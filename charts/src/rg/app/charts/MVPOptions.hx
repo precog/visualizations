@@ -15,6 +15,7 @@ import thx.date.DateParser;
 import rg.util.Periodicity;
 import thx.error.Error;
 import rg.util.RG;
+import rg.html.widget.Logo;
 using Arrays;
 
 class MVPOptions
@@ -52,7 +53,7 @@ class MVPOptions
 			}
 			authorized = auth.authorizeMany(hosts);
 		} else {
-			authorized = false;
+			authorized = Logo.pageIsBranded();
 		}
 		a1 = function(params : Dynamic, handler : Dynamic -> Void)
 		{
@@ -152,11 +153,12 @@ class MVPOptions
 			{
 				if(axis.variable == "dependent")
 				{
-					
+
 				} else {
 					switch(params.options.visualization)
 					{
-						case "barchart":
+						case "barchart", "pivottable":
+//							trace(axis.type + " " + axis.scalemode);
 							if(null == axis.scalemode)
 								axis.scalemode = "fit";
 					}

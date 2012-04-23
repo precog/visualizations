@@ -4,7 +4,7 @@ class ufront_external_mvc_ThxDependencyResolver implements ufront_web_mvc_IDepen
 	public function __construct($locator) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $locator) {
-			throw new HException(new thx_error_NullArgument("locator", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ThxDependencyResolver.hx", "lineNumber" => 20, "className" => "ufront.external.mvc.ThxDependencyResolver", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("locator", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ThxDependencyResolver.hx", "lineNumber" => 19, "className" => "ufront.external.mvc.ThxDependencyResolver", "methodName" => "new"))));
 		}
 		$this->locator = $locator;
 		$this->defaultResolver = new ufront_web_mvc_DefaultDependencyResolver($this);

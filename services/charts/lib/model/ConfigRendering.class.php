@@ -16,6 +16,9 @@ class model_ConfigRendering {
 	public $image;
 	public $wk;
 	public $template;
+	public function toString() {
+		return "ConfigRendering: " . model_ConfigObjects::fieldsToString($this);
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -95,7 +98,7 @@ class model_ConfigRendering {
 		}
 		return $config;
 	}
-	function __toString() { return 'model.ConfigRendering'; }
+	function __toString() { return $this->toString(); }
 }
 function model_ConfigRendering_0(&$config, &$options) {
 	if(null === $options->duration) {

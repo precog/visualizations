@@ -18,7 +18,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		$this->encodedString = $this->buf->b;
 		$this->buf = null;
 	}
-	public function startObject() {
+	public function objectStart() {
 		{
 			$x = "{";
 			if(is_null($x)) {
@@ -32,7 +32,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->count->push(0);
 	}
-	public function startField($name) {
+	public function objectFieldStart($name) {
 		if($this->count->»a[$this->count->length - 1]++ > 0) {
 			$x = ",";
 			if(is_null($x)) {
@@ -56,9 +56,9 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 			$this->buf->b .= $x;
 		}
 	}
-	public function endField() {
+	public function objectFieldEnd() {
 	}
-	public function endObject() {
+	public function objectEnd() {
 		{
 			$x = "}";
 			if(is_null($x)) {
@@ -72,7 +72,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->count->pop();
 	}
-	public function startArray() {
+	public function arrayStart() {
 		{
 			$x = "[";
 			if(is_null($x)) {
@@ -86,7 +86,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->count->push(0);
 	}
-	public function startItem() {
+	public function arrayItemStart() {
 		if($this->count->»a[$this->count->length - 1]++ > 0) {
 			$x = ",";
 			if(is_null($x)) {
@@ -99,9 +99,9 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 			$this->buf->b .= $x;
 		}
 	}
-	public function endItem() {
+	public function arrayItemEnd() {
 	}
-	public function endArray() {
+	public function arrayEnd() {
 		{
 			$x = "]";
 			if(is_null($x)) {
@@ -115,7 +115,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->count->pop();
 	}
-	public function date($d) {
+	public function valueDate($d) {
 		$x = $d->getTime();
 		if(is_null($x)) {
 			$x = "null";
@@ -126,7 +126,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->buf->b .= $x;
 	}
-	public function string($s) {
+	public function valueString($s) {
 		$x = $this->quote($s);
 		if(is_null($x)) {
 			$x = "null";
@@ -137,7 +137,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->buf->b .= $x;
 	}
-	public function int($i) {
+	public function valueInt($i) {
 		$x = $i;
 		if(is_null($x)) {
 			$x = "null";
@@ -148,7 +148,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->buf->b .= $x;
 	}
-	public function float($f) {
+	public function valueFloat($f) {
 		$x = $f;
 		if(is_null($x)) {
 			$x = "null";
@@ -159,7 +159,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->buf->b .= $x;
 	}
-	public function null() {
+	public function valueNull() {
 		$x = "null";
 		if(is_null($x)) {
 			$x = "null";
@@ -170,7 +170,7 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		}
 		$this->buf->b .= $x;
 	}
-	public function bool($b) {
+	public function valueBool($b) {
 		$x = (($b) ? "true" : "false");
 		if(is_null($x)) {
 			$x = "null";

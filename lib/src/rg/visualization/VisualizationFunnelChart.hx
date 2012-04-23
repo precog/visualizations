@@ -19,7 +19,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 	public var info : InfoFunnelChart;
 	var title : Null<Title>;
 	var chart : FunnelChart;
-	
+
 	override function init()
 	{
 		// CHART
@@ -35,11 +35,11 @@ class VisualizationFunnelChart extends VisualizationSvg
 			chart.labelDataPointOver = info.label.datapointover;
 		if (null != info.label.arrow)
 			chart.labelArrow = info.label.arrow;
-		
+
 		// events
 		if(null != info.click)
 			chart.click = info.click;
-			
+
 		chart.padding = info.padding;
 		chart.flatness = info.flatness;
 		switch(info.effect)
@@ -50,9 +50,9 @@ class VisualizationFunnelChart extends VisualizationSvg
 			case NoEffect:
 				chart.displayGradient = false;
 		}
-		
+
 		chart.arrowSize = info.arrowSize;
-		
+
 		// TITLE
 		if (null != info.label.title)
 		{
@@ -62,7 +62,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 			title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
 		}
 	}
-	
+
 	// TODO move sort to axis
 	override function feedData(data : Array<DataPoint>)
 	{
@@ -86,7 +86,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 		chart.init();
 		chart.data(data);
 	}
-	
+
 	override public function destroy()
 	{
 		chart.destroy();

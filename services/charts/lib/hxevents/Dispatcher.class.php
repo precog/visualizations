@@ -33,23 +33,19 @@ class hxevents_Dispatcher {
 		$this->handlers = new _hx_array(array());
 	}
 	public function dispatch($e) {
-		try {
-			$list = $this->handlers->copy();
-			{
-				$_g = 0;
-				while($_g < $list->length) {
-					$l = $list[$_g];
-					++$_g;
-					call_user_func_array($l, array($e));
-					unset($l);
+		$list = $this->handlers->copy();
+		{
+			$_g = 0;
+			while($_g < $list->length) {
+				$l = $list[$_g];
+				++$_g;
+				if($this->_stop === true) {
+					$this->_stop = false;
+					break;
 				}
+				call_user_func_array($l, array($e));
+				unset($l);
 			}
-			return true;
-		}catch(Exception $»e) {
-			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
-			if(($exc = $_ex_) instanceof hxevents_EventException){
-				return false;
-			} else throw $»e;;
 		}
 	}
 	public function dispatchAndAutomate($e) {
@@ -75,6 +71,10 @@ class hxevents_Dispatcher {
 			return false;
 		}
 	}
+	public $_stop;
+	public function stop() {
+		$this->_stop = true;
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -84,9 +84,6 @@ class hxevents_Dispatcher {
 			return $this->__toString();
 		else
 			throw new HException('Unable to call «'.$m.'»');
-	}
-	static function stop() {
-		throw new HException(hxevents_EventException::$StopPropagation);
 	}
 	function __toString() { return 'hxevents.Dispatcher'; }
 }

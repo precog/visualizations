@@ -15,6 +15,7 @@ import thx.math.Random;
 import rg.app.charts.MVPOptions;
 //import thx.svg.Symbol;
 import rg.svg.util.SymbolCache;
+import thx.util.MacroVersion;
 
 class JSBridge
 {
@@ -159,7 +160,7 @@ class JSBridge
 
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
-			version : thx.util.MacroVersion.fullVersion()
+			version : MacroVersion.next()
 		};
 
 //		untyped JsExport.property(rg.util.ChainedExecutor.prototype, "execute", rg.util.ChainedExecutor.prototype.execute);

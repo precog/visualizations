@@ -101,6 +101,7 @@ class RGLegacyRenderer
 		// remove dangerous stuff
 		Reflect.deleteField(params, "load");
 		Reflect.deleteField(params.options, "download");
+		params.options.forcelegacy = false;
 	}
 
 	static function removeFunctions(o : Dynamic)
@@ -164,13 +165,13 @@ class RGLegacyRenderer
 		else
 			classes += " rg";
 		var h = '<!DOCTYPE html>
-<html onload="__RG__render()">
+<html>
 <head>
 <title></title>
 '
 +
 (null == scripts ? "" : Arrays.map(scripts, function(src, _) {
-	return Std.format('<script src="$src" type=""text/javascript"></script>');
+	return Std.format('<script src="$src" type="text/javascript"></script>');
 }).join("\n"))
 +
 (null == css ? "" : Arrays.map(css, function(href, _) {
@@ -184,7 +185,7 @@ ReportGrid.chart("#'+id+'", '+p+');
 }
 </script>
 </head>
-<body>
+<body onload="__RG__render()">
 <div id="'+id+'" class="'+classes+'" style="margin:0"></div>
 </body>
 </html>';

@@ -60,10 +60,10 @@ class ufront_web_HttpResponse {
 	}
 	public function setHeader($name, $value) {
 		if(null === $name) {
-			throw new HException(new thx_error_NullArgument("name", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpResponse.hx", "lineNumber" => 104, "className" => "ufront.web.HttpResponse", "methodName" => "setHeader"))));
+			throw new HException(new thx_error_NullArgument("name", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpResponse.hx", "lineNumber" => 103, "className" => "ufront.web.HttpResponse", "methodName" => "setHeader"))));
 		}
 		if(null === $value) {
-			throw new HException(new thx_error_NullArgument("value", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpResponse.hx", "lineNumber" => 105, "className" => "ufront.web.HttpResponse", "methodName" => "setHeader"))));
+			throw new HException(new thx_error_NullArgument("value", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpResponse.hx", "lineNumber" => 104, "className" => "ufront.web.HttpResponse", "methodName" => "setHeader"))));
 		}
 		$this->_headers->set($name, $value);
 	}

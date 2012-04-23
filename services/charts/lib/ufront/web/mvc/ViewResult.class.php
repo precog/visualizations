@@ -20,7 +20,7 @@ class ufront_web_mvc_ViewResult extends ufront_web_mvc_ActionResult {
 	}
 	public function executeResult($context) {
 		if(null === $context) {
-			throw new HException(new thx_error_NullArgument("context", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ViewResult.hx", "lineNumber" => 32, "className" => "ufront.web.mvc.ViewResult", "methodName" => "executeResult"))));
+			throw new HException(new thx_error_NullArgument("context", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ViewResult.hx", "lineNumber" => 30, "className" => "ufront.web.mvc.ViewResult", "methodName" => "executeResult"))));
 		}
 		if(null === $this->viewName || "" === $this->viewName) {
 			$this->viewName = $context->routeData->getRequired("action");
@@ -55,7 +55,7 @@ class ufront_web_mvc_ViewResult extends ufront_web_mvc_ActionResult {
 	}
 	public function findView($context, $viewName) {
 		if(null === $viewName) {
-			throw new HException(new thx_error_NullArgument("viewName", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ViewResult.hx", "lineNumber" => 63, "className" => "ufront.web.mvc.ViewResult", "methodName" => "findView"))));
+			throw new HException(new thx_error_NullArgument("viewName", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ViewResult.hx", "lineNumber" => 62, "className" => "ufront.web.mvc.ViewResult", "methodName" => "findView"))));
 		}
 		if(null == ufront_web_mvc_ViewEngines::getEngines()) throw new HException('null iterable');
 		$»it = ufront_web_mvc_ViewEngines::getEngines()->iterator();

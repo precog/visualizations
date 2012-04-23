@@ -36,7 +36,7 @@ class ufront_web_HttpContext {
 	}
 	public function addUrlFilter($filter) {
 		if(null === $filter) {
-			throw new HException(new thx_error_NullArgument("filter", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContext.hx", "lineNumber" => 58, "className" => "ufront.web.HttpContext", "methodName" => "addUrlFilter"))));
+			throw new HException(new thx_error_NullArgument("filter", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContext.hx", "lineNumber" => 57, "className" => "ufront.web.HttpContext", "methodName" => "addUrlFilter"))));
 		}
 		$this->_requestUri = null;
 		$this->_urlFilters->push($filter);

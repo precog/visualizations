@@ -7,7 +7,7 @@ class ufront_web_routing_RouteUriParser {
 	public $restUsed;
 	public function parse($uri, $implicitOptionals) {
 		if(null === $uri) {
-			throw new HException(new thx_error_NullArgument("uri", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteUriParser.hx", "lineNumber" => 17, "className" => "ufront.web.routing.RouteUriParser", "methodName" => "parse"))));
+			throw new HException(new thx_error_NullArgument("uri", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteUriParser.hx", "lineNumber" => 16, "className" => "ufront.web.routing.RouteUriParser", "methodName" => "parse"))));
 		}
 		$segments = _hx_explode("/", $uri);
 		if($segments->length <= 1) {

@@ -4,25 +4,25 @@ class model_ConfigObjects {
 	public function __construct(){}
 	static $FORMATS;
 	static function createDefault() {
-		return _hx_anonymous(array("cacheExpires" => 43200000., "duration" => null, "allowedFormats" => new _hx_array(array("pdf", "png", "jpg", "svg")), "params" => _hx_anonymous(array()), "defaults" => _hx_anonymous(array()), "zoom" => 1.0, "dpi" => null, "grayscale" => false, "imageDpi" => null, "imageQuality" => null, "lowQuality" => false, "marginTop" => null, "marginBottom" => null, "marginLeft" => null, "marginRight" => null, "portrait" => true, "pageHeight" => null, "pageSize" => null, "pageWidth" => null, "title" => null, "usePrintMediaType" => false, "disableSmartShrinking" => false, "footerCenter" => null, "footerLeft" => null, "footerRight" => null, "footerFontName" => null, "footerFontSize" => null, "footerHtml" => null, "footerSpacing" => null, "footerLine" => false, "headerCenter" => null, "headerLeft" => null, "headerRight" => null, "headerFontName" => null, "headerFontSize" => null, "headerHtml" => null, "headerSpacing" => null, "headerLine" => false, "x" => null, "y" => null, "width" => null, "height" => null, "screenWidth" => null, "screenHeight" => null, "quality" => null, "disableSmartWidth" => false, "transparent" => false));
+		return _hx_anonymous(array("cacheExpires" => 43200000., "duration" => null, "allowedFormats" => new _hx_array(array("pdf", "ps", "png", "jpg", "bmp", "tif", "svg", "html")), "params" => _hx_anonymous(array()), "defaults" => _hx_anonymous(array()), "zoom" => 1.0, "dpi" => null, "grayscale" => false, "imageDpi" => null, "imageQuality" => null, "lowQuality" => false, "marginTop" => null, "marginBottom" => null, "marginLeft" => null, "marginRight" => null, "portrait" => true, "pageHeight" => null, "pageSize" => null, "pageWidth" => null, "title" => null, "usePrintMediaType" => false, "disableSmartShrinking" => false, "footerCenter" => null, "footerLeft" => null, "footerRight" => null, "footerFontName" => null, "footerFontSize" => null, "footerHtml" => null, "footerSpacing" => null, "footerLine" => false, "headerCenter" => null, "headerLeft" => null, "headerRight" => null, "headerFontName" => null, "headerFontSize" => null, "headerHtml" => null, "headerSpacing" => null, "headerLine" => false, "x" => null, "y" => null, "width" => null, "height" => null, "screenWidth" => null, "screenHeight" => null, "quality" => null, "disableSmartWidth" => false, "transparent" => false));
 	}
 	static function overrideValues($config, $over) {
 		if(null !== _hx_field($over, "duration")) {
 			$e = $over->duration;
 			if(Std::is($e, _hx_qtype("Float"))) {
 				if($e <= 0) {
-					throw new HException(new thx_error_Error("invalid negative value for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 134, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+					throw new HException(new thx_error_Error("invalid negative value for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 80, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
 				$config->duration = $e;
 			} else {
 				if(Std::is($e, _hx_qtype("String"))) {
 					$v = thx_date_Milli::parse($e);
 					if($v <= 0) {
-						throw new HException(new thx_error_Error("invalid expression for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 139, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+						throw new HException(new thx_error_Error("invalid expression for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 85, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 					}
 					$config->duration = $v;
 				} else {
-					throw new HException(new thx_error_Error("invalid value type for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 142, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+					throw new HException(new thx_error_Error("invalid value type for duration: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 88, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
 			}
 		}
@@ -30,18 +30,18 @@ class model_ConfigObjects {
 			$e = $over->cache;
 			if(Std::is($e, _hx_qtype("Float"))) {
 				if($e <= 0) {
-					throw new HException(new thx_error_Error("invalid negative value for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 151, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+					throw new HException(new thx_error_Error("invalid negative value for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 97, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
 				$config->cacheExpires = $e;
 			} else {
 				if(Std::is($e, _hx_qtype("String"))) {
 					$v = thx_date_Milli::parse($e);
 					if($v <= 0) {
-						throw new HException(new thx_error_Error("invalid expression for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 156, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+						throw new HException(new thx_error_Error("invalid expression for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 102, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 					}
 					$config->cacheExpires = $v;
 				} else {
-					throw new HException(new thx_error_Error("invalid value type for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 159, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+					throw new HException(new thx_error_Error("invalid value type for cacheExpires: {0}", new _hx_array(array($e)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 105, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
 			}
 		}
@@ -80,7 +80,7 @@ class model_ConfigObjects {
 				$item = $»it->next();
 				$s = strtolower(trim($item));
 				if(!Arrays::exists(model_ConfigObjects::$FORMATS, $s, null)) {
-					throw new HException(new thx_error_Error("the format '{0}' is not supported", new _hx_array(array($item)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 182, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
+					throw new HException(new thx_error_Error("the format '{0}' is not supported", new _hx_array(array($item)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 128, "className" => "model.ConfigObjects", "methodName" => "overrideValues"))));
 				}
 				$config->allowedFormats->push($s);
 				unset($s);
@@ -160,7 +160,7 @@ class model_ConfigObjects {
 			return $s;
 		}
 		if(!Arrays::exists(model_WKHtmlToPdf::$allowedPaperSize, $s, null)) {
-			throw new HException(new thx_error_Error("invalid paper size '{0}'", new _hx_array(array($v)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 264, "className" => "model.ConfigObjects", "methodName" => "parsePaperSize"))));
+			throw new HException(new thx_error_Error("invalid paper size '{0}'", new _hx_array(array($v)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 210, "className" => "model.ConfigObjects", "methodName" => "parsePaperSize"))));
 		}
 		return $s;
 	}
@@ -170,7 +170,7 @@ class model_ConfigObjects {
 			return $s;
 		}
 		if(!model_WKHtmlToPdf::validateUnitReal($s)) {
-			throw new HException(new thx_error_Error("invalid unit size '{0}' for '{1}'", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 274, "className" => "model.ConfigObjects", "methodName" => "parseUnit"))));
+			throw new HException(new thx_error_Error("invalid unit size '{0}' for '{1}'", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 220, "className" => "model.ConfigObjects", "methodName" => "parseUnit"))));
 		}
 		return $s;
 	}
@@ -180,7 +180,7 @@ class model_ConfigObjects {
 			return null;
 		}
 		if($i < 0 || $i > 100) {
-			throw new HException(new thx_error_Error("quality must be an integer value between 0 and 100", null, null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 284, "className" => "model.ConfigObjects", "methodName" => "parseQuality"))));
+			throw new HException(new thx_error_Error("quality must be an integer value between 0 and 100", null, null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 230, "className" => "model.ConfigObjects", "methodName" => "parseQuality"))));
 		}
 		return $i;
 	}
@@ -207,7 +207,7 @@ class model_ConfigObjects {
 				if(Std::is($v, _hx_qtype("String")) && Bools::canParse($v)) {
 					return Bools::parse($v);
 				} else {
-					throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 306, "className" => "model.ConfigObjects", "methodName" => "parseBool"))));
+					throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 252, "className" => "model.ConfigObjects", "methodName" => "parseBool"))));
 				}
 			}
 		}
@@ -222,7 +222,7 @@ class model_ConfigObjects {
 			if(Std::is($v, _hx_qtype("String")) && Ints::canParse($v)) {
 				return Ints::parse($v);
 			} else {
-				throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 317, "className" => "model.ConfigObjects", "methodName" => "parseInt"))));
+				throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 263, "className" => "model.ConfigObjects", "methodName" => "parseInt"))));
 			}
 		}
 	}
@@ -236,9 +236,26 @@ class model_ConfigObjects {
 			if(Std::is($v, _hx_qtype("String")) && Floats::canParse($v)) {
 				return Floats::parse($v);
 			} else {
-				throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObject.hx", "lineNumber" => 328, "className" => "model.ConfigObjects", "methodName" => "parseFloat"))));
+				throw new HException(new thx_error_Error("unsupported value '{0}' for {1}", new _hx_array(array($v, $field)), null, _hx_anonymous(array("fileName" => "ConfigObjects.hx", "lineNumber" => 274, "className" => "model.ConfigObjects", "methodName" => "parseFloat"))));
 			}
 		}
+	}
+	static function fieldsToString($o) {
+		$fields = Reflect::fields($o); $pairs = new _hx_array(array());
+		{
+			$_g = 0;
+			while($_g < $fields->length) {
+				$field = $fields[$_g];
+				++$_g;
+				$value = Reflect::field($o, $field);
+				if(null === $value) {
+					continue;
+				}
+				$pairs->push($field . ": " . $value);
+				unset($value,$field);
+			}
+		}
+		return $pairs->join(", ");
 	}
 	function __toString() { return 'model.ConfigObjects'; }
 }

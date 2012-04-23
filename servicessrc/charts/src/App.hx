@@ -2,6 +2,7 @@ import model.CacheGateway;
 import model.RenderableGateway;
 import model.ConfigGateway;
 import thx.util.Imports;
+import thx.util.MacroVersion;
 import ufront.web.AppConfiguration;
 import ufront.web.mvc.MvcApplication;
 import ufront.web.routing.RouteCollection;
@@ -48,8 +49,15 @@ class App
 
 	static function main()
 	{
-		App.version = thx.util.MacroVersion.fullVersion();
-
+		App.version =
+#if (release && minor)
+				MacroVersion.incrementMinor()
+#elseif release
+				MacroVersion.incrementMaintenance()
+#else
+				MacroVersion.incrementBuild()
+#end
+		;
 		var locator = new thx.util.TypeLocator();
 		locator.memoize(model.WKHtmlToImage, function() {
 			return new model.WKHtmlToImage(WKIMAGE);
@@ -91,6 +99,8 @@ class App
 			app    = new MvcApplication(config, routes);
 
 		app.modules.add(new util.TraceToMongo(MONGO_DB_NAME, LOG_COLLECTION, serverName()));
+
+routes.addRoute("/contact/{?message}", {controller:"site", action:"contact"});
 
 		routes.addRoute('/', {
 			controller : "home", action : "index"

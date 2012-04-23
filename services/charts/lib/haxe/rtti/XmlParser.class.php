@@ -222,6 +222,13 @@ class haxe_rtti_XmlParser {
 				}
 				if($tinf->path === $inf->path) {
 					$sameType = true;
+					if(($tinf->doc === null) != ($inf->doc === null)) {
+						if($inf->doc === null) {
+							$inf->doc = $tinf->doc;
+						} else {
+							$tinf->doc = $inf->doc;
+						}
+					}
 					if($tinf->module === $inf->module && $tinf->doc === $inf->doc && $tinf->isPrivate == $inf->isPrivate) {
 						$»t = ($ct);
 						switch($»t->index) {

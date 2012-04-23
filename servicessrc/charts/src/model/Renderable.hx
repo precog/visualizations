@@ -42,4 +42,9 @@ class Renderable
 		s = untyped __call__('base_convert', s, 16, 36);
 		return s.substr(0, 12);
 	}
+
+	public function toString()
+	{
+		return Std.format("CONFIG\n$config\n\nHTML\n$html");
+	}
 }

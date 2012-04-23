@@ -623,6 +623,17 @@ class haxe_Http {
 				unset($x);
 			}
 		}
+		{
+			$x = "\x0D\x0A";
+			if(is_null($x)) {
+				$x = "null";
+			} else {
+				if(is_bool($x)) {
+					$x = (($x) ? "true" : "false");
+				}
+			}
+			$b->b .= $x;
+		}
 		if($this->postData !== null) {
 			$x = $this->postData;
 			if(is_null($x)) {
@@ -634,17 +645,6 @@ class haxe_Http {
 			}
 			$b->b .= $x;
 		} else {
-			{
-				$x = "\x0D\x0A";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
 			if($post && $uri !== null) {
 				$x = $uri;
 				if(is_null($x)) {

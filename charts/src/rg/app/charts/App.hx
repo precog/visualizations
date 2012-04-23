@@ -63,7 +63,7 @@ class App
 			variables = new FactoryVariable().createVariables(params.variables),
 			general   = new InfoGeneral().feed(params.options),
 			infoviz   = new InfoVisualizationType().feed(params.options),
-			uselegacy = !supportsSvg();
+			uselegacy = !supportsSvg() || general.forcelegacy;
 
 		var visualization : Visualization = null;
 		params.options.marginheight = 29;

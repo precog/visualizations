@@ -48,7 +48,7 @@ class ReportGridTransformers
 		});
 	}
 
-	public static function propertyValues(arr : Array<String>, params : { path : String, event : String, property : String }, keep : Array<String>) : Array<{ event : String, path : String, property : String, value : Dynamic }>
+	public static function propertyValues(arr : Array<String>, params : { path : String, event : String, property : String, ?where : Dynamic }, keep : Array<String>) : Array<{ event : String, path : String, property : String, value : Dynamic }>
 	{
 		var path     = params.path,
 			event    = params.event,
@@ -61,6 +61,8 @@ class ReportGridTransformers
 				value :    value
 			};
 			_keep(params, o, keep);
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			return o;
 		});
 	}
@@ -101,8 +103,8 @@ class ReportGridTransformers
 					count : item[1]
 				};
 				_keep(params, o, keep);
-			if(null != params.where)
-				Objects.copyTo(params.where, o);
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				Reflect.setField(o, tag, Strings.trim(key, "/"));
 				Reflect.setField(o, property, item[0]);
 				return o;
@@ -125,7 +127,7 @@ class ReportGridTransformers
 		});
 	}
 
-	public static function intersect(ob : Dynamic, params : { ?properties : Array<{ property : String }> }, keep : Array<String>) : Array<{ count : Int }>
+	public static function intersect(ob : Dynamic, params : { ?properties : Array<{ property : String }>, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var properties = params.properties,
 			result     = [];
@@ -135,6 +137,8 @@ class ReportGridTransformers
 			var o : Dynamic = {
 				count : pair.value
 			};
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			for(i in 0...properties.length)
 			{
@@ -145,7 +149,7 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function intersectTag(ob : Dynamic, params : { tag : String, ?properties : Array<{ property : String }> }, keep : Array<String>) : Array<{ count : Int }>
+	public static function intersectTag(ob : Dynamic, params : { tag : String, ?properties : Array<{ property : String }>, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var tag        = params.tag,
 			properties = params.properties,
@@ -156,6 +160,8 @@ class ReportGridTransformers
 				var o : Dynamic = {
 					count : pair.value
 				};
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				_keep(params, o, keep);
 				Reflect.setField(o, tag, Strings.trim(key, '/'));
 				for(i in 0...properties.length)
@@ -168,7 +174,7 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function intersectSeries(ob : Dynamic, params : { periodicity : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }> }, keep : Array<String>) : Array<{ count : Int }>
+	public static function intersectSeries(ob : Dynamic, params : { periodicity : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }>, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var properties  = params.properties,
 			periodicity = params.periodicity,
@@ -184,6 +190,8 @@ class ReportGridTransformers
 				var o : Dynamic = {
 					count : item[1]
 				};
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				_keep(params, o, keep);
 				_injectTime(o, item[0], periodicity, timezone, groupby);
 				for(i in 0...properties.length)
@@ -196,7 +204,7 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function intersectSeriesTag(ob : Dynamic, params : { periodicity : String, tag : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }> }, keep : Array<String>) : Array<{ count : Int }>
+	public static function intersectSeriesTag(ob : Dynamic, params : { periodicity : String, tag : String, ?timezone : Dynamic, ?groupby : String, ?properties : Array<{ property : String }>, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var properties  = params.properties,
 			periodicity = params.periodicity,
@@ -213,6 +221,8 @@ class ReportGridTransformers
 					var o : Dynamic = {
 						count : item[1]
 					};
+					if(null != params.where)
+						Objects.copyTo(params.where, o);
 					_keep(params, o, keep);
 					_injectTime(o, item[0], periodicity, timezone, groupby);
 					Reflect.setField(o, tag, Strings.trim(key, '/'));
@@ -233,6 +243,8 @@ class ReportGridTransformers
 			event : params.event,
 			count : count
 		};
+		if(null != params.where)
+			Objects.copyTo(params.where, o);
 		_keep(params, o, keep);
 		if(null != params.where)
 			Objects.copyTo(params.where, o);
@@ -248,6 +260,8 @@ class ReportGridTransformers
 				event : event,
 				count : count
 			};
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			Reflect.setField(o, tag, Strings.trim(key, "/"));
 			if(null != params.where)
@@ -271,6 +285,8 @@ class ReportGridTransformers
 					event : event,
 					count : item[1]
 				};
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				_keep(params, o, keep);
 				Reflect.setField(o, tag, Strings.trim(key, "/"));
 				_injectTime(o, item[0], periodicity, null, groupby);
@@ -296,6 +312,8 @@ class ReportGridTransformers
 				event : event,
 				count : item[1]
 			};
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			_injectTime(o, item[0], periodicity, timezone, groupby);
 			if(null != where)
@@ -308,12 +326,14 @@ class ReportGridTransformers
 	public static function propertySummary(value : Array<Dynamic>, params : { type : String, ?where : Dynamic }, keep : Array<String>) : Array<{ }>
 	{
 		var o = { };
+		if(null != params.where)
+			Objects.copyTo(params.where, o);
 		_keep(params, o, keep);
 		Reflect.setField(o, params.type, value[0][1]);
 		return [o];
 	}
 
-	public static function propertySummarySeries(values : Array<Array<Dynamic>>, params : { periodicity : String, type : String, ?timezone : String, ?groupby : String }, keep : Array<String>) : Array<{  }>
+	public static function propertySummarySeries(values : Array<Array<Dynamic>>, params : { periodicity : String, type : String, ?timezone : String, ?groupby : String, ?where : Dynamic }, keep : Array<String>) : Array<{  }>
 	{
 		var periodicity = params.periodicity,
 			type		= params.type,
@@ -323,6 +343,8 @@ class ReportGridTransformers
 		for(item in values)
 		{
 			var o = { };
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			_injectTime(o, item[0], periodicity, timezone, groupby);
 			Reflect.setField(o, type, item[1]);
@@ -331,7 +353,7 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function propertySummarySeriesTagGroupedBy(ob : Dynamic, params : { periodicity : String, type : String, tag : String, groupby : String }, keep : Array<String>) : Array<{ }>
+	public static function propertySummarySeriesTagGroupedBy(ob : Dynamic, params : { periodicity : String, type : String, tag : String, groupby : String, ?where : Dynamic }, keep : Array<String>) : Array<{ }>
 	{
 		var periodicity = params.periodicity,
 			type		= params.type,
@@ -343,6 +365,8 @@ class ReportGridTransformers
 			{
 				var o = { };
 				_keep(params, o, keep);
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				Reflect.setField(o, tag, Strings.trim(key, "/"));
 				Reflect.setField(o, type, item[1]);
 				_injectTime(o, item[0], periodicity, null, groupby);
@@ -362,7 +386,7 @@ class ReportGridTransformers
 		return [o];
 	}
 
-	public static function propertyValueCountTag(counts : Dynamic, params : { property : String, value : Dynamic, tag : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function propertyValueCountTag(counts : Dynamic, params : { property : String, value : Dynamic, tag : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property = params.property,
 			value    = params.value,
@@ -371,6 +395,8 @@ class ReportGridTransformers
 			var o = {
 				count : count
 			};
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			Reflect.setField(o, property, value);
 			Reflect.setField(o, tag, Strings.trim(key, "/"));
@@ -378,7 +404,7 @@ class ReportGridTransformers
 		});
 	}
 
-	public static function propertyValueSeries(values : Array<Array<Dynamic>>, params : { property : String, value : Dynamic, periodicity : String, ?timezone : Dynamic, ?groupby : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function propertyValueSeries(values : Array<Array<Dynamic>>, params : { property : String, value : Dynamic, periodicity : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property    = params.property,
 			periodicity = params.periodicity,
@@ -391,6 +417,8 @@ class ReportGridTransformers
 			var o = {
 				count : item[1]
 			};
+			if(null != params.where)
+				Objects.copyTo(params.where, o);
 			_keep(params, o, keep);
 			Reflect.setField(o, property, value);
 			_injectTime(o, item[0], periodicity, timezone, groupby);
@@ -399,7 +427,7 @@ class ReportGridTransformers
 		return result;
 	}
 
-	public static function propertyValueSeriesTagGroupedBy(ob : Dynamic, params : { property : String, value : Dynamic, periodicity : String, tag : String, groupby : String }, keep : Array<String>) : Array<{ count : Int }>
+	public static function propertyValueSeriesTagGroupedBy(ob : Dynamic, params : { property : String, value : Dynamic, periodicity : String, tag : String, groupby : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property    = params.property,
 			value       = params.value,
@@ -413,6 +441,8 @@ class ReportGridTransformers
 				var o = {
 					count : item[1]
 				};
+				if(null != params.where)
+					Objects.copyTo(params.where, o);
 				_keep(params, o, keep);
 				Reflect.setField(ob, property, value);
 				Reflect.setField(o, tag, Strings.trim(key, "/"));

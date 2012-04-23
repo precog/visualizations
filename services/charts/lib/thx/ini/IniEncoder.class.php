@@ -43,16 +43,16 @@ class thx_ini_IniEncoder implements thx_data_IDataHandler{
 		}
 		$this->encodedString = trim($lines->join($this->newline));
 	}
-	public function startObject() {
+	public function objectStart() {
 		if($this->inarray > 0) {
-			throw new HException(new thx_error_Error("arrays must contain only primitive values", null, null, _hx_anonymous(array("fileName" => "IniEncoder.hx", "lineNumber" => 58, "className" => "thx.ini.IniEncoder", "methodName" => "startObject"))));
+			throw new HException(new thx_error_Error("arrays must contain only primitive values", null, null, _hx_anonymous(array("fileName" => "IniEncoder.hx", "lineNumber" => 58, "className" => "thx.ini.IniEncoder", "methodName" => "objectStart"))));
 		}
 	}
-	public function startField($name) {
+	public function objectFieldStart($name) {
 		$this->stack->push($this->enc($name));
 		$this->value = "";
 	}
-	public function endField() {
+	public function objectFieldEnd() {
 		if(null === $this->value) {
 			return;
 		}
@@ -70,36 +70,36 @@ class thx_ini_IniEncoder implements thx_data_IDataHandler{
 		}
 		return $section;
 	}
-	public function endObject() {
+	public function objectEnd() {
 		$this->stack->pop();
 	}
-	public function startArray() {
+	public function arrayStart() {
 		if($this->inarray > 0) {
-			throw new HException(new thx_error_Error("nested arrays are not supported in the .ini format", null, null, _hx_anonymous(array("fileName" => "IniEncoder.hx", "lineNumber" => 97, "className" => "thx.ini.IniEncoder", "methodName" => "startArray"))));
+			throw new HException(new thx_error_Error("nested arrays are not supported in the .ini format", null, null, _hx_anonymous(array("fileName" => "IniEncoder.hx", "lineNumber" => 97, "className" => "thx.ini.IniEncoder", "methodName" => "arrayStart"))));
 		}
 		$this->inarray = 1;
 		$this->value = "";
 	}
-	public function startItem() {
+	public function arrayItemStart() {
 		if($this->inarray === 1) {
 			$this->inarray = 2;
 		} else {
 			$this->value .= ", ";
 		}
 	}
-	public function endItem() {
+	public function arrayItemEnd() {
 	}
-	public function endArray() {
+	public function arrayEnd() {
 		$this->inarray = 0;
 	}
-	public function date($d) {
+	public function valueDate($d) {
 		if($d->getSeconds() === 0 && $d->getMinutes() === 0 && $d->getHours() === 0) {
 			$this->value .= Dates::format($d, "C", new _hx_array(array("%Y-%m-%d")), null);
 		} else {
 			$this->value .= Dates::format($d, "C", new _hx_array(array("%Y-%m-%d %H:%M:%S")), null);
 		}
 	}
-	public function string($s) {
+	public function valueString($s) {
 		if(trim($s) === $s) {
 			$this->value .= $this->enc($s);
 		} else {
@@ -120,13 +120,13 @@ class thx_ini_IniEncoder implements thx_data_IDataHandler{
 	public function quote($s) {
 		return "\"" . str_replace("\"", "\\\"", $this->enc($s)) . "\"";
 	}
-	public function int($i) {
+	public function valueInt($i) {
 		$this->value .= $i;
 	}
-	public function float($f) {
+	public function valueFloat($f) {
 		$this->value .= $f;
 	}
-	public function null() {
+	public function valueNull() {
 		$this->value .= "";
 	}
 	public function comment($s) {
@@ -134,7 +134,7 @@ class thx_ini_IniEncoder implements thx_data_IDataHandler{
 			$this->value .= "#" . $s;
 		}
 	}
-	public function bool($b) {
+	public function valueBool($b) {
 		$this->value .= (($b) ? "ON" : "OFF");
 	}
 	public function __call($m, $a) {

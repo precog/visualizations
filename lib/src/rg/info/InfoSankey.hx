@@ -37,12 +37,17 @@ using rg.info.Info;
 	public var displayentry : Null<DataPoint -> Stats<Dynamic> -> Bool>;
 	public var displayexit : Null<DataPoint -> Stats<Dynamic> -> Bool>;
 
+	public var stackbackedges : Bool;
+	public var thinbackedges : Bool;
+
 	public function new()
 	{
 		label = new InfoLabelSankey();
 		idproperty = "id";
 		weightproperty = "count";
 		parentsproperty = "parents";
+		stackbackedges = true;
+		thinbackedges = false;
 	}
 
 	public static function filters()
@@ -191,6 +196,14 @@ using rg.info.Info;
 					field : "displayexit",
 					value : Std.is(v, Bool) ? function(_,_) return v : cast v
 				}]
+			}, {
+				field : "stackbackedges",
+				validator : function(v) return Std.is(v, Bool),
+				filter : null
+			}, {
+				field : "thinbackedges",
+				validator : function(v) return Std.is(v, Bool),
+				filter : null
 			}];
 	}
 }

@@ -2,6 +2,6 @@
 
 interface thx_translation_ITranslation {
 	//;
-	function _($id, $domain);
-	function __($ids, $idp, $quantifier, $domain);
+	function singular($id, $domain);
+	function plural($ids, $idp, $quantifier, $domain);
 }

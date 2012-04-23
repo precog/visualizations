@@ -16,7 +16,9 @@ ReportGrid.sankey("#chart", {
 				+ ".png";
 		},
 		nodespacing : 63,
-		layoutmethod : "weightbalance"
+		layoutmethod : "weightbalance",
+		stackbackedges : true,
+		thinbackedges : true
 	}
 });
 

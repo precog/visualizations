@@ -76,19 +76,13 @@ class hxevents_AsyncDispatcher {
 			return;
 		}
 		$async = new hxevents_Async($after, array(new _hx_lambda(array(&$after, &$count, &$e, &$error, &$handler, &$haserror, &$list, &$size), "hxevents_AsyncDispatcher_4"), 'execute'));
-		try {
+		{
 			$_g = 0;
 			while($_g < $list->length) {
 				$l = $list[$_g];
 				++$_g;
 				call_user_func_array($l, array($e, $async));
 				unset($l);
-			}
-		}catch(Exception $»e) {
-			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
-			$e1 = $_ex_;
-			{
-				call_user_func_array($error, array($e1));
 			}
 		}
 	}

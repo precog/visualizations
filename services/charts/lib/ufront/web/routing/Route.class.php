@@ -4,14 +4,14 @@ class ufront_web_routing_Route extends ufront_web_routing_RouteBase {
 	public function __construct($url, $handler, $defaults, $constraints) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $url) {
-			throw new HException(new thx_error_NullArgument("url", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Route.hx", "lineNumber" => 40, "className" => "ufront.web.routing.Route", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("url", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Route.hx", "lineNumber" => 39, "className" => "ufront.web.routing.Route", "methodName" => "new"))));
 		}
 		if(!StringTools::startsWith($url, "/")) {
 			throw new HException(new thx_error_Error("invalid route url '{0}'; url must begin with '/'", null, $url, _hx_anonymous(array("fileName" => "Route.hx", "lineNumber" => 41, "className" => "ufront.web.routing.Route", "methodName" => "new"))));
 		}
 		$this->url = $url;
 		if(null === $handler) {
-			throw new HException(new thx_error_NullArgument("handler", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Route.hx", "lineNumber" => 44, "className" => "ufront.web.routing.Route", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("handler", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Route.hx", "lineNumber" => 43, "className" => "ufront.web.routing.Route", "methodName" => "new"))));
 		}
 		$this->handler = $handler;
 		if(null === $defaults) {

@@ -14,47 +14,47 @@ class thx_data_ValueHandler implements thx_data_IDataHandler{
 	public function end() {
 		$this->value = $this->_stack->pop();
 	}
-	public function startObject() {
+	public function objectStart() {
 		$this->_stack->push(_hx_anonymous(array()));
 	}
-	public function endObject() {
+	public function objectEnd() {
 	}
-	public function startField($name) {
+	public function objectFieldStart($name) {
 		$this->_names->push($name);
 	}
-	public function endField() {
+	public function objectFieldEnd() {
 		$value = $this->_stack->pop();
 		$last = thx_data_ValueHandler_0($this, $value);
 		$last->{$this->_names->pop()} = $value;
 	}
-	public function startArray() {
+	public function arrayStart() {
 		$this->_stack->push(new _hx_array(array()));
 	}
-	public function endArray() {
+	public function arrayEnd() {
 	}
-	public function startItem() {
+	public function arrayItemStart() {
 	}
-	public function endItem() {
+	public function arrayItemEnd() {
 		$value = $this->_stack->pop();
 		$last = thx_data_ValueHandler_1($this, $value);
 		$last->push($value);
 	}
-	public function date($d) {
+	public function valueDate($d) {
 		$this->_stack->push($d);
 	}
-	public function string($s) {
+	public function valueString($s) {
 		$this->_stack->push($s);
 	}
-	public function int($i) {
+	public function valueInt($i) {
 		$this->_stack->push($i);
 	}
-	public function float($f) {
+	public function valueFloat($f) {
 		$this->_stack->push($f);
 	}
-	public function null() {
+	public function valueNull() {
 		$this->_stack->push(null);
 	}
-	public function bool($b) {
+	public function valueBool($b) {
 		$this->_stack->push($b);
 	}
 	public function comment($s) {

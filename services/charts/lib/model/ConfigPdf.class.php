@@ -44,17 +44,7 @@ class model_ConfigPdf {
 	public $headerSpacing;
 	public $headerLine;
 	public function toString() {
-		$pairs = new _hx_array(array());
-		{
-			$_g = 0; $_g1 = Reflect::fields($this);
-			while($_g < $_g1->length) {
-				$field = $_g1[$_g];
-				++$_g;
-				$pairs->push($field . ":" . Reflect::field($this, $field));
-				unset($field);
-			}
-		}
-		return "ConfigPdf " . $pairs->join(", ");
+		return "ConfigPdf: " . model_ConfigObjects::fieldsToString($this);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

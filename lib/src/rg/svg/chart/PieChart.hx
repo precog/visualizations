@@ -137,10 +137,16 @@ class PieChart extends Chart
 			path.attr("d").stringf(arcShape(arcNormal));
 		}
 		arc.onNode("mouseover.label", onMouseOver);
-		if (null != labelDataPoint)
-			arc.eachNode(appendLabel);
+//		if (null != labelDataPoint)
+//			arc.eachNode(appendLabel);
 		if (null != mouseClick)
 			arc.onNode("click.user", onMouseClick);
+
+		if (null != labelDataPoint)
+			choice.enter()
+				.append("svg:g")
+					.attr("transform").string("translate(" + radius + "," + radius + ")")
+					.eachNode(appendLabel);
 
 		// update
 		choice.update()

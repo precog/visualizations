@@ -118,11 +118,8 @@ class Dates {
 				$d = Date::fromTime($time);
 				return _hx_deref(new Date($d->getFullYear(), 0, 1, 0, 0, 0))->getTime();
 			}break;
-			case "eternity":{
-				return 0;
-			}break;
 			default:{
-				Dates_23($mode, $period, $time);
+				return 0;
 			}break;
 			}
 		} else {
@@ -151,11 +148,8 @@ class Dates {
 					$d = Date::fromTime($time);
 					return _hx_deref(new Date($d->getFullYear() + 1, 0, 1, 0, 0, 0))->getTime();
 				}break;
-				case "eternity":{
-					return 0;
-				}break;
 				default:{
-					Dates_24($mode, $period, $time);
+					return 0;
 				}break;
 				}
 			} else {
@@ -183,11 +177,8 @@ class Dates {
 					$d = Date::fromTime($time); $mod = (($time > _hx_deref(new Date($d->getFullYear(), 6, 2, 0, 0, 0))->getTime()) ? 1 : 0);
 					return _hx_deref(new Date($d->getFullYear() + $mod, 0, 1, 0, 0, 0))->getTime();
 				}break;
-				case "eternity":{
-					return 0;
-				}break;
 				default:{
-					Dates_25($mode, $period, $time);
+					return 0;
 				}break;
 				}
 			}
@@ -219,7 +210,7 @@ class Dates {
 			$s = 6;
 		}break;
 		default:{
-			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 190, "className" => "Dates", "methodName" => "snapToWeekDay"))));
+			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 184, "className" => "Dates", "methodName" => "snapToWeekDay"))));
 		}break;
 		}
 		return $time - ($d - $s) % 7 * 24 * 60 * 60 * 1000;
@@ -237,7 +228,7 @@ class Dates {
 		return $date;
 	}
 	static function compare($a, $b) {
-		return Dates_26($a, $b);
+		return Dates_23($a, $b);
 	}
 	function __toString() { return 'Dates'; }
 }
@@ -349,7 +340,7 @@ function Dates_20(&$culture, &$f, &$format, &$param, &$params, $d) {
 }
 function Dates_21(&$culture, &$f, &$format, &$param, &$params, $d) {
 	{
-		return thx_culture_FormatDate::format($f, $d, $culture, Dates_27($culture, $d, $f, $format, $param, $params));
+		return thx_culture_FormatDate::format($f, $d, $culture, Dates_24($culture, $d, $f, $format, $param, $params));
 	}
 }
 function Dates_22(&$a, &$b, &$equation, &$f, $v) {
@@ -357,16 +348,7 @@ function Dates_22(&$a, &$b, &$equation, &$f, $v) {
 		return Date::fromTime(call_user_func_array($f, array($v)));
 	}
 }
-function Dates_23(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 113, "className" => "Dates", "methodName" => "snap"))));
-}
-function Dates_24(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 138, "className" => "Dates", "methodName" => "snap"))));
-}
-function Dates_25(&$mode, &$period, &$time) {
-	throw new HException(new thx_error_Error("unknown period '{0}'", null, $period, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 164, "className" => "Dates", "methodName" => "snap"))));
-}
-function Dates_26(&$a, &$b) {
+function Dates_23(&$a, &$b) {
 	{
 		$a1 = $a->getTime(); $b1 = $b->getTime();
 		if($a1 < $b1) {
@@ -381,7 +363,7 @@ function Dates_26(&$a, &$b) {
 		unset($b1,$a1);
 	}
 }
-function Dates_27(&$culture, &$d, &$f, &$format, &$param, &$params) {
+function Dates_24(&$culture, &$d, &$f, &$format, &$param, &$params) {
 	if($params[1] !== null) {
 		return $params[1] === "true";
 	} else {

@@ -4,7 +4,7 @@ class ufront_web_routing_RouteParamExtractor {
 	public function __construct($ast) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $ast) {
-			throw new HException(new thx_error_NullArgument("ast", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteParamExtractor.hx", "lineNumber" => 18, "className" => "ufront.web.routing.RouteParamExtractor", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("ast", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteParamExtractor.hx", "lineNumber" => 17, "className" => "ufront.web.routing.RouteParamExtractor", "methodName" => "new"))));
 		}
 		$this->ast = $ast;
 	}}
@@ -12,7 +12,7 @@ class ufront_web_routing_RouteParamExtractor {
 	public $data;
 	public function extract($uri) {
 		if(null === $uri) {
-			throw new HException(new thx_error_NullArgument("uri", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteParamExtractor.hx", "lineNumber" => 24, "className" => "ufront.web.routing.RouteParamExtractor", "methodName" => "extract"))));
+			throw new HException(new thx_error_NullArgument("uri", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "RouteParamExtractor.hx", "lineNumber" => 23, "className" => "ufront.web.routing.RouteParamExtractor", "methodName" => "extract"))));
 		}
 		$segments = _hx_explode("/", $uri);
 		if($segments->length <= 1) {

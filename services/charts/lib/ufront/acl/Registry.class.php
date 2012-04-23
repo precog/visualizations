@@ -47,10 +47,10 @@ class ufront_acl_Registry {
 			$onlyParents = false;
 		}
 		if(null === $role) {
-			throw new HException(new thx_error_NullArgument("role", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Registry.hx", "lineNumber" => 60, "className" => "ufront.acl.Registry", "methodName" => "inherits"))));
+			throw new HException(new thx_error_NullArgument("role", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Registry.hx", "lineNumber" => 59, "className" => "ufront.acl.Registry", "methodName" => "inherits"))));
 		}
 		if(null === $inherit) {
-			throw new HException(new thx_error_NullArgument("inherit", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Registry.hx", "lineNumber" => 62, "className" => "ufront.acl.Registry", "methodName" => "inherits"))));
+			throw new HException(new thx_error_NullArgument("inherit", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Registry.hx", "lineNumber" => 60, "className" => "ufront.acl.Registry", "methodName" => "inherits"))));
 		}
 		$r = $this->_roles->get($role);
 		if(null === $r) {

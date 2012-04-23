@@ -2,6 +2,7 @@ package controller;
 
 import thx.error.Error;
 import model.ConfigObject;
+import model.ConfigObjects;
 import model.Renderable;
 import model.ConfigRendering;
 import template.RenderableDisplay;

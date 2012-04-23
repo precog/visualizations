@@ -71,12 +71,14 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
+	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			executor.propertyValues(
 				params.path,
 				options,
@@ -125,10 +127,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
+	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?where : Dynamic, ?tag : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?where : Dynamic, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
 // TODO tag?
 // TODO time range?
 			if(null == params.type)
@@ -137,6 +139,8 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			var options : Dynamic = _defaultOptions(params);
 			options.property = params.event + _prefixProperty(params.property);
 			options.periodicity = "single";
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			switch(params.type.toLowerCase())
 			{
 				case "mean":
@@ -163,10 +167,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
+	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic }, handler) {
 // TODO tag?
 // TODO groupBy
 			if(null == params.type)
@@ -177,6 +181,8 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			var tranform  : Dynamic -> Dynamic -> Array<String> -> Array<Dynamic> = ((null != params.tag)
 				? cast ReportGridTransformers.propertySummarySeriesTagGroupedBy
 				: cast ReportGridTransformers.propertySummarySeries);
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			switch(params.type.toLowerCase())
 			{
 				case "mean":
@@ -204,16 +210,17 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	}
 
 // TODO tag?
-	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, ?keep : Array<String>)
+	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic }, handler) {
 
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { periodicity : "eternity" }),
 				properties = [];
 				options.properties = properties;
-
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			for(i in 0...params.properties.length)
 			{
 				var item = params.properties[i];
@@ -246,16 +253,17 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 // TODO tag?
 // TODO groupBy?
-	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
+	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic }, handler) {
 			_ensureTimeParams(params);
 			var options = _defaultSeriesOptions(params),
 				properties = [];
 
 			options.properties = properties;
-
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			for(i in 0...params.properties.length)
 			{
 				var item = params.properties[i];
@@ -377,12 +385,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-//ReportGrid.events('/query/test2', { event : "impression", start : "2012-03-01", end : "2012-03-11", tag : "location", location : "/italy" }, function(data) { console.log(data) })
-// properties=a,b,c
-	public function rawEvents(?p : { ?path : String, ?event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, ?keep : Array<String>)
+	public function rawEvents(?p : { ?path : String, ?event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { event : params.event });
 			if(null != params.properties)
@@ -399,6 +405,8 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			{
 				options.limit = params.limit;
 			}
+			if(null != params.where)
+				options.where = _where(params.event, params.where);
 			executor.events(
 				params.path,
 				options,

@@ -6,7 +6,7 @@ class ufront_web_mvc_QueryStringValueProviderFactory extends ufront_web_mvc_Valu
 	}}
 	public function getValueProvider($controllerContext) {
 		if(null === $controllerContext) {
-			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "QueryStringValueProviderFactory.hx", "lineNumber" => 21, "className" => "ufront.web.mvc.QueryStringValueProviderFactory", "methodName" => "getValueProvider"))));
+			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "QueryStringValueProviderFactory.hx", "lineNumber" => 20, "className" => "ufront.web.mvc.QueryStringValueProviderFactory", "methodName" => "getValueProvider"))));
 		}
 		return new ufront_web_mvc_QueryStringValueProvider($controllerContext);
 	}

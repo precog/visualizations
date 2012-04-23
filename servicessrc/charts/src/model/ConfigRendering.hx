@@ -87,4 +87,9 @@ class ConfigRendering
 		template = new ConfigTemplate();
 		allowedFormats;
 	}
+
+	public function toString()
+	{
+		return "ConfigRendering: " + ConfigObjects.fieldsToString(this);
+	}
 }

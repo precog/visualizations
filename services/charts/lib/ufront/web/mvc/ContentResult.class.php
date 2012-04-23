@@ -10,7 +10,7 @@ class ufront_web_mvc_ContentResult extends ufront_web_mvc_ActionResult {
 	public $contentType;
 	public function executeResult($controllerContext) {
 		if(null === $controllerContext) {
-			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ContentResult.hx", "lineNumber" => 19, "className" => "ufront.web.mvc.ContentResult", "methodName" => "executeResult"))));
+			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ContentResult.hx", "lineNumber" => 17, "className" => "ufront.web.mvc.ContentResult", "methodName" => "executeResult"))));
 		}
 		if(null !== $this->contentType) {
 			$controllerContext->response->setContentType($this->contentType);

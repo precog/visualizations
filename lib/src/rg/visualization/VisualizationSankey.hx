@@ -1,17 +1,17 @@
 package rg.visualization;
 import rg.info.InfoSankey;
-//import rg.graph.Layout;
-import rg.graph.EdgeSplitter;
+//import thx.graph.Layout;
+import thx.graph.EdgeSplitter;
 import rg.svg.layer.Title;
 import rg.svg.chart.Sankey;
 import rg.data.DataPoint;
-import rg.graph.LongestPathLayer;
-import rg.graph.Graph;
-import rg.graph.GraphLayout;
-import rg.graph.GEdge;
-import rg.graph.SugiyamaMethod;
-import rg.graph.HeaviestNodeLayer;
-import rg.graph.GreedySwitchDecrosser;
+import thx.graph.LongestPathLayer;
+import thx.graph.Graph;
+import thx.graph.GraphLayout;
+import thx.graph.GEdge;
+import thx.graph.SugiyamaMethod;
+import thx.graph.HeaviestNodeLayer;
+import thx.graph.GreedySwitchDecrosser;
 import rg.util.DataPoints;
 
 using Arrays;
@@ -78,6 +78,8 @@ class VisualizationSankey extends VisualizationSvg
 		if(null != info.labelNodeSpacing)
 			chart.labelNodeSpacing = info.labelNodeSpacing;
 
+		chart.stackbackedges = info.stackbackedges;
+		chart.thinbackedges  = info.thinbackedges;
 
 		chart.labelDataPoint = info.label.datapoint;
 		chart.labelDataPointOver = info.label.datapointover;

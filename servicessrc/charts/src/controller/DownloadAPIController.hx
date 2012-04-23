@@ -30,6 +30,7 @@ class DownloadAPIController extends Controller
 	public function download(uid : String, ext : String, forceDownload = false)
 	{
 		var renderable = renderables.load(uid);
+//		trace(renderable);
 		if(null == renderable)
 			return error(Std.format("uid '$uid' doesn't exist"), ext);
 

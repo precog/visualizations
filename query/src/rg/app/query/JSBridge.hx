@@ -10,6 +10,7 @@ import rg.query.ReportGridQuery;
 import thx.math.Random;
 import thx.date.DateParser;
 import rg.util.Periodicity;
+import thx.util.MacroVersion;
 
 class JSBridge
 {
@@ -41,7 +42,7 @@ class JSBridge
 		else
 			storage = new MemoryStorage();
 
-		var r : Dynamic = untyped __js__("(!ReportGrid) ? (ReportGrid = {}) : ReportGrid"),
+		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid"),
 			timeout = 120,
 			executor : IExecutorReportGrid = new ReportGridExecutorCache(r, storage, timeout);
 		r.query = createQuery(executor);
@@ -72,7 +73,7 @@ class JSBridge
 		};
 		r.info = null != r.info ? r.info : { };
 		r.info.query = {
-			version : thx.util.MacroVersion.fullVersion()
+			version : MacroVersion.next()
 		};
 
 		var rand = new Random(666);

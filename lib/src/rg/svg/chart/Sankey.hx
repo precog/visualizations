@@ -10,9 +10,10 @@ import rg.svg.widget.GridAnchor;
 import rg.svg.widget.DiagonalArea;
 import rg.svg.widget.ElbowArea;
 import rg.svg.widget.HookConnectorArea;
-import rg.graph.GraphLayout;
-import rg.graph.GEdge;
-import rg.graph.GNode;
+import rg.svg.widget.HookConnector;
+import thx.graph.GraphLayout;
+import thx.graph.GEdge;
+import thx.graph.GNode;
 import rg.axis.Stats;
 import rg.util.RGColors;
 using Arrays;
@@ -33,6 +34,9 @@ class Sankey extends Chart
 	public var imageHeight : Float;
 	public var imageSpacing : Float;
 	public var labelNodeSpacing : Float;
+
+	public var stackbackedges : Bool;
+	public var thinbackedges : Bool;
 
 	public var labelEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
 	public var labelEdgeOver : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
@@ -85,6 +89,9 @@ class Sankey extends Chart
 		styleexit = "6";
 		styleEdgeBackward = "3";
 		styleEdgeForward = "0";
+
+		stackbackedges = true;
+		thinbackedges = true;
 	}
 
 	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
@@ -153,12 +160,35 @@ class Sankey extends Chart
 
 		// correct max available height and maxweight
 		// remove space for back connections
-		for(edge in layout.graph.edges)
+		if(thinbackedges)
 		{
-			if(layout.cell(edge.tail).layer < layout.cell(edge.head).layer)
-				continue;
-			availableheight -= backEdgeSpacing;
-			maxweight += edge.weight;
+			var count = stackbackedges
+				? Iterators.filter(layout.graph.edges.iterator(), function(edge) { return layout.cell(edge.tail).layer >= layout.cell(edge.head).layer; }).length
+				: 1;
+			trace(count);
+			availableheight -= (1 + backEdgeSpacing) * count;
+		} else {
+			if(stackbackedges)
+			{
+				for(edge in layout.graph.edges)
+				{
+					if(layout.cell(edge.tail).layer < layout.cell(edge.head).layer)
+						continue;
+					availableheight -= backEdgeSpacing;
+					maxweight += edge.weight;
+				}
+			} else {
+				availableheight -= backEdgeSpacing;
+				var v = 0.0;
+				for(edge in layout.graph.edges)
+				{
+					if(layout.cell(edge.tail).layer < layout.cell(edge.head).layer)
+						continue;
+					if(edge.weight > v)
+						v = edge.weight;
+				}
+				maxweight += v;
+			}
 		}
 		availableheight -= extraRadius + extraHeight;
 
@@ -258,46 +288,114 @@ class Sankey extends Chart
 		});
 
 		// back edges
-		cedges.each(function(edge, _) {
-			if(edge.weight <= 0)
-				return;
-			var cellhead = layout.cell(edge.head),
-				celltail = layout.cell(edge.tail);
-			if(cellhead.layer > celltail.layer)
-				return;
-			var weight = nheight(edge.weight),
-				hook   = new HookConnectorArea(edgescontainer, "fill fill-"+styleEdgeBackward, "stroke stroke-"+styleEdgeBackward),
-				before = hafter(edge.id, edge.tail.positives()) + Math.min(extraWidth, nheight(edge.tail.data.exit)),
-				after  = hafter(edge.id, edge.head.negatives()),
-				x1 = layerWidth / 2 + xlayer(celltail.layer),
-				x2 = - layerWidth / 2 + xlayer(cellhead.layer),
-				y1 = ynode(edge.tail) + ydiagonal(edge.id, edge.tail.positives()),
-				y2 = nheight(edge.head.data.entry) + ynode(edge.head) + ydiagonal(edge.id, edge.head.negatives());
-			addToMap(edge.id, "edge", hook.g);
-			hook.update(
-				x1,
-				y1,
-				x2,
-				y2,
-				weight,
-				backedgesy,
-				before,
-				after
-			);
-			hook.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy + weight / 2, edge));
-			if(null != edgeClass)
-			{
-				var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
-				if(null != cls)
-					hook.addClass(cls);
-			}
-			RGColors.storeColorForSelection(hook.g, "fill", hook.area.style("fill").get());
-			if(null != clickEdge)
-			{
-				hook.g.onNode("click", callback(edgeClickWithEdge, edge));
-			}
-			backedgesy += weight + backEdgeSpacing;
-		});
+		if(thinbackedges)
+		{
+			var blockwidth = 10;
+			cedges.each(function(edge, _) {
+				if(edge.weight <= 0)
+					return;
+				var cellhead = layout.cell(edge.head),
+					celltail = layout.cell(edge.tail);
+				if(cellhead.layer > celltail.layer)
+					return;
+				var weight = nheight(edge.weight),
+					before = 5 + cafter(edge.id, edge.tail.positives()) * (backEdgeSpacing + 1),
+					after  = 5 + cafter(edge.id, edge.head.negatives()) * (backEdgeSpacing + 1),
+					x1 = layerWidth / 2 + xlayer(celltail.layer),
+					x2 = - layerWidth / 2 + xlayer(cellhead.layer),
+					y1 = ynode(edge.tail) + ydiagonal(edge.id, edge.tail.positives()),
+					y2 = nheight(edge.head.data.entry) + ynode(edge.head) + ydiagonal(edge.id, edge.head.negatives());
+
+				var g = edgescontainer.append("svg:g");
+
+				// chunk
+				var chunkf = g.append("svg:rect")
+					.attr("x").float(x1)
+					.attr("y").float(y1)
+					.attr("width").float(blockwidth)
+					.attr("height").float(weight)
+					.attr("class").string("edge fill fill-" + styleEdgeBackward + " stroke stroke-"+styleEdgeBackward)
+					.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy, edge))
+				;
+				var chunkf = g.append("svg:rect")
+					.attr("x").float(x2 - blockwidth)
+					.attr("y").float(y2)
+					.attr("width").float(blockwidth)
+					.attr("height").float(weight)
+					.attr("class").string("edge fill fill-" + styleEdgeBackward + " stroke stroke-"+styleEdgeBackward)
+					.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy, edge))
+				;
+
+				// hook
+				var hook = new HookConnector(g, "stroke stroke-"+styleEdgeBackward);
+				addToMap(edge.id, "edge", g);
+				hook.update(
+					x1 + blockwidth,
+					y1 + weight / 2,
+					x2 - blockwidth,
+					y2 + weight / 2,
+					backedgesy,
+					before,
+					after
+				);
+				hook.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy, edge));
+				if(null != edgeClass)
+				{
+					var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
+					if(null != cls)
+						hook.addClass(cls);
+				}
+				RGColors.storeColorForSelection(hook.g, "stroke", hook.line.style("stroke").get());
+				if(null != clickEdge)
+				{
+					hook.g.onNode("click", callback(edgeClickWithEdge, edge));
+				}
+				if(stackbackedges)
+					backedgesy += 1 + backEdgeSpacing;
+			});
+		} else {
+			cedges.each(function(edge, _) {
+				if(edge.weight <= 0)
+					return;
+				var cellhead = layout.cell(edge.head),
+					celltail = layout.cell(edge.tail);
+				if(cellhead.layer > celltail.layer)
+					return;
+				var weight = nheight(edge.weight),
+					hook   = new HookConnectorArea(edgescontainer, "fill fill-"+styleEdgeBackward, "stroke stroke-"+styleEdgeBackward),
+					before = hafter(edge.id, edge.tail.positives()) + Math.min(extraWidth, nheight(edge.tail.data.exit)),
+					after  = hafter(edge.id, edge.head.negatives()),
+					x1 = layerWidth / 2 + xlayer(celltail.layer),
+					x2 = - layerWidth / 2 + xlayer(cellhead.layer),
+					y1 = ynode(edge.tail) + ydiagonal(edge.id, edge.tail.positives()),
+					y2 = nheight(edge.head.data.entry) + ynode(edge.head) + ydiagonal(edge.id, edge.head.negatives());
+				addToMap(edge.id, "edge", hook.g);
+				hook.update(
+					x1,
+					y1,
+					x2,
+					y2,
+					weight,
+					backedgesy,
+					before,
+					after
+				);
+				hook.g.onNode("mouseover", callback(onmouseoveredge, (x1 + x2) / 2, backedgesy + weight / 2, edge));
+				if(null != edgeClass)
+				{
+					var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
+					if(null != cls)
+						hook.addClass(cls);
+				}
+				RGColors.storeColorForSelection(hook.g, "fill", hook.area.style("fill").get());
+				if(null != clickEdge)
+				{
+					hook.g.onNode("click", callback(edgeClickWithEdge, edge));
+				}
+				if(stackbackedges)
+					backedgesy += weight + backEdgeSpacing;
+			});
+		}
 
 // TODO edges must be ordered at the node level
 		// forward edges
@@ -893,6 +991,24 @@ class Sankey extends Chart
 			weight += edge.weight;
 		}
 		return nheight(weight);
+	}
+
+	function cafter(id : Int, edges : Iterator<GEdge<NodeData, Dynamic>>)
+	{
+		var found = false,
+			count = 0;
+		for(edge in edges)
+		{
+			if(!found)
+			{
+				if(edge.id == id)
+					//	continue;
+					found = true;
+				continue;
+			}
+			count++;
+		}
+		return count;
 	}
 
 	function hafter(id : Int, edges : Iterator<GEdge<NodeData, Dynamic>>)

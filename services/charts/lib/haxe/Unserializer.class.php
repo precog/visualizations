@@ -82,26 +82,18 @@ class haxe_Unserializer {
 		$this->pos++;
 	}
 	public function unserializeEnum($edecl, $tag) {
-		$constr = Reflect::field($edecl, $tag);
-		if($constr === null) {
-			throw new HException("Unknown enum tag " . Type::getEnumName($edecl) . "." . $tag);
-		}
 		if(ord(substr($this->buf,$this->pos++,1)) !== 58) {
 			throw new HException("Invalid enum format");
 		}
 		$nargs = $this->readDigits();
 		if($nargs === 0) {
-			$this->cache->push($constr);
-			return $constr;
+			return Type::createEnum($edecl, $tag, null);
 		}
 		$args = new _hx_array(array());
-		while($nargs > 0) {
+		while($nargs-- > 0) {
 			$args->push($this->unserialize());
-			$nargs -= 1;
 		}
-		$e = Reflect::callMethod($edecl, $constr, $args);
-		$this->cache->push($e);
-		return $e;
+		return Type::createEnum($edecl, $tag, $args);
 	}
 	public function unserialize() {
 		switch(ord(substr($this->buf,$this->pos++,1))) {
@@ -215,7 +207,9 @@ class haxe_Unserializer {
 			if($edecl === null) {
 				throw new HException("Enum not found " . $name);
 			}
-			return $this->unserializeEnum($edecl, $this->unserialize());
+			$e = $this->unserializeEnum($edecl, $this->unserialize());
+			$this->cache->push($e);
+			return $e;
 		}break;
 		case 106:{
 			$name = $this->unserialize();
@@ -229,7 +223,9 @@ class haxe_Unserializer {
 			if($tag === null) {
 				throw new HException("Unknown enum index " . $name . "@" . $index);
 			}
-			return $this->unserializeEnum($edecl, $tag);
+			$e = $this->unserializeEnum($edecl, $tag);
+			$this->cache->push($e);
+			return $e;
 		}break;
 		case 108:{
 			$l = new HList();

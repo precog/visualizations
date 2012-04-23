@@ -7,7 +7,8 @@ define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
 define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
 //define('AUTHCODE_LOCALHOST', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
-define('AUTHCODE_LOCALHOST', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');
+//define('AUTHCODE_LOCALHOST', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');
+define('AUTHCODE_LOCALHOST', null);
 
 $viz_categories = array(
 	'SK' => array("name" => 'Sankey',				"sequence" => 0),
@@ -36,7 +37,7 @@ $viz_categories = array(
 
 if(LOCAL)
 {
-	define('REPORTGRID_VIZ_API', HOST.'/rg/charts/js/reportgrid-charts.js?authCode='.urlencode(AUTHCODE_LOCALHOST));
+	define('REPORTGRID_VIZ_API', HOST.'/rg/charts/js/reportgrid-charts.js' . (AUTHCODE_LOCALHOST ? ('authCode=' . urlencode(AUTHCODE_LOCALHOST)) : ''));
 	define('REPORTGRID_QUERY_API', HOST.'/rg/queries/js/reportgrid-query.js');
 	define('REPORTGRID_CSS_API', HOST.'/rg/charts/css/rg-charts.css');
 	define('REPORTGRID_CORE_API', HOST.'/rg/api/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');

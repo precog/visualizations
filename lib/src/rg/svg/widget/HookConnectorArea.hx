@@ -15,10 +15,10 @@ class HookConnectorArea
 	var lower : Selection;
 	public function new(container : Selection, classarea : String, classborder : String)
 	{
-		g     = container.append("svg:g").attr("class").string("hook");
-		area  = g.append("svg:path").attr("class").string("hook-fill" + (null == classarea ? "" : " " + classarea));
-		upper = g.append("svg:path").attr("class").string("hook-stroke upper" + (null == classborder ? "" : " " + classborder));
-		lower = g.append("svg:path").attr("class").string("hook-stroke lower" + (null == classborder ? "" : " " + classborder));
+		g     = container.append("svg:g").attr("class").string("hook-area");
+		area  = g.append("svg:path").attr("class").string("hook-area-fill" + (null == classarea ? "" : " " + classarea));
+		upper = g.append("svg:path").attr("class").string("hook-area-stroke upper" + (null == classborder ? "" : " " + classborder));
+		lower = g.append("svg:path").attr("class").string("hook-area-stroke lower" + (null == classborder ? "" : " " + classborder));
 	}
 
 	public function addClass(cls : String)

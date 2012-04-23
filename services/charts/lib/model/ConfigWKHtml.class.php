@@ -5,6 +5,9 @@ class model_ConfigWKHtml {
 		;
 	}
 	public $zoom;
+	public function toString() {
+		return "ConfigWKHtml: " . model_ConfigObjects::fieldsToString($this);
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -15,5 +18,5 @@ class model_ConfigWKHtml {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	function __toString() { return 'model.ConfigWKHtml'; }
+	function __toString() { return $this->toString(); }
 }

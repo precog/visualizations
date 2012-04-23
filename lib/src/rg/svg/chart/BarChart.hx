@@ -114,8 +114,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return gr;
 		}
 
-		var flatdata = dps.flatten().flatten();
-
 		// dependent values
 		for (i in 0...dps.length)
 		{
@@ -188,7 +186,6 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			return gr;
 		}
 
-		var flatdata = dps.flatten().flatten();
 		// dependent values
 		for (i in 0...dps.length)
 		{
@@ -215,6 +212,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 					click = callback(onclick, stats)
 				;
 
+//				trace(Type.typeof(xVariable.axis));
 				var prev = 0.0;
 				// segment values, datapoints
 				for (k in 0...axisdps.length)

@@ -27,9 +27,9 @@ class thx_util_Message {
 		}
 		$culture = thx_culture_Culture::get($domain);
 		if($this->params->length === 1 && Std::is($this->params[0], _hx_qtype("Int"))) {
-			return Strings::format($translator->__(null, $this->message, $this->params[0], $domain), $this->params, null, $culture);
+			return Strings::format($translator->plural(null, $this->message, $this->params[0], $domain), $this->params, null, $culture);
 		} else {
-			return Strings::format($translator->_($this->message, $domain), $this->params, null, $culture);
+			return Strings::format($translator->singular($this->message, $domain), $this->params, null, $culture);
 		}
 	}
 	public function __call($m, $a) {

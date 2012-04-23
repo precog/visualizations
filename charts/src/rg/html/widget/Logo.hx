@@ -8,6 +8,15 @@ import js.Dom;
 class Logo
 {
 	static var registry = new Hash();
+
+	public static function pageIsBranded()
+	{
+		for(logo in getLogos())
+			if(!dhx.Dom.select('img[src="' + logo + '"]').empty())
+				return true;
+		return false;
+	}
+
 	public static function createLogo(container : Selection, padright : Int)
 	{
 		var id   = container.attr("id").get(),
@@ -159,9 +168,19 @@ class Logo
 		setStyle(image, 'width', LOGO_WIDTH+'px');
 	}
 
-	function getLogo()
+	static function getLogo()
 	{
-		return 'http://api.reportgrid.com/css/images/reportgrid-clear.png';
+		return getLogos()[0];
+	}
+
+	static function getLogos()
+	{
+		return [
+			'http://api.reportgrid.com/css/images/reportgrid-clear.png',
+			'http://api.reportgrid.com/css/images/reportgrid-cleart.png',
+			'http://api.reportgrid.com/css/images/reportgrid-dark.png',
+			'http://api.reportgrid.com/css/images/reportgrid-darkt.png'
+		];
 	}
 
 	static function position(el : HtmlDom)

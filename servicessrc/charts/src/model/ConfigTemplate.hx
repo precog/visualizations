@@ -51,4 +51,9 @@ class ConfigTemplate
 		});
 		return list;
 	}
+
+	public function toString()
+	{
+		return "ConfigTample: " + ConfigObjects.fieldsToString(this);
+	}
 }

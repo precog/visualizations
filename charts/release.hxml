@@ -6,6 +6,7 @@
 -lib hxevents
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
+#--connect 8888
 -D release
 -D js_shims
 -D noEmbedJS

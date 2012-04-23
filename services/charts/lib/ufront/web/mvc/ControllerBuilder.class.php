@@ -18,7 +18,7 @@ class ufront_web_mvc_ControllerBuilder {
 	}
 	public function setControllerFactory($controllerFactory) {
 		if(null === $controllerFactory) {
-			throw new HException(new thx_error_NullArgument("controllerFactory", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ControllerBuilder.hx", "lineNumber" => 32, "className" => "ufront.web.mvc.ControllerBuilder", "methodName" => "setControllerFactory"))));
+			throw new HException(new thx_error_NullArgument("controllerFactory", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "ControllerBuilder.hx", "lineNumber" => 31, "className" => "ufront.web.mvc.ControllerBuilder", "methodName" => "setControllerFactory"))));
 		}
 		$this->_controllerFactory = $controllerFactory;
 		return $controllerFactory;

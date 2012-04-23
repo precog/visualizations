@@ -32,7 +32,14 @@ class haxe_xml_Fast {
 			throw new HException($this->getName() . " does not have data");
 		}
 		$v = $it->next();
-		if($it->hasNext()) {
+		$n = $it->next();
+		if($n !== null) {
+			if($v->nodeType == Xml::$PCData && $n->nodeType == Xml::$CData && trim($v->getNodeValue()) === "") {
+				$n2 = $it->next();
+				if($n2 === null || $n2->nodeType == Xml::$PCData && trim($n2->getNodeValue()) === "" && $it->next() === null) {
+					return $n->getNodeValue();
+				}
+			}
 			throw new HException($this->getName() . " does not only have data");
 		}
 		if($v->nodeType != Xml::$PCData && $v->nodeType != Xml::$CData) {

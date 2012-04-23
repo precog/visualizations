@@ -16,19 +16,19 @@ class thx_data_ValueEncoder {
 		switch($»t->index) {
 		case 0:
 		{
-			$this->handler->null();
+			$this->handler->valueNull();
 		}break;
 		case 1:
 		{
-			$this->handler->int($o);
+			$this->handler->valueInt($o);
 		}break;
 		case 2:
 		{
-			$this->handler->float($o);
+			$this->handler->valueFloat($o);
 		}break;
 		case 3:
 		{
-			$this->handler->bool($o);
+			$this->handler->valueBool($o);
 		}break;
 		case 4:
 		{
@@ -42,13 +42,13 @@ class thx_data_ValueEncoder {
 		$c = $»t->params[0];
 		{
 			if(Std::is($o, _hx_qtype("String"))) {
-				$this->handler->string($o);
+				$this->handler->valueString($o);
 			} else {
 				if(Std::is($o, _hx_qtype("Array"))) {
 					$this->encodeArray($o);
 				} else {
 					if(Std::is($o, _hx_qtype("Date"))) {
-						$this->handler->date($o);
+						$this->handler->valueDate($o);
 					} else {
 						if(Std::is($o, _hx_qtype("Hash"))) {
 							$this->encodeHash($o);
@@ -75,58 +75,58 @@ class thx_data_ValueEncoder {
 		}
 	}
 	public function encodeObject($o) {
-		$this->handler->startObject();
+		$this->handler->objectStart();
 		{
 			$_g = 0; $_g1 = Reflect::fields($o);
 			while($_g < $_g1->length) {
 				$key = $_g1[$_g];
 				++$_g;
-				$this->handler->startField($key);
+				$this->handler->objectFieldStart($key);
 				$this->encodeValue(Reflect::field($o, $key));
-				$this->handler->endField();
+				$this->handler->objectFieldEnd();
 				unset($key);
 			}
 		}
-		$this->handler->endObject();
+		$this->handler->objectEnd();
 	}
 	public function encodeHash($o) {
-		$this->handler->startObject();
+		$this->handler->objectStart();
 		if(null == $o) throw new HException('null iterable');
 		$»it = $o->keys();
 		while($»it->hasNext()) {
 			$key = $»it->next();
-			$this->handler->startField($key);
+			$this->handler->objectFieldStart($key);
 			$this->encodeValue($o->get($key));
-			$this->handler->endField();
+			$this->handler->objectFieldEnd();
 		}
-		$this->handler->endObject();
+		$this->handler->objectEnd();
 	}
 	public function encodeList($list) {
-		$this->handler->startArray();
+		$this->handler->arrayStart();
 		if(null == $list) throw new HException('null iterable');
 		$»it = $list->iterator();
 		while($»it->hasNext()) {
 			$item = $»it->next();
-			$this->handler->startItem();
+			$this->handler->arrayItemStart();
 			$this->encodeValue($item);
-			$this->handler->endItem();
+			$this->handler->arrayItemEnd();
 		}
-		$this->handler->endArray();
+		$this->handler->arrayEnd();
 	}
 	public function encodeArray($a) {
-		$this->handler->startArray();
+		$this->handler->arrayStart();
 		{
 			$_g = 0;
 			while($_g < $a->length) {
 				$item = $a[$_g];
 				++$_g;
-				$this->handler->startItem();
+				$this->handler->arrayItemStart();
 				$this->encodeValue($item);
-				$this->handler->endItem();
+				$this->handler->arrayItemEnd();
 				unset($item);
 			}
 		}
-		$this->handler->endArray();
+		$this->handler->arrayEnd();
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

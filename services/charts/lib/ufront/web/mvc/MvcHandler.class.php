@@ -4,7 +4,7 @@ class ufront_web_mvc_MvcHandler implements ufront_web_IHttpHandler{
 	public function __construct($requestContext) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $requestContext) {
-			throw new HException(new thx_error_NullArgument("requestContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "MvcHandler.hx", "lineNumber" => 16, "className" => "ufront.web.mvc.MvcHandler", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("requestContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "MvcHandler.hx", "lineNumber" => 15, "className" => "ufront.web.mvc.MvcHandler", "methodName" => "new"))));
 		}
 		$this->requestContext = $requestContext;
 	}}

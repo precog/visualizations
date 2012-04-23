@@ -118,7 +118,7 @@ class thx_json_JsonDecoder {
 	}
 	public function parseObject() {
 		$first = true;
-		$this->handler->startObject();
+		$this->handler->objectStart();
 		while(true) {
 			$this->ignoreWhiteSpace();
 			if($this->expect("}")) {
@@ -140,17 +140,17 @@ class thx_json_JsonDecoder {
 				$this->error("expected ':'");
 			}
 			$this->ignoreWhiteSpace();
-			$this->handler->startField($k);
+			$this->handler->objectFieldStart($k);
 			$this->parse();
-			$this->handler->endField();
+			$this->handler->objectFieldEnd();
 			unset($k);
 		}
-		$this->handler->endObject();
+		$this->handler->objectEnd();
 	}
 	public function parseArray() {
 		$this->ignoreWhiteSpace();
 		$first = true;
-		$this->handler->startArray();
+		$this->handler->arrayStart();
 		while(true) {
 			$this->ignoreWhiteSpace();
 			if($this->expect("]")) {
@@ -166,21 +166,21 @@ class thx_json_JsonDecoder {
 					}
 				}
 			}
-			$this->handler->startItem();
+			$this->handler->arrayItemStart();
 			$this->parse();
-			$this->handler->endItem();
+			$this->handler->arrayItemEnd();
 		}
-		$this->handler->endArray();
+		$this->handler->arrayEnd();
 	}
 	public function parseValue() {
 		if($this->expect("true")) {
-			$this->handler->bool(true);
+			$this->handler->valueBool(true);
 		} else {
 			if($this->expect("false")) {
-				$this->handler->bool(false);
+				$this->handler->valueBool(false);
 			} else {
 				if($this->expect("null")) {
-					$this->handler->null();
+					$this->handler->valueNull();
 				} else {
 					$this->parseFloat();
 				}
@@ -188,7 +188,7 @@ class thx_json_JsonDecoder {
 		}
 	}
 	public function parseString() {
-		$this->handler->string($this->_parseString());
+		$this->handler->valueString($this->_parseString());
 	}
 	public function _parseString() {
 		if(!$this->expect("\"")) {
@@ -267,7 +267,7 @@ class thx_json_JsonDecoder {
 				unset($i1,$i,$c);
 			}
 		}
-		$this->handler->int(Std::parseInt("0x" . $v->join("")));
+		$this->handler->valueInt(Std::parseInt("0x" . $v->join("")));
 		return Std::parseInt("0x" . $v->join(""));
 	}
 	public function parseFloat() {
@@ -291,7 +291,7 @@ class thx_json_JsonDecoder {
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			if(($e = $_ex_) instanceof thx_json__JsonDecoder_StreamError){
-				$this->handler->int(Std::parseInt($v));
+				$this->handler->valueInt(Std::parseInt($v));
 				return;
 			} else throw $»e;;
 		}
@@ -299,7 +299,7 @@ class thx_json_JsonDecoder {
 			if($this->expect(".")) {
 				$v .= "." . $this->parseDigits(1);
 			} else {
-				$this->handler->int(Std::parseInt($v));
+				$this->handler->valueInt(Std::parseInt($v));
 				return;
 			}
 			if($this->expect("e") || $this->expect("E")) {
@@ -315,11 +315,11 @@ class thx_json_JsonDecoder {
 		}catch(Exception $»e) {
 			$_ex_ = ($»e instanceof HException) ? $»e->e : $»e;
 			if(($e2 = $_ex_) instanceof thx_json__JsonDecoder_StreamError){
-				$this->handler->float(Std::parseFloat($v));
+				$this->handler->valueFloat(Std::parseFloat($v));
 				return;
 			} else throw $»e;;
 		}
-		$this->handler->float(Std::parseFloat($v));
+		$this->handler->valueFloat(Std::parseFloat($v));
 	}
 	public function parseDigits($atleast) {
 		if($atleast === null) {

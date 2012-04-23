@@ -26,6 +26,9 @@ class model_Renderable {
 	public function canRenderTo($format) {
 		return Arrays::exists($this->config->allowedFormats, $format, null);
 	}
+	public function toString() {
+		return "CONFIG\x0A" . $this->config . "\x0A\x0AHTML\x0A" . $this->html;
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -42,5 +45,5 @@ class model_Renderable {
 		$s = base_convert($s, 16, 36);
 		return _hx_substr($s, 0, 12);
 	}
-	function __toString() { return 'model.Renderable'; }
+	function __toString() { return $this->toString(); }
 }

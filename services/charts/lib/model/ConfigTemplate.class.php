@@ -34,6 +34,9 @@ class model_ConfigTemplate {
 		$list->sort(array(new _hx_lambda(array(&$list), "model_ConfigTemplate_0"), 'execute'));
 		return $list;
 	}
+	public function toString() {
+		return "ConfigTample: " . model_ConfigObjects::fieldsToString($this);
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -44,7 +47,7 @@ class model_ConfigTemplate {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	function __toString() { return 'model.ConfigTemplate'; }
+	function __toString() { return $this->toString(); }
 }
 function model_ConfigTemplate_0(&$list, $a, $b) {
 	{

@@ -25,7 +25,8 @@ function data() {
 ReportGrid.sankey("#chart", {
 	axes : ["billions"],
 	datapoints : data(),
-	options : { layerwidth : 130
+	options : {
+		layerwidth : 130
 	}
 });
 

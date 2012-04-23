@@ -11,6 +11,9 @@ import dhx.Selection;
 import rg.util.RGStrings;
 import rg.util.Periodicity;
 import thx.color.Rgb;
+import rg.axis.IAxis;
+import rg.axis.AxisTime;
+import rg.data.Variable;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.util.DataPoints;
@@ -193,6 +196,7 @@ class PivotTable
 					.text().string(rep ? "" : labelAxisValue(v, d.row_headers[i]));
 			}
 
+			var v;
 			for (cell in row.cells)
 			{
 				var td = tr.append("td")
@@ -200,12 +204,13 @@ class PivotTable
 					.attr("title").string(formatDataPointOver(cell));
 				if (null != click)
 					td.onNode("click", callback(onClick, cell));
-				if (displayHeatMap)
+				if (displayHeatMap && !Math.isNaN(v = DataPoints.value(cell, cellVariable.type) / d.stats.max))
 				{
-					var c = color(DataPoints.value(cell, cellVariable.type) / d.stats.max);
+					var c = color(v);
 					td
+						.style("color").color(Rgb.contrastBW(c))
 						.style("background-color").color(c)
-						.style("color").color(Rgb.contrastBW(c));
+					;
 				}
 			}
 
@@ -295,7 +300,7 @@ class PivotTable
 	function transformData(dps : Array<DataPoint>): {
 		column_headers : Array<String>,
 		row_headers : Array<String>,
-		columns : Array<{ values : Array<Dynamic>, stats : StatsNumeric }>,
+		columns : Array<{ values : Array<Dynamic>, stats : StatsNumeric, type : String }>,
 		rows : Array<{ values : Array<Dynamic>, cells : Array<DataPoint>, stats : StatsNumeric} >,
 		stats : StatsNumeric
 	}
@@ -316,7 +321,8 @@ class PivotTable
 			{
 				columns.push({
 					values : [value],
-					stats : null
+					stats : null,
+					type : variable.type
 				});
 			}
 		}
@@ -349,11 +355,15 @@ class PivotTable
 				for (j in 0...headers.length)
 				{
 					name = headers[j];
-					if (Reflect.field(dp, name) != column.values[j])
-						return false;
+					if(
+						(Properties.isTime(name) &&
+						 Dates.snap(Reflect.field(dp, name), Properties.periodicity(name)) == column.values[j])
+						|| Reflect.field(dp, name) == column.values[j]
+					)
+						return true;
 				}
-				return true;
-			} ))
+				return false;
+			}))
 			{
 				var v = Reflect.field(dp, cellVariable.type);
 				if (null == v)
@@ -394,42 +404,69 @@ class PivotTable
 				}
 			}
 		}
-
 		var name,
 			headers = row_headers;
-		for (row in rows)
+		for (i in 0...rows.length)
 		{
+			var row = rows[i];
 			row.stats = new StatsNumeric(null);
 			row.cells = [];
 
-			var rdps = dps.filter(function(d) {
+			var rdps;
+			rdps = dps.filter(function(d) {
 				for (j in 0...headers.length)
 				{
 					name = headers[j];
-					if (Reflect.field(d, name) != row.values[j])
+					if(
+						(Properties.isTime(name) &&
+						 Dates.snap(Reflect.field(d, name), Properties.periodicity(name)) != row.values[j])
+						|| Reflect.field(d, name) != row.values[j]
+					)
 						return false;
 				}
 				return true;
 			});
 
-			for (column in columns)
+			for (k in 0...columns.length)
 			{
-				var dp = rdps.firstf(function(dp) {
-					for (i in 0...column.values.length)
-					{
-						if (Reflect.field(dp, column_headers[i]) != column.values[i])
-							return false;
-					}
-					return true;
-				});
-				var v = Reflect.field(dp, cellVariable.type);
-				if (null == v)
+				var column = columns[k];
+				if(Properties.isTime(column.type))
 				{
-					row.cells.push({});
-					continue;
+					var periodicity = Properties.periodicity(column.type);
+					var dp = rdps.firstf(function(dp) {
+						for (i in 0...column.values.length)
+						{
+							if (Dates.snap(Reflect.field(dp, column_headers[i]), periodicity) != column.values[i])
+								return false;
+						}
+						return true;
+					});
+					var v = Reflect.field(dp, cellVariable.type);
+					if (null == v)
+					{
+						row.cells.push({});
+						continue;
+					}
+					row.cells.push(dp);
+					row.stats.add(v);
+				} else {
+					var dp = rdps.firstf(function(dp) {
+						for (i in 0...column.values.length)
+						{
+							if (Reflect.field(dp, column_headers[i]) != column.values[i])
+								return false;
+						}
+						return true;
+					});
+					var v = Reflect.field(dp, cellVariable.type);
+					if (null == v)
+					{
+						row.cells.push({});
+						continue;
+					}
+					row.cells.push(dp);
+					row.stats.add(v);
 				}
-				row.cells.push(dp);
-				row.stats.add(v);
 			}
 		}
 

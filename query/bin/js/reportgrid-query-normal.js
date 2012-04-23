@@ -1,10 +1,12 @@
-var $_, $hxClasses = $hxClasses || {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+(function () { "use strict";
+var $_, $hxClasses = {}, $estr = function() { return js.Boot.__string_rec(this,''); }
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
-var Arrays = $hxClasses["Arrays"] = function() { }
+var Arrays = function() { }
+$hxClasses["Arrays"] = Arrays;
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
 	if(null != condition) {
@@ -552,13 +554,13 @@ Arrays.scanf = function(arr,weightf,incremental) {
 	}
 	var scan = (function($this) {
 		var $r;
-		var scan = null;
-		scan = function(v,start,end) {
+		var scan1 = null;
+		scan1 = function(v,start,end) {
 			if(start == end) return arr[start];
 			var mid = Math.floor((end - start) / 2) + start, value = weights[mid];
-			if(v < value) return scan(v,start,mid); else return scan(v,mid + 1,end);
+			if(v < value) return scan1(v,start,mid); else return scan1(v,mid + 1,end);
 		};
-		$r = scan;
+		$r = scan1;
 		return $r;
 	}(this));
 	return function(v) {
@@ -569,7 +571,8 @@ Arrays.scanf = function(arr,weightf,incremental) {
 Arrays.prototype = {
 	__class__: Arrays
 }
-var Bools = $hxClasses["Bools"] = function() { }
+var Bools = function() { }
+$hxClasses["Bools"] = Bools;
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
 	return (Bools.formatf(param,params,culture))(v);
@@ -621,7 +624,8 @@ Bools.compare = function(a,b) {
 Bools.prototype = {
 	__class__: Bools
 }
-var DateTools = $hxClasses["DateTools"] = function() { }
+var DateTools = function() { }
+$hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
 DateTools.__format_get = function(d,e) {
 	return (function($this) {
@@ -760,10 +764,11 @@ DateTools.make = function(o) {
 DateTools.prototype = {
 	__class__: DateTools
 }
-var EReg = $hxClasses["EReg"] = function(r,opt) {
+var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
+$hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	r: null
@@ -812,7 +817,8 @@ EReg.prototype = {
 	}
 	,__class__: EReg
 }
-var Dates = $hxClasses["Dates"] = function() { }
+var Dates = function() { }
+$hxClasses["Dates"] = Dates;
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
 	return (Dates.formatf(param,params,culture))(d);
@@ -1028,7 +1034,8 @@ Dates.compare = function(a,b) {
 Dates.prototype = {
 	__class__: Dates
 }
-var Dynamics = $hxClasses["Dynamics"] = function() { }
+var Dynamics = function() { }
+$hxClasses["Dynamics"] = Dynamics;
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
 	return (Dynamics.formatf(param,params,nullstring,culture))(v);
@@ -1155,7 +1162,6 @@ Dynamics.compare = function(a,b) {
 	var $e = (Type["typeof"](a));
 	switch( $e[1] ) {
 	case 1:
-		return a - b;
 	case 2:
 		return a < b?-1:a > b?1:0;
 	case 3:
@@ -1187,7 +1193,6 @@ Dynamics.comparef = function(sample) {
 	var $e = (Type["typeof"](sample));
 	switch( $e[1] ) {
 	case 1:
-		return Ints.compare;
 	case 2:
 		return Floats.compare;
 	case 3:
@@ -1377,7 +1382,7 @@ Dynamics.same = function(a,b) {
 	}
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 372, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 370, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 }
@@ -1387,7 +1392,8 @@ Dynamics.number = function(v) {
 Dynamics.prototype = {
 	__class__: Dynamics
 }
-var Enums = $hxClasses["Enums"] = function() { }
+var Enums = function() { }
+$hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
 	var cons = e[0];
@@ -1408,7 +1414,8 @@ Enums.compare = function(a,b) {
 Enums.prototype = {
 	__class__: Enums
 }
-var Floats = $hxClasses["Floats"] = function() { }
+var Floats = function() { }
+$hxClasses["Floats"] = Floats;
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
 	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
@@ -1551,9 +1558,10 @@ Floats.round = function(number,precision) {
 Floats.prototype = {
 	__class__: Floats
 }
-var Hash = $hxClasses["Hash"] = function() {
-	this.h = Object.create != null?Object.create(null):{ };
+var Hash = function() {
+	this.h = { };
 };
+$hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
 	h: null
@@ -1564,17 +1572,19 @@ Hash.prototype = {
 		return this.h["$" + key];
 	}
 	,exists: function(key) {
-		return Object.prototype.hasOwnProperty.call(this.h,"$" + key);
+		return this.h.hasOwnProperty("$" + key);
 	}
 	,remove: function(key) {
 		key = "$" + key;
-		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
+		if(!this.h.hasOwnProperty(key)) return false;
 		delete(this.h[key]);
 		return true;
 	}
 	,keys: function() {
-		var a = new Array();
-		for(var i in this.h) a.push(i.substr(1));
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
 		return a.iterator();
 	}
 	,iterator: function() {
@@ -1601,9 +1611,10 @@ Hash.prototype = {
 	}
 	,__class__: Hash
 }
-var IntHash = $hxClasses["IntHash"] = function() {
+var IntHash = function() {
 	this.h = { };
 };
+$hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
 	h: null
@@ -1614,16 +1625,18 @@ IntHash.prototype = {
 		return this.h[key];
 	}
 	,exists: function(key) {
-		return Object.prototype.hasOwnProperty.call(this.h,key);
+		return this.h.hasOwnProperty(key);
 	}
 	,remove: function(key) {
-		if(!Object.prototype.hasOwnProperty.call(this.h,key)) return false;
+		if(!this.h.hasOwnProperty(key)) return false;
 		delete(this.h[key]);
 		return true;
 	}
 	,keys: function() {
-		var a = new Array();
-		for( var x in this.h ) a.push(x|0);
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key | 0);
+		}
 		return a.iterator();
 	}
 	,iterator: function() {
@@ -1650,10 +1663,11 @@ IntHash.prototype = {
 	}
 	,__class__: IntHash
 }
-var IntIter = $hxClasses["IntIter"] = function(min,max) {
+var IntIter = function(min,max) {
 	this.min = min;
 	this.max = max;
 };
+$hxClasses["IntIter"] = IntIter;
 IntIter.__name__ = ["IntIter"];
 IntIter.prototype = {
 	min: null
@@ -1666,7 +1680,8 @@ IntIter.prototype = {
 	}
 	,__class__: IntIter
 }
-var Ints = $hxClasses["Ints"] = function() { }
+var Ints = function() { }
+$hxClasses["Ints"] = Ints;
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
 	if(step == null) step = 1;
@@ -1734,7 +1749,8 @@ Ints.compare = function(a,b) {
 Ints.prototype = {
 	__class__: Ints
 }
-var Iterables = $hxClasses["Iterables"] = function() { }
+var Iterables = function() { }
+$hxClasses["Iterables"] = Iterables;
 Iterables.__name__ = ["Iterables"];
 Iterables.count = function(it) {
 	return Iterators.count(it.iterator());
@@ -1796,7 +1812,8 @@ Iterables.isIterable = function(v) {
 Iterables.prototype = {
 	__class__: Iterables
 }
-var Iterators = $hxClasses["Iterators"] = function() { }
+var Iterators = function() { }
+$hxClasses["Iterators"] = Iterators;
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
 	var i = 0;
@@ -1919,7 +1936,8 @@ Iterators.isIterator = function(v) {
 Iterators.prototype = {
 	__class__: Iterators
 }
-var Lambda = $hxClasses["Lambda"] = function() { }
+var Lambda = function() { }
+$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
 	var a = new Array();
@@ -2061,9 +2079,10 @@ Lambda.concat = function(a,b) {
 Lambda.prototype = {
 	__class__: Lambda
 }
-var List = $hxClasses["List"] = function() {
+var List = function() {
 	this.length = 0;
 };
+$hxClasses["List"] = List;
 List.__name__ = ["List"];
 List.prototype = {
 	h: null
@@ -2174,7 +2193,8 @@ List.prototype = {
 	}
 	,__class__: List
 }
-var Objects = $hxClasses["Objects"] = function() { }
+var Objects = function() { }
+$hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
 Objects.field = function(o,fieldname,alt) {
 	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
@@ -2385,7 +2405,8 @@ Objects.formatf = function(param,params,culture) {
 Objects.prototype = {
 	__class__: Objects
 }
-var Reflect = $hxClasses["Reflect"] = function() { }
+var Reflect = function() { }
+$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
 	return Object.prototype.hasOwnProperty.call(o,field);
@@ -2462,7 +2483,8 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype = {
 	__class__: Reflect
 }
-var Std = $hxClasses["Std"] = function() { }
+var Std = function() { }
+$hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
 	return js.Boot.__instanceof(v,t);
@@ -2488,9 +2510,10 @@ Std.random = function(x) {
 Std.prototype = {
 	__class__: Std
 }
-var StringBuf = $hxClasses["StringBuf"] = function() {
+var StringBuf = function() {
 	this.b = new Array();
 };
+$hxClasses["StringBuf"] = StringBuf;
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
 	add: function(x) {
@@ -2508,7 +2531,8 @@ StringBuf.prototype = {
 	,b: null
 	,__class__: StringBuf
 }
-var StringTools = $hxClasses["StringTools"] = function() { }
+var StringTools = function() { }
+$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
 	return encodeURIComponent(s);
@@ -2597,7 +2621,8 @@ StringTools.isEOF = function(c) {
 StringTools.prototype = {
 	__class__: StringTools
 }
-var Strings = $hxClasses["Strings"] = function() { }
+var Strings = function() { }
+$hxClasses["Strings"] = Strings;
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
@@ -2838,6 +2863,11 @@ Strings.interpolatef = function(a,b,equation) {
 			f.push(null);
 		}
 	};
+	var decimals = function(v) {
+		var s = "" + v, p = s.indexOf(".");
+		if(p < 0) return 0;
+		return s.length - p - 1;
+	};
 	var sa = [], fa = [], sb = [], fb = [];
 	extract(a,sa,fa);
 	extract(b,sb,fb);
@@ -2855,11 +2885,12 @@ Strings.interpolatef = function(a,b,equation) {
 				})(s));
 			} else {
 				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
-				functions.push((function(f) {
+				var dec = [Math.pow(10,Ints.max(decimals(fa[i]),decimals(fb[i])))];
+				functions.push((function(dec,f) {
 					return function(t) {
-						return "" + f[0](t);
+						return "" + Math.round(f[0](t) * dec[0]) / dec[0];
 					};
-				})(f));
+				})(dec,f));
 			}
 		} else {
 			var s = [sa[i]];
@@ -2962,7 +2993,8 @@ ValueType.TEnum = function(e) { var $x = ["TEnum",7,e]; $x.__enum__ = ValueType;
 ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
-var Type = $hxClasses["Type"] = function() { }
+var Type = function() { }
+$hxClasses["Type"] = Type;
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
@@ -3123,7 +3155,8 @@ Type.allEnums = function(e) {
 Type.prototype = {
 	__class__: Type
 }
-var Types = $hxClasses["Types"] = function() { }
+var Types = function() { }
+$hxClasses["Types"] = Types;
 Types.__name__ = ["Types"];
 Types.className = function(o) {
 	return Type.getClassName(Type.getClass(o)).split(".").pop();
@@ -3233,8 +3266,9 @@ Types.isPrimitive = function(v) {
 Types.prototype = {
 	__class__: Types
 }
-var haxe = haxe || {}
-haxe.Log = $hxClasses["haxe.Log"] = function() { }
+var haxe = {}
+haxe.Log = function() { }
+$hxClasses["haxe.Log"] = haxe.Log;
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
 	js.Boot.__trace(v,infos);
@@ -3245,8 +3279,9 @@ haxe.Log.clear = function() {
 haxe.Log.prototype = {
 	__class__: haxe.Log
 }
-haxe.Md5 = $hxClasses["haxe.Md5"] = function() {
+haxe.Md5 = function() {
 };
+$hxClasses["haxe.Md5"] = haxe.Md5;
 haxe.Md5.__name__ = ["haxe","Md5"];
 haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
@@ -3410,12 +3445,13 @@ haxe.Md5.prototype = {
 	}
 	,__class__: haxe.Md5
 }
-haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
+haxe.Timer = function(time_ms) {
 	var me = this;
 	this.id = window.setInterval(function() {
 		me.run();
 	},time_ms);
 };
+$hxClasses["haxe.Timer"] = haxe.Timer;
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
 	var t = new haxe.Timer(time_ms);
@@ -3445,8 +3481,9 @@ haxe.Timer.prototype = {
 	}
 	,__class__: haxe.Timer
 }
-var js = js || {}
-js.Boot = $hxClasses["js.Boot"] = function() { }
+var js = {}
+js.Boot = function() { }
+$hxClasses["js.Boot"] = js.Boot;
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
 	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
@@ -3626,16 +3663,20 @@ js.Boot.__init = function() {
 js.Boot.prototype = {
 	__class__: js.Boot
 }
-js.Lib = $hxClasses["js.Lib"] = function() { }
+js.Lib = function() { }
+$hxClasses["js.Lib"] = js.Lib;
 js.Lib.__name__ = ["js","Lib"];
 js.Lib.isIE = null;
 js.Lib.isOpera = null;
 js.Lib.document = null;
 js.Lib.window = null;
+js.Lib.debug = function() {
+	debugger;
+}
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
 }
-js.Lib.eval = function(code) {
+js.Lib["eval"] = function(code) {
 	return eval(code);
 }
 js.Lib.setErrorHandler = function(f) {
@@ -3644,10 +3685,11 @@ js.Lib.setErrorHandler = function(f) {
 js.Lib.prototype = {
 	__class__: js.Lib
 }
-var rg = rg || {}
-if(!rg.app) rg.app = {}
-if(!rg.app.query) rg.app.query = {}
-rg.app.query.JSBridge = $hxClasses["rg.app.query.JSBridge"] = function() { }
+var rg = {}
+rg.app = {}
+rg.app.query = {}
+rg.app.query.JSBridge = function() { }
+$hxClasses["rg.app.query.JSBridge"] = rg.app.query.JSBridge;
 rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
 rg.app.query.JSBridge.createQuery = function(executor) {
 	var inst = rg.query.ReportGridQuery.create(executor);
@@ -3669,7 +3711,7 @@ rg.app.query.JSBridge.createQuery = function(executor) {
 rg.app.query.JSBridge.main = function() {
 	var storage;
 	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
-	var r = (!ReportGrid) ? (ReportGrid = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
+	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid, timeout = 120, executor = new rg.data.reportgrid.ReportGridExecutorCache(r,storage,timeout);
 	r.query = rg.app.query.JSBridge.createQuery(executor);
 	r.date = { range : function(a,b,p) {
 		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
@@ -3684,7 +3726,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.0.1557"};
+	r.info.query = { version : "1.3.7.1601"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -3725,9 +3767,10 @@ rg.app.query.JSBridge.opt = function(ob) {
 rg.app.query.JSBridge.prototype = {
 	__class__: rg.app.query.JSBridge
 }
-if(!rg.data) rg.data = {}
-if(!rg.data.reportgrid) rg.data.reportgrid = {}
-rg.data.reportgrid.IExecutorReportGrid = $hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = function() { }
+rg.data = {}
+rg.data.reportgrid = {}
+rg.data.reportgrid.IExecutorReportGrid = function() { }
+$hxClasses["rg.data.reportgrid.IExecutorReportGrid"] = rg.data.reportgrid.IExecutorReportGrid;
 rg.data.reportgrid.IExecutorReportGrid.__name__ = ["rg","data","reportgrid","IExecutorReportGrid"];
 rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	children: null
@@ -3747,13 +3790,14 @@ rg.data.reportgrid.IExecutorReportGrid.prototype = {
 	,events: null
 	,__class__: rg.data.reportgrid.IExecutorReportGrid
 }
-rg.data.reportgrid.ReportGridExecutorCache = $hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = function(executor,storage,timeout) {
+rg.data.reportgrid.ReportGridExecutorCache = function(executor,storage,timeout) {
 	this.executor = executor;
 	this.storage = storage;
 	this.queue = new Hash();
 	this.timeout = timeout;
 	this.cleanOld();
 };
+$hxClasses["rg.data.reportgrid.ReportGridExecutorCache"] = rg.data.reportgrid.ReportGridExecutorCache;
 rg.data.reportgrid.ReportGridExecutorCache.__name__ = ["rg","data","reportgrid","ReportGridExecutorCache"];
 rg.data.reportgrid.ReportGridExecutorCache.__interfaces__ = [rg.data.reportgrid.IExecutorReportGrid];
 rg.data.reportgrid.ReportGridExecutorCache.prototype = {
@@ -3908,12 +3952,13 @@ rg.data.reportgrid.ReportGridExecutorCache.prototype = {
 	}
 	,__class__: rg.data.reportgrid.ReportGridExecutorCache
 }
-if(!rg.query) rg.query = {}
-rg.query.BaseQuery = $hxClasses["rg.query.BaseQuery"] = function(async,first) {
+rg.query = {}
+rg.query.BaseQuery = function(async,first) {
 	this._async = async;
 	this._first = first;
 	this._store = new Hash();
 };
+$hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
@@ -4224,9 +4269,10 @@ rg.query.BaseQuery.prototype = {
 	}
 	,__class__: rg.query.BaseQuery
 }
-rg.query.Query = $hxClasses["rg.query.Query"] = function() {
+rg.query.Query = function() {
 	rg.query.BaseQuery.call(this,null,this);
 };
+$hxClasses["rg.query.Query"] = rg.query.Query;
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.create = function() {
 	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
@@ -4239,16 +4285,16 @@ rg.query.Query.executeHandler = function(instance,handler) {
 	var current = instance._next;
 	var execute = (function($this) {
 		var $r;
-		var execute = null;
-		execute = function(result) {
+		var execute1 = null;
+		execute1 = function(result) {
 			if(null == current._next) {
 				handler(Arrays.flatten(result));
 				return;
 			}
 			current = current._next;
-			current._async(result,execute);
+			current._async(result,execute1);
 		};
-		$r = execute;
+		$r = execute1;
 		return $r;
 	}(this));
 	execute([]);
@@ -4260,9 +4306,10 @@ rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
 	}
 	,__class__: rg.query.Query
 });
-rg.query.ReportGridBaseQuery = $hxClasses["rg.query.ReportGridBaseQuery"] = function(async,first) {
+rg.query.ReportGridBaseQuery = function(async,first) {
 	rg.query.BaseQuery.call(this,async,first);
 };
+$hxClasses["rg.query.ReportGridBaseQuery"] = rg.query.ReportGridBaseQuery;
 rg.query.ReportGridBaseQuery.__name__ = ["rg","query","ReportGridBaseQuery"];
 rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
 	if(null == options) options = { };
@@ -4324,7 +4371,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 498, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 506, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -4365,6 +4412,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		return this.data(null == p?[{ }]:Std["is"](p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			me.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
 		});
 	}
@@ -4398,6 +4446,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
 			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 			options.periodicity = "single";
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			switch(params.type.toLowerCase()) {
 			case "mean":
 				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
@@ -4422,6 +4471,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
 			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			switch(params.type.toLowerCase()) {
 			case "mean":
 				me.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
@@ -4444,6 +4494,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
 			options.properties = properties;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			var _g1 = 0, _g = params.properties.length;
 			while(_g1 < _g) {
 				var i = _g1++;
@@ -4470,6 +4521,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params), properties = [];
 			options.properties = properties;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			var _g1 = 0, _g = params.properties.length;
 			while(_g1 < _g) {
 				var i = _g1++;
@@ -4546,6 +4598,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 				} else options.properties = params.properties;
 			}
 			if(null != params.limit) options.limit = params.limit;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
 			me.executor.events(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.events,params,keep,handler));
 		});
 	}
@@ -4565,10 +4618,11 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 	}
 	,__class__: rg.query.ReportGridBaseQuery
 });
-rg.query.ReportGridQuery = $hxClasses["rg.query.ReportGridQuery"] = function(executor) {
+rg.query.ReportGridQuery = function(executor) {
 	rg.query.ReportGridBaseQuery.call(this,null,this);
 	this.executor = executor;
 };
+$hxClasses["rg.query.ReportGridQuery"] = rg.query.ReportGridQuery;
 rg.query.ReportGridQuery.__name__ = ["rg","query","ReportGridQuery"];
 rg.query.ReportGridQuery.create = function(executor) {
 	var start = new rg.query.ReportGridQuery(executor), query = start._createQuery(null,start);
@@ -4582,7 +4636,8 @@ rg.query.ReportGridQuery.prototype = $extend(rg.query.ReportGridBaseQuery.protot
 	}
 	,__class__: rg.query.ReportGridQuery
 });
-rg.query.ReportGridTransformers = $hxClasses["rg.query.ReportGridTransformers"] = function() { }
+rg.query.ReportGridTransformers = function() { }
+$hxClasses["rg.query.ReportGridTransformers"] = rg.query.ReportGridTransformers;
 rg.query.ReportGridTransformers.__name__ = ["rg","query","ReportGridTransformers"];
 rg.query.ReportGridTransformers.childrenPath = function(arr,params,keep) {
 	var parent = params.parent, prefix = parent == "/"?"":parent;
@@ -4613,6 +4668,7 @@ rg.query.ReportGridTransformers.propertyValues = function(arr,params,keep) {
 	return arr.map(function(value,_) {
 		var o = { path : path, event : event, property : property, value : value};
 		rg.query.ReportGridTransformers._keep(params,o,keep);
+		if(null != params.where) Objects.copyTo(params.where,o);
 		return o;
 	});
 }
@@ -4662,6 +4718,7 @@ rg.query.ReportGridTransformers.intersect = function(ob,params,keep) {
 		var pair = _g1[_g];
 		++_g;
 		var o = { count : pair.value};
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		var _g3 = 0, _g2 = properties.length;
 		while(_g3 < _g2) {
@@ -4680,6 +4737,7 @@ rg.query.ReportGridTransformers.intersectTag = function(ob,params,keep) {
 			var pair = _g1[_g];
 			++_g;
 			var o = { count : pair.value};
+			if(null != params.where) Objects.copyTo(params.where,o);
 			rg.query.ReportGridTransformers._keep(params,o,keep);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			var _g3 = 0, _g2 = properties.length;
@@ -4704,6 +4762,7 @@ rg.query.ReportGridTransformers.intersectSeries = function(ob,params,keep) {
 			var item = values[_g2];
 			++_g2;
 			var o = { count : item[1]};
+			if(null != params.where) Objects.copyTo(params.where,o);
 			rg.query.ReportGridTransformers._keep(params,o,keep);
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 			var _g4 = 0, _g3 = properties.length;
@@ -4729,6 +4788,7 @@ rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params,keep) {
 				var item = values[_g2];
 				++_g2;
 				var o = { count : item[1]};
+				if(null != params.where) Objects.copyTo(params.where,o);
 				rg.query.ReportGridTransformers._keep(params,o,keep);
 				rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 				o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
@@ -4745,6 +4805,7 @@ rg.query.ReportGridTransformers.intersectSeriesTag = function(ob,params,keep) {
 }
 rg.query.ReportGridTransformers.eventCount = function(count,params,keep) {
 	var o = { event : params.event, count : count};
+	if(null != params.where) Objects.copyTo(params.where,o);
 	rg.query.ReportGridTransformers._keep(params,o,keep);
 	if(null != params.where) Objects.copyTo(params.where,o);
 	return [o];
@@ -4753,6 +4814,7 @@ rg.query.ReportGridTransformers.eventCountTag = function(counts,params,keep) {
 	var event = params.event, tag = params.tag;
 	return Objects.map(counts,function(key,count) {
 		var o = { event : event, count : count};
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 		if(null != params.where) Objects.copyTo(params.where,o);
@@ -4768,6 +4830,7 @@ rg.query.ReportGridTransformers.eventSeriesTagGroupedBy = function(ob,params,kee
 			var item = values[_g];
 			++_g;
 			var o = { event : event, count : item[1]};
+			if(null != params.where) Objects.copyTo(params.where,o);
 			rg.query.ReportGridTransformers._keep(params,o,keep);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
@@ -4784,6 +4847,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params,keep) {
 		var item = values[_g];
 		++_g;
 		var o = { event : event, count : item[1]};
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		if(null != where) Objects.copyTo(where,o);
@@ -4793,6 +4857,7 @@ rg.query.ReportGridTransformers.eventSeries = function(values,params,keep) {
 }
 rg.query.ReportGridTransformers.propertySummary = function(value,params,keep) {
 	var o = { };
+	if(null != params.where) Objects.copyTo(params.where,o);
 	rg.query.ReportGridTransformers._keep(params,o,keep);
 	o[params.type] = value[0][1];
 	return [o];
@@ -4804,6 +4869,7 @@ rg.query.ReportGridTransformers.propertySummarySeries = function(values,params,k
 		var item = values[_g];
 		++_g;
 		var o = { };
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
 		o[type] = item[1];
@@ -4821,6 +4887,7 @@ rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy = function(ob,
 			++_g;
 			var o = { };
 			rg.query.ReportGridTransformers._keep(params,o,keep);
+			if(null != params.where) Objects.copyTo(params.where,o);
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
 			o[type] = item[1];
 			rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,null,groupby);
@@ -4839,6 +4906,7 @@ rg.query.ReportGridTransformers.propertyValueCountTag = function(counts,params,k
 	var property = params.property, value = params.value, tag = params.tag;
 	return Objects.map(counts,function(key,count) {
 		var o = { count : count};
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[property] = value;
 		o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
@@ -4852,6 +4920,7 @@ rg.query.ReportGridTransformers.propertyValueSeries = function(values,params,kee
 		var item = values[_g];
 		++_g;
 		var o = { count : item[1]};
+		if(null != params.where) Objects.copyTo(params.where,o);
 		rg.query.ReportGridTransformers._keep(params,o,keep);
 		o[property] = value;
 		rg.query.ReportGridTransformers._injectTime(o,item[0],periodicity,timezone,groupby);
@@ -4868,6 +4937,7 @@ rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy = function(ob,pa
 			var item = values[_g];
 			++_g;
 			var o = { count : item[1]};
+			if(null != params.where) Objects.copyTo(params.where,o);
 			rg.query.ReportGridTransformers._keep(params,o,keep);
 			ob[property] = value;
 			o[tag] = Strings.rtrim(Strings.ltrim(key,"/"),"/");
@@ -4910,7 +4980,8 @@ rg.query.ReportGridTransformers._trimPrefix = function(v) {
 rg.query.ReportGridTransformers.prototype = {
 	__class__: rg.query.ReportGridTransformers
 }
-rg.query.Transformers = $hxClasses["rg.query.Transformers"] = function() { }
+rg.query.Transformers = function() { }
+$hxClasses["rg.query.Transformers"] = rg.query.Transformers;
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.crossStack = function(data) {
 	if(data.length <= 1) return data;
@@ -5170,8 +5241,9 @@ rg.query.Transformers.rotate = function(matchingf) {
 rg.query.Transformers.prototype = {
 	__class__: rg.query.Transformers
 }
-if(!rg.storage) rg.storage = {}
-rg.storage.IStorage = $hxClasses["rg.storage.IStorage"] = function() { }
+rg.storage = {}
+rg.storage.IStorage = function() { }
+$hxClasses["rg.storage.IStorage"] = rg.storage.IStorage;
 rg.storage.IStorage.__name__ = ["rg","storage","IStorage"];
 rg.storage.IStorage.prototype = {
 	keys: null
@@ -5181,10 +5253,11 @@ rg.storage.IStorage.prototype = {
 	,clear: null
 	,__class__: rg.storage.IStorage
 }
-rg.storage.BrowserStorage = $hxClasses["rg.storage.BrowserStorage"] = function(api,kind) {
+rg.storage.BrowserStorage = function(api,kind) {
 	this.storage = api;
 	this.kind = kind;
 };
+$hxClasses["rg.storage.BrowserStorage"] = rg.storage.BrowserStorage;
 rg.storage.BrowserStorage.__name__ = ["rg","storage","BrowserStorage"];
 rg.storage.BrowserStorage.__interfaces__ = [rg.storage.IStorage];
 rg.storage.BrowserStorage.hasSessionStorage = function() {
@@ -5237,9 +5310,10 @@ rg.storage.BrowserStorage.prototype = {
 	}
 	,__class__: rg.storage.BrowserStorage
 }
-rg.storage.MemoryStorage = $hxClasses["rg.storage.MemoryStorage"] = function() {
+rg.storage.MemoryStorage = function() {
 	this.storage = new Hash();
 };
+$hxClasses["rg.storage.MemoryStorage"] = rg.storage.MemoryStorage;
 rg.storage.MemoryStorage.__name__ = ["rg","storage","MemoryStorage"];
 rg.storage.MemoryStorage.__interfaces__ = [rg.storage.IStorage];
 rg.storage.MemoryStorage.prototype = {
@@ -5264,8 +5338,9 @@ rg.storage.MemoryStorage.prototype = {
 	}
 	,__class__: rg.storage.MemoryStorage
 }
-if(!rg.util) rg.util = {}
-rg.util.Periodicity = $hxClasses["rg.util.Periodicity"] = function() { }
+rg.util = {}
+rg.util.Periodicity = function() { }
+$hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultPeriodicity = function(span) {
 	if(null == span || 0 == span) return "eternity";
@@ -5383,9 +5458,10 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		}
 		return result;
 	case "year":
-		return Ints.range(rg.util.Periodicity.dateUtc(start).getFullYear(),rg.util.Periodicity.dateUtc(end).getFullYear() + 1,1).map(function(d,i) {
+		var result = Ints.range(rg.util.Periodicity.dateUtc(start).getFullYear(),rg.util.Periodicity.dateUtc(end).getFullYear() + 1,1).map(function(d,i) {
 			return new Date(d,0,1,0,0,0).getTime();
 		});
+		return result;
 	}
 	return Floats.range(start,end + step,step);
 }
@@ -5641,9 +5717,10 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 rg.util.Periodicity.prototype = {
 	__class__: rg.util.Periodicity
 }
-var thx = thx || {}
-if(!thx.culture) thx.culture = {}
-thx.culture.Info = $hxClasses["thx.culture.Info"] = function() { }
+var thx = {}
+thx.culture = {}
+thx.culture.Info = function() { }
+$hxClasses["thx.culture.Info"] = thx.culture.Info;
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
 	name: null
@@ -5657,7 +5734,8 @@ thx.culture.Info.prototype = {
 	}
 	,__class__: thx.culture.Info
 }
-thx.culture.Culture = $hxClasses["thx.culture.Culture"] = function() { }
+thx.culture.Culture = function() { }
+$hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
 thx.culture.Culture.cultures = null;
@@ -5713,7 +5791,8 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,percent: null
 	,__class__: thx.culture.Culture
 });
-thx.culture.FormatDate = $hxClasses["thx.culture.FormatDate"] = function() { }
+thx.culture.FormatDate = function() { }
+$hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
@@ -5945,7 +6024,8 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 thx.culture.FormatDate.prototype = {
 	__class__: thx.culture.FormatDate
 }
-thx.culture.FormatNumber = $hxClasses["thx.culture.FormatNumber"] = function() { }
+thx.culture.FormatNumber = function() { }
+$hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
@@ -6023,7 +6103,8 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 thx.culture.FormatNumber.prototype = {
 	__class__: thx.culture.FormatNumber
 }
-thx.culture.FormatParams = $hxClasses["thx.culture.FormatParams"] = function() { }
+thx.culture.FormatParams = function() { }
+$hxClasses["thx.culture.FormatParams"] = thx.culture.FormatParams;
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
 	if(p.length <= 1) return p;
@@ -6044,7 +6125,8 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.FormatParams.prototype = {
 	__class__: thx.culture.FormatParams
 }
-thx.culture.Language = $hxClasses["thx.culture.Language"] = function() { }
+thx.culture.Language = function() { }
+$hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
 thx.culture.Language.languages = null;
@@ -6065,8 +6147,8 @@ thx.culture.Language.__super__ = thx.culture.Info;
 thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
 	__class__: thx.culture.Language
 });
-if(!thx.culture.core) thx.culture.core = {}
-thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
+thx.culture.core = {}
+thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDays,am,pm,separatorDate,separatorTime,firstWeekDay,patternYearMonth,patternMonthDay,patternDate,patternDateShort,patternDateRfc,patternDateTime,patternUniversal,patternSortable,patternTime,patternTimeShort) {
 	this.months = months;
 	this.abbrMonths = abbrMonths;
 	this.days = days;
@@ -6088,6 +6170,7 @@ thx.culture.core.DateTimeInfo = $hxClasses["thx.culture.core.DateTimeInfo"] = fu
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
 };
+$hxClasses["thx.culture.core.DateTimeInfo"] = thx.culture.core.DateTimeInfo;
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
 	months: null
@@ -6112,7 +6195,7 @@ thx.culture.core.DateTimeInfo.prototype = {
 	,patternTimeShort: null
 	,__class__: thx.culture.core.DateTimeInfo
 }
-thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
+thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
 	this.decimals = decimals;
 	this.decimalsSeparator = decimalsSeparator;
 	this.groups = groups;
@@ -6120,6 +6203,7 @@ thx.culture.core.NumberInfo = $hxClasses["thx.culture.core.NumberInfo"] = functi
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
 };
+$hxClasses["thx.culture.core.NumberInfo"] = thx.culture.core.NumberInfo;
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
 	decimals: null
@@ -6130,8 +6214,8 @@ thx.culture.core.NumberInfo.prototype = {
 	,patternPositive: null
 	,__class__: thx.culture.core.NumberInfo
 }
-if(!thx.languages) thx.languages = {}
-thx.languages.En = $hxClasses["thx.languages.En"] = function() {
+thx.languages = {}
+thx.languages.En = function() {
 	this.name = "en";
 	this.english = "English";
 	this["native"] = "English";
@@ -6140,6 +6224,7 @@ thx.languages.En = $hxClasses["thx.languages.En"] = function() {
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
 };
+$hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
 thx.languages.En.__properties__ = {get_language:"getLanguage"}
 thx.languages.En.language = null;
@@ -6151,8 +6236,8 @@ thx.languages.En.__super__ = thx.culture.Language;
 thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
 	__class__: thx.languages.En
 });
-if(!thx.cultures) thx.cultures = {}
-thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
+thx.cultures = {}
+thx.cultures.EnUS = function() {
 	this.language = thx.languages.En.getLanguage();
 	this.name = "en-US";
 	this.english = "English (United States)";
@@ -6180,6 +6265,7 @@ thx.cultures.EnUS = $hxClasses["thx.cultures.EnUS"] = function() {
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
 };
+$hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
 thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
 thx.cultures.EnUS.culture = null;
@@ -6191,32 +6277,34 @@ thx.cultures.EnUS.__super__ = thx.culture.Culture;
 thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 	__class__: thx.cultures.EnUS
 });
-if(!thx.data) thx.data = {}
-thx.data.IDataHandler = $hxClasses["thx.data.IDataHandler"] = function() { }
+thx.data = {}
+thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
 	start: null
 	,end: null
-	,startObject: null
-	,startField: null
-	,endField: null
-	,endObject: null
-	,startArray: null
-	,startItem: null
-	,endItem: null
-	,endArray: null
-	,date: null
-	,string: null
-	,'int': null
-	,'float': null
-	,'null': null
-	,bool: null
+	,objectStart: null
+	,objectFieldStart: null
+	,objectFieldEnd: null
+	,objectEnd: null
+	,arrayStart: null
+	,arrayItemStart: null
+	,arrayItemEnd: null
+	,arrayEnd: null
+	,valueDate: null
+	,valueString: null
+	,valueInt: null
+	,valueFloat: null
+	,valueNull: null
+	,valueBool: null
 	,comment: null
 	,__class__: thx.data.IDataHandler
 }
-thx.data.ValueEncoder = $hxClasses["thx.data.ValueEncoder"] = function(handler) {
+thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
+$hxClasses["thx.data.ValueEncoder"] = thx.data.ValueEncoder;
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
 	handler: null
@@ -6229,16 +6317,16 @@ thx.data.ValueEncoder.prototype = {
 		var $e = (Type["typeof"](o));
 		switch( $e[1] ) {
 		case 0:
-			this.handler["null"]();
+			this.handler.valueNull();
 			break;
 		case 1:
-			this.handler["int"](o);
+			this.handler.valueInt(o);
 			break;
 		case 2:
-			this.handler["float"](o);
+			this.handler.valueFloat(o);
 			break;
 		case 3:
-			this.handler.bool(o);
+			this.handler.valueBool(o);
 			break;
 		case 4:
 			this.encodeObject(o);
@@ -6248,7 +6336,7 @@ thx.data.ValueEncoder.prototype = {
 			break;
 		case 6:
 			var c = $e[2];
-			if(Std["is"](o,String)) this.handler.string(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.date(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			if(Std["is"](o,String)) this.handler.valueString(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.valueDate(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
 			var e = $e[2];
@@ -6260,55 +6348,56 @@ thx.data.ValueEncoder.prototype = {
 		}
 	}
 	,encodeObject: function(o) {
-		this.handler.startObject();
+		this.handler.objectStart();
 		var _g = 0, _g1 = Reflect.fields(o);
 		while(_g < _g1.length) {
 			var key = _g1[_g];
 			++_g;
-			this.handler.startField(key);
+			this.handler.objectFieldStart(key);
 			this.encodeValue(Reflect.field(o,key));
-			this.handler.endField();
+			this.handler.objectFieldEnd();
 		}
-		this.handler.endObject();
+		this.handler.objectEnd();
 	}
 	,encodeHash: function(o) {
-		this.handler.startObject();
+		this.handler.objectStart();
 		var $it0 = o.keys();
 		while( $it0.hasNext() ) {
 			var key = $it0.next();
-			this.handler.startField(key);
+			this.handler.objectFieldStart(key);
 			this.encodeValue(o.get(key));
-			this.handler.endField();
+			this.handler.objectFieldEnd();
 		}
-		this.handler.endObject();
+		this.handler.objectEnd();
 	}
 	,encodeList: function(list) {
-		this.handler.startArray();
+		this.handler.arrayStart();
 		var $it0 = list.iterator();
 		while( $it0.hasNext() ) {
 			var item = $it0.next();
-			this.handler.startItem();
+			this.handler.arrayItemStart();
 			this.encodeValue(item);
-			this.handler.endItem();
+			this.handler.arrayItemEnd();
 		}
-		this.handler.endArray();
+		this.handler.arrayEnd();
 	}
 	,encodeArray: function(a) {
-		this.handler.startArray();
+		this.handler.arrayStart();
 		var _g = 0;
 		while(_g < a.length) {
 			var item = a[_g];
 			++_g;
-			this.handler.startItem();
+			this.handler.arrayItemStart();
 			this.encodeValue(item);
-			this.handler.endItem();
+			this.handler.arrayItemEnd();
 		}
-		this.handler.endArray();
+		this.handler.arrayEnd();
 	}
 	,__class__: thx.data.ValueEncoder
 }
-thx.data.ValueHandler = $hxClasses["thx.data.ValueHandler"] = function() {
+thx.data.ValueHandler = function() {
 };
+$hxClasses["thx.data.ValueHandler"] = thx.data.ValueHandler;
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
@@ -6322,55 +6411,56 @@ thx.data.ValueHandler.prototype = {
 	,end: function() {
 		this.value = this._stack.pop();
 	}
-	,startObject: function() {
+	,objectStart: function() {
 		this._stack.push({ });
 	}
-	,endObject: function() {
+	,objectEnd: function() {
 	}
-	,startField: function(name) {
+	,objectFieldStart: function(name) {
 		this._names.push(name);
 	}
-	,endField: function() {
+	,objectFieldEnd: function() {
 		var value = this._stack.pop();
 		var last = Arrays.last(this._stack);
 		last[this._names.pop()] = value;
 	}
-	,startArray: function() {
+	,arrayStart: function() {
 		this._stack.push([]);
 	}
-	,endArray: function() {
+	,arrayEnd: function() {
 	}
-	,startItem: function() {
+	,arrayItemStart: function() {
 	}
-	,endItem: function() {
+	,arrayItemEnd: function() {
 		var value = this._stack.pop();
 		var last = Arrays.last(this._stack);
 		last.push(value);
 	}
-	,date: function(d) {
+	,valueDate: function(d) {
 		this._stack.push(d);
 	}
-	,string: function(s) {
+	,valueString: function(s) {
 		this._stack.push(s);
 	}
-	,'int': function(i) {
+	,valueInt: function(i) {
 		this._stack.push(i);
 	}
-	,'float': function(f) {
+	,valueFloat: function(f) {
 		this._stack.push(f);
 	}
-	,'null': function() {
+	,valueNull: function() {
 		this._stack.push(null);
 	}
-	,bool: function(b) {
+	,valueBool: function(b) {
 		this._stack.push(b);
 	}
 	,comment: function(s) {
 	}
 	,__class__: thx.data.ValueHandler
 }
-if(!thx.date) thx.date = {}
-thx.date.DateParser = $hxClasses["thx.date.DateParser"] = function() { }
+thx.date = {}
+thx.date.DateParser = function() { }
+$hxClasses["thx.date.DateParser"] = thx.date.DateParser;
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
@@ -6593,12 +6683,13 @@ thx.date.DateParser.plusPm = function(s) {
 thx.date.DateParser.prototype = {
 	__class__: thx.date.DateParser
 }
-if(!thx.util) thx.util = {}
-thx.util.Message = $hxClasses["thx.util.Message"] = function(message,params,param) {
+thx.util = {}
+thx.util.Message = function(message,params,param) {
 	this.message = message;
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
 };
+$hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
 	message: null
@@ -6616,11 +6707,12 @@ thx.util.Message.prototype = {
 	}
 	,__class__: thx.util.Message
 }
-if(!thx.error) thx.error = {}
-thx.error.Error = $hxClasses["thx.error.Error"] = function(message,params,param,pos) {
+thx.error = {}
+thx.error.Error = function(message,params,param,pos) {
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
 };
+$hxClasses["thx.error.Error"] = thx.error.Error;
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
@@ -6644,8 +6736,9 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 	}
 	,__class__: thx.error.Error
 });
-if(!thx.json) thx.json = {}
-thx.json.Json = $hxClasses["thx.json.Json"] = function() { }
+thx.json = {}
+thx.json.Json = function() { }
+$hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
 thx.json.Json.nativeEncoder = null;
 thx.json.Json.nativeDecoder = null;
@@ -6664,11 +6757,12 @@ thx.json.Json.decode = function(value) {
 thx.json.Json.prototype = {
 	__class__: thx.json.Json
 }
-thx.json.JsonDecoder = $hxClasses["thx.json.JsonDecoder"] = function(handler,tabsize) {
+thx.json.JsonDecoder = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
 	this.tabsize = tabsize;
 };
+$hxClasses["thx.json.JsonDecoder"] = thx.json.JsonDecoder;
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	col: null
@@ -6761,7 +6855,7 @@ thx.json.JsonDecoder.prototype = {
 	}
 	,parseObject: function() {
 		var first = true;
-		this.handler.startObject();
+		this.handler.objectStart();
 		while(true) {
 			this.ignoreWhiteSpace();
 			if(this.expect("}")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
@@ -6769,30 +6863,30 @@ thx.json.JsonDecoder.prototype = {
 			this.ignoreWhiteSpace();
 			if(!this.expect(":")) this.error("expected ':'");
 			this.ignoreWhiteSpace();
-			this.handler.startField(k);
+			this.handler.objectFieldStart(k);
 			this.parse();
-			this.handler.endField();
+			this.handler.objectFieldEnd();
 		}
-		this.handler.endObject();
+		this.handler.objectEnd();
 	}
 	,parseArray: function() {
 		this.ignoreWhiteSpace();
 		var first = true;
-		this.handler.startArray();
+		this.handler.arrayStart();
 		while(true) {
 			this.ignoreWhiteSpace();
 			if(this.expect("]")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
-			this.handler.startItem();
+			this.handler.arrayItemStart();
 			this.parse();
-			this.handler.endItem();
+			this.handler.arrayItemEnd();
 		}
-		this.handler.endArray();
+		this.handler.arrayEnd();
 	}
 	,parseValue: function() {
-		if(this.expect("true")) this.handler.bool(true); else if(this.expect("false")) this.handler.bool(false); else if(this.expect("null")) this.handler["null"](); else this.parseFloat();
+		if(this.expect("true")) this.handler.valueBool(true); else if(this.expect("false")) this.handler.valueBool(false); else if(this.expect("null")) this.handler.valueNull(); else this.parseFloat();
 	}
 	,parseString: function() {
-		this.handler.string(this._parseString());
+		this.handler.valueString(this._parseString());
 	}
 	,_parseString: function() {
 		if(!this.expect("\"")) this.error("expected double quote");
@@ -6859,7 +6953,7 @@ thx.json.JsonDecoder.prototype = {
 			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
 			v.push(c);
 		}
-		this.handler["int"](Std.parseInt("0x" + v.join("")));
+		this.handler.valueInt(Std.parseInt("0x" + v.join("")));
 		return Std.parseInt("0x" + v.join(""));
 	}
 	,parseFloat: function() {
@@ -6876,13 +6970,13 @@ thx.json.JsonDecoder.prototype = {
 			v += this.parseDigits();
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.handler["int"](Std.parseInt(v));
+				this.handler.valueInt(Std.parseInt(v));
 				return;
 			} else throw(e);
 		}
 		try {
 			if(this.expect(".")) v += "." + this.parseDigits(1); else {
-				this.handler["int"](Std.parseInt(v));
+				this.handler.valueInt(Std.parseInt(v));
 				return;
 			}
 			if(this.expect("e") || this.expect("E")) {
@@ -6893,11 +6987,11 @@ thx.json.JsonDecoder.prototype = {
 			}
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.handler["float"](Std.parseFloat(v));
+				this.handler.valueFloat(Std.parseFloat(v));
 				return;
 			} else throw(e);
 		}
-		this.handler["float"](Std.parseFloat(v));
+		this.handler.valueFloat(Std.parseFloat(v));
 	}
 	,parseDigits: function(atleast) {
 		if(atleast == null) atleast = 0;
@@ -6928,13 +7022,14 @@ thx.json.JsonDecoder.prototype = {
 	}
 	,__class__: thx.json.JsonDecoder
 }
-if(!thx.json._JsonDecoder) thx.json._JsonDecoder = {}
+thx.json._JsonDecoder = {}
 thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
-thx.json.JsonEncoder = $hxClasses["thx.json.JsonEncoder"] = function() {
+thx.json.JsonEncoder = function() {
 };
+$hxClasses["thx.json.JsonEncoder"] = thx.json.JsonEncoder;
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
@@ -6952,49 +7047,49 @@ thx.json.JsonEncoder.prototype = {
 		this.encodedString = this.buf.b.join("");
 		this.buf = null;
 	}
-	,startObject: function() {
+	,objectStart: function() {
 		this.buf.add("{");
 		this.count.push(0);
 	}
-	,startField: function(name) {
+	,objectFieldStart: function(name) {
 		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
 		this.buf.add(this.quote(name) + ":");
 	}
-	,endField: function() {
+	,objectFieldEnd: function() {
 	}
-	,endObject: function() {
+	,objectEnd: function() {
 		this.buf.add("}");
 		this.count.pop();
 	}
-	,startArray: function() {
+	,arrayStart: function() {
 		this.buf.add("[");
 		this.count.push(0);
 	}
-	,startItem: function() {
+	,arrayItemStart: function() {
 		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
 	}
-	,endItem: function() {
+	,arrayItemEnd: function() {
 	}
-	,endArray: function() {
+	,arrayEnd: function() {
 		this.buf.add("]");
 		this.count.pop();
 	}
-	,date: function(d) {
+	,valueDate: function(d) {
 		this.buf.add(d.getTime());
 	}
-	,string: function(s) {
+	,valueString: function(s) {
 		this.buf.add(this.quote(s));
 	}
-	,'int': function(i) {
+	,valueInt: function(i) {
 		this.buf.add(i);
 	}
-	,'float': function(f) {
+	,valueFloat: function(f) {
 		this.buf.add(f);
 	}
-	,'null': function() {
+	,valueNull: function() {
 		this.buf.add("null");
 	}
-	,bool: function(b) {
+	,valueBool: function(b) {
 		this.buf.add(b?"true":"false");
 	}
 	,comment: function(s) {
@@ -7007,8 +7102,9 @@ thx.json.JsonEncoder.prototype = {
 	}
 	,__class__: thx.json.JsonEncoder
 }
-if(!thx.math) thx.math = {}
-thx.math.Equations = $hxClasses["thx.math.Equations"] = function() { }
+thx.math = {}
+thx.math.Equations = function() { }
+$hxClasses["thx.math.Equations"] = thx.math.Equations;
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
 	return v;
@@ -7072,10 +7168,11 @@ thx.math.Equations.polynomialf = function(e) {
 thx.math.Equations.prototype = {
 	__class__: thx.math.Equations
 }
-thx.math.Random = $hxClasses["thx.math.Random"] = function(seed) {
+thx.math.Random = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
 };
+$hxClasses["thx.math.Random"] = thx.math.Random;
 thx.math.Random.__name__ = ["thx","math","Random"];
 thx.math.Random.prototype = {
 	seed: null
@@ -7087,8 +7184,9 @@ thx.math.Random.prototype = {
 	}
 	,__class__: thx.math.Random
 }
-if(!thx.translation) thx.translation = {}
-thx.translation.ITranslation = $hxClasses["thx.translation.ITranslation"] = function() { }
+thx.translation = {}
+thx.translation.ITranslation = function() { }
+$hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	domain: null
@@ -7097,7 +7195,8 @@ thx.translation.ITranslation.prototype = {
 	,__class__: thx.translation.ITranslation
 	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
-thx.util.MacroVersion = $hxClasses["thx.util.MacroVersion"] = function() { }
+thx.util.MacroVersion = function() { }
+$hxClasses["thx.util.MacroVersion"] = thx.util.MacroVersion;
 thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 thx.util.MacroVersion.prototype = {
 	__class__: thx.util.MacroVersion
@@ -7303,4 +7402,5 @@ thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+seco
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
-rg.app.query.JSBridge.main()
+rg.app.query.JSBridge.main();
+})()

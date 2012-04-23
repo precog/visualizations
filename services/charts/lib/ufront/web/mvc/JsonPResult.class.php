@@ -10,7 +10,7 @@ class ufront_web_mvc_JsonPResult extends ufront_web_mvc_ActionResult {
 	public $callbackName;
 	public function executeResult($controllerContext) {
 		if(null === $controllerContext) {
-			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "JsonPResult.hx", "lineNumber" => 22, "className" => "ufront.web.mvc.JsonPResult", "methodName" => "executeResult"))));
+			throw new HException(new thx_error_NullArgument("controllerContext", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "JsonPResult.hx", "lineNumber" => 20, "className" => "ufront.web.mvc.JsonPResult", "methodName" => "executeResult"))));
 		}
 		$controllerContext->response->setContentType("text/javascript");
 		$serialized = thx_json_Json::encode($this->content);

@@ -49,11 +49,6 @@ class ConfigPdf
 
 	public function toString()
 	{
-		var pairs = [];
-		for(field in Reflect.fields(this))
-		{
-			pairs.push(field + ":" + Reflect.field(this, field));
-		}
-		return Std.format("ConfigPdf ${pairs.join(', ')}");
+		return "ConfigPdf: " + ConfigObjects.fieldsToString(this);
 	}
 }

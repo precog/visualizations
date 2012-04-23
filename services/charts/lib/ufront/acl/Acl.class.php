@@ -63,7 +63,7 @@ class ufront_acl_Acl {
 	}
 	public function addResource($resource, $parent) {
 		if(null === $resource) {
-			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 133, "className" => "ufront.acl.Acl", "methodName" => "addResource"))));
+			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 132, "className" => "ufront.acl.Acl", "methodName" => "addResource"))));
 		}
 		if($this->existsResource($resource)) {
 			throw new HException(new thx_error_Error("Resource '{0}' already exists in the ACL", null, $resource, _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 134, "className" => "ufront.acl.Acl", "methodName" => "addResource"))));
@@ -85,10 +85,10 @@ class ufront_acl_Acl {
 			$onlyParent = false;
 		}
 		if(null === $resource) {
-			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 158, "className" => "ufront.acl.Acl", "methodName" => "inheritsResource"))));
+			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 157, "className" => "ufront.acl.Acl", "methodName" => "inheritsResource"))));
 		}
 		if(null === $inherit) {
-			throw new HException(new thx_error_NullArgument("inherit", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 160, "className" => "ufront.acl.Acl", "methodName" => "inheritsResource"))));
+			throw new HException(new thx_error_NullArgument("inherit", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 158, "className" => "ufront.acl.Acl", "methodName" => "inheritsResource"))));
 		}
 		$r = $this->_resources->get($resource);
 		if(null === $r) {
@@ -114,7 +114,7 @@ class ufront_acl_Acl {
 	}
 	public function removeResource($resource) {
 		if(null === $resource) {
-			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 183, "className" => "ufront.acl.Acl", "methodName" => "removeResource"))));
+			throw new HException(new thx_error_NullArgument("resource", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 182, "className" => "ufront.acl.Acl", "methodName" => "removeResource"))));
 		}
 		if(!$this->existsResource($resource)) {
 			return false;
@@ -375,7 +375,7 @@ class ufront_acl_Acl {
 	}
 	public function _roleDFSOnePrivilege($role, $resource, $privilege) {
 		if(null === $privilege) {
-			throw new HException(new thx_error_NullArgument("privilege", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 427, "className" => "ufront.acl.Acl", "methodName" => "_roleDFSOnePrivilege"))));
+			throw new HException(new thx_error_NullArgument("privilege", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 424, "className" => "ufront.acl.Acl", "methodName" => "_roleDFSOnePrivilege"))));
 		}
 		$dfs = _hx_anonymous(array("visited" => new thx_collection_Set(), "stack" => new _hx_array(array())));
 		$result = $this->_roleDFSVisitOnePrivilege($role, $resource, $privilege, $dfs);
@@ -396,7 +396,7 @@ class ufront_acl_Acl {
 	}
 	public function _roleDFSVisitOnePrivilege($role, $resource, $privilege, $dfs) {
 		if(null === $privilege) {
-			throw new HException(new thx_error_NullArgument("privilege", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 453, "className" => "ufront.acl.Acl", "methodName" => "_roleDFSVisitOnePrivilege"))));
+			throw new HException(new thx_error_NullArgument("privilege", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "Acl.hx", "lineNumber" => 451, "className" => "ufront.acl.Acl", "methodName" => "_roleDFSVisitOnePrivilege"))));
 		}
 		$result = $this->_getRuleType($resource, $role, $privilege);
 		if(null !== $result) {

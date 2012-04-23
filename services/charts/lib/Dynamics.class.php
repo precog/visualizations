@@ -429,7 +429,7 @@ class Dynamics {
 		case 7:
 		$e = $»t->params[0];
 		{
-			$ea = Type::getEnumName($e); $eb = Type::getEnumName(Type::getEnum($b));
+			$ea = Type::getEnumName($e); $teb = Type::getEnum($b); $eb = Type::getEnumName($teb);
 			if($ea !== $eb) {
 				return false;
 			}
@@ -606,7 +606,7 @@ function Dynamics_4(&$a, &$b, &$ta, &$tb) {
 	throw new HException("Unable to compare two unknown types");
 }
 function Dynamics_5(&$a, &$b, &$ta, &$tb) {
-	throw new HException(new thx_error_Error("Unable to compare values: {0} and {1}", new _hx_array(array($a, $b)), null, _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 371, "className" => "Dynamics", "methodName" => "same"))));
+	throw new HException(new thx_error_Error("Unable to compare values: {0} and {1}", new _hx_array(array($a, $b)), null, _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 372, "className" => "Dynamics", "methodName" => "same"))));
 }
 function Dynamics_6(&$culture, &$nullstring, &$param, &$params, &$v) {
 	throw new HException(new thx_error_Error("Unsupported type format: {0}", null, Type::typeof($v), _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 44, "className" => "Dynamics", "methodName" => "formatf"))));

@@ -9,19 +9,19 @@ class ufront_web_HttpContextImpl extends ufront_web_HttpContext {
 	}}
 	public function setRequest($request) {
 		if(null === $request) {
-			throw new HException(new thx_error_NullArgument("request", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 23, "className" => "ufront.web.HttpContextImpl", "methodName" => "setRequest"))));
+			throw new HException(new thx_error_NullArgument("request", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 22, "className" => "ufront.web.HttpContextImpl", "methodName" => "setRequest"))));
 		}
 		$this->request = $request;
 	}
 	public function setResponse($response) {
 		if(null === $response) {
-			throw new HException(new thx_error_NullArgument("response", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 29, "className" => "ufront.web.HttpContextImpl", "methodName" => "setResponse"))));
+			throw new HException(new thx_error_NullArgument("response", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 28, "className" => "ufront.web.HttpContextImpl", "methodName" => "setResponse"))));
 		}
 		$this->response = $response;
 	}
 	public function setSession($session) {
 		if(null === $session) {
-			throw new HException(new thx_error_NullArgument("session", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 35, "className" => "ufront.web.HttpContextImpl", "methodName" => "setSession"))));
+			throw new HException(new thx_error_NullArgument("session", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "HttpContextImpl.hx", "lineNumber" => 34, "className" => "ufront.web.HttpContextImpl", "methodName" => "setSession"))));
 		}
 		$this->session = $session;
 	}

@@ -29,10 +29,17 @@ class Panels
 			y += p.frame.y;
 			p = p.parent;
 		}
-		var node = htmlContainer(panel);
-		var rect : Dynamic<Int> = untyped node.getBoundingClientRect();
-		var left = js.Scroll.getLeft(),
+		var node = htmlContainer(panel),
+			left = js.Scroll.getLeft(),
 			top  = js.Scroll.getTop();
+		if(null == node)
+		{
+			return {
+				x : left,
+				y : top
+			}
+		}
+		var rect : Dynamic<Int> = untyped node.getBoundingClientRect();
 		return {
 			x : rect.left + x + left,
 			y : rect.top + y + top
@@ -41,7 +48,9 @@ class Panels
 	public static function svgContainer(panel : Panel)
 	{
 		var node = panel.g.node();
-		do { } while(null != Reflect.field(node = untyped node.ownerSVGElement, "ownerSVGElement"));
+		do {
+			node = untyped node.ownerSVGElement;
+		} while(null != node && null != Reflect.field(untyped node.ownerSVGElement, "ownerSVGElement"));
 		return null == node ? null : node;
 	}
 

@@ -4,7 +4,7 @@ class thx_collection_CascadeHash {
 	public function __construct($hashes) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $hashes) {
-			throw new HException(new thx_error_NullArgument("hashes", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "CascadeHash.hx", "lineNumber" => 16, "className" => "thx.collection.CascadeHash", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("hashes", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "CascadeHash.hx", "lineNumber" => 15, "className" => "thx.collection.CascadeHash", "methodName" => "new"))));
 		}
 		$this->_h = new HList();
 		{

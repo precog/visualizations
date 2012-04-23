@@ -9,6 +9,7 @@ import rg.svg.chart.BarChart;
 import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
+import rg.util.Properties;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import thx.collection.Set;
@@ -60,15 +61,30 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 			variable = independentVariables[0],
 			values = variable.axis.range(variable.min(), variable.max());
 
-		for (value in values)
+		if(Properties.isTime(variable.type))
 		{
-			var axisresults = [];
-			for (i in 0...dependentVariables.length)
+			var periodicity = Properties.periodicity(variable.type);
+			for (value in values)
 			{
-				var dps = DataPoints.filterByDependents(dps, [dependentVariables[i]]);
-				axisresults.push(dps.filter(function(d) return Reflect.field(d, variable.type) == value));
+				var axisresults = [];
+				for (i in 0...dependentVariables.length)
+				{
+					var dps = DataPoints.filterByDependents(dps, [dependentVariables[i]]);
+					axisresults.push(dps.filter(function(d) return Dates.snap(Reflect.field(d, variable.type), periodicity) == value));
+				}
+				results.push(axisresults);
 			}
-			results.push(axisresults);
+		} else {
+			for (value in values)
+			{
+				var axisresults = [];
+				for (i in 0...dependentVariables.length)
+				{
+					var dps = DataPoints.filterByDependents(dps, [dependentVariables[i]]);
+					axisresults.push(dps.filter(function(d) return Reflect.field(d, variable.type) == value));
+				}
+				results.push(axisresults);
+			}
 		}
 
 		if(null != infoBar.segment.on)

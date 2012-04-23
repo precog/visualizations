@@ -89,7 +89,7 @@ class AxisTime implements IAxisDiscrete<Float>
 				return (v - start) / (end - start);
 			default:
 				var values = range(start, end);
-				return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, v), values.length);
+				return ScaleDistributions.distribute(scaleDistribution, Arrays.indexOf(values, Dates.snap(v, periodicity)), values.length);
 		}
 	}
 

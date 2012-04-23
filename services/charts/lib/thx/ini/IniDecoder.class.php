@@ -26,14 +26,14 @@ class thx_ini_IniDecoder {
 	public $insection;
 	public function decode($s) {
 		$this->handler->start();
-		$this->handler->startObject();
+		$this->handler->objectStart();
 		$this->insection = false;
 		$this->decodeLines($s);
 		if($this->insection) {
-			$this->handler->endObject();
-			$this->handler->endField();
+			$this->handler->objectEnd();
+			$this->handler->objectFieldEnd();
 		}
-		$this->handler->endObject();
+		$this->handler->objectEnd();
 		$this->handler->end();
 		if($this->explodesections) {
 			_hx_deref(new thx_data_ValueEncoder($this->other))->encode(thx_ini_IniDecoder::explodeSections($this->value->value));
@@ -60,13 +60,13 @@ class thx_ini_IniDecoder {
 		switch($c) {
 		case "[":{
 			if($this->insection) {
-				$this->handler->endObject();
-				$this->handler->endField();
+				$this->handler->objectEnd();
+				$this->handler->objectFieldEnd();
 			} else {
 				$this->insection = true;
 			}
-			$this->handler->startField(_hx_substr($line, 1, _hx_index_of($line, "]", null) - 1));
-			$this->handler->startObject();
+			$this->handler->objectFieldStart(_hx_substr($line, 1, _hx_index_of($line, "]", null) - 1));
+			$this->handler->objectStart();
 			return;
 		}break;
 		case "#":case ";":{
@@ -84,12 +84,12 @@ class thx_ini_IniDecoder {
 		$key = trim($this->dec(_hx_substr($line, 0, $pos)));
 		$value = _hx_substr($line, $pos + 1, null);
 		$parts = thx_ini_IniDecoder::$linesplitter->split($value);
-		$this->handler->startField($key);
+		$this->handler->objectFieldStart($key);
 		$this->decodeValue($parts[0]);
 		if($parts->length > 1) {
 			$this->handler->comment($parts[1]);
 		}
-		$this->handler->endField();
+		$this->handler->objectFieldEnd();
 	}
 	public function dec($s) {
 		{
@@ -106,47 +106,47 @@ class thx_ini_IniDecoder {
 		$s = trim($s);
 		$c = _hx_substr($s, 0, 1);
 		if($c === "\"" || $c === "'" && _hx_substr($s, -1, null) === $c) {
-			$this->handler->string($this->dec(_hx_substr($s, 1, strlen($s) - 2)));
+			$this->handler->valueString($this->dec(_hx_substr($s, 1, strlen($s) - 2)));
 			return;
 		}
 		if(Ints::canParse($s)) {
-			$this->handler->int(Ints::parse($s));
+			$this->handler->valueInt(Ints::parse($s));
 		} else {
 			if(Floats::canParse($s)) {
-				$this->handler->float(Floats::parse($s));
+				$this->handler->valueFloat(Floats::parse($s));
 			} else {
 				if(Dates::canParse($s)) {
-					$this->handler->date(Dates::parse($s));
+					$this->handler->valueDate(Dates::parse($s));
 				} else {
 					if($this->emptytonull && "" === $s) {
-						$this->handler->null();
+						$this->handler->valueNull();
 					} else {
 						switch(strtolower($s)) {
 						case "yes":case "true":case "on":{
-							$this->handler->bool(true);
+							$this->handler->valueBool(true);
 						}break;
 						case "no":case "false":case "off":{
-							$this->handler->bool(false);
+							$this->handler->valueBool(false);
 						}break;
 						default:{
 							$parts = _hx_explode(", ", $s);
 							if($parts->length > 1) {
-								$this->handler->startArray();
+								$this->handler->arrayStart();
 								{
 									$_g = 0;
 									while($_g < $parts->length) {
 										$part = $parts[$_g];
 										++$_g;
-										$this->handler->startItem();
+										$this->handler->arrayItemStart();
 										$this->decodeValue($part);
-										$this->handler->endItem();
+										$this->handler->arrayItemEnd();
 										unset($part);
 									}
 								}
-								$this->handler->endArray();
+								$this->handler->arrayEnd();
 							} else {
 								$s = $this->dec($s);
-								$this->handler->string($s);
+								$this->handler->valueString($s);
 							}
 						}break;
 						}

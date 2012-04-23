@@ -4,7 +4,7 @@ class ufront_web_mvc_DefaultControllerFactory implements ufront_web_mvc_IControl
 	public function __construct($controllerBuilder, $dependencyResolver) {
 		if(!php_Boot::$skip_constructor) {
 		if(null === $controllerBuilder) {
-			throw new HException(new thx_error_NullArgument("controllerBuilder", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "DefaultControllerFactory.hx", "lineNumber" => 16, "className" => "ufront.web.mvc.DefaultControllerFactory", "methodName" => "new"))));
+			throw new HException(new thx_error_NullArgument("controllerBuilder", "invalid null argument '{0}' for method {1}.{2}()", _hx_anonymous(array("fileName" => "DefaultControllerFactory.hx", "lineNumber" => 14, "className" => "ufront.web.mvc.DefaultControllerFactory", "methodName" => "new"))));
 		}
 		$this->_controllerBuilder = $controllerBuilder;
 		$this->_dependencyResolver = $dependencyResolver;

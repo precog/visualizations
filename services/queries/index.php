@@ -6,6 +6,7 @@ define('SAMPLE_EXT', '.js');
 define('DEFAULT_PATH', '/query/test2');
 define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
 define('DISABLE_CACHE', isset($_GET['disableCache']));
+define('ANALYTICS_SERVER', isset($_GET['analyticsServer']) ? $_GET['analyticsServer'] : 'http://stageapp01.reportgrid.com/services/analytics/v1/');
 
 $categories = array(
 	'RG' => array("name" => 'RG Query', "sequence" => 0),
@@ -22,14 +23,14 @@ if(LOCAL)
 	define('REPORTGRID_QUERY_API', '/rg/queries/js/reportgrid-query.js');
 	define('REPORTGRID_CHARTS_API', '/rg/charts/js/reportgrid-charts.js');
 	define('REPORTGRID_CSS_API', '/rg/charts/css/rg-charts.css');
-	define('REPORTGRID_CORE_API', '/rg/api/reportgrid-core.js?tokenId=$tokenId&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/');
+	define('REPORTGRID_CORE_API', '/rg/api/reportgrid-core.js?tokenId=$tokenId' . (ANALYTICS_SERVER ? ('&analyticsServer='.ANALYTICS_SERVER) : ''));
 	define('PRECOG_CORE_API', '/rg/api/precog.js?tokenId=C5EF0038-A2A2-47EB-88A4-AAFCE59EC22B');
 	$categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
 	define('REPORTGRID_QUERY_API', 'http://api.reportgrid.com/js/reportgrid-query.js');
 	define('REPORTGRID_CHARTS_API', 'http://api.reportgrid.com/js/reportgrid-charts.js');
 	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg-charts.css');
-	define('PRECOG_CORE_API', 'http://api.reportgrid.com/js/precog.js?tokenId=C5EF0038-A2A2-47EB-88A4-AAFCE59EC22B');
+	define('PRECOG_CORE_API', 'http://api.reportgrid.com/js/precog.js?tokenId=C5EF0038-A2A2-47EB-88A4-AAFCE59EC22B' . (ANALYTICS_SERVER ? ('&analyticsServer='.ANALYTICS_SERVER) : ''));
 }
 
 function categories()

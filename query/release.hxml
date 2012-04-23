@@ -6,6 +6,9 @@
 -main rg.app.query.JSBridge
 -D release
 #-D reportgridapi
+--js-modern
+#--macro keep(["rg.query.ReportGridQuery","rg.query.ReportGridBaseQuery"])
+#--dead-code-elimination
 -D js_shims
 --no-traces
 -cmd ./deploy.sh
