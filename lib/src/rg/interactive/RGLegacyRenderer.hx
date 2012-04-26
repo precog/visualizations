@@ -44,7 +44,17 @@ class RGLegacyRenderer
 </script>
 </form>';
 		writeToIframe(cast iframe.node(), content);
+
+		var inode : js.Dom.Frame = cast iframe.node();
+		var doc = getIframeDoc(inode);
+		untyped inode.attachEvent("onload", function() {
+			var doc = getIframeDoc(inode);
+			doc.body.scroll = "no";
+			doc.body.style.overflow = "hidden";
+
+		});
 	}
+
 
 	static var nextframeid = 0;
 	function createIframe(width : Int, height : Int)
@@ -53,20 +63,37 @@ class RGLegacyRenderer
 		return container.append("iframe")
 			.attr("name").string(id)
 			.attr("id").string(id)
-			.attr("frameborder").float(0)
-			.attr("width").float(width)
-			.attr("height").float(height)
-			.attr("marginwidth").float(0)
-			.attr("marginheight").float(0)
-			.attr("scrolling").string("auto")
-			.style("overflow").string("hidden")
-			.style("border").string("0")
-			.style("margin").string("0")
-			.style("padding").string("0")
-			.attr("src").string("about:blank");
+			.attr("frameBorder").string("0")
+			.attr("scrolling").string("no")
+			.attr("width").string((0+width)+"")
+			.attr("height").string((0+height)+"")
+			.attr("marginwidth").string("0")
+			.attr("marginheight").string("0")
+			.attr("hspace").string("0")
+			.attr("vspace").string("0")
+			.attr("style").string("width:100%; border:0; height:100%; overflow:auto;")
+//			.style("overflow").string("hidden")
+//			.style("border").string("0")
+//			.style("margin").string("0")
+//			.style("padding").string("0")
+
+//hspace="0" vspace="0" marginheight="0" marginwidth="0"
+			.attr("src").string("about:blank")
+		;
 	}
 
 	function writeToIframe(iframe : js.Dom.Frame, content : String)
+	{
+		var iframeDoc : Dynamic = getIframeDoc(iframe);
+		if (null != iframeDoc)
+		{
+			iframeDoc.open();
+			iframeDoc.write('<html><head><title></title></head><body style="display:none;border:none" scroll="no">'+content+'</body></html>');
+			iframeDoc.close();
+		}
+	}
+
+	static function getIframeDoc(iframe : js.Dom.Frame)
 	{
 		var iframeDoc : Dynamic = null;
 		if (untyped iframe.contentDocument)
@@ -77,11 +104,7 @@ class RGLegacyRenderer
 		} else if (null != js.Lib.window.frames[cast iframe.name]) {
 			iframeDoc = untyped js.Lib.window.frames[cast iframe.name].document;
 		}
-		if (iframeDoc) {
-			iframeDoc.open();
-			iframeDoc.write('<html><head><title></title></head><body style="display:none">'+content+'</body></html>');
-			iframeDoc.close();
-		}
+		return iframeDoc;
 	}
 
 	function normalizeParams(params : Dynamic)

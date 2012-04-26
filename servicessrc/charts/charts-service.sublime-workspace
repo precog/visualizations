@@ -640,13 +640,15 @@
 	},
 	"file_history":
 	[
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/Site.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/App.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/WKHtml.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/RenderableAPIController.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/DownloadAPIController.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/Site.hx",
 		"/Users/francoponticelli/Desktop/charts1.html",
 		"/Users/francoponticelli/Desktop/temp.html",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObject.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigPdf.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/RenderableAPIController.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigImage.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObjects.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigTemplate.hx",
@@ -665,7 +667,6 @@
 		"/Users/francoponticelli/Projects/thx/test/thx/data/TestValueEncoder.hx",
 		"/Users/francoponticelli/Projects/thx/test/thx/data/TestValueHandler.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/data/IDataHandler.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/DownloadAPIController.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/build.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/css/rg-charts.css",
 		"/Users/francoponticelli/Projects/thx/src/thx/graph/GEdge.hx",
@@ -766,8 +767,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/chart/Leadeboard.hx",
 		"/Users/francoponticelli/Projects/thx/build.hxml",
 		"/Users/francoponticelli/Projects/test/testint/src/build.hxml",
-		"/Users/francoponticelli/Projects/thx/src/Floats.hx",
-		"/Users/francoponticelli/Projects/thx/src/thx/culture/FormatNumber.hx"
+		"/Users/francoponticelli/Projects/thx/src/Floats.hx"
 	],
 	"find":
 	{
@@ -778,6 +778,9 @@
 		"height": 91.0,
 		"where_history":
 		[
+			"/Users/francoponticelli/Projects/reportgrid/visualizations",
+			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.hx",
+			"/Users/francoponticelli/Projects/visualizations,*.hx",
 			"/Users/francoponticelli/Projects/thx,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations/charts,/Users/francoponticelli/Projects/reportgrid/visualizations/lib,*.hx",
 			"/Users/francoponticelli/Projects/reportgrid/visualizations,*.hx",
@@ -817,9 +820,12 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"unable to render the result",
+			"token cannot be",
+			"Token cannot be",
 			"console",
 			"startItem",
 			"endItem",
@@ -944,9 +950,6 @@
 			"extrain",
 			"extraout",
 			"extrain",
-			"extra",
-			"onmouseoverextraout",
-			"onmouseoverextrain",
 			"extra"
 		],
 		"highlight": true,
@@ -1046,7 +1049,7 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": true,
+		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
@@ -1088,10 +1091,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 232.0
-	},
 	"replace":
 	{
 		"height": 62.0

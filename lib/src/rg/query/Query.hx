@@ -452,12 +452,15 @@ using Arrays;
 	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + Std.format(" [next: ${null != _next}, async: ${null != _async}]")
 
 	inline function _this(q) : This return cast q
-/*
-	static function __init__()
+
+	static function __init__() untyped
 	{
-		Reflect.setField(untyped __js__("rg.query.BaseQuery"), "execute", untyped __js__("rg.query.BaseQuery.prototype.execute"));
+		var r = window.ReportGrid ? window.ReportGrid : (window["ReportGrid"] = {});
+		r['$'] = r['$'] || {};
+		r['$']['pk'] = r['$']['pk'] || {};
+		r['$']['pk']['rg_query_BaseQuery'] = r['$']['pk']['rg_query_BaseQuery'] || __js__("rg.query.BaseQuery");
+		r['$']['pk']['rg_query_Query'] = r['$']['pk']['rg_query_Query'] || __js__("rg.query.Query");
 	}
-*/
 }
 
 typedef StackTransformer = Array<Array<Dynamic>> -> Array<Array<Dynamic>>;

@@ -537,4 +537,13 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	{
 		return null == k ? [] : (Std.is(k, String) ? cast [k] : k);
 	}
+
+	static function __init__() untyped
+	{
+		var r = window.ReportGrid ? window.ReportGrid : (window["ReportGrid"] = {});
+		r['$'] = r['$'] || {};
+		r['$']['pk'] = r['$']['pk'] || {};
+		r['$']['pk']['rg_query_ReportGridBaseQuery'] = r['$']['pk']['rg_query_ReportGridBaseQuery'] || __js__("rg.query.ReportGridBaseQuery");
+		r['$']['pk']['rg_query_ReportGridQuery'] = r['$']['pk']['rg_query_ReportGridQuery'] || __js__("rg.query.ReportGridQuery");
+	}
 }

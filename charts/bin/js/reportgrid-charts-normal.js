@@ -617,7 +617,8 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.floor(time / 3600000.0) * 3600000.0;
 	case "day":
-		return Math.floor(time / 86400000.) * 86400000.;
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0).getTime();
 	case "week":
 		return Math.floor(time / 604800000.) * 604800000.;
 	case "month":
@@ -636,7 +637,8 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.ceil(time / 3600000.0) * 3600000.0;
 	case "day":
-		return Math.ceil(time / 86400000.) * 86400000.;
+		var d = Date.fromTime(time);
+		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + 1,0,0,0).getTime();
 	case "week":
 		return Math.ceil(time / 604800000.) * 604800000.;
 	case "month":
@@ -655,7 +657,8 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.round(time / 3600000.0) * 3600000.0;
 	case "day":
-		return Math.round(time / 86400000.) * 86400000.;
+		var d = Date.fromTime(time), mod = d.getHours() >= 12?1:0;
+		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + mod,0,0,0).getTime();
 	case "week":
 		return Math.round(time / 604800000.) * 604800000.;
 	case "month":
@@ -694,7 +697,7 @@ Dates.snapToWeekDay = function(time,day) {
 		s = 6;
 		break;
 	default:
-		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 184, className : "Dates", methodName : "snapToWeekDay"});
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 186, className : "Dates", methodName : "snapToWeekDay"});
 	}
 	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
 }
@@ -6031,13 +6034,30 @@ rg.app.charts.JSBridge.main = function() {
 	}, random : function() {
 		return ((rand.seed = rand.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
 	}};
-	r.query = null != r.query?r.query:rg.query.Query.create();
+	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.22.8181"};
+	r.info.charts = { version : "1.4.26.8324"};
+}
+rg.app.charts.JSBridge.createQuery = function() {
+	var inst = rg.query.Query.create();
+	var query = { };
+	var _g = 0, _g1 = Type.getInstanceFields(Type.getClass(inst));
+	while(_g < _g1.length) {
+		var field = [_g1[_g]];
+		++_g;
+		if(field[0].substr(0,1) == "_" || !Reflect.isFunction(Reflect.field(inst,field[0]))) continue;
+		query[field[0]] = (function(field) {
+			return function() {
+				var ob = rg.query.Query.create(), f = Reflect.field(ob,field[0]);
+				return f.apply(ob,arguments);
+			};
+		})(field);
+	}
+	return query;
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 179, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 196, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -7630,6 +7650,10 @@ rg.html.chart.PivotTable.prototype = {
 	,cellVariable: null
 	,incolumns: null
 	,click: null
+	,cellclass: null
+	,valueclass: null
+	,headerclass: null
+	,totalclass: null
 	,container: null
 	,stats: null
 	,labelDataPoint: function(dp,stats) {
@@ -7666,7 +7690,13 @@ rg.html.chart.PivotTable.prototype = {
 				var i = _g1++;
 				var tr = thead.append("tr");
 				this.prependSpacer(leftspan,tr);
-				var header = tr.append("th").attr("class").string("col-header").text().string(this.labelAxis(d.column_headers[i]));
+				var header = tr.append("th").text().string(this.labelAxis(d.column_headers[i]));
+				var clsbuf = ["col-header"];
+				if(null != this.headerclass) {
+					var v = this.headerclass(d.column_headers[i]);
+					if(null != v) clsbuf.push(v);
+				}
+				header.attr("class").string(clsbuf.join(" "));
 				if(d.columns.length > 1) header.attr("colspan")["float"](d.columns.length);
 				var counter = 1, last = d.columns[0].values[i];
 				tr = thead.append("tr");
@@ -7675,7 +7705,13 @@ rg.html.chart.PivotTable.prototype = {
 					while(_g2 < _g3.length) {
 						var h = _g3[_g2];
 						++_g2;
-						tr.append("th").attr("class").string("row-header").text().string(this.labelAxis(h));
+						var th = tr.append("th").text().string(this.labelAxis(h));
+						var clsbuf1 = ["row-header"];
+						if(null != this.headerclass) {
+							var v = this.headerclass(h);
+							if(null != v) clsbuf1.push(v);
+						}
+						th.attr("class").string(clsbuf1.join(" "));
 					}
 				} else this.prependSpacer(leftspan,tr);
 				var _g3 = 1, _g2 = d.columns.length;
@@ -7718,7 +7754,14 @@ rg.html.chart.PivotTable.prototype = {
 						last[j] = null;
 					}
 				}
-				tr.append("th").attr("class").string(rep?"row value empty":"row value").text().string(rep?"":this.labelAxisValue(v,d.row_headers[i]));
+				var th = tr.append("th").text().string(rep?"":this.labelAxisValue(v,d.row_headers[i]));
+				var clsbuf = ["row value"];
+				if(rep) clsbuf.push("empty");
+				if(null != this.valueclass) {
+					var cls = this.valueclass(v,d.row_headers[i]);
+					if(null != cls) clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
 			}
 			var v;
 			var _g2 = 0, _g3 = row.cells;
@@ -7735,8 +7778,22 @@ rg.html.chart.PivotTable.prototype = {
 					var c = color(v);
 					td.style("color").color(thx.color.Rgb.contrastBW(c)).style("background-color").color(c);
 				}
+				var clsbuf = [];
+				if(null != this.cellclass) {
+					var cls = this.cellclass(cell,row.stats);
+					if(null != cls) clsbuf.push(cls);
+				}
+				td.attr("class").string(clsbuf.join(" "));
 			}
-			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("row total").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
+			if(this.displayRowTotal && d.columns.length > 1) {
+				var th = tr.append("th").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
+				var clsbuf = ["row total"];
+				if(null != this.totalclass) {
+					var cls = this.totalclass(row.stats.tot,row.values);
+					if(null != cls) clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
+			}
 		}
 		var tfoot = table.append("tfoot");
 		if(this.displayColumnTotal && d.rows.length > 1) {
@@ -7746,9 +7803,23 @@ rg.html.chart.PivotTable.prototype = {
 			while(_g < _g1.length) {
 				var col = _g1[_g];
 				++_g;
-				tr.append("th").attr("class").string("column total").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
+				var th = tr.append("th").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
+				var clsbuf = ["column total"];
+				if(null != this.totalclass) {
+					var cls = this.totalclass(col.stats.tot,col.values);
+					if(null != cls) clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
 			}
-			if(this.displayRowTotal && d.columns.length > 1) tr.append("th").attr("class").string("table total").text().string(this.formatTotal(d.stats.tot)).attr("title").string(this.formatTotalOver(d.stats.tot));
+			if(this.displayRowTotal && d.columns.length > 1) {
+				var th = tr.append("th").text().string(this.formatTotal(d.stats.tot)).attr("title").string(this.formatTotalOver(d.stats.tot));
+				var clsbuf = ["table total"];
+				if(null != this.totalclass) {
+					var cls = this.totalclass(d.stats.tot,[]);
+					if(null != cls) clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
+			}
 		}
 		this.ready.dispatch();
 	}
@@ -7768,8 +7839,14 @@ rg.html.chart.PivotTable.prototype = {
 		return this.labelDataPointOver(dp,this.stats);
 	}
 	,buildValue: function(value,header,counter,tr) {
-		var th = tr.append("th").attr("class").string("column value").text().string(this.labelAxisValue(value,header));
+		var th = tr.append("th").text().string(this.labelAxisValue(value,header));
 		if(counter > 1) th.attr("colspan")["float"](counter);
+		var clsbuf = ["column value"];
+		if(null != this.valueclass) {
+			var cls = this.valueclass(value,header);
+			if(null != cls) clsbuf.push(cls);
+		}
+		th.attr("class").string(clsbuf.join(" "));
 	}
 	,prependSpacer: function(counter,tr) {
 		if(counter == 0) return;
@@ -9305,6 +9382,14 @@ rg.info.InfoPivotTable.filters = function() {
 		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelPivotTable(),v)}];
 	}},{ field : "click", validator : function(v) {
 		return Reflect.isFunction(v);
+	}, filter : null},{ field : "cellclass", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "valueclass", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "headerclass", validator : function(v) {
+		return Reflect.isFunction(v);
+	}, filter : null},{ field : "totalclass", validator : function(v) {
+		return Reflect.isFunction(v);
 	}, filter : null}];
 }
 rg.info.InfoPivotTable.prototype = {
@@ -9316,6 +9401,10 @@ rg.info.InfoPivotTable.prototype = {
 	,displayRowTotal: null
 	,columnAxes: null
 	,click: null
+	,cellclass: null
+	,valueclass: null
+	,headerclass: null
+	,totalclass: null
 	,__class__: rg.info.InfoPivotTable
 }
 rg.info.InfoSankey = function() {
@@ -9725,6 +9814,11 @@ rg.interactive.RGLegacyRenderer = function(container,serviceurl) {
 };
 $hxClasses["rg.interactive.RGLegacyRenderer"] = rg.interactive.RGLegacyRenderer;
 rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
+rg.interactive.RGLegacyRenderer.getIframeDoc = function(iframe) {
+	var iframeDoc = null;
+	if(iframe.contentDocument) iframeDoc = iframe.contentDocument; else if(iframe.contentWindow) iframeDoc = iframe.contentWindow.document; else if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
+	return iframeDoc;
+}
 rg.interactive.RGLegacyRenderer.removeFunctions = function(o) {
 	var _g = 0, _g1 = Reflect.fields(o);
 	while(_g < _g1.length) {
@@ -9762,17 +9856,23 @@ rg.interactive.RGLegacyRenderer.prototype = {
 		var c = this.config(width,height);
 		var content = "<form method=\"post\" action=\"" + u + "\" name=\"VIZ\"><textarea name=\"html\">" + h + "</textarea><textarea name=\"config\">" + c + "</textarea><script type=\"text/javascript\">\n  document.VIZ.submit();\n</script>\n</form>";
 		this.writeToIframe(iframe.node(),content);
+		var inode = iframe.node();
+		var doc = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
+		inode.attachEvent("onload",function() {
+			var doc1 = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
+			doc1.body.scroll = "no";
+			doc1.body.style.overflow = "hidden";
+		});
 	}
 	,createIframe: function(width,height) {
 		var id = "rgiframe" + ++rg.interactive.RGLegacyRenderer.nextframeid;
-		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameborder")["float"](0).attr("width")["float"](width).attr("height")["float"](height).attr("marginwidth")["float"](0).attr("marginheight")["float"](0).attr("scrolling").string("auto").style("overflow").string("hidden").style("border").string("0").style("margin").string("0").style("padding").string("0").attr("src").string("about:blank");
+		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameBorder").string("0").attr("scrolling").string("no").attr("width").string(width + "").attr("height").string(height + "").attr("marginwidth").string("0").attr("marginheight").string("0").attr("hspace").string("0").attr("vspace").string("0").attr("style").string("width:100%; border:0; height:100%; overflow:auto;").attr("src").string("about:blank");
 	}
 	,writeToIframe: function(iframe,content) {
-		var iframeDoc = null;
-		if(iframe.contentDocument) iframeDoc = iframe.contentDocument; else if(iframe.contentWindow) iframeDoc = iframe.contentWindow.document; else if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
-		if(iframeDoc) {
+		var iframeDoc = rg.interactive.RGLegacyRenderer.getIframeDoc(iframe);
+		if(null != iframeDoc) {
 			iframeDoc.open();
-			iframeDoc.write("<html><head><title></title></head><body style=\"display:none\">" + content + "</body></html>");
+			iframeDoc.write("<html><head><title></title></head><body style=\"display:none;border:none\" scroll=\"no\">" + content + "</body></html>");
 			iframeDoc.close();
 		}
 	}
@@ -16353,6 +16453,10 @@ rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.Vi
 		this.chart.displayRowTotal = this.info.displayRowTotal;
 		this.chart.colorStart = this.info.heatmapColorStart;
 		this.chart.colorEnd = this.info.heatmapColorEnd;
+		this.chart.cellclass = this.info.cellclass;
+		this.chart.valueclass = this.info.valueclass;
+		this.chart.headerclass = this.info.headerclass;
+		this.chart.totalclass = this.info.totalclass;
 		if(null != this.info.click) this.chart.click = this.info.click;
 		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
@@ -21113,6 +21217,13 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	math.BigInteger.lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
 	math.BigInteger.lplim = 67108864 / math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1] | 0;
 }
+{
+	var r = window.ReportGrid?window.ReportGrid:window["ReportGrid"] = { };
+	r["$"] = r["$"] || { };
+	r["$"]["pk"] = r["$"]["pk"] || { };
+	r["$"]["pk"]["rg_query_BaseQuery"] = r["$"]["pk"]["rg_query_BaseQuery"] || rg.query.BaseQuery;
+	r["$"]["pk"]["rg_query_Query"] = r["$"]["pk"]["rg_query_Query"] || rg.query.Query;
+}
 rg.svg.util.SymbolCache.cache = new rg.svg.util.SymbolCache();
 {
 	rg.visualization.Visualizations.layoutDefault = new Hash();
@@ -21434,7 +21545,7 @@ dhx.Timer._step = dhx.Timer.step;
 dhx.BaseTransition._id = 0;
 dhx.BaseTransition._inheritid = 0;
 rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/renderer/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/up.json";
 rg.RGConst.LEGACY_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
 rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;

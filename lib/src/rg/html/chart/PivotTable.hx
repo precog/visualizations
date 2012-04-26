@@ -7,6 +7,7 @@ package rg.html.chart;
 import rg.axis.Stats;
 import thx.color.Hsl;
 import rg.data.DataPoint;
+import rg.axis.Stats;
 import dhx.Selection;
 import rg.util.RGStrings;
 import rg.util.Periodicity;
@@ -44,6 +45,10 @@ class PivotTable
 	public var incolumns : Int;
 
 	public var click : DataPoint -> Void;
+	public var cellclass : DataPoint -> Stats<Dynamic> -> String;
+	public var valueclass : Dynamic -> String -> String;
+	public var headerclass : String -> String;
+	public var totalclass : Dynamic -> Array<Dynamic> -> String;
 
 	var container : Selection;
 	var stats : StatsNumeric;
@@ -121,9 +126,16 @@ class PivotTable
 				prependSpacer(leftspan, tr);
 
 				var header = tr
-						.append("th")
-						.attr("class").string("col-header")
-						.text().string(labelAxis(d.column_headers[i]));
+					.append("th")
+					.text().string(labelAxis(d.column_headers[i]));
+				var clsbuf = ["col-header"];
+				if(null != headerclass)
+				{
+					var v = headerclass(d.column_headers[i]);
+					if(null != v)
+						clsbuf.push(v);
+				}
+				header.attr("class").string(clsbuf.join(" "));
 				if(d.columns.length > 1)
 					header.attr("colspan").float(d.columns.length);
 
@@ -135,10 +147,18 @@ class PivotTable
 				{
 					for (h in d.row_headers)
 					{
-						tr
+						var th = tr
 							.append("th")
-							.attr("class").string("row-header")
 							.text().string(labelAxis(h));
+
+						var clsbuf = ["row-header"];
+						if(null != headerclass)
+						{
+							var v = headerclass(h);
+							if(null != v)
+								clsbuf.push(v);
+						}
+						th.attr("class").string(clsbuf.join(" "));
 					}
 				} else
 					prependSpacer(leftspan, tr);
@@ -191,9 +211,22 @@ class PivotTable
 					for (j in i + 1...len)
 						last[j] = null;
 				}
-				tr.append("th")
-					.attr("class").string(rep ? "row value empty" : "row value")
+				var th = tr.append("th")
+//					.attr("class").string(rep ? "row value empty" : "row value")
 					.text().string(rep ? "" : labelAxisValue(v, d.row_headers[i]));
+
+				var clsbuf = ["row value"];
+				if(rep)
+				{
+					clsbuf.push("empty");
+				}
+				if(null != valueclass)
+				{
+					var cls = valueclass(v, d.row_headers[i]);
+					if(null != cls)
+						clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
 			}
 
 			var v;
@@ -212,13 +245,31 @@ class PivotTable
 						.style("background-color").color(c)
 					;
 				}
+				var clsbuf = [];
+				if(null != cellclass)
+				{
+					var cls = cellclass(cell, row.stats);
+					if(null != cls)
+						clsbuf.push(cls);
+				}
+				td.attr("class").string(clsbuf.join(" "));
 			}
 
 			if (displayRowTotal && d.columns.length > 1)
-				tr.append("th")
-					.attr("class").string("row total")
+			{
+				var th = tr.append("th")
+//					.attr("class").string("row total")
 					.text().string(formatTotal(row.stats.tot))
 					.attr("title").string(formatTotalOver(row.stats.tot));
+				var clsbuf = ["row total"];
+				if(null != totalclass)
+				{
+					var cls = totalclass(row.stats.tot, row.values);
+					if(null != cls)
+						clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
+			}
 		}
 
 		// FOOT
@@ -230,17 +281,37 @@ class PivotTable
 			prependSpacer(leftspan, tr);
 			for (col in d.columns)
 			{
-				tr.append("th")
-					.attr("class").string("column total")
+				var th = tr.append("th")
+//					.attr("class").string("column total")
 					.text().string(formatTotal(col.stats.tot))
 					.attr("title").string(formatTotalOver(col.stats.tot));
+
+				var clsbuf = ["column total"];
+				if(null != totalclass)
+				{
+					var cls = totalclass(col.stats.tot, col.values);
+					if(null != cls)
+						clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
 			}
 
 			if(displayRowTotal && d.columns.length > 1)
-				tr.append("th")
-					.attr("class").string("table total")
+			{
+				var th = tr.append("th")
+//					.attr("class").string("table total")
 					.text().string(formatTotal(d.stats.tot))
 					.attr("title").string(formatTotalOver(d.stats.tot));
+
+				var clsbuf = ["table total"];
+				if(null != totalclass)
+				{
+					var cls = totalclass(d.stats.tot, []);
+					if(null != cls)
+						clsbuf.push(cls);
+				}
+				th.attr("class").string(clsbuf.join(" "));
+			}
 		}
 		ready.dispatch();
 	}
@@ -259,10 +330,19 @@ class PivotTable
 	{
 		var th = tr
 			.append("th")
-			.attr("class").string("column value")
+//			.attr("class").string("column value")
 			.text().string(labelAxisValue(value, header));
 		if (counter > 1)
 			th.attr("colspan").float(counter);
+
+		var clsbuf = ["column value"];
+		if(null != valueclass)
+		{
+			var cls = valueclass(value, header);
+			if(null != cls)
+				clsbuf.push(cls);
+		}
+		th.attr("class").string(clsbuf.join(" "));
 	}
 
 	function prependSpacer(counter : Int, tr : Selection)

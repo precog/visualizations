@@ -5,6 +5,7 @@
 
 package rg.info;
 import rg.data.DataPoint;
+import rg.axis.Stats;
 import thx.color.Hsl;
 import thx.color.NamedColors;
 import rg.util.RGColors;
@@ -26,6 +27,10 @@ using rg.info.Info;
 	public var columnAxes : Int;
 
 	public var click : DataPoint -> Void;
+	public var cellclass : Null<DataPoint -> Stats<Dynamic> -> String>;
+	public var valueclass : Null<Dynamic -> String -> String>;
+	public var headerclass : Null<String -> String>;
+	public var totalclass : Null<Dynamic -> Array<Dynamic> -> String>;
 
 	public function new()
 	{
@@ -94,6 +99,22 @@ using rg.info.Info;
 			}]
 		}, {
 			field : "click",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "cellclass",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "valueclass",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "headerclass",
+			validator : function(v) return Reflect.isFunction(v),
+			filter : null
+		}, {
+			field : "totalclass",
 			validator : function(v) return Reflect.isFunction(v),
 			filter : null
 		}];

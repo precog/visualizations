@@ -156,7 +156,7 @@ class JSBridge
 			random : function() return rand.float()
 		}
 
-		r.query = null != r.query ? r.query : rg.query.Query.create();
+		r.query = null != r.query ? r.query : createQuery(); // rg.query.Query.create();
 
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
@@ -164,6 +164,23 @@ class JSBridge
 		};
 
 //		untyped JsExport.property(rg.util.ChainedExecutor.prototype, "execute", rg.util.ChainedExecutor.prototype.execute);
+	}
+
+	static function createQuery()
+	{
+		var inst = rg.query.Query.create(); //ReportGridQuery.create(executor);
+		var query = {};
+		for(field in Type.getInstanceFields(Type.getClass(inst)))
+		{
+			if(field.substr(0,1) == '_' || !Reflect.isFunction(Reflect.field(inst, field)))
+				continue;
+			Reflect.setField(query, field, function() {
+				var ob = rg.query.Query.create(),
+					f  = Reflect.field(ob, field);
+				return Reflect.callMethod(ob, f, untyped __js__('arguments'));
+			});
+		}
+		return query;
 	}
 /*
 	static function register(name : String, value : Dynamic)

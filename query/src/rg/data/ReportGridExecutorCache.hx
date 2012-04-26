@@ -109,19 +109,16 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 			val = cacheGet(id);
 		if(null != val)
 		{
-//			trace("from cache: " + name);
 			success(val);
 			return;
 		}
 		var q = getQueue(id);
 		if(null != q)
 		{
-//			trace("queues: " + name);
 			q.push(success);
 		}
 		else
 		{
-//			trace("live query: " + name);
 			Reflect.field(executor, name)(path, options, storageSuccess(id, success), error);
 		}
 	}
@@ -168,14 +165,12 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		{
 			storage.remove(idd);
 			storage.remove(idValue(id));
-//			trace("cleared " + id);
 		}
 	}
 
 	function delayedCleanup(id : String)
 	{
 		haxe.Timer.delay(function() {
-//			trace("delayed cleanup");
 			cacheRemove(id);
 		}, timeout * 1000);
 	}
@@ -198,7 +193,6 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 	{
 		storage.remove(idDate(id));
 		storage.remove(idValue(id));
-//		trace("removed from cache " + id);
 	}
 
 	function ids()
@@ -213,7 +207,6 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 
 	function cleanOld()
 	{
-//		trace("trying cleanup");
 		for(id in ids())
 		{
 			clearValueIfOld(id);

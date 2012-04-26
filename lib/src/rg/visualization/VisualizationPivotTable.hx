@@ -35,6 +35,11 @@ class VisualizationPivotTable extends VisualizationHtml
 		chart.colorStart = info.heatmapColorStart;
 		chart.colorEnd = info.heatmapColorEnd;
 
+		chart.cellclass = info.cellclass;
+		chart.valueclass = info.valueclass;
+		chart.headerclass = info.headerclass;
+		chart.totalclass = info.totalclass;
+
 		if (null != info.click)
 			chart.click = info.click;
 

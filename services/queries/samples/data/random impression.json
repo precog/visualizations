@@ -100,8 +100,8 @@
 				env :     random("env"),
 				gender :  random("gender"),
 				age :     parseInt(random("age")),
-				'#location' : thx.json.Json.decode(random("location")),
-				keywords : thx.json.Json.decode(random("keywords"))
+				'#location' : JSON.stringify(random("location")),
+				keywords : JSON.stringify(random("keywords"))
 			};
 			var o = {};
 			o[event] = data;
