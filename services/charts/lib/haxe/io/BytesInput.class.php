@@ -51,5 +51,6 @@ class haxe_io_BytesInput extends haxe_io_Input {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("set_bigEndian" => "setEndian");
 	function __toString() { return 'haxe.io.BytesInput'; }
 }

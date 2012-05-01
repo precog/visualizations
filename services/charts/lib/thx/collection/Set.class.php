@@ -24,7 +24,7 @@ class thx_collection_Set {
 			while($_g < $_g1->length) {
 				$t = $_g1[$_g];
 				++$_g;
-				if($t === $v) {
+				if($t == $v) {
 					return true;
 				}
 				unset($t);

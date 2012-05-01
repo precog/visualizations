@@ -81,6 +81,7 @@ class ufront_web_HttpRequest {
 		}
 		return ufront_web_HttpRequest::$instance;
 	}
+	static $__properties__ = array("get_authorization" => "getAuthorization","get_scriptDirectory" => "getScriptDirectory","get_httpMethod" => "getHttpMethod","get_userAgent" => "getUserAgent","get_clientHeaders" => "getClientHeaders","get_uri" => "getUri","get_clientIP" => "getClientIP","get_hostName" => "getHostName","get_cookies" => "getCookies","get_post" => "getPost","get_query" => "getQuery","get_postString" => "getPostString","get_queryString" => "getQueryString","get_params" => "getParams","get_instance" => "getInstance");
 	function __toString() { return 'ufront.web.HttpRequest'; }
 }
 function ufront_web_HttpRequest_0(&$»this) {

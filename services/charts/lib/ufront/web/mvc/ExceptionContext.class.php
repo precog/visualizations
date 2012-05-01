@@ -27,6 +27,7 @@ class ufront_web_mvc_ExceptionContext extends ufront_web_mvc_ControllerContext {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("set_result" => "setResult","get_result" => "getResult");
 	function __toString() { return 'ufront.web.mvc.ExceptionContext'; }
 }
 function ufront_web_mvc_ExceptionContext_0(&$»this) {

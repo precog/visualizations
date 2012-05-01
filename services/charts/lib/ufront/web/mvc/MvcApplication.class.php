@@ -59,6 +59,7 @@ class ufront_web_mvc_MvcApplication extends ufront_web_HttpApplication {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $defaultRoutes;
+	static $__properties__ = array("get_session" => "getSession","get_response" => "getResponse","get_request" => "getRequest");
 	function __toString() { return 'ufront.web.mvc.MvcApplication'; }
 }
 ufront_web_mvc_MvcApplication::$defaultRoutes = new _hx_array(array(new ufront_web_routing_Route("/", new ufront_web_mvc_MvcRouteHandler(), DynamicsT::toHash(_hx_anonymous(array("controller" => "home", "action" => "index"))), null), new ufront_web_routing_Route("/{controller}/{action}/{?id}", new ufront_web_mvc_MvcRouteHandler(), null, null)));

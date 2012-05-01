@@ -166,6 +166,7 @@ class ufront_web_HttpApplication {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("get_session" => "getSession","get_response" => "getResponse","get_request" => "getRequest");
 	function __toString() { return 'ufront.web.HttpApplication'; }
 }
 function ufront_web_HttpApplication_0(&$e, $f, $a1) {

@@ -35,7 +35,7 @@ class php_Lib {
 	}
 	static function hashOfAssociativeArray($arr) {
 		$h = new Hash();
-		reset($arr); while(list($k, $v) = each($arr)) $h->set($k, $v);
+		$h->h = $arr;
 		return $h;
 	}
 	static function associativeArrayOfHash($hash) {
@@ -49,6 +49,17 @@ class php_Lib {
 	}
 	static function associativeArrayOfObject($ob) {
 		return (array) $ob;
+	}
+	static function mail($to, $subject, $message, $additionalHeaders, $additionalParameters) {
+		if(null !== $additionalParameters) {
+			return mail($to, $subject, $message, $additionalHeaders, $additionalParameters);
+		} else {
+			if(null !== $additionalHeaders) {
+				return mail($to, $subject, $message, $additionalHeaders);
+			} else {
+				return mail($to, $subject, $message);
+			}
+		}
 	}
 	static function rethrow($e) {
 		if(Std::is($e, _hx_qtype("php.Exception"))) {

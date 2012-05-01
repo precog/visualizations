@@ -22,7 +22,7 @@ class ufront_web_module_TraceToFileModule implements ufront_web_module_ITraceMod
 	}
 	public function getFile() {
 		if(null === $this->file) {
-			$this->file = php_io_File::append($this->path, null);
+			$this->file = sys_io_File::append($this->path, null);
 		}
 		return $this->file;
 	}

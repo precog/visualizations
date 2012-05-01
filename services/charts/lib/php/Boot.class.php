@@ -106,7 +106,7 @@ class _hx_array implements ArrayAccess, IteratorAggregate {
 	}
 
 	function slice($pos, $end) {
-		if($end == null)
+		if($end === null)
 			return new _hx_array(array_slice($this->»a, $pos));
 		else
 			return new _hx_array(array_slice($this->»a, $pos, $end-$pos));
@@ -526,7 +526,10 @@ function _hx_string_rec($o, $s) {
 			}
 			return $b;
 		} else {
-			if($o instanceof _hx_anonymous) {
+			if ($o instanceof _hx_anonymous) {
+				if ($o->toString && is_callable($o->toString)) {
+					return call_user_func($o->toString);
+				}
 				$rfl = new ReflectionObject($o);
 				$b2 = "{
 ";

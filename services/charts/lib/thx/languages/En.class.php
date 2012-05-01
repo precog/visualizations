@@ -17,6 +17,7 @@ class thx_languages_En extends thx_culture_Language {
 		}
 		return thx_languages_En::$language;
 	}
+	static $__properties__ = array("get_language" => "getLanguage","get_languages" => "getLanguages");
 	function __toString() { return 'thx.languages.En'; }
 }
 thx_languages_En::getLanguage();

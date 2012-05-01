@@ -15,18 +15,7 @@ class haxe_Stack {
 			while($_g < $stack->length) {
 				$s = $stack[$_g];
 				++$_g;
-				{
-					$x = "\x0ACalled from ";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$b->b .= $x;
-					unset($x);
-				}
+				$b->add("\x0ACalled from ");
 				haxe_Stack::itemToString($b, $s);
 				unset($s);
 			}
@@ -38,166 +27,40 @@ class haxe_Stack {
 		switch($퍁->index) {
 		case 0:
 		{
-			$x = "a C function";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$b->b .= $x;
+			$b->add("a C function");
 		}break;
 		case 1:
 		$m = $퍁->params[0];
 		{
-			{
-				$x = "module ";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = $m;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
+			$b->add("module ");
+			$b->add($m);
 		}break;
 		case 2:
 		$line = $퍁->params[2]; $file = $퍁->params[1]; $s1 = $퍁->params[0];
 		{
 			if($s1 !== null) {
 				haxe_Stack::itemToString($b, $s1);
-				{
-					$x = " (";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$b->b .= $x;
-				}
+				$b->add(" (");
 			}
-			{
-				$x = $file;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = " line ";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = $line;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
+			$b->add($file);
+			$b->add(" line ");
+			$b->add($line);
 			if($s1 !== null) {
-				$x = ")";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
+				$b->add(")");
 			}
 		}break;
 		case 3:
 		$meth = $퍁->params[1]; $cname = $퍁->params[0];
 		{
-			{
-				$x = $cname;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = ".";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = $meth;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
+			$b->add($cname);
+			$b->add(".");
+			$b->add($meth);
 		}break;
 		case 4:
 		$n = $퍁->params[0];
 		{
-			{
-				$x = "local function #";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
-			{
-				$x = $n;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$b->b .= $x;
-			}
+			$b->add("local function #");
+			$b->add($n);
 		}break;
 		}
 	}

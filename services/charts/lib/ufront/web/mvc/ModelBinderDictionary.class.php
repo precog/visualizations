@@ -81,6 +81,7 @@ class ufront_web_mvc_ModelBinderDictionary {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("get_values" => "getValues","get_keys" => "getKeys","set_defaultBinder" => "setDefaultBinder","get_defaultBinder" => "getDefaultBinder","get_count" => "getCount");
 	function __toString() { return 'ufront.web.mvc.ModelBinderDictionary'; }
 }
 function ufront_web_mvc_ModelBinderDictionary_0(&$item, $binder) {

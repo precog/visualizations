@@ -41,9 +41,9 @@ class controller_GistUploadController extends controller_BaseController {
 			if(null === $html) {
 				return $this->error("The GIST doesn't inclide the required HTML file", $outputformat);
 			}
-			$controller = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.RenderableAPIController"));
-			$controller->controllerContext = $this->controllerContext;
-			return $controller->upload($html, $config, $outputformat);
+			$controller1 = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.RenderableAPIController"));
+			$controller1->controllerContext = $this->controllerContext;
+			return $controller1->upload($html, $config, $outputformat);
 		}
 	}
 	public $lastError;
@@ -75,6 +75,7 @@ class controller_GistUploadController extends controller_BaseController {
 		$http->request(false);
 		return $result;
 	}
+	static $__properties__ = array("get_urlHelper" => "getUrlHelper","set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'controller.GistUploadController'; }
 }
 function controller_GistUploadController_0(&$http, &$me, &$result, &$url, $e) {

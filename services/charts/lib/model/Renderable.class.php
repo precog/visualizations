@@ -45,5 +45,6 @@ class model_Renderable {
 		$s = base_convert($s, 16, 36);
 		return _hx_substr($s, 0, 12);
 	}
+	static $__properties__ = array("get_uid" => "getUid");
 	function __toString() { return $this->toString(); }
 }

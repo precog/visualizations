@@ -155,12 +155,12 @@ class Iterators {
 }
 function Iterators_0(&$f, &$it, &$v, $v2) {
 	{
-		return $v === $v2;
+		return $v == $v2;
 	}
 }
 function Iterators_1(&$f, &$it, &$v, $v2) {
 	{
-		return $v === $v2;
+		return $v == $v2;
 	}
 }
 function Iterators_2(&$f, &$it) {

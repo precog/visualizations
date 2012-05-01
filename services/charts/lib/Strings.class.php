@@ -231,11 +231,12 @@ class Strings {
 	}
 	static function interpolatef($a, $b, $equation) {
 		$extract = array(new _hx_lambda(array(&$a, &$b, &$equation), "Strings_15"), 'execute');
+		$decimals = array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract), "Strings_16"), 'execute');
 		$sa = new _hx_array(array()); $fa = new _hx_array(array()); $sb = new _hx_array(array()); $fb = new _hx_array(array());
 		call_user_func_array($extract, array($a, $sa, $fa));
 		call_user_func_array($extract, array($b, $sb, $fb));
 		$functions = new _hx_array(array()); $i = 0;
-		$min = Strings_16($a, $b, $equation, $extract, $fa, $fb, $functions, $i, $sa, $sb);
+		$min = Strings_17($a, $b, $decimals, $equation, $extract, $fa, $fb, $functions, $i, $sa, $sb);
 		while($i < $min) {
 			if($sa[$i] !== $sb[$i]) {
 				break;
@@ -243,16 +244,17 @@ class Strings {
 			if(null === $sa[$i]) {
 				if($fa[$i] === $fb[$i]) {
 					$s = "" . $fa[$i];
-					$functions->push(array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb), "Strings_17"), 'execute'));
+					$functions->push(array(new _hx_lambda(array(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb), "Strings_18"), 'execute'));
 					unset($s);
 				} else {
 					$f = Floats::interpolatef($fa[$i], $fb[$i], $equation);
-					$functions->push(array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$f, &$fa, &$fb, &$functions, &$i, &$min, &$sa, &$sb), "Strings_18"), 'execute'));
-					unset($f);
+					$dec = Math::pow(10, Strings_19($a, $b, $decimals, $equation, $extract, $f, $fa, $fb, $functions, $i, $min, $sa, $sb));
+					$functions->push(array(new _hx_lambda(array(&$a, &$b, &$dec, &$decimals, &$equation, &$extract, &$f, &$fa, &$fb, &$functions, &$i, &$min, &$sa, &$sb), "Strings_20"), 'execute'));
+					unset($f,$dec);
 				}
 			} else {
 				$s = $sa[$i];
-				$functions->push(array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb), "Strings_19"), 'execute'));
+				$functions->push(array(new _hx_lambda(array(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb), "Strings_21"), 'execute'));
 				unset($s);
 			}
 			$i++;
@@ -267,9 +269,9 @@ class Strings {
 			$i++;
 		}
 		if("" !== $rest) {
-			$functions->push(array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb), "Strings_20"), 'execute'));
+			$functions->push(array(new _hx_lambda(array(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb), "Strings_22"), 'execute'));
 		}
-		return array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb), "Strings_21"), 'execute');
+		return array(new _hx_lambda(array(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb), "Strings_23"), 'execute');
 	}
 	static function interpolateChars($v, $a, $b, $equation) {
 		return call_user_func_array(Strings::interpolateCharsf($a, $b, $equation), array($v));
@@ -291,7 +293,7 @@ class Strings {
 				unset($i);
 			}
 		}
-		return array(new _hx_lambda(array(&$a, &$aa, &$ab, &$ai, &$b, &$equation), "Strings_22"), 'execute');
+		return array(new _hx_lambda(array(&$a, &$aa, &$ab, &$ai, &$b, &$equation), "Strings_24"), 'execute');
 	}
 	static function interpolateChar($v, $a, $b, $equation) {
 		return call_user_func_array(Strings::interpolateCharf($a, $b, $equation), array($v));
@@ -305,7 +307,7 @@ class Strings {
 			$a = $r->matched(0);
 		}
 		$ca = _hx_char_code_at($a, 0); $cb = _hx_char_code_at($b, 0); $i = Ints::interpolatef($ca, $cb, $equation);
-		return array(new _hx_lambda(array(&$a, &$b, &$ca, &$cb, &$equation, &$i, &$r), "Strings_23"), 'execute');
+		return array(new _hx_lambda(array(&$a, &$b, &$ca, &$cb, &$equation, &$i, &$r), "Strings_25"), 'execute');
 	}
 	static function ellipsis($s, $maxlen, $symbol) {
 		if($symbol === null) {
@@ -315,7 +317,7 @@ class Strings {
 			$maxlen = 20;
 		}
 		if(strlen($s) > $maxlen) {
-			return _hx_substr($s, 0, Strings_24($maxlen, $s, $symbol)) . $symbol;
+			return _hx_substr($s, 0, Strings_26($maxlen, $s, $symbol)) . $symbol;
 		} else {
 			return $s;
 		}
@@ -327,7 +329,7 @@ class Strings {
 		if($maxlen === null) {
 			$maxlen = 20;
 		}
-		return array(new _hx_lambda(array(&$maxlen, &$symbol), "Strings_25"), 'execute');
+		return array(new _hx_lambda(array(&$maxlen, &$symbol), "Strings_27"), 'execute');
 	}
 	static function compare($a, $b) {
 		return (($a < $b) ? -1 : (($a > $b) ? 1 : 0));
@@ -353,7 +355,7 @@ function Strings_1(&$buf, &$culture, &$format, &$left, &$nullstring, &$p, &$para
 }
 function Strings_2(&$buf, &$culture, &$df, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos, $f, $a1) {
 	{
-		return array(new _hx_lambda(array(&$a1, &$buf, &$culture, &$df, &$f, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos), "Strings_26"), 'execute');
+		return array(new _hx_lambda(array(&$a1, &$buf, &$culture, &$df, &$f, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos), "Strings_28"), 'execute');
 	}
 }
 function Strings_3(&$buf, &$culture, &$df, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos, $i, $v) {
@@ -366,7 +368,7 @@ function Strings_4(&$buf, &$culture, &$nullstring, &$pattern, $values) {
 		if(null === $values) {
 			$values = new _hx_array(array());
 		}
-		return Iterators::map($buf->iterator(), array(new _hx_lambda(array(&$buf, &$culture, &$nullstring, &$pattern, &$values), "Strings_27"), 'execute'))->join("");
+		return Iterators::map($buf->iterator(), array(new _hx_lambda(array(&$buf, &$culture, &$nullstring, &$pattern, &$values), "Strings_29"), 'execute'))->join("");
 	}
 }
 function Strings_5(&$culture, &$format, &$param, &$params, $v) {
@@ -448,7 +450,16 @@ function Strings_15(&$a, &$b, &$equation, $value, $s, $f) {
 		}
 	}
 }
-function Strings_16(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$sa, &$sb) {
+function Strings_16(&$a, &$b, &$equation, &$extract, $v) {
+	{
+		$s = "" . $v; $p = _hx_index_of($s, ".", null);
+		if($p < 0) {
+			return 0;
+		}
+		return strlen($s) - $p - 1;
+	}
+}
+function Strings_17(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$sa, &$sb) {
 	{
 		$a1 = $sa->length; $b1 = $sb->length;
 		if($a1 < $b1) {
@@ -459,32 +470,43 @@ function Strings_16(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$
 		unset($b1,$a1);
 	}
 }
-function Strings_17(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb, $_) {
+function Strings_18(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb, $_) {
 	{
 		return $s;
 	}
 }
-function Strings_18(&$a, &$b, &$equation, &$extract, &$f, &$fa, &$fb, &$functions, &$i, &$min, &$sa, &$sb, $t) {
+function Strings_19(&$a, &$b, &$decimals, &$equation, &$extract, &$f, &$fa, &$fb, &$functions, &$i, &$min, &$sa, &$sb) {
 	{
-		return "" . call_user_func_array($f, array($t));
+		$a1 = call_user_func_array($decimals, array($fa[$i])); $b1 = call_user_func_array($decimals, array($fb[$i]));
+		if($a1 > $b1) {
+			return $a1;
+		} else {
+			return $b1;
+		}
+		unset($b1,$a1);
 	}
 }
-function Strings_19(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb, $_) {
+function Strings_20(&$a, &$b, &$dec, &$decimals, &$equation, &$extract, &$f, &$fa, &$fb, &$functions, &$i, &$min, &$sa, &$sb, $t) {
+	{
+		return "" . Math::round(call_user_func_array($f, array($t)) * $dec) / $dec;
+	}
+}
+function Strings_21(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$s, &$sa, &$sb, $_) {
 	{
 		return $s;
 	}
 }
-function Strings_20(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, $_) {
+function Strings_22(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, $_) {
 	{
 		return $rest;
 	}
 }
-function Strings_21(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, $t) {
+function Strings_23(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, $t) {
 	{
-		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, &$t), "Strings_28"), 'execute'))->join("");
+		return Iterators::map($functions->iterator(), array(new _hx_lambda(array(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, &$t), "Strings_30"), 'execute'))->join("");
 	}
 }
-function Strings_22(&$a, &$aa, &$ab, &$ai, &$b, &$equation, $v) {
+function Strings_24(&$a, &$aa, &$ab, &$ai, &$b, &$equation, $v) {
 	{
 		$r = new _hx_array(array());
 		{
@@ -498,12 +520,12 @@ function Strings_22(&$a, &$aa, &$ab, &$ai, &$b, &$equation, $v) {
 		return trim($r->join(""));
 	}
 }
-function Strings_23(&$a, &$b, &$ca, &$cb, &$equation, &$i, &$r, $v) {
+function Strings_25(&$a, &$b, &$ca, &$cb, &$equation, &$i, &$r, $v) {
 	{
 		return chr(call_user_func_array($i, array($v)));
 	}
 }
-function Strings_24(&$maxlen, &$s, &$symbol) {
+function Strings_26(&$maxlen, &$s, &$symbol) {
 	{
 		$a = strlen($symbol); $b = $maxlen - strlen($symbol);
 		if($a > $b) {
@@ -514,31 +536,31 @@ function Strings_24(&$maxlen, &$s, &$symbol) {
 		unset($b,$a);
 	}
 }
-function Strings_25(&$maxlen, &$symbol, $s) {
+function Strings_27(&$maxlen, &$symbol, $s) {
 	{
 		if(strlen($s) > $maxlen) {
-			return _hx_substr($s, 0, Strings_29($maxlen, $s, $symbol)) . $symbol;
+			return _hx_substr($s, 0, Strings_31($maxlen, $s, $symbol)) . $symbol;
 		} else {
 			return $s;
 		}
 	}
 }
-function Strings_26(&$a1, &$buf, &$culture, &$df, &$f, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos, $a2) {
+function Strings_28(&$a1, &$buf, &$culture, &$df, &$f, &$format, &$left, &$nullstring, &$p, &$params, &$pattern, &$pos, $a2) {
 	{
 		return call_user_func_array($f, array($a1, $a2));
 	}
 }
-function Strings_27(&$buf, &$culture, &$nullstring, &$pattern, &$values, $df, $_) {
+function Strings_29(&$buf, &$culture, &$nullstring, &$pattern, &$values, $df, $_) {
 	{
 		return call_user_func_array($df, array($values));
 	}
 }
-function Strings_28(&$a, &$b, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, &$t, $f, $_) {
+function Strings_30(&$a, &$b, &$decimals, &$equation, &$extract, &$fa, &$fb, &$functions, &$i, &$min, &$rest, &$sa, &$sb, &$t, $f, $_) {
 	{
 		return call_user_func_array($f, array($t));
 	}
 }
-function Strings_29(&$maxlen, &$s, &$symbol) {
+function Strings_31(&$maxlen, &$s, &$symbol) {
 	{
 		$a = strlen($symbol); $b = $maxlen - strlen($symbol);
 		if($a > $b) {

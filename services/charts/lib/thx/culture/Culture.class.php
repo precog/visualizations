@@ -69,9 +69,9 @@ class thx_culture_Culture extends thx_culture_Info {
 		}
 	}
 	static function loadAll() {
-		$dir = php_Sys::getCwd() . "lib/thx/cultures/";
+		$dir = Sys::getCwd() . "lib/thx/cultures/";
 		{
-			$_g = 0; $_g1 = php_FileSystem::readDirectory($dir);
+			$_g = 0; $_g1 = sys_FileSystem::readDirectory($dir);
 			while($_g < $_g1->length) {
 				$file = $_g1[$_g];
 				++$_g;
@@ -80,5 +80,6 @@ class thx_culture_Culture extends thx_culture_Info {
 			}
 		}
 	}
+	static $__properties__ = array("set_defaultCulture" => "setDefaultCulture","get_defaultCulture" => "getDefaultCulture","get_cultures" => "getCultures");
 	function __toString() { return 'thx.culture.Culture'; }
 }

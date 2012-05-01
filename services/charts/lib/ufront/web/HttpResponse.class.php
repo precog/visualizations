@@ -33,30 +33,14 @@ class ufront_web_HttpResponse {
 	}
 	public function write($s) {
 		if(null !== $s) {
-			$x = $s;
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->_buff->b .= $x;
+			$this->_buff->add($s);
 		}
 	}
 	public function writeChar($c) {
 		$this->_buff->b .= chr($c);
 	}
 	public function writeBytes($b, $pos, $len) {
-		$x = $b->readString($pos, $len);
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->_buff->b .= $x;
+		$this->_buff->add($b->readString($pos, $len));
 	}
 	public function setHeader($name, $value) {
 		if(null === $name) {
@@ -154,5 +138,6 @@ class ufront_web_HttpResponse {
 	static $UNAUTHORIZED = 401;
 	static $NOT_FOUND = 404;
 	static $INTERNAL_SERVER_ERROR = 500;
+	static $__properties__ = array("set_redirectLocation" => "setRedirectLocation","get_redirectLocation" => "getRedirectLocation","set_contentType" => "setContentType","get_contentType" => "getContentType","get_instance" => "getInstance");
 	function __toString() { return 'ufront.web.HttpResponse'; }
 }

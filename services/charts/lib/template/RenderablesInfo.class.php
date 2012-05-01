@@ -7,289 +7,46 @@ class template_RenderablesInfo extends erazor_macro_Template {
 	public function execute($__context__) {
 		$__b__ = new StringBuf();
 		{
-			{
-				$x = "<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Download Error</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->baseurl;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->url->base("css/style.css");
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = "\">\x0A</head>\x0A<body>\x0A<h1>Top #";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = $__context__->top;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
-			{
-				$x = " used renderables</h1>\x0A";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
+			$__b__->add("<!DOCTYPE html>\x0A<html>\x0A<head>\x0A  <title>Download Error</title>\x0A  <link rel=\"stylesheet\" type=\"text/css\" href=\"");
+			$__b__->add($__context__->baseurl);
+			$__b__->add($__context__->url->base("css/style.css"));
+			$__b__->add("\">\x0A</head>\x0A<body>\x0A<h1>Top #");
+			$__b__->add($__context__->top);
+			$__b__->add(" used renderables</h1>\x0A");
 			if(null === $__context__->renderables || $__context__->renderables->length === 0) {
-				{
-					$x = "\x0A\x09<div class=\"warning\">The list is empty</div>\x0A";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
+				$__b__->add("\x0A\x09<div class=\"warning\">The list is empty</div>\x0A");
 				null;
 			} else {
-				{
-					$x = "\x0A\x09<dl>\x0A\x09";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
+				$__b__->add("\x0A\x09<dl>\x0A\x09");
 				{
 					$_g = 0; $_g1 = $__context__->renderables;
 					while($_g < $_g1->length) {
 						$item = $_g1[$_g];
 						++$_g;
-						{
-							$x = "\x0A\x09  <dt><a href=\"";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = $__context__->baseurl;
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = $__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => $item->uid, "outputformat" => "html")));
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = "\">";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = $item->uid;
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = "</a></dt>\x0A\x09  <dd>";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = $item->usages;
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = ", created on: ";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = Date::fromTime($item->createdOn);
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
-						{
-							$x = " ";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
+						$__b__->add("\x0A\x09  <dt><a href=\"");
+						$__b__->add($__context__->baseurl);
+						$__b__->add($__context__->url->route(_hx_anonymous(array("controller" => "renderableAPI", "action" => "display", "uid" => $item->uid, "outputformat" => "html"))));
+						$__b__->add("\">");
+						$__b__->add($item->uid);
+						$__b__->add("</a></dt>\x0A\x09  <dd>");
+						$__b__->add($item->usages);
+						$__b__->add(", created on: ");
+						$__b__->add(Date::fromTime($item->createdOn));
+						$__b__->add(" ");
 						if($item->createdOn !== $item->lastUsage) {
-							{
-								$x = ", last usage on: ";
-								if(is_null($x)) {
-									$x = "null";
-								} else {
-									if(is_bool($x)) {
-										$x = (($x) ? "true" : "false");
-									}
-								}
-								$__b__->b .= $x;
-								unset($x);
-							}
-							{
-								$x = Date::fromTime($item->lastUsage);
-								if(is_null($x)) {
-									$x = "null";
-								} else {
-									if(is_bool($x)) {
-										$x = (($x) ? "true" : "false");
-									}
-								}
-								$__b__->b .= $x;
-								unset($x);
-							}
+							$__b__->add(", last usage on: ");
+							$__b__->add(Date::fromTime($item->lastUsage));
 							null;
 						}
-						{
-							$x = "</dd>\x0A\x09";
-							if(is_null($x)) {
-								$x = "null";
-							} else {
-								if(is_bool($x)) {
-									$x = (($x) ? "true" : "false");
-								}
-							}
-							$__b__->b .= $x;
-							unset($x);
-						}
+						$__b__->add("</dd>\x0A\x09");
 						null;
 						unset($item);
 					}
 				}
-				{
-					$x = "\x0A\x09</dl>\x0A";
-					if(is_null($x)) {
-						$x = "null";
-					} else {
-						if(is_bool($x)) {
-							$x = (($x) ? "true" : "false");
-						}
-					}
-					$__b__->b .= $x;
-				}
+				$__b__->add("\x0A\x09</dl>\x0A");
 				null;
 			}
-			{
-				$x = "\x0A</body>\x0A</html>";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$__b__->b .= $x;
-			}
+			$__b__->add("\x0A</body>\x0A</html>");
 		}
 		return $__b__->b;
 	}

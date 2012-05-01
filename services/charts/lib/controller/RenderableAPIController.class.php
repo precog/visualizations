@@ -165,6 +165,7 @@ class controller_RenderableAPIController extends controller_BaseController {
 			unset($value,$field);
 		}
 	}
+	static $__properties__ = array("get_urlHelper" => "getUrlHelper","set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'controller.RenderableAPIController'; }
 }
 controller_RenderableAPIController::$DEARRAY = new EReg("\\[\\d+\\]\$", "");

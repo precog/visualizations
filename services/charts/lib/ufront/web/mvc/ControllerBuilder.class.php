@@ -34,6 +34,7 @@ class ufront_web_mvc_ControllerBuilder {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $current;
+	static $__properties__ = array("set_controllerFactory" => "setControllerFactory","get_controllerFactory" => "getControllerFactory");
 	function __toString() { return 'ufront.web.mvc.ControllerBuilder'; }
 }
 ufront_web_mvc_ControllerBuilder::$current = new ufront_web_mvc_ControllerBuilder();

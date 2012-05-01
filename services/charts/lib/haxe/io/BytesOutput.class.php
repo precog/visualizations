@@ -31,5 +31,6 @@ class haxe_io_BytesOutput extends haxe_io_Output {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("set_bigEndian" => "setEndian");
 	function __toString() { return 'haxe.io.BytesOutput'; }
 }

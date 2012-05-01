@@ -49,5 +49,6 @@ class ufront_web_mvc_MvcHandler implements ufront_web_IHttpHandler{
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("set_controllerBuilder" => "setControllerBuilder","get_controllerBuilder" => "getControllerBuilder");
 	function __toString() { return 'ufront.web.mvc.MvcHandler'; }
 }

@@ -123,6 +123,7 @@ class ufront_web_routing_Route extends ufront_web_routing_RouteBase {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $parser;
+	static $__properties__ = array("get_url" => "getUrl");
 	function __toString() { return $this->toString(); }
 }
 ufront_web_routing_Route::$parser = new ufront_web_routing_RouteUriParser();

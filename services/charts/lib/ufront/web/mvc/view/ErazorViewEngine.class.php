@@ -37,7 +37,7 @@ class ufront_web_mvc_view_ErazorViewEngine implements ufront_web_mvc_view_ITempl
 		if(!file_exists($fullpath)) {
 			return null;
 		} else {
-			return new erazor_Template(php_io_File::getContent($fullpath));
+			return new erazor_Template(sys_io_File::getContent($fullpath));
 		}
 	}
 	public function releaseView($controllerContext, $view) {

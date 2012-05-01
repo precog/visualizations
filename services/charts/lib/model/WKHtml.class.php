@@ -13,9 +13,10 @@ class model_WKHtml {
 	public function render($content) {
 		$ext = ((_hx_index_of($content, "-//W3C//DTD XHTML 1.0", null) >= 0) ? "xhtml" : "html");
 		$t = model_WKHtml::tmp($ext);
-		php_io_File::putContent($t, $content);
+		sys_io_File::saveContent($t, $content);
 		$this->err = null;
 		$r = $this->renderUrl($t);
+		@unlink($t);
 		if(null === $r) {
 			throw new HException(new thx_error_Error("unable to render the result", null, null, _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 35, "className" => "model.WKHtml", "methodName" => "render"))));
 		}
@@ -33,10 +34,9 @@ class model_WKHtml {
 			$ok = false;
 			haxe_Log::trace(model_WKHtml::cmdToString($this->cmd, $args) . "\x0A" . $this->cleanErr($this->err), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 56, "className" => "model.WKHtml", "methodName" => "renderUrl")));
 		} else {
-			haxe_Log::trace(model_WKHtml::cmdToString($this->cmd, $args) . "\x0A" . $this->cleanErr($this->err), _hx_anonymous(array("fileName" => "WKHtml.hx", "lineNumber" => 58, "className" => "model.WKHtml", "methodName" => "renderUrl")));
 		}
 		if($ok) {
-			$result = php_io_File::getContent($out);
+			$result = sys_io_File::getContent($out);
 			@unlink($out);
 			return $this->modify($result);
 		} else {
@@ -51,7 +51,7 @@ class model_WKHtml {
 	}
 	public $err;
 	public function execute($args) {
-		$process = new php_io_Process($this->cmd, Iterators::map($args->iterator(), array(new _hx_lambda(array(&$args), "model_WKHtml_2"), 'execute')));
+		$process = new sys_io_Process($this->cmd, Iterators::map($args->iterator(), array(new _hx_lambda(array(&$args), "model_WKHtml_2"), 'execute')));
 		$process->close();
 		$r = $process->exitCode();
 		$this->err = $process->stderr->readAll(null)->toString();
@@ -60,12 +60,12 @@ class model_WKHtml {
 	}
 	public function commandOptions() {
 		$args = new _hx_array(array());
-		$args->push("--debug-javascript");
+		$args->push("--use-xserver");
 		$args->push("--disable-local-file-access");
 		$args->push("--javascript-delay");
 		$args->push("" . model_WKHtml::$JS_DELAY);
 		$args->push("--user-style-sheet");
-		$args->push("/Users/francoponticelli/Projects/reportgrid/visualizations/services/charts/css/reset.css");
+		$args->push("./css/reset.css");
 		$args->push("--run-script");
 		$args->push(model_WKHtml::finalscript());
 		$cfg = $this->getWKConfig();
@@ -103,7 +103,7 @@ class model_WKHtml {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
-	static $JS_DELAY = 5000;
+	static $JS_DELAY = 30000;
 	static function cmdToString($cmd, $args) {
 		$args = Iterators::map($args->iterator(), array(new _hx_lambda(array(&$args, &$cmd), "model_WKHtml_3"), 'execute'));
 		return $cmd . ((($args->length > 0) ? " " : "")) . $args->join(" ");
@@ -126,6 +126,7 @@ class model_WKHtml {
 	static function minifyJs($js) {
 		return _hx_deref(new EReg("\\s+", "mg"))->replace($js, " ");
 	}
+	static $__properties__ = array("set_format" => "setFormat","get_format" => "getFormat","set_wkConfig" => "setWKConfig","get_wkConfig" => "getWKConfig");
 	function __toString() { return 'model.WKHtml'; }
 }
 function model_WKHtml_0(&$err, $line, $_) {

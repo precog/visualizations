@@ -96,81 +96,19 @@ class thx_collection_HashList {
 	}
 	public function toString() {
 		$s = new StringBuf();
-		{
-			$x = "{";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$s->b .= $x;
-		}
+		$s->add("{");
 		$it = $this->keys();
 		$»it = $it;
 		while($»it->hasNext()) {
 			$i = $»it->next();
-			{
-				$x = $i;
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$s->b .= $x;
-				unset($x);
-			}
-			{
-				$x = " => ";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$s->b .= $x;
-				unset($x);
-			}
-			{
-				$x = Std::string($this->get($i));
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$s->b .= $x;
-				unset($x);
-			}
+			$s->add($i);
+			$s->add(" => ");
+			$s->add(Std::string($this->get($i)));
 			if($it->hasNext()) {
-				$x = ", ";
-				if(is_null($x)) {
-					$x = "null";
-				} else {
-					if(is_bool($x)) {
-						$x = (($x) ? "true" : "false");
-					}
-				}
-				$s->b .= $x;
-				unset($x);
+				$s->add(", ");
 			}
 		}
-		{
-			$x = "}";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$s->b .= $x;
-		}
+		$s->add("}");
 		return $s->b;
 	}
 	public $__keys;

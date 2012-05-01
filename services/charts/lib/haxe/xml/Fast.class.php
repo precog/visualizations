@@ -53,16 +53,7 @@ class haxe_xml_Fast {
 		$»it = $this->x->iterator();
 		while($»it->hasNext()) {
 			$x = $»it->next();
-			$x1 = $x->toString();
-			if(is_null($x1)) {
-				$x1 = "null";
-			} else {
-				if(is_bool($x1)) {
-					$x1 = (($x1) ? "true" : "false");
-				}
-			}
-			$s->b .= $x1;
-			unset($x1);
+			$s->add($x->toString());
 		}
 		return $s->b;
 	}
@@ -80,6 +71,7 @@ class haxe_xml_Fast {
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("get_elements" => "getElements","get_innerHTML" => "getInnerHTML","get_innerData" => "getInnerData","get_name" => "getName");
 	function __toString() { return 'haxe.xml.Fast'; }
 }
 function haxe_xml_Fast_0(&$it) {

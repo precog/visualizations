@@ -36,6 +36,7 @@ class thx_cultures_EnUS extends thx_culture_Culture {
 		}
 		return thx_cultures_EnUS::$culture;
 	}
+	static $__properties__ = array("get_culture" => "getCulture","set_defaultCulture" => "setDefaultCulture","get_defaultCulture" => "getDefaultCulture","get_cultures" => "getCultures");
 	function __toString() { return 'thx.cultures.EnUS'; }
 }
 thx_cultures_EnUS::getCulture();

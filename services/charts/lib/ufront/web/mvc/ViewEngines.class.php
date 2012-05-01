@@ -33,5 +33,6 @@ class ufront_web_mvc_ViewEngines {
 		}
 		return ufront_web_mvc_ViewEngines::$engines;
 	}
+	static $__properties__ = array("get_engines" => "getEngines");
 	function __toString() { return 'ufront.web.mvc.ViewEngines'; }
 }

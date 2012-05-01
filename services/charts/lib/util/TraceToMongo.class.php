@@ -36,5 +36,6 @@ class util_TraceToMongo implements ufront_web_module_ITraceModule{
 		else
 			throw new HException('Unable to call «'.$m.'»');
 	}
+	static $__properties__ = array("get_coll" => "getColl");
 	function __toString() { return 'util.TraceToMongo'; }
 }

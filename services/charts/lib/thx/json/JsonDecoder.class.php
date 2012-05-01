@@ -226,7 +226,7 @@ class thx_json_JsonDecoder {
 					$buf .= "\x09";
 				}break;
 				case "u":{
-					$utf = new haxe_Utf8();
+					$utf = new haxe_Utf8(null);
 					$utf->addChar($this->parseHexa());
 					$buf .= $utf->toString();
 				}break;

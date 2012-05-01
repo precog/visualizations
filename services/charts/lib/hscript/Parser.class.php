@@ -804,18 +804,18 @@ class hscript_Parser {
 						if($n > 0 || $exp > 0) {
 							$this->invalidChar($char);
 						}
-						$n1 = 0;
+						$n1 = 0 | 0;
 						while(true) {
 							$char = $this->readChar();
 							switch($char) {
 							case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:{
-								$n1 = ($n1 << 4) + ($char - 48);
+								$n1 = ($n1 << 4) + ($char - 48) | 0;
 							}break;
 							case 65:case 66:case 67:case 68:case 69:case 70:{
-								$n1 = ($n1 << 4) + ($char - 55);
+								$n1 = ($n1 << 4) + ($char - 55) | 0;
 							}break;
 							case 97:case 98:case 99:case 100:case 101:case 102:{
-								$n1 = ($n1 << 4) + ($char - 87);
+								$n1 = ($n1 << 4) + ($char - 87) | 0;
 							}break;
 							default:{
 								$this->char = $char;

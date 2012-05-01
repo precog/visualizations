@@ -49,15 +49,8 @@ class App
 
 	static function main()
 	{
-		App.version =
-#if (release && minor)
-				MacroVersion.incrementMinor()
-#elseif release
-				MacroVersion.incrementMaintenance()
-#else
-				MacroVersion.incrementBuild()
-#end
-		;
+		App.version = MacroVersion.next();
+
 		var locator = new thx.util.TypeLocator();
 		locator.memoize(model.WKHtmlToImage, function() {
 			return new model.WKHtmlToImage(WKIMAGE);

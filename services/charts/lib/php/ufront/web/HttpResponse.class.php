@@ -189,6 +189,7 @@ class php_ufront_web_HttpResponse extends ufront_web_HttpResponse {
 		}break;
 		}
 	}
+	static $__properties__ = array("set_redirectLocation" => "setRedirectLocation","get_redirectLocation" => "getRedirectLocation","set_contentType" => "setContentType","get_contentType" => "getContentType","get_instance" => "getInstance");
 	function __toString() { return 'php.ufront.web.HttpResponse'; }
 }
 function php_ufront_web_HttpResponse_0(&$»this, &$cookie, &$k, &$v) {

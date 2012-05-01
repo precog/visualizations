@@ -1,7 +1,7 @@
 <?php
 
 class haxe_Utf8 {
-	public function __construct() {
+	public function __construct($size) {
 		if(!php_Boot::$skip_constructor) {
 		$this->__b = "";
 	}}

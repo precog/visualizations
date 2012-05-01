@@ -86,6 +86,7 @@ class ufront_web_module_ErrorController extends ufront_web_mvc_Controller {
 		}break;
 		}
 	}
+	static $__properties__ = array("set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'ufront.web.module.ErrorController'; }
 }
 function ufront_web_module_ErrorController_0(&$»this, &$error, &$showStack) {

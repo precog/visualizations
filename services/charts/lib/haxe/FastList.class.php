@@ -27,7 +27,7 @@ class haxe_FastList {
 		$prev = null;
 		$l = $this->head;
 		while($l !== null) {
-			if($l->elt === $v) {
+			if($l->elt == $v) {
 				if($prev === null) {
 					$this->head = $l->next;
 				} else {

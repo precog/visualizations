@@ -18,16 +18,7 @@ class ufront_web_routing_RouteUriBuilder {
 					return null;
 				} else {
 					if("" !== $s) {
-						$x = "/" . $s;
-						if(is_null($x)) {
-							$x = "null";
-						} else {
-							if(is_bool($x)) {
-								$x = (($x) ? "true" : "false");
-							}
-						}
-						$buf->b .= $x;
-						unset($x);
+						$buf->add("/" . $s);
 					}
 				}
 				unset($segment,$s);

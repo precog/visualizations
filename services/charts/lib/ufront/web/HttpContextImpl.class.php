@@ -37,5 +37,6 @@ class ufront_web_HttpContextImpl extends ufront_web_HttpContext {
 	public function dispose() {
 		$this->getSession()->dispose();
 	}
+	static $__properties__ = array("get_session" => "getSession","get_response" => "getResponse","get_request" => "getRequest");
 	function __toString() { return 'ufront.web.HttpContextImpl'; }
 }

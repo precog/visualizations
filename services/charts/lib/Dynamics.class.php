@@ -160,9 +160,6 @@ class Dynamics {
 		$퍁 = (Type::typeof($a));
 		switch($퍁->index) {
 		case 1:
-		{
-			return $a - $b;
-		}break;
 		case 2:
 		{
 			return (($a < $b) ? -1 : (($a > $b) ? 1 : 0));
@@ -208,9 +205,6 @@ class Dynamics {
 		$퍁 = (Type::typeof($sample));
 		switch($퍁->index) {
 		case 1:
-		{
-			return (isset(Ints::$compare) ? Ints::$compare: array("Ints", "compare"));
-		}break;
 		case 2:
 		{
 			return (isset(Floats::$compare) ? Floats::$compare: array("Floats", "compare"));
@@ -334,7 +328,7 @@ class Dynamics {
 		case 1:
 		case 3:
 		{
-			return $a === $b;
+			return $a == $b;
 		}break;
 		case 5:
 		{
@@ -347,7 +341,7 @@ class Dynamics {
 			if($ca !== $cb) {
 				return false;
 			}
-			if(Std::is($a, _hx_qtype("String")) && $a !== $b) {
+			if(Std::is($a, _hx_qtype("String")) && $a != $b) {
 				return false;
 			}
 			if(Std::is($a, _hx_qtype("Array"))) {
@@ -549,13 +543,13 @@ function Dynamics_0(&$culture, &$nullstring, &$param, &$params, $v) {
 		case 6:
 		$c = $퍁->params[0];
 		{
-			if($c === _hx_qtype("String")) {
+			if($c == _hx_qtype("String")) {
 				return Strings::formatOne($v, $param, $params, $culture);
 			} else {
-				if($c === _hx_qtype("Array")) {
+				if($c == _hx_qtype("Array")) {
 					return Arrays::format($v, $param, $params, $culture);
 				} else {
-					if($c === _hx_qtype("Date")) {
+					if($c == _hx_qtype("Date")) {
 						return Dates::format($v, $param, $params, $culture);
 					} else {
 						return Objects::format($v, $param, $params, $culture);
@@ -606,7 +600,7 @@ function Dynamics_4(&$a, &$b, &$ta, &$tb) {
 	throw new HException("Unable to compare two unknown types");
 }
 function Dynamics_5(&$a, &$b, &$ta, &$tb) {
-	throw new HException(new thx_error_Error("Unable to compare values: {0} and {1}", new _hx_array(array($a, $b)), null, _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 372, "className" => "Dynamics", "methodName" => "same"))));
+	throw new HException(new thx_error_Error("Unable to compare values: {0} and {1}", new _hx_array(array($a, $b)), null, _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 370, "className" => "Dynamics", "methodName" => "same"))));
 }
 function Dynamics_6(&$culture, &$nullstring, &$param, &$params, &$v) {
 	throw new HException(new thx_error_Error("Unsupported type format: {0}", null, Type::typeof($v), _hx_anonymous(array("fileName" => "Dynamics.hx", "lineNumber" => 44, "className" => "Dynamics", "methodName" => "formatf"))));

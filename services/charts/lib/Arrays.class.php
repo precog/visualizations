@@ -327,7 +327,7 @@ class Arrays {
 			while($_g < $arr->length) {
 				$v = $arr[$_g];
 				++$_g;
-				if($v === $value) {
+				if($v == $value) {
 					return true;
 				}
 				unset($v);
@@ -452,7 +452,7 @@ class Arrays {
 			$_g = 0;
 			while($_g < $len) {
 				$i = $_g++;
-				if($arr[$i] === $el) {
+				if($arr[$i] == $el) {
 					return $i;
 				}
 				unset($i);

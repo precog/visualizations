@@ -79,6 +79,7 @@ class ufront_web_HttpContext {
 		}
 		return new ufront_web_HttpContextImpl($request, $response, ufront_web_session_FileSession::create($sessionpath));
 	}
+	static $__properties__ = array("get_session" => "getSession","get_response" => "getResponse","get_request" => "getRequest");
 	function __toString() { return 'ufront.web.HttpContext'; }
 }
 function ufront_web_HttpContext_0(&$»this) {

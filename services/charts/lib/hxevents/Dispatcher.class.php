@@ -62,7 +62,7 @@ class hxevents_Dispatcher {
 				while($_g < $_g1->length) {
 					$handler = $_g1[$_g];
 					++$_g;
-					if($h === $handler) {
+					if($h == $handler) {
 						return true;
 					}
 					unset($handler);

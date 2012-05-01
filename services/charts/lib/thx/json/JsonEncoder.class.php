@@ -19,167 +19,53 @@ class thx_json_JsonEncoder implements thx_data_IDataHandler{
 		$this->buf = null;
 	}
 	public function objectStart() {
-		{
-			$x = "{";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
-		}
+		$this->buf->add("{");
 		$this->count->push(0);
 	}
 	public function objectFieldStart($name) {
 		if($this->count->»a[$this->count->length - 1]++ > 0) {
-			$x = ",";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
+			$this->buf->add(",");
 		}
-		{
-			$x = $this->quote($name) . ":";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
-		}
+		$this->buf->add($this->quote($name) . ":");
 	}
 	public function objectFieldEnd() {
 	}
 	public function objectEnd() {
-		{
-			$x = "}";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
-		}
+		$this->buf->add("}");
 		$this->count->pop();
 	}
 	public function arrayStart() {
-		{
-			$x = "[";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
-		}
+		$this->buf->add("[");
 		$this->count->push(0);
 	}
 	public function arrayItemStart() {
 		if($this->count->»a[$this->count->length - 1]++ > 0) {
-			$x = ",";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
+			$this->buf->add(",");
 		}
 	}
 	public function arrayItemEnd() {
 	}
 	public function arrayEnd() {
-		{
-			$x = "]";
-			if(is_null($x)) {
-				$x = "null";
-			} else {
-				if(is_bool($x)) {
-					$x = (($x) ? "true" : "false");
-				}
-			}
-			$this->buf->b .= $x;
-		}
+		$this->buf->add("]");
 		$this->count->pop();
 	}
 	public function valueDate($d) {
-		$x = $d->getTime();
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add($d->getTime());
 	}
 	public function valueString($s) {
-		$x = $this->quote($s);
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add($this->quote($s));
 	}
 	public function valueInt($i) {
-		$x = $i;
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add($i);
 	}
 	public function valueFloat($f) {
-		$x = $f;
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add($f);
 	}
 	public function valueNull() {
-		$x = "null";
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add("null");
 	}
 	public function valueBool($b) {
-		$x = (($b) ? "true" : "false");
-		if(is_null($x)) {
-			$x = "null";
-		} else {
-			if(is_bool($x)) {
-				$x = (($x) ? "true" : "false");
-			}
-		}
-		$this->buf->b .= $x;
+		$this->buf->add((($b) ? "true" : "false"));
 	}
 	public function comment($s) {
 	}

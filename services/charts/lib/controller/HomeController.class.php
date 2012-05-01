@@ -21,5 +21,6 @@ class controller_HomeController extends ufront_web_mvc_Controller {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $__rtti = "<class path=\"controller.HomeController\" params=\"\">\x0A\x09<extends path=\"ufront.web.mvc.Controller\"/>\x0A\x09<config><c path=\"model.ConfigGateway\"/></config>\x0A\x09<index public=\"1\" set=\"method\" line=\"14\"><f a=\"?auth\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ContentResult\"/>\x0A</f></index>\x0A\x09<new public=\"1\" set=\"method\" line=\"9\"><f a=\"config\">\x0A\x09<c path=\"model.ConfigGateway\"/>\x0A\x09<e path=\"Void\"/>\x0A</f></new>\x0A</class>";
+	static $__properties__ = array("set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'controller.HomeController'; }
 }

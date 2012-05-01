@@ -32,12 +32,12 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 				}
 			}
 			if(!$haserrors) {
-				$controller = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.RenderableAPIController"));
-				$controller->controllerContext = $this->controllerContext;
+				$controller1 = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.RenderableAPIController"));
+				$controller1->controllerContext = $this->controllerContext;
 				if(null !== $displayFormat) {
-					return $controller->uploadAndDisplay($html, $config, $displayFormat, null);
+					return $controller1->uploadAndDisplay($html, $config, $displayFormat, null);
 				} else {
-					return $controller->upload($html, $config, "html");
+					return $controller1->upload($html, $config, "html");
 				}
 			}
 		} else {
@@ -52,9 +52,9 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 	public function gist($gistid) {
 		$id = $this->validateGist($gistid);
 		if(null !== $id) {
-			$controller = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.GistUploadController"));
-			$controller->controllerContext = $this->controllerContext;
-			return $controller->importGist($id, "html");
+			$controller1 = ufront_web_mvc_DependencyResolver::$current->getService(_hx_qtype("controller.GistUploadController"));
+			$controller1->controllerContext = $this->controllerContext;
+			return $controller1->importGist($id, "html");
 		} else {
 			$ob = _hx_anonymous(array("baseurl" => App::baseUrl(), "error" => $this->lastError, "url" => new ufront_web_mvc_view_UrlHelperInst($this->controllerContext->requestContext), "gistid" => $gistid));
 			return new ufront_web_mvc_ContentResult(_hx_deref(new template_GistUpload())->execute($ob), null);
@@ -86,5 +86,6 @@ class controller_UploadForm extends ufront_web_mvc_Controller {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $__rtti = "<class path=\"controller.UploadForm\" params=\"\" module=\"controller.UploadFormController\">\x0A\x09<extends path=\"ufront.web.mvc.Controller\"/>\x0A\x09<display public=\"1\" set=\"method\" line=\"8\"><f a=\"?html:?config:?displayFormat\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<d/>\x0A</f></display>\x0A\x09<lastError><c path=\"String\"/></lastError>\x0A\x09<gist public=\"1\" set=\"method\" line=\"62\"><f a=\"?gistid\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></gist>\x0A\x09<validateGist set=\"method\" line=\"81\"><f a=\"id\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A</f></validateGist>\x0A\x09<new public=\"1\" set=\"method\" line=\"6\"><f a=\"\"><e path=\"Void\"/></f></new>\x0A</class>";
+	static $__properties__ = array("set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'controller.UploadForm'; }
 }

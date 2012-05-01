@@ -49,7 +49,7 @@ class Lambda {
 			$»it = $it->iterator();
 			while($»it->hasNext()) {
 				$x = $»it->next();
-				if($x === $elt) {
+				if($x == $elt) {
 					return true;
 				}
 			}
@@ -146,7 +146,7 @@ class Lambda {
 		$»it = $it->iterator();
 		while($»it->hasNext()) {
 			$v2 = $»it->next();
-			if($v === $v2) {
+			if($v == $v2) {
 				return $i;
 			}
 			$i++;

@@ -105,7 +105,8 @@ class Dates {
 				return Math::floor($time / 3600000.0) * 3600000.0;
 			}break;
 			case "day":{
-				return Math::floor($time / 86400000.) * 86400000.;
+				$d = Date::fromTime($time);
+				return _hx_deref(new Date($d->getFullYear(), $d->getMonth(), $d->getDate(), 0, 0, 0))->getTime();
 			}break;
 			case "week":{
 				return Math::floor($time / 604800000.) * 604800000.;
@@ -135,7 +136,8 @@ class Dates {
 					return Math::ceil($time / 3600000.0) * 3600000.0;
 				}break;
 				case "day":{
-					return Math::ceil($time / 86400000.) * 86400000.;
+					$d = Date::fromTime($time);
+					return _hx_deref(new Date($d->getFullYear(), $d->getMonth(), $d->getDate() + 1, 0, 0, 0))->getTime();
 				}break;
 				case "week":{
 					return Math::ceil($time / 604800000.) * 604800000.;
@@ -164,7 +166,8 @@ class Dates {
 					return Math::round($time / 3600000.0) * 3600000.0;
 				}break;
 				case "day":{
-					return Math::round($time / 86400000.) * 86400000.;
+					$d = Date::fromTime($time); $mod = (($d->getHours() >= 12) ? 1 : 0);
+					return _hx_deref(new Date($d->getFullYear(), $d->getMonth(), $d->getDate() + $mod, 0, 0, 0))->getTime();
 				}break;
 				case "week":{
 					return Math::round($time / 604800000.) * 604800000.;
@@ -210,7 +213,7 @@ class Dates {
 			$s = 6;
 		}break;
 		default:{
-			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 184, "className" => "Dates", "methodName" => "snapToWeekDay"))));
+			throw new HException(new thx_error_Error("unknown week day '{0}'", null, $day, _hx_anonymous(array("fileName" => "Dates.hx", "lineNumber" => 186, "className" => "Dates", "methodName" => "snapToWeekDay"))));
 		}break;
 		}
 		return $time - ($d - $s) % 7 * 24 * 60 * 60 * 1000;

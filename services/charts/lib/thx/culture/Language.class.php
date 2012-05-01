@@ -19,5 +19,6 @@ class thx_culture_Language extends thx_culture_Info {
 			thx_culture_Language::getLanguages()->set($language->iso2, $language);
 		}
 	}
+	static $__properties__ = array("get_languages" => "getLanguages");
 	function __toString() { return 'thx.culture.Language'; }
 }

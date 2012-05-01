@@ -46,6 +46,7 @@ class controller_BaseController extends ufront_web_mvc_Controller {
 			throw new HException('Unable to call «'.$m.'»');
 	}
 	static $__rtti = "<class path=\"controller.BaseController\" params=\"\">\x0A\x09<extends path=\"ufront.web.mvc.Controller\"/>\x0A\x09<urlHelper public=\"1\" get=\"getUrlHelper\" set=\"null\"><c path=\"ufront.web.mvc.view.UrlHelperInst\"/></urlHelper>\x0A\x09<getUrlHelper set=\"method\" line=\"13\"><f a=\"\"><c path=\"ufront.web.mvc.view.UrlHelperInst\"/></f></getUrlHelper>\x0A\x09<error set=\"method\" line=\"22\"><f a=\"message:format\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></error>\x0A\x09<output params=\"T\" set=\"method\" line=\"27\"><f a=\"data:format:templateClass\">\x0A\x09<c path=\"output.T\"/>\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"Class\"><d/></c>\x0A\x09<c path=\"ufront.web.mvc.ActionResult\"/>\x0A</f></output>\x0A\x09<normalizeFormat set=\"method\" line=\"46\"><f a=\"f\">\x0A\x09<c path=\"String\"/>\x0A\x09<c path=\"String\"/>\x0A</f></normalizeFormat>\x0A\x09<new public=\"1\" set=\"method\" line=\"10\"><f a=\"\"><e path=\"Void\"/></f></new>\x0A</class>";
+	static $__properties__ = array("get_urlHelper" => "getUrlHelper","set_invoker" => "setInvoker","get_invoker" => "getInvoker","set_valueProvider" => "setValueProvider","get_valueProvider" => "getValueProvider");
 	function __toString() { return 'controller.BaseController'; }
 }
 function controller_BaseController_0(&$»this, &$data, &$format, &$templateClass) {
