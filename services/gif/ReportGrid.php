@@ -138,12 +138,12 @@ class ReportGridAPI {
     }
 
     public function gifUrl($path, $events, $options = null) {
-        $args = array("tokenId" => $this->_tokenID, "path" => urlencode($path), "event" => json_encode($events));
+        $args = array("tokenId=" . $this->_tokenID, "path=" . urlencode($path), "event=" . urlencode(json_encode($events)));
         if(BASE_URL != $this->_baseUrl)
-            $args['service'] = urlencode($this->_baseUrl);
+            $args[] = 'service=' . urlencode($this->_baseUrl);
         if($options) {
             foreach ($options as $key => $value) {
-                $args[$key] = urlencode($value);
+                $args[] = $key . "=" . urlencode($value);
             }
         }
         return GIF_URL . "?" . implode('&', $args);
