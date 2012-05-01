@@ -1,1 +1,27 @@
-../../../client-libraries/reportgrid/php/src/transparent.php
+<?php
+header("Content-type: image/gif");
+header("Content-length: 43");
+
+$fp=fopen("php://output","wb");
+fwrite($fp,"GIF89a\x01\x00\x01\x00\x80\x00\x00\xFF\xFF\xFF\x00\x00\x00\x21\xF9\x04\x01\x00\x00\x00\x00\x2C\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3B",43);
+fclose($fp);
+
+require_once("ReportGrid.php");
+
+$token      = isset($_GET['tokenId']) ? $_GET['tokenId'] : null;
+$path       = isset($_GET['path'])    ? $_GET['path']    : null;;
+$event      = isset($_GET['event'])   ? $_GET['event']   : null;;
+
+$service    = isset($_GET['service']) ? $_GET['service'] : null;;
+$rollup     = isset($_GET['rollup'])  ? $_GET['rollup']  : null;;
+
+if(!$token || !$path || !$event) exit(1);
+
+$options = array();
+if($rollup)
+    $options['rollup'] = $rollup;
+
+$events = json_decode($event, true);
+
+$api = $service ? new ReportGridAPI($token, $service) : new ReportGridAPI($token);
+$api->track($path, $events, $options);
