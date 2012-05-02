@@ -17,6 +17,7 @@ class ReportGridAPI {
     private $_baseUrl = null;
     public $isError = false;
     public $errorMessage = null;
+    public $forwardIP = false;
 
     /*
      * Initialize a new ReportGridAPI object
@@ -33,7 +34,7 @@ class ReportGridAPI {
      * Create a new token
      *
      * @param String path         The path, relative to the parent's path, that will be associated with this tokenId
-     * @param String expires 	  The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time
+     * @param String expires      The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time
      * @param String read         Does this token have read permissions
      * @param String write        Does this token have write permissions
      * @param String share        Does this token have share permissions
@@ -380,6 +381,15 @@ class ReportGridAPI {
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
+    private function ip()
+    {
+        return array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
+            ? $_SERVER['HTTP_X_FORWARDED_FOR']
+            : array_key_exists('REMOTE_ADDR', $_SERVER)
+            ? $_SERVER['REMOTE_ADDR']
+            : null;
+    }
+
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
         $return = null;
 
@@ -390,11 +400,12 @@ class ReportGridAPI {
         ));
         if ($params !== null) {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
-
-
-                $header = "Content-Type: application/json";
+                $header = "Content-Type: application/json\r\n";
                 $http_params['http']['content'] = json_encode($params);
                 $http_params['http']['header'] = $header;
+                if($this->forwardIP && ($ip = $this->ip())) {
+                    $http_params['http']['header'] .= "X-Forwarded-For: $ip\r\n";
+                }
                 // workaround for php bug where http headers don't get sent in php 5.2
                 if(version_compare(PHP_VERSION, '5.3.0') == -1){
                     ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header);
