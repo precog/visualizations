@@ -383,11 +383,14 @@ class ReportGridAPI {
      *********************************/
     private function ip()
     {
+        $headers = @apache_request_headers();
+        if($headers && isset($headers['X-Forwarded-For']))
+            return $headers['X-Forwarded-For'];
         return array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
             ? $_SERVER['HTTP_X_FORWARDED_FOR']
-            : array_key_exists('REMOTE_ADDR', $_SERVER)
+            : (array_key_exists('REMOTE_ADDR', $_SERVER)
             ? $_SERVER['REMOTE_ADDR']
-            : null;
+            : null);
     }
 
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
