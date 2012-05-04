@@ -385,7 +385,7 @@ class ReportGridAPI {
     {
         $headers = @apache_request_headers();
         if($headers && isset($headers['X-Forwarded-For']))
-            return $headers['X-Forwarded-For'];
+            return trim(array_shift(explode(',', $headers['X-Forwarded-For'])));
         return array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
             ? $_SERVER['HTTP_X_FORWARDED_FOR']
             : (array_key_exists('REMOTE_ADDR', $_SERVER)
