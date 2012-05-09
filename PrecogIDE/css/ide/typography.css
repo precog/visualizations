@@ -1,0 +1,28 @@
+html
+{
+    font: 75% 'Lucida Sans Unicode','Lucida Grande',arial,helvetica,sans-serif;
+    color: #000;
+}
+
+.pg-statusbar
+{
+    font-size: 90%;
+}
+
+/*.pg-statusbar .k-state-disabled .k-link */
+.pg-statusbar .k-state-disabled, .pg-statusbar .k-state-disabled .k-link, .pg-statusbar .k-state-disabled .k-button,
+.pg-statusbar .k-other-month .k-link, .pg-statusbar .k-dropzone em, .pg-statusbar .k-tile-empty strong,
+.pg-statusbar .k-slider .k-draghandle
+{
+    color: inherit;
+}
+
+.pg-output .pg-json, .pg-output .ace_line
+{
+    white-space: pre;
+}
+
+.pg-left-bar
+{
+    font-weight: bold;
+}

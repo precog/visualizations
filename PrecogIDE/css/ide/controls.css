@@ -1,0 +1,201 @@
+.pg-statusbar .k-last
+{
+    float: right;
+    border: 0;
+    margin: 6px 8px 0 0;
+}
+
+.pg-statusbar .k-last .k-link
+{
+    padding: 0;
+}
+
+.pg-execution-time .pg-progress
+{
+    width: 80px;
+    height: 10px;
+    display: inline-block;
+}
+
+.pg-execution-time .pg-progress .k-slider-track
+{
+    width: 100%;
+    height: 8px;
+}
+
+.pg-execution-time .pg-progress .k-slider-selection
+{
+    height: 8px;
+}
+
+.pg-output
+{
+    height: 100%;
+    overflow: hidden;
+}
+
+.pg-output .k-grid.k-widget
+{
+    height: 100%;
+}
+
+.pg-output .ace_invalid
+{
+    padding: 0 4px;
+}
+
+.pg-output .ace_invalid:first-child
+{
+    padding-top: 4px;
+}
+
+.pg-output .ace_editor
+{
+    position: relative;
+}
+
+.pg-main-bar, .pg-output-toolbar
+{
+    height: 35px;
+}
+
+.pg-left-bar
+{
+    float: left;
+    margin: 10px;
+}
+
+.pg-right-bar
+{
+    float: right;
+    margin: 5px;
+}
+
+.pg-main-bar
+{
+    z-index: 10000 !important;
+}
+
+.pg-right-bar a
+{
+    margin-left: 5px;
+}
+
+.pg-json
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+.pg-output-panes, .pg-output-panes .k-grid, .pg-output-panes .k-splitter, .pg-output-panes .k-splitter .k-splitbar
+{
+    border-width: 0;
+}
+
+.pg-main-bar, .pg-output-toolbar, .pg-statusbar ul
+{
+    border-left: 0;
+    border-right: 0;
+}
+
+.pg-main-bar
+{
+    border-top: 0;
+}
+
+.pg-output-panes .k-splitter .k-splitbar, .pg-output-panes .k-splitbar-static-vertical,
+.pg-precog-ide.k-splitter > .k-splitbar, .pg-precog-ide.k-splitter > .k-splitbar-static-vertical
+{
+    width: 0;
+    height: 0;
+    border-width: 0;
+}
+
+.pg-statusbar.k-pane, .pg-main-bar.k-pane
+{
+    overflow: visible;
+    z-index: 1;
+}
+
+.pg-runner {
+    display: block;
+    position: absolute;
+    right: 25px;
+    bottom: 25px;
+}
+
+.pg-editor-container {
+    height: 100%;
+}
+
+.pg-main-bar .pg-right-bar li {
+    border: 0;
+}
+
+.pg-editors.k-tabstrip,
+.pg-editors.k-tabstrip .k-content,
+.pg-editors.k-tabstrip .k-content.k-state-active {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.pg-editor-toolbar {
+    position: absolute;
+    z-index: 10;
+    overflow: visible !important;
+}
+
+.pg-editor-toolbar a {
+    float: right;
+    margin: 3px 5px 0 0;
+}
+
+
+.k-icon.pg-sprite.pg-icon.pg-close.pg-tab-close {
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+/* SPRITES */
+
+.pg-download {
+    background-position:0px 0px;
+}
+
+.pg-help {
+    background-position:0px -16px;
+}
+
+.pg-new {
+    background-position:0px -32px;
+}
+
+.pg-minimize {
+    background-position:0px -48px;
+}
+
+.pg-close {
+    background-position:0px -64px;
+}
+
+.pg-duplicate {
+    background-position:0px -80px;
+}
+
+.pg-maximize {
+    background-position:0px -96px;
+}
+
+.pg-folder {
+    background-position:0px -112px;
+}
+
+.pg-query {
+    background-position:0px -128px;
+}
+
+.pg-settings {
+    background-position:0px -144px;
+}

@@ -519,38 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "src/rg/query/ReportGridQuery.hx",
-			"settings":
-			{
-				"buffer_size": 19758,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "bin/service/samples/data/random impression.json",
-			"settings":
-			{
-				"buffer_size": 3616,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
-			"settings":
-			{
-				"buffer_size": 10722,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/rg/app/query/JSBridge.hx",
-			"settings":
-			{
-				"buffer_size": 3737,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -664,13 +632,15 @@
 	},
 	"file_history":
 	[
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/ReportGridExecutorCache.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/app/query/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/data/random impression.json",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/ReportGridExecutorCache.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/release.hxml",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/app/query/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/version",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/DataSourceReportGridGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/ITrackReportGrid.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/css/rg-charts.css",
@@ -683,7 +653,6 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG930-raw events - where.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG720-summary - mean with where.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/reportgrid/ITrackReportGrid.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/js/src/v1/reportgrid-core.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG120-explore - values with where.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/RG405-intersect - simple with where.js",
@@ -790,8 +759,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/index.html",
 		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/innerpagetemplate.html",
 		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/news-and-events.html",
-		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/pricing.html",
-		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/success-stories.html"
+		"/Users/francoponticelli/Projects/reportgrid/website/queriowebsite/pricing.html"
 	],
 	"find":
 	{
@@ -841,6 +809,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"eventSeries",
 			"Query.",
 			"thx.json.Json.decode",
 			"thx",
@@ -967,8 +936,7 @@
 			"reduce",
 			"f",
 			"addField",
-			"yestarday",
-			"trace"
+			"yestarday"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1035,320 +1003,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/rg/query/ReportGridQuery.hx",
-					"settings":
-					{
-						"buffer_size": 19758,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								252,
-								251
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"haxe-build-id": 0,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "bin/service/samples/data/random impression.json",
-					"settings":
-					{
-						"buffer_size": 3616,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3021,
-								3021
-							],
-							[
-								3072,
-								3072
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1438.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/query/Query.hx",
-					"settings":
-					{
-						"buffer_size": 10722,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								142,
-								142
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"haxe-build-id": 0,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/rg/app/query/JSBridge.hx",
-					"settings":
-					{
-						"buffer_size": 3737,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								897,
-								381
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"haxe-build-id": 0,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 237.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -1383,10 +1039,6 @@
 		]
 	},
 	"menu_visible": true,
-	"output.exec":
-	{
-		"height": 116.0
-	},
 	"replace":
 	{
 		"height": 62.0
