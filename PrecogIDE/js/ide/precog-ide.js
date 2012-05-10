@@ -11,7 +11,8 @@
     // UTILITIES
     $.browser.safari = ( $.browser.safari && /chrome/.test(navigator.userAgent.toLowerCase()) ) ? false : true;
 
-    var doc = document,
+    var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
+        doc = document,
         initialFolder = location.href.match(/\//g).length,
         skinRegex = /kendo\.\w+(\.min)?\.css/i,
         loadCssNative = document.createStyleSheet ?
@@ -46,6 +47,24 @@
                 if(counter > 0 || !callback) return;
                 callback();
             });
+        }
+    };
+
+    var selectText = function(element) {
+        if (document.body.createTextRange) { // ms
+            var range = document.body.createTextRange();
+            range.moveToElementText(element);
+            range.select();
+        } else if (window.getSelection) {
+            var selection = window.getSelection();
+            if (selection.setBaseAndExtent) { // webkit
+                selection.setBaseAndExtent(element, 0, element, 1);
+            } else { // moz, opera
+                var range = document.createRange();
+                range.selectNodeContents(element);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     };
 
@@ -380,6 +399,30 @@
             function htmlEditorBar() {
                 return '<div class="pg-editor-toolbar">' +
                     '<a class="pg-add-editor-button k-button"><span class="k-icon pg-icon pg-new"></span></a>' +
+                    '<a class="pg-download-editor-button k-button"><span class="k-icon pg-icon pg-download"></span></a>' +
+                    '</div>'
+                ;
+            }
+
+            function htmlDownloadQuirrelSnippet(languages) {
+                var buttons = [];
+                for(var i = 0; i < languages.length; i++) {
+                    buttons.push('<a href="#" class="k-button pg-quirrel-to pg-quirrel-to-'+languages[i].token+'">'+languages[i].name+'</a>');
+                }
+                return '<div class="pg-quirrel-download">' +
+                        '<form method="POST" action="'+downloadQueryService+'">' +
+                            '<div class="k-toolbar pg-toolbar">' +
+                                buttons.join(' ') +
+                            '</div>' +
+                            '<div class="k-copy-container">' +
+                                '<textarea class="pg-quirrel-code-copier" name="query"></textarea>' +
+                                '<input type="hidden" name="name" value="">' +
+                            '</div>' +
+                            '<div class="k-toolbar pg-toolbar pg-actions">' +
+                                '<a href="#" class="k-button pg-quirrel-action-copy">copy</a> ' +
+                                '<button type="submit" class="k-button pg-quirrel-action-download">download</button> ' +
+                            '</div>' +
+                        '</form>' +
                     '</div>'
                 ;
             }
@@ -448,6 +491,109 @@
                 tabs.select(tabs.items().length - 1);
             });
 
+            function quirrelToOneLine(code) {
+                return code
+                    .replace(/--(.*)$/mg, '(- $1 -)')
+                    .replace(/(\s+)/mg, ' ')
+                    .replace(/"/g, '\"')
+                    .trim()
+                ;
+            }
+
+            el.find('.pg-download-editor-button').click((function() {
+                var config = window.Precog.$.Config,
+                    tokenId = config.tokenId,
+                    service = config.analyticsService;
+
+                var languages = [{
+                    token: "qrl",
+                    name : "Quirrel",
+                    handler : function(code) {
+                        return "# Quirrel query generated with Quirrel IDE by Precog\n\n" + code.trim();
+                    }
+                }, {
+                    token: "js",
+                    name : "JavaScript",
+                    handler : function(code) {
+                        code = quirrelToOneLine(code);
+                        return "// Quirrel query in JavaScript generated with Quirrel IDE by Precog\n\n" +
+                            'Precog.query("'+code+'",\n\tfunction(data) { /* do something with the data */ },\n\tfunction(error) { console.log(error); }\n);';
+                    }
+                }, {
+                    token: "html",
+                    name : "HTML",
+                    handler : function(code) {
+                        code = quirrelToOneLine(code);
+                        return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId="'+tokenId+'&analyticsService='+service+'"></script>\n' +
+                            '<script>\n' +
+                            "// Quirrel query in JavaScript generated with Quirrel IDE by Precog\n\n" +
+                            'Precog.query("'+code+'",\n\tfunction(data) { /* do something with the data */ },\n\tfunction(error) { console.log(error); }\n);\n' +
+                            '</script>\n</head>\n<body></body>\n</html>'
+                            ;
+                    }
+                }, {
+                    token: "php",
+                    name : "PHP",
+                    handler : function(code) {
+                        code = quirrelToOneLine(code);
+                        return '<?php\n\n' +
+                            "// Quirrel query in PHP generated with Quirrel IDE by Precog\n\n" +
+                            'require_once("Precog.php");\n\n' +
+                            '' +
+                            '$precog = new PrecogAPI("'+tokenId+'", "'+service+'");\n$result = $precog->query("'+code+'");\n' +
+                            'if(false === $precog) {\n' +
+                            '\tdie($precog->errorMessage());\n' +
+                            '} else {\n' +
+                            '\t// do something with $result here\n' +
+                            '}\n?>'
+                            ;
+                    }
+                }];
+                return function() {
+                    var el = $(".pg-quirrel-download");
+                    if(0 === el.length) {
+                        el = $(document.body).append(htmlDownloadQuirrelSnippet(languages)).find(".pg-quirrel-download");
+                        el.kendoWindow({
+                            title : "Export Query",
+                            modal : true,
+                            width: 700,
+                            height : 450,
+                            overflow: "hidden",
+                            resizable : false,
+                            draggable : false
+                        });
+
+                        el.find('textarea').click(function(){
+                            selectText(this);
+                        });
+
+                        for(var i = 0; i < languages.length; i++) {
+                            el.find('.pg-quirrel-to-' + languages[i].token).click((function(lang) {
+                                return function() {
+                                    el.find('.pg-quirrel-to').removeClass('k-state-active');
+                                    $(this).addClass('k-state-active');
+                                    var code = window.PrecogIDE.ide.getSession().getValue();
+                                    el.find('textarea').text(lang.handler(code));
+                                    el.find('input[name=name]').text("query." + lang.token);
+                                }
+                            })(languages[i]));
+                            if(i == 0)
+                                el.find('.pg-quirrel-to-' + languages[i].token).click();
+                        }
+
+                        el.find('a.pg-quirrel-action-copy').zclip({
+                            path:'js/zclip/ZeroClipboard.swf',
+                            copy:function(){
+                                return el.find('textarea').text();
+                            }
+                        });
+                    }
+                    var win = el.data("kendoWindow");
+                    win.center();
+                    win.open();
+                };
+            })());
+
             el.kendoSplitter({
                 panes : [
                     {scrollable:false,collapsible:false,resizable:false,size:"35px"},
@@ -472,6 +618,7 @@
                 var li = e.item,
                     uid = $(li).data("uid");
                 var ace = editors[uid].ace();
+                window.PrecogIDE.ide = ace;
                 setTimeout(function() { ace.focus(); }, 100);
             });
 
@@ -878,7 +1025,7 @@
                 editors : editors
             };
         };
-        window.PrecogIDE.changeTheme =  changeIdeTheme;
+        window.PrecogIDE.changeTheme = changeIdeTheme;
         window.PrecogIDE.clearConfig = configIde.clear;
 
         $(function() {
@@ -889,5 +1036,5 @@
     // load mandatory css/scripts
     loadCss(["css/kendoui/kendo.common.min.css", "css/kendoui/kendo.default.min.css", "css/ide/typography.css", "css/ide/controls.css"]);
     //"http://api.reportgrid.com/js/precog.js"
-    loadSyncScript(["js/jquery/jstorage.js", "http://api.reportgrid.com/js/precog.js", "js/kendoui/kendo.web.min.js", "js/ace/ace.js", "js/ace/mode-quirrel-uncompressed.js"], init);
+    loadSyncScript(["js/jquery/jstorage.js", "http://api.reportgrid.com/js/precog.js", "js/kendoui/kendo.web.min.js", "js/ace/ace.js", "js/ace/mode-quirrel-uncompressed.js", "js/zclip/jquery.zclip.min.js"], init);
 })();

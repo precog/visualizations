@@ -26,3 +26,20 @@ html
 {
     font-weight: bold;
 }
+
+.pg-quirrel-download textarea {
+    font-family: monospace;
+    padding: 10px;
+    font-size: 12px;
+    line--height: 16px;
+    resize: none;
+}
+
+/*
+* {
+    -webkit-transition: color 0.75s;
+    -webkit-transition: background-color 0.75s;
+    -moz-transition: color 0.5s;
+    -moz-transition: background-color 0.5s;
+}
+*/

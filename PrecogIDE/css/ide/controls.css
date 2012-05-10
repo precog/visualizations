@@ -165,6 +165,23 @@
     margin-right: 0;
 }
 
+.pg-quirrel-download.k-window-content {
+    overflow: hidden;
+}
+
+.pg-quirrel-download textarea {
+    width: 664px;
+    height: 334px;
+    border: none;
+}
+
+.pg-toolbar {
+    padding: 6px;
+    margin: 2px 0;
+    text-align: center;
+}
+
+
 /* SPRITES */
 
 .pg-download {
