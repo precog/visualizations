@@ -357,9 +357,10 @@
             }
 
             function htmlMainMenu() {
-                return '<div k-toolbar>' +
-                    '<a class="pg-config-button k-button"><span class="k-icon pg-icon pg-settings"></span></a>' +
-                    '<a class="pg-fullscreen k-button"><span class="k-icon pg-icon pg-maximize"></span></a>' +
+                return '<div class="k-toolbar">' +
+                    '<a href="http://precog.io/" target="_blank"><span class="pg-logo pg-precog"></span></a></div>' +
+                    '<a href="#" class="pg-config-button k-button"><span class="k-icon pg-icon pg-settings"></span></a>' +
+                    '<a href="#" class="pg-fullscreen k-button"><span class="k-icon pg-icon pg-maximize"></span></a>' +
                     '</div>' +
                     '<ul class="pg-config-menu k-widget k-popup">' +
                         '<li class="k-item k-state-focused">light themes:</li>' +
@@ -373,7 +374,7 @@
             }
 
             function htmlMainBar() {
-                return "<div class=\"pg-left-bar\">Quirrel IDE</div><div class=\"pg-right-bar\">" + htmlMainMenu() + "</div>";
+                return "<div class=\"pg-left-bar\"><a href=\"http://quirrel-lang.org/\" target=\"_blank\"><span class=\"pg-logo pg-quirrel\"></span></a> IDE</div><div class=\"pg-right-bar\">" + htmlMainMenu() + "</div>";
             }
 
             function htmlEditorBar() {
@@ -418,7 +419,7 @@
 
             function changeTheme(theme) {
                 if(!theme) theme = "default";
-                $('.pg-right-bar ul .editor-theme')
+                mainbar.find('ul .editor-theme')
                     .removeClass('k-state-selected')
                     .each(function() {
                         if($(this).attr("data-editor-theme") == theme)
@@ -428,7 +429,7 @@
                 changeIdeTheme(themeMap[theme]);
             }
 
-            mainbar.find('.pg-right-bar ul .editor-theme').click(function (e) {
+            mainbar.find('ul .editor-theme').click(function (e) {
                 configIde.set("theme", $(this).attr('data-editor-theme'));
                 changeTheme(configIde.get("theme"));
                 e.preventDefault(); return false;
@@ -764,7 +765,7 @@
                     {collapsible:false, min:"100px",scrollable:false,resizable:true},
                     {collapsible:false, min:"100px", size:"50%",scrollable:false}
                 ],
-                orientation : "horizontal",
+                orientation : "vertical",
                 resize: (function () {
                     var kill;
                     return function (){
