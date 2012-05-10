@@ -4,8 +4,6 @@
     <list default="true" id="42f73fb1-5b65-4349-9317-210ff67781a6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/ide/controls.css" afterPath="$PROJECT_DIR$/css/ide/controls.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/ide/typography.css" afterPath="$PROJECT_DIR$/css/ide/typography.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ide.html" afterPath="$PROJECT_DIR$/ide.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/ide/precog-ide.js" afterPath="$PROJECT_DIR$/js/ide/precog-ide.js" />
     </list>
     <ignored path="PrecogIDE.iws" />
@@ -31,7 +29,7 @@
       <file leaf-file-name="ide.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ide.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="-4.375">
+            <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -40,7 +38,7 @@
       <file leaf-file-name="precog-ide.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/ide/precog-ide.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="557" column="41" selection-start="23667" selection-end="23667" vertical-scroll-proportion="0.49373883">
+            <state line="579" column="64" selection-start="24849" selection-end="24849" vertical-scroll-proportion="0.50715566">
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -51,7 +49,7 @@
       <file leaf-file-name="default.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../website/js/default.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="-18.76923">
+            <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -76,7 +74,7 @@
       <file leaf-file-name="pg-sprite-light.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-light.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="1" selection-start="80" selection-end="80" vertical-scroll-proportion="-0.54545456">
+            <state line="2" column="1" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -85,7 +83,7 @@
       <file leaf-file-name="controls.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/ide/controls.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="173" column="14" selection-start="2454" selection-end="2454" vertical-scroll-proportion="-6.672727">
+            <state line="172" column="12" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -94,7 +92,7 @@
       <file leaf-file-name="typography.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/ide/typography.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="-5.4545455">
+            <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -340,14 +338,14 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="JavaScriptLanguageLevel" value="ES5" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
     <property name="JavaScriptPreferStrict" value="true" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -408,9 +406,9 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.85820895" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.85240465" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.13598673" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.14179105" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -499,30 +497,6 @@
         <state line="517" column="30" selection-start="17179" selection-end="17179" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/ide/images/custom-precog-sprite-dark.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-dark.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="1" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-light.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="1" selection-start="80" selection-end="80" vertical-scroll-proportion="-0.54545456">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ide.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="-4.375">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../website/charts.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="43" selection-start="898" selection-end="904" vertical-scroll-proportion="0.26785713">
@@ -532,35 +506,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../website/js/charts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.29645637">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.29645637" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ide.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../website/js/default.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="-18.76923">
+        <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/ide/images/custom-precog-sprite-dark.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-light.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="1" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/ide/typography.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="-5.4545455">
+        <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-dark.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="1" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/css/ide/controls.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="173" column="14" selection-start="2454" selection-end="2454" vertical-scroll-proportion="-6.672727">
+        <state line="172" column="12" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/ide/precog-ide.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="557" column="41" selection-start="23667" selection-end="23667" vertical-scroll-proportion="0.49373883">
+        <state line="579" column="64" selection-start="24849" selection-end="24849" vertical-scroll-proportion="0.50715566">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

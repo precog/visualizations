@@ -377,7 +377,7 @@
 
             function htmlMainMenu() {
                 return '<div class="k-toolbar">' +
-                    '<a href="http://precog.io/" target="_blank"><span class="pg-logo pg-precog"></span></a></div>' +
+                    '<a href="http://precog.io/" target="_blank"><span class="pg-logo pg-precog"></span></a>' +
                     '<a href="#" class="pg-config-button k-button"><span class="k-icon pg-icon pg-settings"></span></a>' +
                     '<a href="#" class="pg-fullscreen k-button"><span class="k-icon pg-icon pg-maximize"></span></a>' +
                     '</div>' +
@@ -415,7 +415,7 @@
                                 buttons.join(' ') +
                             '</div>' +
                             '<div class="k-copy-container">' +
-                                '<textarea class="pg-quirrel-code-copier" name="query"></textarea>' +
+                                '<textarea class="pg-quirrel-code-copier" name="code"></textarea>' +
                                 '<input type="hidden" name="name" value="">' +
                             '</div>' +
                             '<div class="k-toolbar pg-toolbar pg-actions">' +
@@ -524,10 +524,10 @@
                     name : "HTML",
                     handler : function(code) {
                         code = quirrelToOneLine(code);
-                        return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId="'+tokenId+'&analyticsService='+service+'"></script>\n' +
+                        return '<!DOCTYPE html>\n<html>\n<head>\n<title>Quirrel Query</title>\n<script src="http://api.reportgrid.com/js/precog.js?tokenId='+tokenId+'&analyticsService='+service+'"></script>\n' +
                             '<script>\n' +
                             "// Quirrel query in JavaScript generated with Quirrel IDE by Precog\n\n" +
-                            'Precog.query("'+code+'",\n\tfunction(data) { /* do something with the data */ },\n\tfunction(error) { console.log(error); }\n);\n' +
+                            'Precog.query("'+code+'",\n\tfunction(data) {\n\t\t/* do something with the data */\n\t\tconsole.log(data);\n\t},\n\tfunction(error) { console.log(error); }\n);\n' +
                             '</script>\n</head>\n<body></body>\n</html>'
                             ;
                     }
@@ -549,6 +549,7 @@
                             ;
                     }
                 }];
+                var cur;
                 return function() {
                     var el = $(".pg-quirrel-download");
                     if(0 === el.length) {
@@ -556,7 +557,7 @@
                         el.kendoWindow({
                             title : "Export Query",
                             modal : true,
-                            width: 700,
+                            width: 800,
                             height : 450,
                             overflow: "hidden",
                             resizable : false,
@@ -569,12 +570,23 @@
 
                         for(var i = 0; i < languages.length; i++) {
                             el.find('.pg-quirrel-to-' + languages[i].token).click((function(lang) {
-                                return function() {
+                                return function(e) {
+                                    cur = lang.token;
                                     el.find('.pg-quirrel-to').removeClass('k-state-active');
                                     $(this).addClass('k-state-active');
                                     var code = window.PrecogIDE.ide.getSession().getValue();
-                                    el.find('textarea').text(lang.handler(code));
-                                    el.find('input[name=name]').text("query." + lang.token);
+                                    code = lang.handler(code);
+                                    if(configIde.get("indentUsingSpaces", true)) {
+                                        var len = configIde.get("tabWidth", 3),
+                                            spaces = [];
+                                        for(var i = 0; i < len; i++) {
+                                            spaces.push(" ");
+                                        }
+                                        code = code.replace(/\t/g, spaces.join(""));
+                                    }
+                                    el.find('textarea').text(code);
+                                    el.find('input[name=name]').val("query." + lang.token);
+                                    e.preventDefault(); return false;
                                 }
                             })(languages[i]));
                             if(i == 0)
@@ -587,6 +599,8 @@
                                 return el.find('textarea').text();
                             }
                         });
+                    } else {
+                        el.find('.pg-quirrel-to-' + cur).click();
                     }
                     var win = el.data("kendoWindow");
                     win.center();
