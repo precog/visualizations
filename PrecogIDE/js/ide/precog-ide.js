@@ -728,6 +728,30 @@
                 configIde.set("editors."+config.uid, config);
             }
 
+            function cleanOutput() {
+                var grid = el.find('.pg-output').find('.pg-grid');
+                if(grid.length > 0) {
+                    grid.find(".k-filterable").each(function() {
+                        var filterMenu = $(this).data("kendoFilterMenu");
+
+                        var popup = filterMenu.popup;
+
+                        popup.element
+                            .find("select")
+                            .each(function() {
+                                var dropdown = $(this).data("kendoDropDownList");
+
+                                dropdown.element.remove();
+                                dropdown.popup.element.unbind().remove();
+                            })
+                            .end()
+                            .remove();
+                    });
+//                    console.log(grid);
+//                    grid.destroy();
+                }
+            }
+
             function displayResults(data) {
                 config.result = lastResult = data;
                 config.error = null;
@@ -740,6 +764,7 @@
                 if (!lastResult) {
                     return;
                 }
+                cleanOutput();
                 var out = el.find('.pg-output');
                 switch(config.output)
                 {
@@ -769,7 +794,7 @@
                                 return o;
                             });
                         }
-                        $(out.html('<table></table>').find("table")).kendoGrid({
+                        $(out.html('<div class="pg-grid"></div>').find(".pg-grid")).kendoGrid({
                             columns : columns,
                             dataSource : {
                                 schema : { model : { fields : fields } },
@@ -791,6 +816,7 @@
                 config.result = null;
                 config.error = { message : message, content : content };
                 save();
+                cleanOutput();
                 endQuery();
                 var msg = "";
                 if(content instanceof Array)
