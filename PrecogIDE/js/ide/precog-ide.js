@@ -654,11 +654,12 @@
                                 el.find('.pg-code-to-' + languages[i].token).click();
                         }
 
-                        el.find('a.  pg-action-copy').zclip({
+                        el.find('a.pg-action-copy').zclip({
                             path:'js/zclip/ZeroClipboard.swf',
                             copy:function(){
-                                return el.find('textarea').text();
-                            }
+                                return ""+el.find('textarea').val();
+                            },
+                            afterCopy : function() { alert("copied to clipboard"); }
                         });
                     } else {
                         el.find('.pg-code-to-' + cur).click();
@@ -1049,11 +1050,12 @@
                                 el.find('.pg-code-to-' + languages[i].token).click();
                         }
 
-                        el.find('a.  pg-action-copy').zclip({
+                        el.find('a.pg-action-copy').zclip({
                             path:'js/zclip/ZeroClipboard.swf',
                             copy:function(){
-                                return el.find('textarea').text();
-                            }
+                                return ""+el.find('textarea').val();
+                            },
+                            afterCopy : function() { alert("copied to clipboard"); }
                         });
                     } else {
                         el.find('.pg-code-to-' + currentOutputExportFormat).click();
