@@ -8,3 +8,5 @@ query/cache/haxecompiler-cache
 query/bin/js/reportgrid-query.js
 *.tmp
 services/gif/ReportGrid.php
+
+PrecogIDE/.idea/workspace.xml

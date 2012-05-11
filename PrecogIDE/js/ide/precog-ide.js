@@ -556,7 +556,7 @@
                 return code
                     .replace(/--(.*)$/mg, '(- $1 -)')
                     .replace(/(\s+)/mg, ' ')
-                    .replace(/"/g, '\"')
+                    .replace(/"/g, '\\"')
                     .trim()
                 ;
             }
