@@ -22,12 +22,7 @@ html
     white-space: pre;
 }
 
-.pg-left-bar
-{
-    font-weight: bold;
-}
-
-.pg-quirrel-download textarea {
+.pg-download-window textarea {
     font-family: monospace;
     padding: 10px;
     font-size: 12px;

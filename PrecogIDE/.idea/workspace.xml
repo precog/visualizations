@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42f73fb1-5b65-4349-9317-210ff67781a6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/ide/controls.css" afterPath="$PROJECT_DIR$/css/ide/controls.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/ide/typography.css" afterPath="$PROJECT_DIR$/css/ide/typography.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/ide/precog-ide.js" afterPath="$PROJECT_DIR$/js/ide/precog-ide.js" />
     </list>
     <ignored path="PrecogIDE.iws" />
@@ -29,7 +29,7 @@
       <file leaf-file-name="ide.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ide.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0">
+            <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="-0.625">
               <folding />
             </state>
           </provider>
@@ -38,7 +38,7 @@
       <file leaf-file-name="precog-ide.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/ide/precog-ide.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="579" column="64" selection-start="24849" selection-end="24849" vertical-scroll-proportion="0.50715566">
+            <state line="577" column="46" selection-start="22638" selection-end="22638" vertical-scroll-proportion="0.15249538">
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -52,13 +52,6 @@
             <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="0.0">
               <folding />
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="custom-precog-sprite-dark.png" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/css/ide/images/custom-precog-sprite-dark.png">
-          <provider selected="true" editor-type-id="images">
-            <state />
           </provider>
         </entry>
       </file>
@@ -83,7 +76,7 @@
       <file leaf-file-name="controls.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/ide/controls.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="172" column="12" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0">
+            <state line="88" column="1" selection-start="1041" selection-end="1041" vertical-scroll-proportion="-29.423077">
               <folding />
             </state>
           </provider>
@@ -92,7 +85,7 @@
       <file leaf-file-name="typography.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/ide/typography.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="0.0">
+            <state line="35" column="47" selection-start="779" selection-end="779" vertical-scroll-proportion="-9.545455">
               <folding />
             </state>
           </provider>
@@ -125,8 +118,8 @@
         <option value="$PROJECT_DIR$/js/ide/chart.html" />
         <option value="$PROJECT_DIR$/js/jquery/jstorage.js" />
         <option value="$PROJECT_DIR$/ide.html" />
-        <option value="$PROJECT_DIR$/css/ide/typography.css" />
         <option value="$PROJECT_DIR$/css/ide/controls.css" />
+        <option value="$PROJECT_DIR$/css/ide/typography.css" />
         <option value="$PROJECT_DIR$/js/ide/precog-ide.js" />
       </list>
     </option>
@@ -136,10 +129,10 @@
     <scope name="ACE" pattern="file:js/ace/*" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1286" />
+    <option name="x" value="1227" />
     <option name="y" value="22" />
     <option name="width" value="1255" />
-    <option name="height" value="1327" />
+    <option name="height" value="1269" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -400,15 +393,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1286" y="22" width="1255" height="1327" extended-state="0" />
+    <frame x="1227" y="22" width="1255" height="1269" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.85240465" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.85278744" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.14179105" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20292208" sideWeight="0.14111498" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -511,21 +504,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ide.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="0.0">
+        <state line="7" column="0" selection-start="262" selection-end="262" vertical-scroll-proportion="-0.625">
           <folding />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../website/js/default.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/ide/images/custom-precog-sprite-dark.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-light.css">
@@ -535,28 +516,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/ide/typography.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="1" selection-start="518" selection-end="518" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/ide/pg-sprite-dark.css">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="1" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/css/ide/images/custom-precog-sprite-dark.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../website/js/default.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="166" column="28" selection-start="8530" selection-end="8530" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/css/ide/controls.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="172" column="12" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0">
+        <state line="88" column="1" selection-start="1041" selection-end="1041" vertical-scroll-proportion="-29.423077">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/ide/typography.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="47" selection-start="779" selection-end="779" vertical-scroll-proportion="-9.545455">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/ide/precog-ide.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="579" column="64" selection-start="24849" selection-end="24849" vertical-scroll-proportion="0.50715566">
+        <state line="577" column="46" selection-start="22638" selection-end="22638" vertical-scroll-proportion="0.15249538">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>

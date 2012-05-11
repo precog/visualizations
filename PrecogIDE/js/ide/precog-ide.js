@@ -51,8 +51,9 @@
     };
 
     var selectText = function(element) {
+        var range;
         if (document.body.createTextRange) { // ms
-            var range = document.body.createTextRange();
+            range = document.body.createTextRange();
             range.moveToElementText(element);
             range.select();
         } else if (window.getSelection) {
@@ -60,13 +61,73 @@
             if (selection.setBaseAndExtent) { // webkit
                 selection.setBaseAndExtent(element, 0, element, 1);
             } else { // moz, opera
-                var range = document.createRange();
+                range = document.createRange();
                 range.selectNodeContents(element);
                 selection.removeAllRanges();
                 selection.addRange(range);
             }
         }
     };
+
+    function jsonToCsv(json) {
+        if(!json) return "";
+        var rows = [],
+            o = json[0],
+            values, key, keys = [],
+            requote = /[",\n\r]/g,
+            ren = /\n/g,
+            rer = /\r/g,
+            req = /"/g,
+            i;
+
+        function escape(s) {
+            return s
+                .replace(ren, "\\n")
+                .replace(rer, "\\r")
+                .replace(req, '""')
+            ;
+        }
+
+        function value(v) {
+            if("string" == typeof v) {
+                if(v.match(requote)) {
+                    return '"' + escape(v) + '"';
+                } else {
+                    return v;
+                }
+            } else if(v instanceof Array || v instanceof Object) {
+                return value(JSON.stringify(v));
+            } else {
+                return "" + v;
+            }
+        }
+
+        values = [];
+        if(o instanceof Object) {
+            for(key in o) {
+                if(o.hasOwnProperty(key)) {
+                    keys.push(key);
+                    values.push(value(key));
+                }
+            }
+            rows.push(values.join(","));
+            for(i = 0; i<json.length; i++) {
+                values = [];
+                o = json[i];
+                for(var j = 0; j < keys.length; j++) {
+                    values.push(value(o[keys[j]]));
+                }
+                rows.push(values.join(","));
+            }
+        } else {
+            rows.push(value("value"));
+            for(i = 0; i<json.length; i++) {
+                rows.push(value(json[i]));
+            }
+        }
+
+        return rows.join("\n");
+    }
 
     function contextMenu(options) {
         if (!options) { alert('You have not specified any options!'); return; }
@@ -313,6 +374,29 @@
             }
         })();
 
+        function htmlDownloadWindow(languages, name) {
+            var buttons = [];
+            for(var i = 0; i < languages.length; i++) {
+                buttons.push('<a href="#" class="k-button pg-code-to pg-code-to-'+languages[i].token+'">'+languages[i].name+'</a>');
+            }
+            return '<div class="pg-download-window pg-download-'+name+'">' +
+                '<form method="POST" action="'+downloadQueryService+'">' +
+                '<div class="k-toolbar pg-toolbar">' +
+                buttons.join(' ') +
+                '</div>' +
+                '<div class="k-copy-container">' +
+                '<textarea class="  pg-code-copier" name="code"></textarea>' +
+                '<input type="hidden" name="name" value="">' +
+                '</div>' +
+                '<div class="k-toolbar pg-toolbar pg-actions">' +
+                '<a href="#" class="k-button   pg-action-copy">copy</a> ' +
+                '<button type="submit" class="k-button pg-action-download">download</button> ' +
+                '</div>' +
+                '</form>' +
+                '</div>'
+                ;
+        }
+
         var changeIdeTheme = function (skinName) {
             var kendoLinks = $("link[href*='kendo.']", doc.getElementsByTagName("head")[0]),
                 commonLink = kendoLinks.filter("[href*='kendo.common']"),
@@ -400,29 +484,6 @@
                 return '<div class="pg-editor-toolbar">' +
                     '<a class="pg-add-editor-button k-button"><span class="k-icon pg-icon pg-new"></span></a>' +
                     '<a class="pg-download-editor-button k-button"><span class="k-icon pg-icon pg-download"></span></a>' +
-                    '</div>'
-                ;
-            }
-
-            function htmlDownloadQuirrelSnippet(languages) {
-                var buttons = [];
-                for(var i = 0; i < languages.length; i++) {
-                    buttons.push('<a href="#" class="k-button pg-quirrel-to pg-quirrel-to-'+languages[i].token+'">'+languages[i].name+'</a>');
-                }
-                return '<div class="pg-quirrel-download">' +
-                        '<form method="POST" action="'+downloadQueryService+'">' +
-                            '<div class="k-toolbar pg-toolbar">' +
-                                buttons.join(' ') +
-                            '</div>' +
-                            '<div class="k-copy-container">' +
-                                '<textarea class="pg-quirrel-code-copier" name="code"></textarea>' +
-                                '<input type="hidden" name="name" value="">' +
-                            '</div>' +
-                            '<div class="k-toolbar pg-toolbar pg-actions">' +
-                                '<a href="#" class="k-button pg-quirrel-action-copy">copy</a> ' +
-                                '<button type="submit" class="k-button pg-quirrel-action-download">download</button> ' +
-                            '</div>' +
-                        '</form>' +
                     '</div>'
                 ;
             }
@@ -551,9 +612,9 @@
                 }];
                 var cur;
                 return function() {
-                    var el = $(".pg-quirrel-download");
+                    var el = $(".pg-download-quirrel");
                     if(0 === el.length) {
-                        el = $(document.body).append(htmlDownloadQuirrelSnippet(languages)).find(".pg-quirrel-download");
+                        el = $(document.body).append(htmlDownloadWindow(languages, "quirrel")).find(".pg-download-quirrel");
                         el.kendoWindow({
                             title : "Export Query",
                             modal : true,
@@ -569,10 +630,10 @@
                         });
 
                         for(var i = 0; i < languages.length; i++) {
-                            el.find('.pg-quirrel-to-' + languages[i].token).click((function(lang) {
+                            el.find('.pg-code-to-' + languages[i].token).click((function(lang) {
                                 return function(e) {
                                     cur = lang.token;
-                                    el.find('.pg-quirrel-to').removeClass('k-state-active');
+                                    el.find('.pg-code-to').removeClass('k-state-active');
                                     $(this).addClass('k-state-active');
                                     var code = window.PrecogIDE.ide.getSession().getValue();
                                     code = lang.handler(code);
@@ -590,17 +651,17 @@
                                 }
                             })(languages[i]));
                             if(i == 0)
-                                el.find('.pg-quirrel-to-' + languages[i].token).click();
+                                el.find('.pg-code-to-' + languages[i].token).click();
                         }
 
-                        el.find('a.pg-quirrel-action-copy').zclip({
+                        el.find('a.  pg-action-copy').zclip({
                             path:'js/zclip/ZeroClipboard.swf',
                             copy:function(){
                                 return el.find('textarea').text();
                             }
                         });
                     } else {
-                        el.find('.pg-quirrel-to-' + cur).click();
+                        el.find('.pg-code-to-' + cur).click();
                     }
                     var win = el.data("kendoWindow");
                     win.center();
@@ -633,6 +694,7 @@
                     uid = $(li).data("uid");
                 var ace = editors[uid].ace();
                 window.PrecogIDE.ide = ace;
+                window.PrecogIDE.currentTab = uid;
                 setTimeout(function() { ace.focus(); }, 100);
             });
 
@@ -646,7 +708,8 @@
             };
         };
 
-        var buildEditor = function (context, config) {
+        var currentOutputExportFormat,
+            buildEditor = function (context, config) {
             var lastResult, queryStartTime, queryLastExecutionTime = 2000,
                 el = context.createEditorContainer(config.uid);
             var progressBar = function (elementSelector, percent) {
@@ -864,8 +927,8 @@
 
             function htmlOutputBar()
             {
-                return '<div class="pg-left-bar"></div>' +
-                    '<div class="pg-right-bar"><a href="#" class="pg-output-control k-button" data-output-type="table"><span class="k-sprite"></span>table</a><a href="#" class="pg-output-control k-button" data-output-type="json"><span class="k-sprite"></span>json</a></div>'
+                return '<div class="pg-left-bar"><a href="#" class="pg-output-control k-button" data-output-type="table"><span class="k-sprite"></span>table</a><a href="#" class="pg-output-control k-button" data-output-type="json"><span class="k-sprite"></span>json</a></div>' +
+                    '<div class="pg-right-bar"><a href="#" class="k-button pg-download-output-button"><span class="k-icon pg-icon pg-download"></span></a></div>'
                     ;
             }
 
@@ -905,6 +968,75 @@
                 executeQuery();
                 e.preventDefault(); return false;
             });
+            el.find('.pg-download-output-button').click((function() {
+                var languages = [{
+                    token: "json",
+                    name : "Json",
+                    handler : function(json) {
+                        return JSON.stringify(json);
+                    }
+                }, {
+                    token: "jsonf",
+                    name : "Formatted Json",
+                    handler : function(json) {
+                        return JSON.stringify(json, null, configIde.get("tabWidth"));
+                    }
+                }, {
+                    token: "csv",
+                    name : "CSV",
+                    handler : function(json) {
+                        return jsonToCsv(json);
+                    }
+                }];
+                return function() {
+                    var el = $(".pg-download-output");
+                    if(0 === el.length) {
+                        el = $(document.body).append(htmlDownloadWindow(languages, "output")).find(".pg-download-output");
+                        el.kendoWindow({
+                            title : "Export Result",
+                            modal : true,
+                            width: 800,
+                            height : 450,
+                            overflow: "hidden",
+                            resizable : false,
+                            draggable : false
+                        });
+
+                        el.find('textarea').click(function(){
+                            selectText(this);
+                        });
+
+                        for(var i = 0; i < languages.length; i++) {
+                            el.find('.pg-code-to-' + languages[i].token).click((function(lang) {
+                                return function(e) {
+                                    currentOutputExportFormat = lang.token;
+                                    el.find('.pg-code-to').removeClass('k-state-active');
+                                    $(this).addClass('k-state-active');
+                                    var json = configIde.get("editors." + window.PrecogIDE.currentTab + ".result", []);
+                                    var result = lang.handler(json);
+                                    el.find('textarea').text(result);
+                                    el.find('input[name=name]').val("result." + lang.token);
+                                    e.preventDefault(); return false;
+                                }
+                            })(languages[i]));
+                            if(i == 0)
+                                el.find('.pg-code-to-' + languages[i].token).click();
+                        }
+
+                        el.find('a.  pg-action-copy').zclip({
+                            path:'js/zclip/ZeroClipboard.swf',
+                            copy:function(){
+                                return el.find('textarea').text();
+                            }
+                        });
+                    } else {
+                        el.find('.pg-code-to-' + currentOutputExportFormat).click();
+                    }
+                    var win = el.data("kendoWindow");
+                    win.center();
+                    win.open();
+                };
+            })());
 
             var aceui = ace.edit(el.find(".pg-ide").get(0));
             aceui.commands.addCommand({

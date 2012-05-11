@@ -68,7 +68,14 @@
 .pg-left-bar
 {
     float: left;
-    margin: 10px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.pg-main-bar .pg-left-bar
+{
+    margin-left: 5px;
+    margin-top: 10px;
     line-height: 35px;
 }
 
@@ -86,6 +93,11 @@
 .pg-right-bar a
 {
     margin-left: 5px;
+}
+
+.pg-left-bar a
+{
+    margin-right: 5px;
 }
 
 .pg-json
@@ -165,11 +177,11 @@
     margin-right: 0;
 }
 
-.pg-quirrel-download.k-window-content {
+.pg-download-window.k-window-content {
     overflow: hidden;
 }
 
-.pg-quirrel-download textarea {
+.pg-download-window textarea {
     width: 764px;
     height: 334px;
     border: none;
