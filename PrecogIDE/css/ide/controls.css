@@ -107,7 +107,9 @@
     height: 100%;
     overflow: auto;
 }
-.pg-output-panes, .pg-output-panes .k-grid, .pg-output-panes .k-splitter, .pg-output-panes .k-splitter .k-splitbar
+.pg-output-panes, .pg-output-panes .k-grid, .pg-output-panes .k-splitter, .pg-output-panes .k-splitter .k-splitbar,
+.pg-editor-pane.k-pane,
+.pg-ide-query
 {
     border-width: 0;
 }
@@ -116,6 +118,7 @@
 {
     border-left: 0;
     border-right: 0;
+    border-top: 0;
 }
 
 .pg-main-bar
@@ -124,13 +127,12 @@
 }
 
 .pg-output-panes .k-splitter .k-splitbar, .pg-output-panes .k-splitbar-static-vertical,
-.pg-precog-ide.k-splitter > .k-splitbar, .pg-precog-ide.k-splitter > .k-splitbar-static-vertical
+.pg-editor-pane > .k-splitbar, .pg-editor-pane > .k-splitbar-static-vertical
 {
     width: 0;
     height: 0;
     border-width: 0;
 }
-
 .pg-statusbar.k-pane, .pg-main-bar.k-pane
 {
     overflow: visible;

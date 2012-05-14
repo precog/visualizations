@@ -482,8 +482,9 @@
 
             function htmlEditorBar() {
                 return '<div class="pg-editor-toolbar">' +
-                    '<a class="pg-add-editor-button k-button"><span class="k-icon pg-icon pg-new"></span></a>' +
-                    '<a class="pg-download-editor-button k-button"><span class="k-icon pg-icon pg-download"></span></a>' +
+                    '<a href="#" class="pg-help-button k-button"><span class="k-icon pg-icon pg-help"></span></a>' +
+                    '<a href="#" class="pg-download-editor-button k-button"><span class="k-icon pg-icon pg-download"></span></a>' +
+                    '<a href="#" class="pg-add-editor-button k-button"><span class="k-icon pg-icon pg-new"></span></a>' +
                     '</div>'
                 ;
             }
@@ -547,10 +548,20 @@
             var editorsContainer = el.append('<div class="pg-editors"></div>').find(".pg-editors");
             editorsContainer.before(htmlEditorBar());
 
-            el.find('.pg-add-editor-button').click(function() {
+            el.find('.pg-add-editor-button').click(function(e) {
                 window.PrecogIDE.createEditor();
                 tabs.select(tabs.items().length - 1);
+                e.preventDefault(); return false;
             });
+
+            el.find('.pg-help-button').click(function(e) {
+                var email   = 'support@precog.io',
+                    subject = 'Quirrel Help',
+                    body    = 'I need help with the following query:\n\n' + window.PrecogIDE.ide.getSession().getValue();
+
+                document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                e.preventDefault(); return false;
+            })
 
             function quirrelToOneLine(code) {
                 return code
@@ -1102,6 +1113,7 @@
                     };
                 })()
             });
+
             el.find('.pg-ide-query .pg-output-panes').kendoSplitter({
                 panes : [
                     {collapsible:false, size:"35px",scrollable:false,resizable:false},
@@ -1180,7 +1192,20 @@
             el = $(el);
             el.addClass('pg-precog-ide');
 
-            context = editorContext(el, editors);
+            var elEditor  = el.append('<div class="pg-editor-pane"></div>').find(".pg-editor-pane"),
+                elSupport = el.append('<div class="pg-support-pane"></div>').find(".pg-support-pane");
+
+
+            elSupport.append("SUPPORT PANE");
+
+            el.kendoSplitter({
+                panes : [
+                    { collapsible:false, min:"200px", scrollable:false, resizable:true },
+                    { collapsible:true, min:"200px", size: "30%", scrollable:false, resizable:true }
+                ]
+            });
+
+            context = editorContext(elEditor, editors);
 
             $(window).on("resize", context.resizeEditorContainers);
 
