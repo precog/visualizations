@@ -1,0 +1,27 @@
+.pg-pane {
+/*    border: 3px !important; */
+}
+
+.ui-layout-resizer-east, .ui-layout-resizer-west {
+    border:0 !important;
+}
+
+.ui-layout-resizer-north, .ui-layout-resizer-south {
+    border:0 !important;
+}
+
+.pg-system, .pg-main, .pg-editor-support, .pg-editor, .pg-io, .pg-input, .pg-output {
+    border:0 !important;
+}
+
+.pg-toolbar {
+    border-bottom: 0 !important;
+}
+
+.pg-statusbar, .pg-support, .pg-input > .pg-toolbar, .pg-filesystem {
+    border-top: 0 !important;
+}
+
+.ui-layout-resizer-dragging {
+/*    background-color: #000 !important; */
+}
