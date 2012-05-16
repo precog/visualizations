@@ -25,3 +25,77 @@
 .ui-layout-resizer-dragging {
 /*    background-color: #000 !important; */
 }
+
+
+.pg-toolbar-actions, .pg-toolbar-context {
+    position: absolute;
+    margin: 2px;
+}
+
+.pg-toolbar-actions { }
+
+.pg-toolbar-context {
+    right: 0;
+}
+
+
+.pg-icon {
+    background-image: url("images/custom-precog-sprite-light.png") !important;
+}
+
+/* SPRITES */
+
+.pg-download {
+    background-position:0px 0px;
+}
+
+.pg-help {
+    background-position:0px -16px;
+}
+
+.pg-new {
+    background-position:0px -32px;
+}
+
+.pg-minimize {
+    background-position:0px -48px;
+}
+
+.pg-close {
+    background-position:0px -64px;
+}
+
+.pg-duplicate {
+    background-position:0px -80px;
+}
+
+.pg-maximize {
+    background-position:0px -96px;
+}
+
+.pg-folder {
+    background-position:0px -112px;
+}
+
+.pg-query {
+    background-position:0px -128px;
+}
+
+.pg-settings {
+    background-position:0px -144px;
+}
+
+.pg-logo {
+    background-repeat: no-repeat;
+    width: 110px;
+    height: 28px;
+    float: left;
+}
+
+.pg-quirrel {
+    background-image: url(images/logo-quirrel.svg);
+}
+
+.pg-precog {
+    background-image: url(images/logo-precog.svg);
+}

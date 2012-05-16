@@ -5,14 +5,8 @@ requirejs.config({
     }
 });
 
-require(["app/config", "app/layout"], function(config, createLayout) {
-    // get config
-    // merge config with page config
-    console.log(config.toString());
-
-    console.log("START APP");
-
+require(["order!jquery", "app/config", "app/layout", "app/mainbar"], function($, config, createLayout, buildMainBar) {
     var layout = createLayout();
 
-    console.log("END APP");
+    buildMainBar(layout.getMainBar());
 })

@@ -1,8 +1,8 @@
 define(["order!jquery", "text!templates/full-layout.html"
-    , "order!jquery-ui/js/jquery.ui.core"
-    , "order!jquery-ui/js/jquery.ui.widget"
-    , "order!jquery-ui/js/jquery.ui.mouse"
-    , "order!jquery-ui/js/jquery.ui.draggable"
+    , "order!jquery-ui-1.9/ui/jquery.ui.core"
+    , "order!jquery-ui-1.9/ui/jquery.ui.widget"
+    , "order!jquery-ui-1.9/ui/jquery.ui.mouse"
+    , "order!jquery-ui-1.9/ui/jquery.ui.draggable"
     , "order!jquery-layout/jquery.layout"
     , "domReady!"
 ],
@@ -112,7 +112,8 @@ define(["order!jquery", "text!templates/full-layout.html"
 
             return {
                 container : container,
-                refresh : refreshLayouts
+                refresh : refreshLayouts,
+                getMainBar : function() { return container.find('.pg-mainbar'); }
             };
         };
 
