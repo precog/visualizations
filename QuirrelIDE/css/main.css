@@ -1,3 +1,8 @@
+.pg-ide, .pg-el {
+    font-size: 73%;
+    font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+}
+
 .pg-pane {
 /*    border: 3px !important; */
 }
@@ -16,6 +21,7 @@
 
 .pg-toolbar {
     border-bottom: 0 !important;
+    vertical-align: baseline !important;
 }
 
 .pg-statusbar, .pg-support, .pg-input > .pg-toolbar, .pg-filesystem {
@@ -30,6 +36,11 @@
 .pg-toolbar-actions, .pg-toolbar-context {
     position: absolute;
     margin: 2px;
+    line-height: 30px;
+}
+
+.pg-toolbar-actions button, .pg-toolbar-context button {
+    height: 26px;
 }
 
 .pg-toolbar-actions { }

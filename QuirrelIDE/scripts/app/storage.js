@@ -1,56 +1,6 @@
-define(["order!jquery", "order!jquery-jstorage/jstorage"], function($) {
+define(["order!jquery", "app/traverse", "order!jquery-jstorage/jstorage"], function($, traverse) {
     return function(key, defaults) {
         var params = $.extend({}, defaults);
-
-        function splitPath(key) {
-            return key.split(/\.|\[|\]\.?/g);
-        }
-
-        function traverseGet(key) {
-            var path = splitPath(key),
-                ref = params,
-                segment = path.shift();
-            while(segment && ref) {
-                ref = ref[segment];
-                segment = path.shift();
-            }
-            return ref;
-        }
-
-        function traverseSet(key, value) {
-            var path = splitPath(key),
-                ref = params,
-                segment = path.shift(),
-                next,
-                nextref;
-            while(path.length > 0) {
-                next = path.shift();
-                nextref = ref[segment];
-                if("undefined" === typeof nextref) {
-                    nextref = ref[segment] = {};
-                }
-                ref = nextref;
-                segment = next;
-            }
-            ref[segment] = value;
-        }
-
-        function traverseRemove(key) {
-            var path = splitPath(key),
-                ref = params,
-                segment = path.shift(),
-                next;
-            while(path.length > 0) {
-                next = path.shift();
-                ref = ref[segment];
-                if("undefined" === typeof ref)
-                {
-                    return;
-                }
-                segment = next;
-            }
-            delete ref[segment];
-        }
 
         function save() {
             $.jStorage.set(key, params)
@@ -71,24 +21,40 @@ define(["order!jquery", "order!jquery-jstorage/jstorage"], function($) {
 
         load();
 
-        return {
+        function getLeafPaths(o, cur) {
+            var paths = [], cur = cur || [];
+            for(var key in defaults) {
+                if(defaults.hasOwnProperty(key)) {
+                    var v = o[key];
+                    if(v instanceof Object) {
+                        paths = paths.concat(getLeafPaths(v, cur));
+                    } else {
+                        paths.push(cur.concat([key]).join('.'));
+                    }
+                }
+            }
+            return paths;
+        }
+
+        var monitor,
+            storage = {
             get : function(key, alternative) {
-                var v = traverseGet(key);
+                var v = traverse.get(params, key);
                 if("undefined" === typeof v)
                     return alternative;
                 else
                     return v;
             },
             set : function(key, value) {
-                traverseSet(key, value);
+                traverse.set(params, key, value);
                 delayedSave();
             },
             remove : function(key) {
-                traverseRemove(key);
+                traverse.remove(params, key);
                 delayedSave();
             },
             keys : function(key) {
-                var ref = traverseGet(key);
+                var ref = traverse.get(params, key);
                 if(ref && "object" === typeof ref) {
                     var result = [];
                     for(var k in ref) {
@@ -115,7 +81,66 @@ define(["order!jquery", "order!jquery-jstorage/jstorage"], function($) {
             },
             toString : function() {
                 return JSON.stringify(params);
+            },
+            monitorStart : function(delay) {
+                monitor.start(delay);
+            },
+            monitorEnd : function() {
+                monitor.end();
+            },
+            monitorEnabled : function() {
+                return monitor.monitoring();
             }
-        }        
+        };
+
+        monitor = (function() {
+            var kill,
+                paths = getLeafPaths(defaults),
+                len = paths.length,
+                last = {};
+
+            function loop() {
+                $.jStorage.reInit();
+                var cached = $.jStorage.get(key, {}), path, cvalue, i;
+                for(i = 0; i < len; i++) {
+                    path = paths[i];
+                    cvalue = traverse.get(cached, path);
+                    if("undefined" === typeof cvalue) continue; // no value in cache
+                    if("undefined" === typeof last[path]) {
+                        last[path] = cvalue;
+                        continue;
+                    }
+                    if(last[path] === cvalue) continue;
+                    if(cvalue === traverse.get(params, path)) continue; // value has not changed
+                    last[path] = cvalue;
+                    traverse.set(params, path, cvalue);
+                    $(storage).trigger(path, cvalue);
+                }
+            }
+
+            loop();
+
+            return {
+                start : function(delay) {
+                    delay = delay || 2500;
+                    if(kill) {
+                        this.end();
+                        this.start(delay);
+                    } else {
+                        kill = setInterval(loop, delay);
+                    }
+                },
+                end : function() {
+                    clearInterval(kill);
+                },
+                monitoring : function() {
+                    return !!kill;
+                }
+            }
+        }());
+
+        monitor.start();
+
+        return storage;
     };
 });

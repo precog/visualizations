@@ -5,8 +5,21 @@ requirejs.config({
     }
 });
 
-require(["order!jquery", "app/config", "app/layout", "app/mainbar"], function($, config, createLayout, buildMainBar) {
+require(["order!jquery", "app/config", "app/layout", "app/bar-main", "app/bar-editor", "app/theme"],
+
+function($, config, createLayout, buildBarMain, buildBarEditor, theme) {
     var layout = createLayout();
 
-    buildMainBar(layout.getMainBar());
+    buildBarMain(layout.getBarMain());
+    buildBarEditor(layout.getBarEditor());
+
+    theme.set(config.get("theme", "default"));
+
+    $(theme).on("change", function(e, name) {
+        config.set("theme", name);
+    });
+
+    $(config).on("theme", function(e, name) {
+        theme.set(name);
+    });
 })

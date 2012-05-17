@@ -2,7 +2,8 @@ define([
     "order!jquery",
     "order!jquery-ui-1.9/ui/jquery.ui.core",
     "order!jquery-ui-1.9/ui/jquery.ui.widget",
-    "order!jquery-ui-1.9/ui/jquery.ui.button"
+    "jquery-ui-1.9/ui/jquery.ui.button",
+    "jquery-ui-1.9/ui/jquery.ui.menu"
 ],
 function() {
     return {
@@ -24,11 +25,19 @@ function() {
                     icons: o.icon ? { primary : o.icon } : o.icons
                 })
                 .click(function(e) {
-                    o.handler.apply(button);
+                    o.handler.apply(button.get(0));
                     e.preventDefault(); return false;
-                })
-                .get(0);
+                });
             ;
+            return button;
+        },
+        menu : function(el, o) {
+            o = $.extend({
+                disabled : false,
+            }, o);
+            return el.menu({
+                disabled: o.disabled
+            });
         }
     };
 });

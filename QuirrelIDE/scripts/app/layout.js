@@ -1,4 +1,4 @@
-define(["order!jquery", "text!templates/full-layout.html"
+define(["order!jquery", "text!templates/layout.full.html"
     , "order!jquery-ui-1.9/ui/jquery.ui.core"
     , "order!jquery-ui-1.9/ui/jquery.ui.widget"
     , "order!jquery-ui-1.9/ui/jquery.ui.mouse"
@@ -113,7 +113,8 @@ define(["order!jquery", "text!templates/full-layout.html"
             return {
                 container : container,
                 refresh : refreshLayouts,
-                getMainBar : function() { return container.find('.pg-mainbar'); }
+                getBarMain : function() { return container.find('.pg-mainbar'); },
+                getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); }
             };
         };
 
