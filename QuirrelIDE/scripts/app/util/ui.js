@@ -1,9 +1,11 @@
 define([
-    "order!jquery",
-    "order!jquery-ui-1.9/ui/jquery.ui.core",
-    "order!jquery-ui-1.9/ui/jquery.ui.widget",
-    "jquery-ui-1.9/ui/jquery.ui.button",
-    "jquery-ui-1.9/ui/jquery.ui.menu"
+      "order!jquery"
+    , "order!jquery-ui-1.9/ui/jquery.ui.core"
+    , "order!jquery-ui-1.9/ui/jquery.ui.widget"
+    , "jquery-ui-1.9/ui/jquery.ui.tabs"
+    , "jquery-ui-1.9/ui/jquery.ui.button"
+    , "jquery-ui-1.9/ui/jquery.ui.menu"
+//    , "jquery-ui-1.9/ui/jquery.ui.sortable"
 ],
 function() {
     return {
@@ -33,11 +35,14 @@ function() {
         },
         menu : function(el, o) {
             o = $.extend({
-                disabled : false,
+                disabled : false
             }, o);
             return el.menu({
                 disabled: o.disabled
             });
+        },
+        tabs : function(el, o) {
+            return el.tabs(o);
         }
     };
 });
