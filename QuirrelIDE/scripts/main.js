@@ -1,13 +1,14 @@
 requirejs.config({
     paths: {
-        'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min',
-        'ace' : 'scripts/editor/ace/ace-noconflict'
+          'jquery' : 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min'
+        , 'ace'    : 'scripts/editor/ace/ace-noconflict'
+        , 'precog' : 'http://api.reportgrid.com/js/precog.js'
     }
 });
 
-require(["order!jquery", "app/config", "app/layout", "app/bar-main", "app/bar-editor", "app/theme"],
+require(["order!jquery", "app/util/config", "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
 
-function($, config, createLayout, buildBarMain, buildBarEditor, theme) {
+function($, config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
     var layout = createLayout();
 
     buildBarMain(layout.getBarMain());
@@ -22,4 +23,7 @@ function($, config, createLayout, buildBarMain, buildBarEditor, theme) {
     $(config).on("theme", function(e, name) {
         theme.set(name);
     });
+
+
+    if(!editors.count()) editors.add();
 })

@@ -1,4 +1,4 @@
-define(["app/storage"], function(createStore) {
+define(["app/util/storage"], function(createStore) {
     var CONFIG_KEY = "pg-quirrel-ide-config",
         defaults = {
             theme : "default",

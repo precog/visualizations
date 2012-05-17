@@ -1,14 +1,11 @@
 define(["order!jquery", "text!templates/layout.full.html"
-    , "order!jquery-ui-1.9/ui/jquery.ui.core"
-    , "order!jquery-ui-1.9/ui/jquery.ui.widget"
-    , "order!jquery-ui-1.9/ui/jquery.ui.mouse"
-    , "order!jquery-ui-1.9/ui/jquery.ui.draggable"
+    , "order!app/util/ui"
     , "order!jquery-layout/jquery.layout"
     , "domReady!"
 ],
 
  function($, template) {
-    var toolbarHeight = 30,
+    var toolbarHeight = 36,
         create = function(container) {
             var layouts = [];
             container = (container && $(container)) || $('body');

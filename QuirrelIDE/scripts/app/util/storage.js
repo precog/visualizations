@@ -1,4 +1,4 @@
-define(["order!jquery", "app/traverse", "order!jquery-jstorage/jstorage"], function($, traverse) {
+define(["order!jquery", "app/util/traverse", "order!jquery-jstorage/jstorage"], function($, traverse) {
     return function(key, defaults) {
         var params = $.extend({}, defaults);
 

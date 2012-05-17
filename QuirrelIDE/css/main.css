@@ -35,8 +35,16 @@
 
 .pg-toolbar-actions, .pg-toolbar-context {
     position: absolute;
-    margin: 2px;
-    line-height: 30px;
+    margin: 5px;
+    line-height: 36px;
+}
+
+.pg-editor-tabs.ui-tabs, .pg-editor-tabs.ui-tabs .ui-tabs-nav {
+    margin: 0;
+    oadding: 0;
+    border: 0;
+    background-color: transparent;
+    background-image: none;
 }
 
 .pg-toolbar-actions button, .pg-toolbar-context button {
@@ -48,12 +56,6 @@
 .pg-toolbar-context {
     right: 0;
 }
-
-
-.pg-icon {
-    background-image: url("images/custom-precog-sprite-light.png") !important;
-}
-
 /* SPRITES */
 
 .pg-download {

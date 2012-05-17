@@ -1,9 +1,9 @@
 define([
     "order!jquery",
-    "order!app/ui",
+    "order!app/util/ui",
     "text!templates/toolbar.main.html",
     "text!templates/menu.settings.html",
-    "app/fullscreen",
+    "app/util/fullscreen",
     "app/theme"
 ], function($, ui, tplToolbar, tplMenu, fullscreen, theme) {
     function buildItems(menu, groups) {
