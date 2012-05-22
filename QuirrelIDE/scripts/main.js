@@ -1,18 +1,21 @@
 requirejs.config({
     paths: {
-          'jquery' : 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min'
-        , 'ace'    : 'scripts/editor/ace/ace-noconflict'
-        , 'precog' : 'http://api.reportgrid.com/js/precog.js'
+        "ui" : "libs/jquery/ui"
     }
 });
 
-require(["order!jquery", "app/util/config", "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
+require([
+    "app/util/config", "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
 
-function($, config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
     var layout = createLayout();
 
     buildBarMain(layout.getBarMain());
     buildBarEditor(layout.getBarEditor());
+
+    $(theme).on("changed", function() {
+        layout.refresh();
+    });
 
     theme.set(config.get("theme", "default"));
 

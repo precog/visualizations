@@ -1,11 +1,10 @@
 define([
-    "order!jquery",
-    "order!app/util/ui",
-    "text!templates/toolbar.main.html",
-    "text!templates/menu.settings.html",
-    "app/util/fullscreen",
-    "app/theme"
-], function($, ui, tplToolbar, tplMenu, fullscreen, theme) {
+      "order!app/util/ui"
+    , "text!templates/toolbar.main.html"
+    , "text!templates/menu.settings.html"
+    , "app/util/fullscreen"
+    , "app/theme"
+], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
     function buildItems(menu, groups) {
         $.each(groups, function(key) {
             menu.append('<li class="ui-state-disabled"><a href="#">'+key+' themes:</a></li>');
@@ -14,7 +13,6 @@ define([
             })
         });
     }
-
 
     return function(el) {
         el.append(tplToolbar);

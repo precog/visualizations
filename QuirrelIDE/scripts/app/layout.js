@@ -1,10 +1,15 @@
-define(["order!jquery", "text!templates/layout.full.html"
+define([
+      "text!templates/layout.full.html"
     , "order!app/util/ui"
-    , "order!jquery-layout/jquery.layout"
+    , "order!ui/jquery.ui.core"
+    , "order!ui/jquery.ui.widget"
+    , "order!ui/jquery.ui.mouse"
+    , "order!ui/jquery.ui.draggable"
+    , "order!libs/jquery/layout/jquery.layout"
     , "domReady!"
 ],
 
- function($, template) {
+ function(template, ui) {
     var toolbarHeight = 36,
         create = function(container) {
             var layouts = [];
@@ -14,8 +19,11 @@ define(["order!jquery", "text!templates/layout.full.html"
             layouts.push(container.layout());
 
             var defaults = {
+                    fxName:               "slide"
+                    ,  fxSpeed:               "slow",
                     initClosed : false,
-                    resizable : true
+                    resizable : true,
+                    slidable : true
                 },
                 toolbar = {
                     resizable : false,
@@ -104,8 +112,6 @@ define(["order!jquery", "text!templates/layout.full.html"
             container.find(".ui-layout-resizer-dragging")
                 .addClass("ui-state-hover")
             ;
-
-            setTimeout(refreshLayouts, 0);
 
             return {
                 container : container,

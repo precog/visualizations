@@ -1,14 +1,13 @@
 define([
-      "order!jquery"
-    , "order!jquery-ui-1.9/ui/jquery.ui.core"
-    , "order!jquery-ui-1.9/ui/jquery.ui.widget"
-    , "order!jquery-ui-1.9/ui/jquery.ui.mouse"
-    , "order!jquery-ui-1.9/ui/jquery.ui.draggable"
-    , "order!jquery-ui-1.9/ui/jquery.ui.button"
-    , "order!jquery-ui-1.9/ui/jquery.ui.tabs"
-    , "order!jquery-ui-1.9/ui/jquery.ui.menu"
-//    , "jquery-ui-1.9/ui/jquery.ui.sortable"
+      "order!ui/jquery.ui.core"
+    , "order!ui/jquery.ui.widget"
+    , "order!ui/jquery.ui.mouse"
+    , "order!ui/jquery.ui.button"
+    , "order!ui/jquery.ui.tabs"
+    , "order!ui/jquery.ui.menu"
+//    , "jQuery/ui/jquery.ui.sortable"
 ],
+
 function() {
     return {
         button : function(el, o) {

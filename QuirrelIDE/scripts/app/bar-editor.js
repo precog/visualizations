@@ -1,11 +1,12 @@
 define([
-      "order!jquery"
-    , "order!app/util/ui"
+      "order!app/util/ui"
     , "app/editors"
 
 
     , "text!templates/toolbar.editor.html"
-], function($, ui, editors, tplToolbar) {
+],
+
+function(ui, editors, tplToolbar) {
 
     return function(el) {
         el.append(tplToolbar);
