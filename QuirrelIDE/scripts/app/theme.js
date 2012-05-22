@@ -29,18 +29,6 @@ function(themes) {
             $("link.ui-theme:first").remove();
         }
     }
-
-    function setSpriteTheme(name) {
-        var url = SPRITE_BASE_URL + name + ".css",
-            cssLink = $('<link href="'+url+'" type="text/css" rel="Stylesheet" class="pg-sprite-theme" />');
-        $("head").append(cssLink);
-
-
-        if( $("link.pg-sprite-theme").size() > 1){
-            $("link.pg-sprite-theme:first").remove();
-        }
-    }
-
     var theme = {
         current : null,
         set : function(name) {
@@ -50,7 +38,6 @@ function(themes) {
             setUITheme(map[name].ui, function() {
                 $(theme).trigger('changed', name);
             });
-            setSpriteTheme(map[name].sprite);
         },
         list : function() { return themes; },
         map : function() { return map; },

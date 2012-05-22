@@ -10,7 +10,7 @@ define([
 ],
 
  function(template, ui) {
-    var toolbarHeight = 36,
+    var toolbarHeight = 34,
         create = function(container) {
             var layouts = [];
             container = (container && $(container)) || $('body');

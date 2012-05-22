@@ -44,7 +44,7 @@ define([
         });
 
         ui.button(right, {
-           icon : "pg-icon pg-settings"
+           icon : "ui-icon-gear"
         }).mouseenter(function() {
            var pos = $(this).offset(),
                w = $(this).outerWidth(),
@@ -57,13 +57,13 @@ define([
         });
 
         ui.button(right, {
-            icon : "pg-icon " + (fullscreen.isFullScreen() ? "pg-minimize" : "pg-maximize" ),
+            icon : fullscreen.isFullScreen() ? "ui-icon-newwin" : "ui-icon-arrow-4-diag",
             handler : function() {
                 fullscreen.toggle();
                 if(fullscreen.isFullScreen()) {
-                    $(this).find('.pg-icon').removeClass("pg-minimize").addClass("pg-maximize");
+                    $(this).find('.pg-icon').removeClass("ui-icon-newwin").addClass("ui-icon-arrow-4-diag");
                 } else {
-                    $(this).find('.pg-icon').removeClass("pg-maximize").addClass("pg-minimize");
+                    $(this).find('.pg-icon').removeClass("ui-icon-arrow-4-diag").addClass("ui-icon-newwin");
                 }
             }
         });

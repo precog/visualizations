@@ -27,7 +27,7 @@ function(ui, editors, tplToolbar) {
 
         var index = 0;
         ui.button(right, {
-            icon : "ui-icon-plus",
+            icon : "ui-icon-plusthick",
             handler : function() {
                 editors.add();
             }

@@ -17,11 +17,11 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
         layout.refresh();
     });
 
-    theme.set(config.get("theme", "default"));
-
     $(theme).on("change", function(e, name) {
         config.set("theme", name);
     });
+
+    theme.set(config.get("theme", "default"));
 
     $(config).on("theme", function(e, name) {
         theme.set(name);
