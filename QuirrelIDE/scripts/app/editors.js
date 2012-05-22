@@ -1,8 +1,13 @@
 define([
-//    "app/util/storage"
+    "util/precog"
+//    "util/storage"
 ],
 
-function() {
+function(precog) {
+    var token = precog.$.Config.tokenId;
+
+    console.log(token);
+
     var map  = {},
         list = [],
         last = 0;

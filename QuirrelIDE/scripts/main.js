@@ -18,6 +18,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
     buildBarEditor(layout.getBarEditor());
 
     $(theme).on("changed", function() {
+        // refreshes the panes layout after theme changing
         layout.refresh();
     });
 
