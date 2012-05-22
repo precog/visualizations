@@ -1,11 +1,11 @@
 define([
       "text!templates/layout.full.html"
-    , "order!app/util/ui"
+    , "order!util/ui"
     , "order!ui/jquery.ui.core"
     , "order!ui/jquery.ui.widget"
     , "order!ui/jquery.ui.mouse"
     , "order!ui/jquery.ui.draggable"
-    , "order!libs/jquery/layout/jquery.layout"
+    , "order!jlib/layout/jquery.layout"
     , "domReady!"
 ],
 

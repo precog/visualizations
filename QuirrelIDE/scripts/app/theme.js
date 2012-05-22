@@ -1,5 +1,5 @@
 define([
-    'app/config/themes'
+    'config/themes'
 ],
 
 function(themes) {

@@ -1,6 +1,9 @@
 requirejs.config({
     paths: {
-        "ui" : "libs/jquery/ui"
+          "ui"     : "libs/jquery/ui"
+        , "util"   : "app/util"
+        , "jlib"   : "libs/jquery"
+        , "config" : "app/config"
     }
 });
 

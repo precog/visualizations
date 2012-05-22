@@ -1,4 +1,6 @@
-define(["jquery"], function($) {
+define([],
+
+ function() {
     var isfullscreen,
         requestFullScreen,
         exitFullScreen;

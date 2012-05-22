@@ -1,5 +1,5 @@
 define([
-      "order!app/util/ui"
+      "order!util/ui"
     , "app/editors"
 
 
