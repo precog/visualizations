@@ -5,7 +5,8 @@ requirejs.config({
 });
 
 require([
-    "app/util/config", "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
+      "app/util/config"
+    , "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
 
 function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
     var layout = createLayout();

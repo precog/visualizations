@@ -31,7 +31,7 @@ function() {
                     o.handler.apply(button.get(0));
                     e.preventDefault(); return false;
                 });
-            ;
+
             return button;
         },
         menu : function(el, o) {

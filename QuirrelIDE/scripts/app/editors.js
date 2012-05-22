@@ -1,8 +1,8 @@
 define([
-    "app/util/storage"
+//    "app/util/storage"
 ],
 
-function(storage) {
+function() {
     var map  = {},
         list = [],
         last = 0;
@@ -43,7 +43,7 @@ function(storage) {
         },
         get : function(index) {
             return list[index];
-        },
+        }
     };
 
     return editors;

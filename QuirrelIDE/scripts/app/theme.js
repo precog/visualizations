@@ -4,7 +4,6 @@ define([
 
 function(themes) {
     var UI_BASE_THEME_URL = "css/jquery/ui/",
-        SPRITE_BASE_URL = "css/",
         map = {},
         groups = {};
 
@@ -42,7 +41,7 @@ function(themes) {
         list : function() { return themes; },
         map : function() { return map; },
         groups : function() { return groups; }
-    }
+    };
 
     return theme;
 });

@@ -15,19 +15,19 @@ define(["jquery"], function($) {
         };
     } else {
         setTimeout(function() { $('.pg-precog-ide .pg-fullscreen').hide(); }, 20);
-        requestFullScreen = function(_) { console.log("your browser doesn't support the FullScreen option"); };
+        requestFullScreen = function() { console.log("your browser doesn't support the FullScreen option"); };
     }
     if(document.exitFullscreen) {
-        exitFullScreen = function(el) { document.exitFullscreen(); };
+        exitFullScreen = function() { document.exitFullscreen(); };
     } else if(document.mozCancelFullScreen) {
-        exitFullScreen = function(el) { document.mozCancelFullScreen(); };
+        exitFullScreen = function() { document.mozCancelFullScreen(); };
     } else if (document.webkitCancelFullScreen) {
         exitFullScreen = function(el) {
             el.webkitRequestFullScreen(); // chrome doesn't behave correctly when the app is started fullscreen
             document.webkitCancelFullScreen();
         };
     } else {
-        exitFullScreen = function(_) { console.log("your browser doesn't support the FullScreen option"); };
+        exitFullScreen = function() { console.log("your browser doesn't support the FullScreen option"); };
     }
     function toggle() {
         isfullscreen = (!window.screenTop && !window.screenY);
@@ -50,4 +50,4 @@ define(["jquery"], function($) {
         },
         isFullScreen : function() { return isfullscreen; }
     };
-})
+});

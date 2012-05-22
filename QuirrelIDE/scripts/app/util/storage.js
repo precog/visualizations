@@ -27,7 +27,8 @@ function(traverse) {
         load();
 
         function getLeafPaths(o, cur) {
-            var paths = [], cur = cur || [];
+            var paths = [];
+            cur = cur || [];
             for(var key in defaults) {
                 if(defaults.hasOwnProperty(key)) {
                     var v = o[key];
@@ -86,19 +87,10 @@ function(traverse) {
             },
             toString : function() {
                 return JSON.stringify(params);
-            },
-            monitorStart : function(delay) {
-                monitor.start(delay);
-            },
-            monitorEnd : function() {
-                monitor.end();
-            },
-            monitorEnabled : function() {
-                return monitor.monitoring();
             }
         };
 
-        monitor = (function() {
+        storage.monitor = monitor = (function() {
             var kill,
                 paths = getLeafPaths(defaults),
                 len = paths.length,

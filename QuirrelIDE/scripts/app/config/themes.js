@@ -126,4 +126,4 @@ define([], function() {
         group : "dark",
         sprite : "pg-sprite-dark"
     }];
-})
+});

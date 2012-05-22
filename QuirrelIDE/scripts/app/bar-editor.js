@@ -19,7 +19,7 @@ function(ui, editors, tplToolbar) {
             });
 
         tabs.on({
-            click : function(a, b){
+            click : function(){
                 var index = $("li", tabs).index($(this).parent());
                 editors.remove(index);
             }
