@@ -1,4 +1,8 @@
-define(["jquery", "app/util/storage"], function($, storage) {
+define([
+    "app/util/storage"
+],
+
+function(storage) {
     var map  = {},
         list = [],
         last = 0;

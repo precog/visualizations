@@ -1,17 +1,27 @@
-define(['jquery', 'app/config/themes'], function($, themes) {
-    var UI_BASE_THEME_URL = "scripts/jquery-ui-1.9/themes/",
+define([
+    'app/config/themes'
+],
+
+function(themes) {
+    var UI_BASE_THEME_URL = "css/jquery/ui/",
         SPRITE_BASE_URL = "css/",
         map = {},
         groups = {};
+
     $.each(themes, function() {
         map[this.token] = this;
         groups[this.group] = groups[this.group] || {};
         groups[this.group][this.token] = this;
     });
 
-    function setUITheme(name) {
-        var url = UI_BASE_THEME_URL + name + "/jquery.ui.all.css",
+    function themeUrl(name) {
+        return UI_BASE_THEME_URL + name + "/jquery.ui.all.css";
+    }
+
+    function setUITheme(name, callback) {
+        var url = themeUrl(name),
             cssLink = $('<link href="'+url+'" type="text/css" rel="Stylesheet" class="ui-theme" />');
+        cssLink.on("load", callback);
         $("head").append(cssLink);
 
 
@@ -37,7 +47,9 @@ define(['jquery', 'app/config/themes'], function($, themes) {
             if(this.current === name) return;
             this.current = name;
             $(theme).trigger('change', name);
-            setUITheme(map[name].ui);
+            setUITheme(map[name].ui, function() {
+                $(theme).trigger('changed', name);
+            });
             setSpriteTheme(map[name].sprite);
         },
         list : function() { return themes; },
