@@ -1,10 +1,9 @@
 define([
       "order!util/traverse"
-    , "util/array"
     , "order!jlib/jstorage/jstorage"
 ],
 
-function(traverse, arr) {
+function(traverse) {
     return function(key, defaults) {
         var params = $.extend({}, defaults);
 

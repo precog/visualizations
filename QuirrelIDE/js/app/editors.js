@@ -2,10 +2,10 @@ define([
       "util/precog"
     , "util/md5"
     , "util/storage"
-    , "util/array"
+    , "util/utils"
 ],
 
-function(precog, md5, createStore, arr) {
+function(precog, md5, createStore, utils) {
     var STORE_KEY = "pg-quirrel-editors-"+md5(precog.$.Config.tokenId),
         store = createStore(STORE_KEY, {
             list : [],
@@ -123,8 +123,8 @@ function(precog, md5, createStore, arr) {
     };
 
     store.monitor.bind("list", function(_, values) {
-        var removed = arr.diff(list, values),
-            added   = arr.diff(values, list);
+        var removed = utils.diff(list, values),
+            added   = utils.diff(values, list);
 
         if(removed.length + added.length == 0) return;
         store.load();
