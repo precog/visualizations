@@ -107,8 +107,14 @@ define([
             .addClass("ui-widget-content")
         ;
 
-        container.find(".ui-layout-toggler-vertical")
-            .addClass("ui-slider-vertical")
+        container.find(".ui-layout-toggler-east")
+//            .addClass("ui-slider-vertical")
+            .addClass("ui-resizable-handle ui-resizable-e")
+        ;
+
+        container.find(".ui-layout-toggler-south")
+//            .addClass("ui-slider-horizontal")
+            .addClass("ui-resizable-handle ui-resizable-s")
         ;
         container.find(".ui-layout-resizer-dragging")
             .addClass("ui-state-hover")

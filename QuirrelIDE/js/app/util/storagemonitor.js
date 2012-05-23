@@ -9,7 +9,6 @@ function(traverse, buildStorage) {
             monitor;
 
         function equals(a, b) {
-//            console.log("COMPARING " + JSON.stringify(a) + " AND " + JSON.stringify(b));
             if(typeof a !== typeof b)
                 return false;
             else if(a instanceof Array) {
@@ -38,21 +37,20 @@ function(traverse, buildStorage) {
         storage.monitor = monitor = (function() {
             var kill = null,
                 last = {},
-                paths = [];
+                paths = [],
+                pathsCounter = {};
 
             function loop() {
                 if(paths.length == 0) return;
                 $.jStorage.reInit();
-                var len = paths.length,
+                var params = storage.all(),
+                    len = paths.length,
                     cached = $.jStorage.get(key, {}),
                     path,
                     cvalue;
                 for(var i = 0; i < len; i++) {
                     path = paths[i];
-//                    console.log("path " + path + " for " + JSON.stringify(cached) + " AND " + JSON.stringify(params));
                     cvalue = traverse.get(cached, path);
-//                    console.log("value " + cvalue + " VS " + traverse.get(params, path));
-//                    if("undefined" === typeof cvalue) continue; // no value in cache
                     if("undefined" === typeof last[path]) {
                         last[path] = cvalue;
                         continue;
@@ -86,9 +84,15 @@ function(traverse, buildStorage) {
                     return null !== kill;
                 },
                 bind : function(path, handler) {
-                    if(paths.indexOf(path) < 0) paths.push(path);
+                    pathsCounter[path] = (pathsCounter[path] && (++pathsCounter[path])) || 1;
+                    if(pathsCounter[path] === 1) paths.push(path);
                     $(storage).on(path, handler);
-//                    console.log("monitoring paths: " + paths);
+                },
+                unbind : function(path, handler) {
+                    if(!pathsCounter[path]) return;
+                    pathsCounter[path]--;
+                    if(pathsCounter[path] === 0) paths.splice(paths.indexOf(path), 1);
+                    $(storage).off(path, handler);
                 }
             }
         }());

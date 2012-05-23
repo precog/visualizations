@@ -2,315 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/css/codefolding-fold-button-states.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/css/expand-marker.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/ace.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/anchor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/anchor_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/background_tokenizer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/commands/command_manager.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/commands/command_manager_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/commands/default_commands.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/commands/multi_select_commands.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/config.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/css/editor.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/document.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/document_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session/bracket_match.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session/fold.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session/fold_line.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session/folding.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/edit_session_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/editor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/editor_change_document_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/editor_highlight_selected_word_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/editor_navigation_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/editor_text_edit_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/ext/static.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/ext/static_highlight.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/ext/static_highlight_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/ext/textarea.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/emacs.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/hash_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/keybinding.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/state_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/textinput.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/commands.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/maps/aliases.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/maps/motions.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/maps/operators.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/maps/util.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/keyboard/vim/registers.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/layer/cursor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/layer/gutter.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/layer/marker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/layer/text.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/layer/text_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/browser_focus.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/dom.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/es5-shim.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/event.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/event_emitter.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/event_emitter_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/fixoldbrowsers.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/keys.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/lang.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/net.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/oop.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/regexp.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/lib/useragent.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/behaviour.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/behaviour/cstyle.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/behaviour/xml.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/behaviour/xquery.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/c9search.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/c9search_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/c_cpp.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/c_cpp_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/clojure.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/clojure_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/coffee-script.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/helpers.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/lexer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/nodes.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/parser.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/parser_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/rewriter.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee/scope.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coffee_worker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coldfusion.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coldfusion_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/coldfusion_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/csharp.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/csharp_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css_worker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css_worker_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/doc_comment_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/c9search.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/cstyle.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/cstyle_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/fold_mode.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/html.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/html_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/mixed.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/pythonic.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/pythonic_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/xml.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/folding/xml_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/golang.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/golang_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/groovy.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/groovy_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/haxe.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/haxe_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/html.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/html_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/html_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/html_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/java.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/java_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript_worker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/javascript_worker_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/json.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/json/json_parse.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/json_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/json_worker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/json_worker_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/latex.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/latex_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/less.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/less_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/liquid.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/liquid_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/liquid_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/lua.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/lua_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/markdown.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/markdown_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/matching_brace_outdent.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/matching_parens_outdent.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/ocaml.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/ocaml_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/perl.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/perl_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/pgsql.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/pgsql_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/php.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/php_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/powershell.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/powershell_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/python.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/python_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/python_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/quirrel.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/quirrel_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/ruby.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/ruby_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/ruby_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scad.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scad_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scala.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scala_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scss.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/scss_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/sh.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/sh_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/sql.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/sql_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/svg.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/svg_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/text.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/text_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/text_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/textile.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/textile_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xml.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xml_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xml_highlight_rules_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xml_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xml_util.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xquery.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/xquery_highlight_rules.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/model/editor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/default_gutter_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/default_handlers.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/dragdrop.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/fold_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/mouse_event.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/mouse_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mouse/multi_select_handler.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/multi_select.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/multi_select_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/narcissus/definitions.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/narcissus/lexer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/narcissus/options.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/narcissus/parser.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/placeholder.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/placeholder_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/range.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/range_list.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/range_list_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/range_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/renderloop.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/requirejs/text.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/scrollbar.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/search.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/search_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/selection.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/selection_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/split.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/all.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/all_browser.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/assertions.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/asyncjs/assert.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/asyncjs/async.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/asyncjs/index.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/asyncjs/test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/asyncjs/utils.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/benchmark.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/mockdom.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/mockrenderer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/test/tests.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/chrome.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/clouds.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/clouds_midnight.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/cobalt.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/crimson_editor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/dawn.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/dreamweaver.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/eclipse.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/idle_fingers.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/kr_theme.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/merbivore.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/merbivore_soft.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/mono_industrial.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/monokai.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/pastel_on_dark.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/solarized_dark.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/solarized_light.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/textmate.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/tomorrow.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/tomorrow_night.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/tomorrow_night_blue.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/tomorrow_night_bright.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/tomorrow_night_eighties.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/twilight.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/theme/vibrant_ink.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/token_iterator.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/token_iterator_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/tokenizer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/undomanager.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/unicode.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/virtual_renderer.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/virtual_renderer_test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/jshint.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/jslint.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/mirror.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/worker.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/worker_client.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/ace/worker/worker_sourcemint.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/ace-compat-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/ace-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/keybinding-emacs-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/keybinding-vim-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/mode-quirrel-uncompressed.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/mode-xml-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-chrome-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-clouds-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-clouds_midnight-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-cobalt-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-crimson_editor-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-dawn-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-dreamweaver-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-eclipse-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-idle_fingers-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-kr_theme-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-merbivore-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-merbivore_soft-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-mono_industrial-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-monokai-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-pastel_on_dark-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-solarized_dark-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-solarized_light-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-tomorrow-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-tomorrow_night-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-tomorrow_night_blue-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-tomorrow_night_bright-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-tomorrow_night_eighties-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-twilight-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-vibrant_ink-noconflict.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/worker-coffee.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/worker-javascript.js" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/mode-text-noconflict.js" afterPath="$PROJECT_DIR$/js/app/editorsync.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/theme-textmate-noconflict.js" afterPath="$PROJECT_DIR$/js/app/util/storagemonitor.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/js/libs/editor/ace/worker-css.js" afterPath="$PROJECT_DIR$/js/libs/editor/ace/mode/css/csslint.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/js/libs/editor/codemirror.js" afterPath="$PROJECT_DIR$/js/libs/editor/editor.codemirror.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-editor.js" afterPath="$PROJECT_DIR$/js/app/bar-editor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/config/themes.js" afterPath="$PROJECT_DIR$/js/app/config/themes.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/editors.js" afterPath="$PROJECT_DIR$/js/app/editors.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/editorsync.js" afterPath="$PROJECT_DIR$/js/app/editorsync.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/layout.js" afterPath="$PROJECT_DIR$/js/app/layout.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/theme.js" afterPath="$PROJECT_DIR$/js/app/theme.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/config.js" afterPath="$PROJECT_DIR$/js/app/util/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/storage.js" afterPath="$PROJECT_DIR$/js/app/util/storage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/layout.full.html" afterPath="$PROJECT_DIR$/js/templates/layout.full.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/storagemonitor.js" afterPath="$PROJECT_DIR$/js/app/util/storagemonitor.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" afterPath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -335,7 +32,7 @@
       <file leaf-file-name="editor.ace.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="57" column="54" selection-start="1884" selection-end="1902" vertical-scroll-proportion="0.0">
+            <state line="58" column="14" selection-start="1928" selection-end="1928" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -344,7 +41,7 @@
       <file leaf-file-name="editors.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/editors.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="28" selection-start="1031" selection-end="1031" vertical-scroll-proportion="0.0">
+            <state line="135" column="35" selection-start="4167" selection-end="4167" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -362,16 +59,16 @@
       <file leaf-file-name="storage.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="37" selection-start="1405" selection-end="1405" vertical-scroll-proportion="0.0">
+            <state line="80" column="17" selection-start="2477" selection-end="2477" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="storagemonitor.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="storagemonitor.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/storagemonitor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="90" selection-start="323" selection-end="323" vertical-scroll-proportion="-0.24668436">
+            <state line="4" column="0" selection-start="55" selection-end="55" vertical-scroll-proportion="-0.23076923">
               <folding />
             </state>
           </provider>
@@ -380,7 +77,16 @@
       <file leaf-file-name="editorsync.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/editorsync.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="3" selection-start="502" selection-end="502" vertical-scroll-proportion="0.0">
+            <state line="24" column="49" selection-start="627" selection-end="627" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="layout.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="110" column="2" selection-start="3152" selection-end="3152" vertical-scroll-proportion="0.7796024">
               <folding />
             </state>
           </provider>
@@ -395,19 +101,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ace.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/ace.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="80" column="32" selection-start="2957" selection-end="2957" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="31" selection-start="101" selection-end="101" vertical-scroll-proportion="0.0">
+            <state line="8" column="5" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -439,18 +136,18 @@
         <option value="$PROJECT_DIR$/js/libs/editor/ace.js" />
         <option value="$PROJECT_DIR$/js/libs/editor/ace/mode/quirrel.js" />
         <option value="$PROJECT_DIR$/js/libs/editor/ace/mode/quirrel_highlight_rules.js" />
-        <option value="$PROJECT_DIR$/js/app/layout.js" />
         <option value="$PROJECT_DIR$/js/app/theme.js" />
         <option value="$PROJECT_DIR$/js/app/config/themes.js" />
-        <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
         <option value="$PROJECT_DIR$/css/main.css" />
-        <option value="$PROJECT_DIR$/js/app/editorsync.js" />
         <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
-        <option value="$PROJECT_DIR$/js/app/util/storage.js" />
         <option value="$PROJECT_DIR$/js/app/util/config.js" />
+        <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
         <option value="$PROJECT_DIR$/js/app/editors.js" />
+        <option value="$PROJECT_DIR$/js/app/util/storage.js" />
         <option value="$PROJECT_DIR$/js/app/util/storagemonitor.js" />
+        <option value="$PROJECT_DIR$/js/app/editorsync.js" />
+        <option value="$PROJECT_DIR$/js/app/layout.js" />
       </list>
     </option>
   </component>
@@ -822,13 +519,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="35" selection-start="2562" selection-end="2562" vertical-scroll-proportion="-22.153847">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/config/themes.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="80" column="31" selection-start="1896" selection-end="1896" vertical-scroll-proportion="-14.5">
@@ -857,44 +547,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="54" selection-start="1884" selection-end="1902" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/editorsync.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="3" selection-start="502" selection-end="502" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="25" selection-start="161" selection-end="161" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="31" selection-start="101" selection-end="101" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="37" selection-start="1405" selection-end="1405" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="28" selection-start="1031" selection-end="1031" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -906,9 +561,51 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="14" selection-start="1928" selection-end="1928" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="135" column="35" selection-start="4167" selection-end="4167" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="80" column="17" selection-start="2477" selection-end="2477" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="5" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/storagemonitor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="90" selection-start="323" selection-end="323" vertical-scroll-proportion="-0.24668436">
+        <state line="4" column="0" selection-start="55" selection-end="55" vertical-scroll-proportion="-0.23076923">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editorsync.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="49" selection-start="627" selection-end="627" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="2" selection-start="3152" selection-end="3152" vertical-scroll-proportion="0.7796024">
           <folding />
         </state>
       </provider>

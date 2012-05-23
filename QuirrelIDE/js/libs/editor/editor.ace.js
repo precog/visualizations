@@ -68,6 +68,9 @@ function(require, ace) {
             },
             engine : function() {
                 return "ace";
+            },
+            focus : function() {
+                editor.focus();
             }
         };
 

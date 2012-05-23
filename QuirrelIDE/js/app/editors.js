@@ -63,77 +63,78 @@ function(precog, md5, createStore, utils) {
 
     var currentIndex = null,
         editors = {
-        add : function(options) {
-            var editor = createEditor(options);
-            store.set(editorKey(editor.id), editor);
-            list.push(editor.id);
-            store.set("list", list);
-            $(editors).trigger("added", editor);
-            return editor;
-        },
-        remove : function(index) {
-            // can't remove the last available tab
-            if(list.length == 1) return;
-            if(index === currentIndex)
-            {
-                this.activate(index === 0 ? index+1 : index-1);
-            }
-            var editor = list[index];
-            if(editor)
-                store.remove(editorKey(editor.id));
-            list.splice(index, 1);
-            store.set("list", list);
-            $(editors).trigger("removed", index);
-            return editor;
-        },
-        list : function() {
-            return list.copy();
-        },
-        count : function() {
-            return list.length;
-        },
-        get : function(index) {
-            return store.get(this.getKey(index));
-        },
-        getById : function(id) {
-            return this.get(list.indexOf(id));
-        },
-        getKey : function(index) {
-            return editorKey(list[index]);
-        },
-        load : function() {
-            var cached = store.get("list"),
-                values = $.map(cached, function(v) { return store.get(editorKey(v)); });
-            for(var i = 0; i < cached.length; i++) {
-                editors.add(values[i]);
-            }
-        },
-        activate : function(index) {
-            this.deactivate(currentIndex);
-            currentIndex = index;
-            $(editors).trigger("activated", index);
+            add : function(options) {
+                var editor = createEditor(options);
+                store.set(editorKey(editor.id), editor);
+                list.push(editor.id);
+                store.set("list", list);
+                $(editors).trigger("added", editor);
+                return editor;
+            },
+            remove : function(index) {
+                // can't remove the last available tab
+                if(list.length == 1) return;
+                if(index === currentIndex)
+                {
+                    this.activate(index === 0 ? index+1 : index-1);
+                }
+                var editor = list[index];
+                if(editor)
+                    store.remove(editorKey(editor.id));
+                list.splice(index, 1);
+                store.set("list", list);
+                $(editors).trigger("removed", index);
+                return editor;
+            },
+            list : function() {
+                return list.copy();
+            },
+            count : function() {
+                return list.length;
+            },
+            get : function(index) {
+                return store.get(this.getKey(index));
+            },
+            getById : function(id) {
+                return this.get(list.indexOf(id));
+            },
+            getKey : function(index) {
+                return editorKey(list[index]);
+            },
+            load : function() {
+                var cached = store.get("list"),
+                    values = $.map(cached, function(v) { return store.get(editorKey(v)); });
+                for(var i = 0; i < cached.length; i++) {
+                    editors.add(values[i]);
+                }
+            },
+            activate : function(index) {
+                this.deactivate(currentIndex);
+                currentIndex = index;
+                $(editors).trigger("activated", index);
 
-        },
-        deactivate : function(index) {
-            if(null === currentIndex) return;
-            currentIndex = null;
-            $(editors).trigger("deactivated", index);
+            },
+            deactivate : function(index) {
+                if(null === currentIndex) return;
+                currentIndex = null;
+                $(editors).trigger("deactivated", index);
 
-        },
-        current : function() {
-            return currentIndex;
-        },
-        setCode : function(code, index) {
-            if("undefined" === typeof index) index = this.current();
-            var key = this.getKey(index);
-            store.set(key + ".code", code);
-        },
-        getCode : function(index) {
-            if("undefined" === typeof index) index = this.current();
-            var key = this.getKey(index);
-            return store.get(key + ".code", "");
-        }
-    };
+            },
+            current : function() {
+                return currentIndex;
+            },
+            setCode : function(code, index) {
+                if("undefined" === typeof index) index = this.current();
+                var key = this.getKey(index);
+                store.set(key + ".code", code);
+            },
+            getCode : function(index) {
+                if("undefined" === typeof index) index = this.current();
+                var key = this.getKey(index);
+                return store.get(key + ".code", "");
+            },
+            monitor : store.monitor
+        };
 
     store.monitor.bind("list", function(_, values) {
         var removed = utils.arrayDiff(list, values),
