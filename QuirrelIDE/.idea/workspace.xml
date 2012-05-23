@@ -2,24 +2,213 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/PrecogIDE2.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/ide2.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/js/ide.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/js/layout/jquery.layout.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/js/layout/jquery.layout.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/js/layout/jquery.layout.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PrecogIDE/js/require.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/main.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/require-jquery.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PrecogIDE/css/ide/controls.css" afterPath="$PROJECT_DIR$/../PrecogIDE/css/ide/controls.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PrecogIDE/ide.html" afterPath="$PROJECT_DIR$/../PrecogIDE/ide.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PrecogIDE/js/ide/precog-ide.js" afterPath="$PROJECT_DIR$/../PrecogIDE/js/ide/precog-ide.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/bar-editor.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/bar-main.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/config/themes.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/editors.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/input.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/layout.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/output.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/theme.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/config.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/fullscreen.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/md5.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/precog.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/querystring.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/storage.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/traverse.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/app/util/ui.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/build.sh" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/domReady.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/ace-compat-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/ace-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/keybinding-emacs-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/keybinding-vim-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/mode-quirrel-uncompressed.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/mode-text-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/mode-xml-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-chrome-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-clouds-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-clouds_midnight-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-cobalt-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-crimson_editor-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-dawn-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-dreamweaver-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-eclipse-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-idle_fingers-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-kr_theme-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-merbivore-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-merbivore_soft-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-mono_industrial-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-monokai-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-pastel_on_dark-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-solarized_dark-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-solarized_light-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-textmate-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-tomorrow-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-tomorrow_night-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-tomorrow_night_blue-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-tomorrow_night_bright-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-tomorrow_night_eighties-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-twilight-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/theme-vibrant_ink-noconflict.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/worker-coffee.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/worker-css.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/ace/worker-javascript.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/keymap/emacs.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/keymap/vim.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/codemirror.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/codemirror.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/closetag.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/dialog.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/dialog.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/foldcode.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/formatting.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/javascript-hint.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/loadmode.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/match-highlighter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/overlay.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/runmode.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/search.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/searchcursor.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/simple-hint.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/lib/util/simple-hint.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/mode/quirrel/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/mode/quirrel/quirrel.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/ambiance.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/blackboard.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/cobalt.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/eclipse.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/elegant.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/lesser-dark.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/monokai.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/neat.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/night.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/rubyblue.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/editor/codemirror/theme/xq-dark.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/jstorage/jstorage.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/layout/jquery.layout.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/layout/jquery.layout.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/layout/jquery.layout.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/loader.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/.jshintrc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-af.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ar-DZ.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ar.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-az.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-bg.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-bs.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ca.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-cs.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-cy-GB.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-da.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-de.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-el.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-en-AU.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-en-GB.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-en-NZ.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-eo.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-es.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-et.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-eu.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-fa.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-fi.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-fo.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-fr-CH.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-fr.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ge.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-gl.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-he.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-hi.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-hr.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-hu.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-hy.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-id.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-is.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-it.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ja.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-kk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-km.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ko.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-lb.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-lt.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-lv.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-mk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ml.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ms.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-nl-BE.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-nl.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-no.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-pl.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-pt-BR.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-pt.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-rm.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ru.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sl.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sq.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sr-SR.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sr.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-sv.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-ta.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-th.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-tj.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-tr.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-uk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-vi.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-zh-CN.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-zh-HK.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/i18n/jquery.ui.datepicker-zh-TW.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.blind.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.bounce.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.clip.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.core.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.drop.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.explode.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.fade.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.fold.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.highlight.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.pulsate.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.scale.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.shake.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.slide.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.effects.transfer.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.accordion.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.autocomplete.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.button.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.core.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.datepicker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.dialog.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.draggable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.droppable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.menu.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.mouse.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.position.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.progressbar.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.resizable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.selectable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.slider.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.sortable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.spinner.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.tabs.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.tooltip.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/ui/jquery.ui.widget.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/zclip/ZeroClipboard.swf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/zclip/jquery.zclip.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/libs/jquery/zclip/jquery.zclip.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/main.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/order.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/r.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/require-jquery.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/templates/layout.full.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/templates/menu.settings.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/templates/toolbar.editor.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/templates/toolbar.main.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scripts/text.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,19 +230,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/index.html">
+      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="30" selection-start="60" selection-end="60" vertical-scroll-proportion="0.038961038">
+            <state line="43" column="2" selection-start="1038" selection-end="1038" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/main.js">
+      <file leaf-file-name="editors.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/editors.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="2" selection-start="91" selection-end="91" vertical-scroll-proportion="0.0">
+            <state line="28" column="25" selection-start="661" selection-end="661" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bar-editor.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="0" selection-start="605" selection-end="605" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="storage.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="164" column="0" selection-start="5559" selection-end="5559" vertical-scroll-proportion="0.57894737">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="traverse.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -74,12 +290,16 @@
       <list>
         <option value="$PROJECT_DIR$/scripts/main.js" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/app/editors.js" />
+        <option value="$PROJECT_DIR$/js/app/util/storage.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1279" />
-    <option name="y" value="22" />
+    <option name="x" value="1127" />
+    <option name="y" value="34" />
     <option name="width" value="1252" />
     <option name="height" value="1327" />
   </component>
@@ -110,37 +330,102 @@
     </navigator>
     <panes>
       <pane id="Scope">
-        <subPane subId="Project Files" />
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
       </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PrecogIDE2" />
+              <option name="myItemId" value="QuirrelIDE" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PrecogIDE2" />
+              <option name="myItemId" value="QuirrelIDE" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PrecogIDE2" />
+              <option name="myItemId" value="QuirrelIDE" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PrecogIDE2" />
+              <option name="myItemId" value="QuirrelIDE" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PrecogIDE2" />
+              <option name="myItemId" value="QuirrelIDE" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -151,10 +436,10 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
+    <property name="options.lastSelected" value="editor.preferences.import" />
     <property name="DefaultHtmlFileTemplate" value="Html" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -164,7 +449,7 @@
   <component name="RunManager">
     <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
-        <option name="engineId" />
+        <option name="engineId" value="embedded" />
         <option name="fileUrl" />
       </JSDebuggerConfigurationSettings>
       <method />
@@ -192,32 +477,33 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="" />
       <created>1337099720681</created>
       <updated>1337099720681</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1279" y="22" width="1252" height="1327" extended-state="0" />
-    <editor active="false" />
+    <frame x="1127" y="34" width="1252" height="1327" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3291874" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24979658" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24979658" sideWeight="0.6708126" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -275,16 +561,44 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/scripts/main.js">
+    <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="2" selection-start="91" selection-end="91" vertical-scroll-proportion="0.0">
+        <state line="18" column="7" selection-start="640" selection-end="640" vertical-scroll-proportion="-11.25">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="30" selection-start="60" selection-end="60" vertical-scroll-proportion="0.038961038">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="0" selection-start="605" selection-end="605" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="2" selection-start="1038" selection-end="1038" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="25" selection-start="661" selection-end="661" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="164" column="0" selection-start="5559" selection-end="5559" vertical-scroll-proportion="0.57894737">
           <folding />
         </state>
       </provider>

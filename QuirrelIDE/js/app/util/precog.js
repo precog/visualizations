@@ -32,7 +32,5 @@ function(qs){
         appendConfig(contexts.shift());
     }
 
-console.log(window.Precog.$.Config);
-
     return window.Precog;
 });

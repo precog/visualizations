@@ -19,8 +19,6 @@ define([
         layouts.push(container.layout());
 
         var defaults = {
-                fxName:               "slide"
-                ,  fxSpeed:               "slow",
                 initClosed : false,
                 resizable : true,
                 slidable : true

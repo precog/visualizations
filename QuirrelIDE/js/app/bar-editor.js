@@ -11,12 +11,19 @@ function(ui, editors, tplToolbar) {
     return function(el) {
         el.append(tplToolbar);
         var right = el.find('.pg-toolbar-context'),
+            autoGoToTab = false,
             tabs = ui.tabs(el.find('.pg-editor-tabs'), {
                 tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
                 add: function(event, ui) {
-                    console.log("tab added");
+                    var index = ui.index;
+                    if(autoGoToTab)
+                    {
+                        tabs.tabs("select", ui.index);
+                        editors.activate(ui.index);
+                    }
                 }
             });
+
 
         tabs.on({
             click : function(){
@@ -25,22 +32,31 @@ function(ui, editors, tplToolbar) {
             }
         }, '.ui-icon-close');
 
+        tabs.on("click", function() {
+            var index = $("li", tabs).index($(this).parent());
+            editors.activate(index);
+        });
+
         var index = 0;
         ui.button(right, {
             icon : "ui-icon-plusthick",
             handler : function() {
+                autoGoToTab = true;
                 editors.add();
+                autoGoToTab = false;
             }
         });
 
         $(editors).on("added", function(e, editor) {
-            console.log("added listener");
             tabs.tabs("add", "#pg-editor-tab-" + (++index), editor.name);
         });
 
         $(editors).on("removed", function(e, index) {
-            console.log("removed listener " + index);
             tabs.tabs("remove", index);
+        });
+
+        $(editors).on("activated", function(e, index) {
+            tabs.tabs("select", index);
         });
     }
 });

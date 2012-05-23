@@ -9,7 +9,11 @@ requirejs.config({
 
 require([
       "app/util/config"
-    , "app/layout", "app/editors", "app/bar-main", "app/bar-editor", "app/theme"],
+    , "app/layout"
+    , "app/editors"
+    , "app/bar-main"
+    , "app/bar-editor"
+    , "app/theme"],
 
 function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
     var layout = createLayout();
@@ -28,10 +32,19 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, theme) {
 
     theme.set(config.get("theme", "default"));
 
-    $(config).on("theme", function(e, name) {
+    config.monitor.bind("theme", function(e, name) {
         theme.set(name);
     });
 
+    $(editors).on("added", function(e, name) {
+//        console.log("added " + JSON.stringify(name));
+    });
 
+    $(editors).on("removed", function(e, name) {
+//        console.log("removed " + name);
+    });
+
+
+    editors.load();
     if(!editors.count()) editors.add();
 })

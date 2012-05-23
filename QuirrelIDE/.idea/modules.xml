@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/PrecogIDE2.iml" filepath="$PROJECT_DIR$/.idea/PrecogIDE2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/QuirrelIDE.iml" filepath="$PROJECT_DIR$/.idea/QuirrelIDE.iml" />
     </modules>
   </component>
 </project>

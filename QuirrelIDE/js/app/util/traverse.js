@@ -1,6 +1,6 @@
 define([], function() {
     function splitPath(key) {
-        return key.split(/\.|\[|\]\.?/g);
+        return key.split(/\./g);
     }
 
     return {
