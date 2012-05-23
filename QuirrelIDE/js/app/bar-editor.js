@@ -2,7 +2,6 @@ define([
       "order!util/ui"
     , "app/editors"
 
-
     , "text!templates/toolbar.editor.html"
 ],
 
@@ -24,7 +23,6 @@ function(ui, editors, tplToolbar) {
                 }
             });
 
-
         tabs.on({
             click : function(){
                 var index = $("li", tabs).index($(this).parent());
@@ -32,10 +30,12 @@ function(ui, editors, tplToolbar) {
             }
         }, '.ui-icon-close');
 
-        tabs.on("click", function() {
-            var index = $("li", tabs).index($(this).parent());
-            editors.activate(index);
-        });
+        tabs.on({
+            click : function() {
+                var index = $("li", tabs).index($(this).parent());
+                editors.activate(index);
+            }
+        }, 'li a');
 
         var index = 0;
         ui.button(right, {

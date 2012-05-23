@@ -1,10 +1,10 @@
 define([
-      "order!editor/ace/ace-uncompressed-noconflict"
-    , "order!editor/ace/mode-quirrel-uncompressed"
+    "require",
+    "ace/ace",
+    "ace/mode/quirrel"
 ],
 
-function(a) {
-    console.log(a);
+function(require, ace) {
     return function(el) {
         var wrapper,
             editor = ace.edit($(el).get(0));
@@ -25,14 +25,13 @@ function(a) {
             $(wrapper).trigger("changeCursor", editor.getCursorPosition());
         });
         sess.getSelection().on("changeSelection", function() {
-            // TODO GET SELECTION NOT POSITION
-            $(wrapper).trigger("changeSelection", editor.getCursorPosition());
+            $(wrapper).trigger("changeSelection", editor.getSelection());
         });
         sess.on("change", (function() {
             var kill;
 
             function trigger() {
-                $(wrapper).trigger("changed", wrapper.get());
+                $(wrapper).trigger("change", wrapper.get());
             };
 
             return function() {
@@ -57,6 +56,18 @@ function(a) {
                 if(toogle === sess.getUseSoftTabs()) return;
                 sess.setUseSoftTabs(toogle);
                 $(wrapper).trigger("useSoftTabsChanged", toogle);
+            },
+            setTheme : function(theme) {
+                var path = "ace/theme/" + theme;
+                require([path], function() {
+                    editor.setTheme(path);
+                });
+            },
+            resize : function() {
+                editor.resize();
+            },
+            engine : function() {
+                return "ace";
             }
         };
 

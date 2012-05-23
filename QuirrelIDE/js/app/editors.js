@@ -1,7 +1,7 @@
 define([
       "util/precog"
     , "util/md5"
-    , "util/storage"
+    , "util/storagemonitor"
     , "util/utils"
 ],
 
@@ -76,7 +76,7 @@ function(precog, md5, createStore, utils) {
             if(list.length == 1) return;
             if(index === currentIndex)
             {
-                activate(index === 0 ? index+1 : index-1);
+                this.activate(index === 0 ? index+1 : index-1);
             }
             var editor = list[index];
             if(editor)
@@ -94,6 +94,9 @@ function(precog, md5, createStore, utils) {
         },
         get : function(index) {
             return store.get(this.getKey(index));
+        },
+        getById : function(id) {
+            return this.get(list.indexOf(id));
         },
         getKey : function(index) {
             return editorKey(list[index]);
@@ -119,12 +122,22 @@ function(precog, md5, createStore, utils) {
         },
         current : function() {
             return currentIndex;
+        },
+        setCode : function(code, index) {
+            if("undefined" === typeof index) index = this.current();
+            var key = this.getKey(index);
+            store.set(key + ".code", code);
+        },
+        getCode : function(index) {
+            if("undefined" === typeof index) index = this.current();
+            var key = this.getKey(index);
+            return store.get(key + ".code", "");
         }
     };
 
     store.monitor.bind("list", function(_, values) {
-        var removed = utils.diff(list, values),
-            added   = utils.diff(values, list);
+        var removed = utils.arrayDiff(list, values),
+            added   = utils.arrayDiff(values, list);
 
         if(removed.length + added.length == 0) return;
         store.load();

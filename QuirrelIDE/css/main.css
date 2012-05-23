@@ -47,6 +47,10 @@
     background-image: none;
 }
 
+.pg-editor-tabs .ui-icon.ui-icon-close {
+    display: inline-block;
+}
+
 .pg-toolbar-actions button, .pg-toolbar-context button {
     height: 24px;
 }

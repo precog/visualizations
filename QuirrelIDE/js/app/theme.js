@@ -40,7 +40,10 @@ function(themes) {
         },
         list : function() { return themes; },
         map : function() { return map; },
-        groups : function() { return groups; }
+        groups : function() { return groups; },
+        getEditorTheme : function(name, editor) {
+            return map[name].editor[editor];
+        }
     };
 
     return theme;

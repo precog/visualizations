@@ -12,7 +12,7 @@ define([
  function(template, ui) {
     var toolbarHeight = 34;
     return function(container) {
-        var layouts = [];
+        var layout, layouts = [];
         container = (container && $(container)) || $('body');
 
         container.append(template);
@@ -87,10 +87,13 @@ define([
             north : toolbar
         }));
 
-        // output separation
+        // input separation
         layouts.push( container.find('.pg-input').layout({
             defaults : defaults,
-            north : toolbar
+            north : toolbar,
+            onresize : function() {
+                $(layout).trigger("resizeCodeEditor");
+            }
         }));
 
         // wire styling to JQuery UI
@@ -111,11 +114,12 @@ define([
             .addClass("ui-state-hover")
         ;
 
-        return {
+        return layout = {
             container : container,
             refresh : refreshLayouts,
             getBarMain : function() { return container.find('.pg-mainbar'); },
-            getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); }
+            getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); },
+            getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); }
         };
     };
 });
