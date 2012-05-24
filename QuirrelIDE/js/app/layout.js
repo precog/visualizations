@@ -12,9 +12,17 @@ define([
  function(template, ui) {
     var toolbarHeight = 34,
         statusbarHeight = 24;
-    return function(container) {
+    return function(container, isvertical) {
         var layout, layouts = [];
-        container = (container && $(container)) || $('body');
+
+        console.log(container, isvertical);
+        if((container === true || container === false) && "undefined" === typeof isvertical)
+        {
+            isvertical = container;
+            container = $('body');
+        } else {
+            container = (container && $(container)) || $('body');
+        }
 
         container.append(template);
         layouts.push(container.layout());
@@ -75,28 +83,63 @@ define([
         }));
 
         // io separation
-        layouts.push(container.find('.pg-io').layout({
-            defaults : defaults,
-            south : {
-                size : 200,
-                closable : false
-            }
-        }));
+        var lio, linput, loutput;
 
-        // output separation
-        layouts.push(container.find('.pg-output').layout({
-            defaults : defaults,
-            north : toolbar
-        }));
-
-        // input separation
-        layouts.push( container.find('.pg-input').layout({
-            defaults : defaults,
-            north : toolbar,
-            onresize : function() {
-                $(layout).trigger("resizeCodeEditor");
+        function buildIO(vertical) {
+            var panels;
+            if(lio) {
+                layouts.splice(layouts.indexOf(lio), 1);
+                layouts.splice(layouts.indexOf(linput), 1);
+                layouts.splice(layouts.indexOf(loutput), 1);
+                lio.destroy();
             }
-        }));
+            if(vertical) {
+                container.find('.pg-output').removeClass('ui-layout-east').addClass('ui-layout-south');
+                panels = {
+                    defaults : defaults,
+                    south : {
+                        size : 200,
+                        closable : false
+                    }
+                };
+            } else {
+                container.find('.pg-output').removeClass('ui-layout-south').addClass('ui-layout-east');
+                panels = {
+                    defaults : defaults,
+                    east : {
+                        size : "50%",
+                        closable : false
+                    }
+                };
+            }
+
+            layouts.push(lio = container.find('.pg-io').layout(panels));
+
+            // output separation
+            layouts.push(loutput = container.find('.pg-output').layout({
+                defaults : defaults,
+                north : toolbar
+            }));
+
+            // input separation
+            layouts.push(linput = container.find('.pg-input').layout({
+                defaults : defaults,
+                north : toolbar,
+                onresize : function() {
+                    $(layout).trigger("resizeCodeEditor");
+                }
+            }));
+//            container.find(".pg-pane").addClass("ui-widget-content");
+            container.find(".ui-layout-resizer")
+                .addClass("ui-widget-shadow")
+            ;
+
+            isvertical = vertical;
+            $(layout).trigger("resizeCodeEditor");
+            $(layout).trigger("ioOrientationChanged", isvertical);
+        }
+
+        buildIO(isvertical);
 
         // wire styling to JQuery UI
         container.addClass("ui-widget-content");
@@ -106,9 +149,9 @@ define([
             .mouseleave(function() { $(this).removeClass("ui-state-hover"); })
             .addClass("ui-widget-header")
         ;
-        container.find(".ui-layout-resizer")
-            .addClass("ui-widget-shadow")
-        ;
+//        container.find(".ui-layout-resizer")
+//            .addClass("ui-widget-shadow")
+//        ;
 
         container.find(".ui-layout-resizer-dragging")
             .addClass("ui-state-hover")
@@ -120,7 +163,9 @@ define([
             getBarMain : function() { return container.find('.pg-mainbar'); },
             getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); },
             getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); },
-            getStatusBar : function() { return container.find('.pg-statusbar'); }
+            getStatusBar : function() { return container.find('.pg-statusbar'); },
+            setIoVertical : buildIO,
+            isIoVertical : function() { return isvertical; }
         };
     };
 });

@@ -4,7 +4,8 @@ define(["util/storagemonitor"], function(createStore) {
             theme : "default",
             indentUsingSpaces : false,
             tabWidth : 2,
-            disableClientCache : true
+            disableClientCache : true,
+            ioPanesVertical : true
         };
 
     return createStore(CONFIG_KEY, defaults);

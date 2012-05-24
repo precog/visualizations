@@ -6,7 +6,7 @@ define([
 
     function(ui, tplToolbar, tplMenu) {
 
-        return function(el, editor) {
+        return function(el, editor, layout) {
             el.append(tplToolbar);
 
             var menu = $('body').append(tplMenu).find(".pg-menu-editor-status:last");
@@ -23,9 +23,7 @@ define([
                     menu.hide();
                     return;
                 }
-                var pos = $(this).offset(),
-                    w = $(this).outerWidth(),
-                    h = $(this).outerHeight();
+                var pos = $(this).offset();
                 menu.css({
                     position : "absolute",
                     top : (pos.top - menu.outerHeight()) + "px",
@@ -65,6 +63,10 @@ define([
                 editor.setUseSoftTabs(!editor.getUseSoftTabs());
             })
 
+            menu.find('.pg-change-orientation').click(function() {
+                layout.setIoVertical(!layout.isIoVertical());
+            })
+
             $(editor).on("tabSizeChanged", updateTabSize);
             $(editor).on("useSoftTabsChanged", updateSoftTabs);
 
@@ -80,9 +82,5 @@ define([
 
             updateTabSize();
             updateSoftTabs();
-
-
-
-
         }
     });

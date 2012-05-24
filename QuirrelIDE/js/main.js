@@ -22,7 +22,7 @@ require([
 ],
 
 function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync) {
-    var layout = createLayout();
+    var layout = createLayout(config.get("ioPanesVertical"));
 
     buildBarMain(layout.getBarMain());
     buildBarEditor(layout.getBarEditor());
@@ -36,13 +36,18 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         config.set("theme", name);
     });
 
-    var editor = buildEditor(layout.getCodeEditor());
+    var editor = buildEditor(layout.getCodeEditor(), config.get("ioPanesVertical"));
 
     editor.setTabSize(config.get("tabSize"));
     editor.setUseSoftTabs(config.get("softTabs"));
 
     $(layout).on("resizeCodeEditor", function() {
         editor.resize();
+    });
+
+    $(layout).on("ioOrientationChanged", function(_, vertical) {
+        config.set("ioPanesVertical", vertical);
+        editor.orientButton(vertical);
     });
 
     $(theme).on("change", function(e, name) {
@@ -63,7 +68,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         console.log(code);
     });
 
-    buildBarStatus(layout.getStatusBar(), editor);
+    buildBarStatus(layout.getStatusBar(), editor, layout);
 
     sync(editor, editors, config);
 

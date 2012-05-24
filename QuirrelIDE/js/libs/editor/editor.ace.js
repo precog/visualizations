@@ -6,7 +6,7 @@ define([
 ],
 
 function(require, ace, ui) {
-    return function(el) {
+    return function(el, vertical) {
         var wrapper,
             editor = ace.edit($(el).get(0));
 
@@ -47,15 +47,25 @@ function(require, ace, ui) {
         var run = ui.button(el, {
             label : "run",
             text : true,
-            icons : { secondary : "ui-icon-circle-triangle-s" },
+            icons : { primary : "ui-icon-circle-triangle-s" },
             handler : execute
-        }).css({
-           display: "block",
-           position: "absolute",
-           right: "25px",
-           bottom: "10px",
-           zIndex: 100
         });
+
+        function orientButton(vertical) {
+            run.css({
+                display: "block",
+                position: "absolute",
+                right: "25px",
+                bottom: vertical ? "10px" : "25px",
+                zIndex: 100
+            });
+            if(vertical)
+                run.find(".ui-icon-circle-triangle-e").removeClass("ui-icon-circle-triangle-e").addClass("ui-icon-circle-triangle-s");
+            else
+                run.find(".ui-icon-circle-triangle-s").removeClass("ui-icon-circle-triangle-s").addClass("ui-icon-circle-triangle-e");
+        }
+
+        orientButton(vertical);
 
         wrapper = {
             get : function() {
@@ -94,7 +104,8 @@ function(require, ace, ui) {
             },
             focus : function() {
                 editor.focus();
-            }
+            },
+            orientButton : orientButton
         };
 
         return wrapper;
