@@ -2,12 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-status.js" afterPath="$PROJECT_DIR$/js/app/bar-status.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/app/output.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/editors.js" afterPath="$PROJECT_DIR$/js/app/editors.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/layout.js" afterPath="$PROJECT_DIR$/js/app/layout.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/config.js" afterPath="$PROJECT_DIR$/js/app/util/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" afterPath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/precog.js" afterPath="$PROJECT_DIR$/js/app/util/precog.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/menu.editor.status.html" afterPath="$PROJECT_DIR$/js/templates/menu.editor.status.html" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,46 +48,46 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="main.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="0" selection-start="581" selection-end="581" vertical-scroll-proportion="0.0">
+            <state line="69" column="0" selection-start="1905" selection-end="1905" vertical-scroll-proportion="0.5470738">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="storage.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
+      <file leaf-file-name="precog.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="26" selection-start="302" selection-end="302" vertical-scroll-proportion="0.0">
+            <state line="19" column="51" selection-start="509" selection-end="509" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="storagemonitor.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/storagemonitor.js">
+      <file leaf-file-name="editors.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/editors.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="9" selection-start="1145" selection-end="1145" vertical-scroll-proportion="0.0">
+            <state line="15" column="0" selection-start="343" selection-end="343" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="editor.ace.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="7" selection-start="635" selection-end="635" vertical-scroll-proportion="-11.25">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="editor.ace.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="30" selection-start="2181" selection-end="2181" vertical-scroll-proportion="0.3885516">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="layout.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/layout.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="35" selection-start="615" selection-end="615" vertical-scroll-proportion="-4.4545455">
+            <state line="83" column="44" selection-start="2710" selection-end="2710" vertical-scroll-proportion="-24.73077">
               <folding />
             </state>
           </provider>
@@ -96,15 +97,6 @@
         <entry file="file://$PROJECT_DIR$/js/app/util/ui.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="29" column="0" selection-start="780" selection-end="780" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="theme.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/theme.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -123,10 +115,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/css/jquery/ui/franco/jquery.ui.all.css" />
-        <option value="$PROJECT_DIR$/js/templates/layout.full.html" />
-        <option value="$PROJECT_DIR$/js/app/config/themes.js" />
-        <option value="$PROJECT_DIR$/js/app/util/precog.js" />
         <option value="$PROJECT_DIR$/js/templates/menu.editor.html" />
         <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/templates/toolbar.status.html" />
@@ -136,9 +124,13 @@
         <option value="$PROJECT_DIR$/js/templates/menu.editor.status.html" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
         <option value="$PROJECT_DIR$/js/app/util/config.js" />
-        <option value="$PROJECT_DIR$/js/main.js" />
-        <option value="$PROJECT_DIR$/js/app/layout.js" />
         <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/app/editors.js" />
+        <option value="$PROJECT_DIR$/js/app/layout.js" />
+        <option value="$PROJECT_DIR$/js/app/util/precog.js" />
+        <option value="$PROJECT_DIR$/js/app/output.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
       </list>
     </option>
   </component>
@@ -493,34 +485,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/css/jquery/ui/matthew/jquery.ui.all.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="0" selection-start="1021" selection-end="1021" vertical-scroll-proportion="0.30858678">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="28" selection-start="1141" selection-end="1141" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/templates/menu.settings.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/bar-main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="91" selection-start="517" selection-end="517" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.button.css">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="1" selection-start="1154" selection-end="1183" vertical-scroll-proportion="0.2572899">
@@ -577,13 +541,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="581" selection-end="581" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/config.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="27" selection-start="270" selection-end="285" vertical-scroll-proportion="0.0">
@@ -591,16 +548,51 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="7" selection-start="635" selection-end="635" vertical-scroll-proportion="-11.25">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="0" selection-start="343" selection-end="343" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/layout.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="35" selection-start="615" selection-end="615" vertical-scroll-proportion="-4.4545455">
+        <state line="17" column="0" selection-start="433" selection-end="433" vertical-scroll-proportion="0.23139746">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="51" selection-start="509" selection-end="509" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/output.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="65" selection-start="179" selection-end="179" vertical-scroll-proportion="0.114503816">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="30" selection-start="2181" selection-end="2181" vertical-scroll-proportion="0.3885516">
+        <state line="83" column="44" selection-start="2710" selection-end="2710" vertical-scroll-proportion="-24.73077">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="0" selection-start="1905" selection-end="1905" vertical-scroll-proportion="0.5470738">
           <folding />
         </state>
       </provider>

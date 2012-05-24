@@ -6,7 +6,7 @@ define([
 ],
 
 function(precog, md5, createStore, utils) {
-    var STORE_KEY = "pg-quirrel-editors-"+md5(precog.$.Config.tokenId),
+    var STORE_KEY = "pg-quirrel-editors-"+md5(precog.config.tokenId),
         store = createStore(STORE_KEY, {
             list : [],
             editors : {}

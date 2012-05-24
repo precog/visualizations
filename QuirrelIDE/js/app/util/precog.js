@@ -6,8 +6,7 @@ define([
 function(qs){
 // TODO basePath
 
-    var precog   = window.Precog,
-        config   = precog.$.Config,
+    var config   = window.Precog.$.Config,
         params   = ["tokenId", "analyticsService"],
         contexts = [null],
         reprecog = /(require|precog)[^.]*.js[?]/i;
@@ -32,18 +31,23 @@ function(qs){
         appendConfig(contexts.shift());
     }
 
-    var query = precog.query;
+    var q = {
+        query : function(text) {
+            $(q).trigger("execute", [text, this.lastExecution]);
+            var me = this,
+                start = new Date().getTime();
+            window.Precog.query(text, function(r) {
+                me.lastExecution = new Date().getTime() - start;
+                $(q).trigger("completed", r);
+            }, function(e, b) {
+                console.log("error: " + e + " " + b);
+                $(q).trigger("failed", e);
+            })
+        },
+        config : config,
+        lastExecution : 2000,
+        cache : window.Precog.cache
+    };
 
-    precog.query = function(text, success, failure) {
-        $(precog).trigger("execute");
-        query(function(r) {
-            success && success(r);
-            $(precog).trigger("executed", r);
-        }, function(e) {
-            failure && failure(e);
-            $(precog).trigger("failed", e);
-        })
-    }
-
-    return precog;
+    return q;
 });

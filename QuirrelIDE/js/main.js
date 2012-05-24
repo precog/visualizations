@@ -19,9 +19,13 @@ require([
     , "app/theme"
     , "editor/editor.ace"
     , "app/editorsync"
+    , "app/output"
+    , "util/precog"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, precog) {
+    precog.cache.disable();
+
     var layout = createLayout(config.get("ioPanesVertical"));
 
     buildBarMain(layout.getBarMain());
@@ -64,11 +68,22 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         config.set("tabSize", value);
     });
 
-    $(editor).on("execute", function(_, code) {
-        console.log(code);
-    });
-
     buildBarStatus(layout.getStatusBar(), editor, layout);
+
+    var result = buildOutput(layout.getOutput());
+
+    $(precog).on("execute", function(_, data, lastExecution) {
+        result.set(data, "execute ("+lastExecution+")");
+    });
+    $(precog).on("completed", function(_, data) {
+        result.set(data, "completed");
+    });
+    $(precog).on("failed", function(_, data) {
+        result.set(data, "failed");
+    });
+    $(editor).on("execute", function(_, code) {
+        precog.query(code);
+    });
 
     sync(editor, editors, config);
 

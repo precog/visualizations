@@ -15,7 +15,6 @@ define([
     return function(container, isvertical) {
         var layout, layouts = [];
 
-        console.log(container, isvertical);
         if((container === true || container === false) && "undefined" === typeof isvertical)
         {
             isvertical = container;
@@ -164,6 +163,7 @@ define([
             getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); },
             getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); },
             getStatusBar : function() { return container.find('.pg-statusbar'); },
+            getOutput : function() { return container.find('.pg-output'); },
             setIoVertical : buildIO,
             isIoVertical : function() { return isvertical; }
         };
