@@ -5,10 +5,12 @@ define([
 
 function(traverse) {
     return function(key, defaults) {
-        var params = $.extend({}, defaults);
+        var dirty  = false,
+            params = $.extend({}, defaults);
 
         function save() {
             $.jStorage.set(key, params)
+            dirty = false;
         }
 
         function load() {
@@ -20,6 +22,7 @@ function(traverse) {
         var delayedSave = (function() {
             var k = null;
             return function() {
+                dirty = true;
                 if(k !== null) {
                     clearInterval(k);
                     k = null;
@@ -78,6 +81,9 @@ function(traverse) {
                 },
                 all : function() {
                     return params;
+                },
+                dirty : function() {
+                    return dirty;
                 }
             };
 

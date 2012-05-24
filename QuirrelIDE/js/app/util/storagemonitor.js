@@ -41,7 +41,7 @@ function(traverse, buildStorage) {
                 pathsCounter = {};
 
             function loop() {
-                if(paths.length == 0) return;
+                if(paths.length == 0 || storage.dirty()) return;
                 $.jStorage.reInit();
                 var params = storage.all(),
                     len = paths.length,
