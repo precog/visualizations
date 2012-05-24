@@ -1,19 +1,68 @@
 define([
       "order!util/ui"
-
     , "text!templates/toolbar.status.html"
+    , "text!templates/menu.editor.status.html"
 ],
 
-    function(ui, tplToolbar) {
+    function(ui, tplToolbar, tplMenu) {
 
         return function(el, editor) {
             el.append(tplToolbar);
 
+            var menu = $('body').append(tplMenu).find(".pg-menu-editor-status:last");
+            ui.menu(menu);
+            menu.hide();
+            menu.mouseleave(function() {
+                menu.hide();
+            }).click(function() {
+                menu.hide();
+            });
+
+            el.find('.pg-editor-settings-trigger').mouseenter(function() {
+                var pos = $(this).offset(),
+                    w = $(this).outerWidth(),
+                    h = $(this).outerHeight();
+                menu.css({
+                    position : "absolute",
+                    top : (pos.top - menu.outerHeight()) + "px",
+                    left : (pos.left) + "px"
+                }).show();
+            });
+
             function updateTabSize() {
-                el.find('.pg-tab-size').text(editor.getTabSize());
+                var size = "" + editor.getTabSize();
+                el.find('.pg-tab-size').text(size);
+
+                menu.find('.pg-tab-size-option').each(function() {
+                    if($(this).attr("data-tab-size") === size) {
+                        $(this).addClass('ui-state-active');
+                    } else {
+                        $(this).removeClass('ui-state-active');
+                    }
+                });
             }
 
+            menu.find('.pg-tab-size-option').click(function() {
+                editor.setTabSize(parseInt($(this).attr("data-tab-size")));
+            });
+
+            function updateSoftTabs() {
+                var toggle = editor.getUseSoftTabs();
+                menu.find('.pg-soft-tabs').each(function() {
+                    if(toggle) {
+                        $(this).addClass('ui-state-active');
+                    } else {
+                        $(this).removeClass('ui-state-active');
+                    }
+                });
+            }
+
+            menu.find('.pg-soft-tabs').click(function() {
+                editor.setUseSoftTabs(!editor.getUseSoftTabs());
+            })
+
             $(editor).on("tabSizeChanged", updateTabSize);
+            $(editor).on("useSoftTabsChanged", updateSoftTabs);
 
             $(editor).on("change", function(_, code) {
                 el.find('.pg-words').text(code.split(/\b[a-z0-9]+?\b/gi).length-1);
@@ -26,57 +75,10 @@ define([
             });
 
             updateTabSize();
-            console.log("added");
-            /*
-            var right = el.find('.pg-toolbar-context'),
-                autoGoToTab = false,
-                tabs = ui.tabs(el.find('.pg-editor-tabs'), {
-                    tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
-                    add: function(event, ui) {
-                        var index = ui.index;
-                        if(autoGoToTab)
-                        {
-                            tabs.tabs("select", ui.index);
-                            editors.activate(ui.index);
-                        }
-                    }
-                });
+            updateSoftTabs();
 
-            tabs.on({
-                click : function(){
-                    var index = $("li", tabs).index($(this).parent());
-                    editors.remove(index);
-                }
-            }, '.ui-icon-close');
 
-            tabs.on({
-                click : function() {
-                    var index = $("li", tabs).index($(this).parent());
-                    editors.activate(index);
-                }
-            }, 'li a');
 
-            var index = 0;
-            ui.button(right, {
-                icon : "ui-icon-plusthick",
-                handler : function() {
-                    autoGoToTab = true;
-                    editors.add();
-                    autoGoToTab = false;
-                }
-            });
 
-            $(editors).on("added", function(e, editor) {
-                tabs.tabs("add", "#pg-editor-tab-" + (++index), editor.name);
-            });
-
-            $(editors).on("removed", function(e, index) {
-                tabs.tabs("remove", index);
-            });
-
-            $(editors).on("activated", function(e, index) {
-                tabs.tabs("select", index);
-            });
-            */
         }
     });

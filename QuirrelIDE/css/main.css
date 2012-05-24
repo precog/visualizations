@@ -45,6 +45,17 @@
     line-height: 24px;
 }
 
+.pg-statusbar .pg-toolbar-actions {
+    font-weight: normal;
+    font-size: 93%;
+}
+
+.pg-statusbar .ui-button.ui-widget.pg-editor-settings-trigger {
+    background: transparent;
+    font-size: 100%;
+    border: none;
+}
+
 .pg-editor-tabs.ui-tabs, .pg-editor-tabs.ui-tabs .ui-tabs-nav {
     margin: 0;
     padding: 0;

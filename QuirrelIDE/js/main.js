@@ -37,7 +37,9 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     var editor = buildEditor(layout.getCodeEditor());
-    buildBarStatus(layout.getStatusBar(), editor);
+
+    editor.setTabSize(config.get("tabSize"));
+    editor.setUseSoftTabs(config.get("softTabs"));
 
     $(layout).on("resizeCodeEditor", function() {
         editor.resize();
@@ -46,6 +48,18 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     $(theme).on("change", function(e, name) {
         editor.setTheme(theme.getEditorTheme(name, editor.engine()));
     });
+
+    $(editor).on("useSoftTabsChanged", function(_, value) {
+        console.log("useSoftTabsChanged " + value);
+        config.set("softTabs", value);
+    });
+
+    $(editor).on("tabSizeChanged", function(_, value) {
+        console.log("tabSizeChanged " + value);
+        config.set("tabSize", value);
+    });
+
+    buildBarStatus(layout.getStatusBar(), editor);
 
     sync(editor, editors, config);
 
@@ -57,5 +71,15 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     config.monitor.bind("theme", function(e, name) {
         theme.set(name);
+    });
+
+    config.monitor.bind("softTabs", function(_, value) {
+        console.log("from config softTabs " + value);
+        editor.setUseSoftTabs(value);
+    });
+
+    config.monitor.bind("tabSize", function(_, value) {
+        console.log("from config tabSize " + value);
+        editor.setTabSize(value);
     });
 });
