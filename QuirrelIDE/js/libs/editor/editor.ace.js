@@ -57,6 +57,12 @@ function(require, ace) {
                 sess.setUseSoftTabs(toogle);
                 $(wrapper).trigger("useSoftTabsChanged", toogle);
             },
+            getTabSize : function() {
+                return sess.getTabSize();
+            },
+            getUseSoftTabs : function(toogle) {
+                return sess.getUseSoftTabs();
+            },
             setTheme : function(theme) {
                 var path = "ace/theme/" + theme;
                 require([path], function() {

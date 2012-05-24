@@ -13,7 +13,7 @@ define([], function() {
         ui : "franco",
         group : "light",
         editor : {
-            ace : "twilight"
+            ace : "dawn"
         }
     }, {
         token : "smoothness",

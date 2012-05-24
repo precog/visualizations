@@ -32,5 +32,18 @@ function(qs){
         appendConfig(contexts.shift());
     }
 
-    return window.Precog;
+    var query = precog.query;
+
+    precog.query = function(text, success, failure) {
+        $(precog).trigger("execute");
+        query(function(r) {
+            success && success(r);
+            $(precog).trigger("executed", r);
+        }, function(e) {
+            failure && failure(e);
+            $(precog).trigger("failed", e);
+        })
+    }
+
+    return precog;
 });

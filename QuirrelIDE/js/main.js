@@ -15,12 +15,13 @@ require([
     , "app/editors"
     , "app/bar-main"
     , "app/bar-editor"
+    , "app/bar-status"
     , "app/theme"
     , "editor/editor.ace"
     , "app/editorsync"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, theme, buildEditor, sync) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync) {
     var layout = createLayout();
 
     buildBarMain(layout.getBarMain());
@@ -36,6 +37,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, theme, bui
     });
 
     var editor = buildEditor(layout.getCodeEditor());
+    buildBarStatus(layout.getStatusBar(), editor);
 
     $(layout).on("resizeCodeEditor", function() {
         editor.resize();

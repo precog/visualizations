@@ -39,6 +39,12 @@
     line-height: 34px;
 }
 
+.pg-statusbar .pg-toolbar-actions, .pg-statusbar .pg-toolbar-context {
+    position: absolute;
+    margin: 0 5px;
+    line-height: 24px;
+}
+
 .pg-editor-tabs.ui-tabs, .pg-editor-tabs.ui-tabs .ui-tabs-nav {
     margin: 0;
     padding: 0;

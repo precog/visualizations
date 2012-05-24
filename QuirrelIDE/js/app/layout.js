@@ -10,7 +10,8 @@ define([
 ],
 
  function(template, ui) {
-    var toolbarHeight = 34;
+    var toolbarHeight = 34,
+        statusbarHeight = 24;
     return function(container) {
         var layout, layouts = [];
         container = (container && $(container)) || $('body');
@@ -30,7 +31,8 @@ define([
                 size: toolbarHeight,
                 spacing_open: 0,
                 spacing_closed: 0
-            };
+            },
+            statusbar = $.extend({}, toolbar, { size : statusbarHeight });
 
         function refreshLayouts() {
             for(var i = 0; i < layouts.length; i++) {
@@ -69,7 +71,7 @@ define([
         // editor separation
         layouts.push(container.find('.pg-editor').layout({
             defaults : defaults,
-            south : toolbar
+            south : statusbar
         }));
 
         // io separation
@@ -117,7 +119,8 @@ define([
             refresh : refreshLayouts,
             getBarMain : function() { return container.find('.pg-mainbar'); },
             getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); },
-            getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); }
+            getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); },
+            getStatusBar : function() { return container.find('.pg-statusbar'); }
         };
     };
 });
