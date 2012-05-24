@@ -59,6 +59,10 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         config.set("tabSize", value);
     });
 
+    $(editor).on("execute", function(_, code) {
+        console.log(code);
+    });
+
     buildBarStatus(layout.getStatusBar(), editor);
 
     sync(editor, editors, config);

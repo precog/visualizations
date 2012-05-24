@@ -18,7 +18,11 @@ define([
                 menu.hide();
             });
 
-            el.find('.pg-editor-settings-trigger').mouseenter(function() {
+            el.find('.pg-editor-settings-trigger').click(function() {
+                if(menu.is(":visible")) {
+                    menu.hide();
+                    return;
+                }
                 var pos = $(this).offset(),
                     w = $(this).outerWidth(),
                     h = $(this).outerHeight();

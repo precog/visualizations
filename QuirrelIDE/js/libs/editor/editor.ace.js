@@ -1,22 +1,26 @@
 define([
-    "require",
-    "ace/ace",
-    "ace/mode/quirrel"
+      "require"
+    , "ace/ace"
+    , "util/ui"
+    , "ace/mode/quirrel"
 ],
 
-function(require, ace) {
+function(require, ace, ui) {
     return function(el) {
         var wrapper,
             editor = ace.edit($(el).get(0));
+
+        function execute() {
+            $(wrapper).trigger('execute', wrapper.get());
+        }
+
         editor.commands.addCommand({
             bindKey: {
                 win: 'Shift-Return',
                 mac: 'Shift-Return|Command-Return',
                 sender: 'editor|cli'
             },
-            exec: function() {
-                $(wrapper).trigger('execute', wrapper.get());
-            }
+            exec: execute
         });
         editor.setShowPrintMargin(false);
         var sess = editor.getSession();
@@ -39,6 +43,19 @@ function(require, ace) {
                 kill = setTimeout(trigger, 250);
             };
         })());
+
+        var run = ui.button(el, {
+            label : "run",
+            text : true,
+            icons : { secondary : "ui-icon-circle-triangle-s" },
+            handler : execute
+        }).css({
+           display: "block",
+           position: "absolute",
+           right: "25px",
+           bottom: "10px",
+           zIndex: 100
+        });
 
         wrapper = {
             get : function() {

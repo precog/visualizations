@@ -19,14 +19,18 @@ function() {
                 icons : null
             }, o);
 
+            var options = {
+                disabled : o.disabled,
+                text: o.text,
+                label: o.label,
+                icons: o.icon ? { primary : o.icon } : o.icons
+            };
+
+            if(!options.icons) delete options.icons;
+
             var button = el.append('<button></button>')
                 .find('button:last')
-                .button({
-                    disabled : o.disabled,
-                    text: o.text,
-                    label: o.label,
-                    icons: o.icon ? { primary : o.icon } : o.icons
-                })
+                .button(options)
                 .click(function(e) {
                     o.handler.apply(button.get(0));
                     e.preventDefault(); return false;
