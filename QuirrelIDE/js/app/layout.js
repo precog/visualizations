@@ -57,13 +57,13 @@ define([
         // console separation
         layouts.push(container.find('.pg-main').layout({
             defaults : defaults,
-            south : { size : "15%" }
+            south : { size : "15%"}
         }));
 
         // editor-support separation
         layouts.push(container.find('.pg-editor-support').layout({
             defaults : defaults,
-            east : { size : "30%" }
+            east : { size : "30%"}
         }));
 
         // editor separation
@@ -97,6 +97,7 @@ define([
         }));
 
         // wire styling to JQuery UI
+        container.addClass("ui-widget-content");
         container.find(".pg-pane").addClass("ui-widget-content");
         container.find(".ui-layout-toggler")
             .mouseenter(function() { $(this).addClass("ui-state-hover"); })
@@ -104,18 +105,9 @@ define([
             .addClass("ui-widget-header")
         ;
         container.find(".ui-layout-resizer")
-            .addClass("ui-widget-content")
+            .addClass("ui-widget-shadow")
         ;
 
-        container.find(".ui-layout-toggler-east")
-//            .addClass("ui-slider-vertical")
-            .addClass("ui-resizable-handle ui-resizable-e")
-        ;
-
-        container.find(".ui-layout-toggler-south")
-//            .addClass("ui-slider-horizontal")
-            .addClass("ui-resizable-handle ui-resizable-s")
-        ;
         container.find(".ui-layout-resizer-dragging")
             .addClass("ui-state-hover")
         ;

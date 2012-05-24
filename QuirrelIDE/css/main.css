@@ -41,7 +41,7 @@
 
 .pg-editor-tabs.ui-tabs, .pg-editor-tabs.ui-tabs .ui-tabs-nav {
     margin: 0;
-    oadding: 0;
+    padding: 0;
     border: 0;
     background-color: transparent;
     background-image: none;
@@ -61,7 +61,6 @@
     right: 0;
 }
 
-
 .pg-logo {
     background-repeat: no-repeat;
     width: 110px;
@@ -75,4 +74,12 @@
 
 .pg-precog {
     background-image: url(images/logo-precog.svg);
+}
+
+.pg-ide .ui-layout-toggler {
+    border: 0;
+}
+
+.pg-ide .ui-layout-resizer {
+    border-radius: 0;
 }

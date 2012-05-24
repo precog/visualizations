@@ -4,16 +4,22 @@ define([], function() {
         name : "default",
         ui : "ui-lightness",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "chrome"
+        }
+    }, {
+        token : "franco",
+        name : "franco",
+        ui : "franco",
+        group : "light",
+        editor : {
+            ace : "twilight"
         }
     }, {
         token : "smoothness",
         name : "Smoothness",
         ui : "smoothness",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "clouds"
         }
@@ -22,7 +28,6 @@ define([], function() {
         name : "Start",
         ui : "start",
         group : "light",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "clouds_midnight"
         }
@@ -31,7 +36,6 @@ define([], function() {
         name : "Redmond",
         ui : "redmond",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "cobalt"
         }
@@ -40,7 +44,6 @@ define([], function() {
         name : "Overcast",
         ui : "overcast",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "crimson_editor"
         }
@@ -49,7 +52,6 @@ define([], function() {
         name : "Sunny",
         ui : "sunny",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "dawn"
         }
@@ -58,7 +60,6 @@ define([], function() {
         name : "Flick",
         ui : "flick",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "dreamweaver"
         }
@@ -67,7 +68,6 @@ define([], function() {
         name : "Pepper Grinder",
         ui : "pepper-grinder",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "eclipse"
         }
@@ -76,7 +76,6 @@ define([], function() {
         name : "Cupertino",
         ui : "cupertino",
         group : "light",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "idle_fingers"
         }
@@ -85,7 +84,6 @@ define([], function() {
         name : "South Street",
         ui : "south-street",
         group : "light",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "kr_theme"
         }
@@ -94,7 +92,6 @@ define([], function() {
         name : "Hot Sneaks",
         ui : "hot-sneaks",
         group : "light",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "merbivore"
         }
@@ -103,7 +100,6 @@ define([], function() {
         name : "Excite Bike",
         ui : "excite-bike",
         group : "light",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "merbivore_soft"
         }
@@ -112,16 +108,22 @@ define([], function() {
         name : "Black Tie",
         ui : "black-tie",
         group : "light",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "mono_industrial"
+        }
+    }, {
+        token : "matthew",
+        name : "matthew",
+        ui : "matthew",
+        group : "dark",
+        editor : {
+            ace : "vibrant_ink"
         }
     }, {
         token : "eggplant",
         name : "Eggplant",
         ui : "eggplant",
         group : "dark",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "monokai"
         }
@@ -130,7 +132,6 @@ define([], function() {
         name : "Dark Hive",
         ui : "dark-hive",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "pastel_on_dark"
         }
@@ -139,7 +140,6 @@ define([], function() {
         name : "UI Darkness",
         ui : "ui-darkness",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "solarized_dark"
         }
@@ -148,7 +148,6 @@ define([], function() {
         name : "Vader",
         ui : "vader",
         group : "dark",
-        sprite : "pg-sprite-light",
         editor : {
             ace : "solarized_light"
         }
@@ -157,7 +156,6 @@ define([], function() {
         name : "Dot Luv",
         ui : "dot-luv",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "textmate"
         }
@@ -166,7 +164,6 @@ define([], function() {
         name : "Mint Chocolate",
         ui : "mint-choc",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "chrome"
         }
@@ -175,7 +172,6 @@ define([], function() {
         name : "Trontastic",
         ui : "trontastic",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "tomorrow"
         }
@@ -184,11 +180,10 @@ define([], function() {
         name : "Swanky Purse",
         ui : "swanky-purse",
         group : "dark",
-        sprite : "pg-sprite-dark",
         editor : {
             ace : "tomorrow_night"
         }
     }];
 });
 
-//tomorrow_night_blue, tomorrow_night_bright, tomorrow_night_eighties, twilightm vibrant_ink
+//tomorrow_night_blue, tomorrow_night_bright, tomorrow_night_eighties, twilight vibrant_ink
