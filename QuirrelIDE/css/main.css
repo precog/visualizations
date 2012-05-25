@@ -33,7 +33,7 @@
 }
 
 
-.pg-toolbar-actions, .pg-toolbar-context {
+.pg-mainbar .pg-toolbar-actions, .pg-mainbar .pg-toolbar-context {
     position: absolute;
     margin: 5px;
     line-height: 34px;
@@ -56,12 +56,27 @@
     border: none;
 }
 
-.pg-editor-tabs.ui-tabs, .pg-editor-tabs.ui-tabs .ui-tabs-nav {
+.pg-editor-tabs.ui-tabs .ui-tabs-nav {
     margin: 0;
     padding: 0;
     border: 0;
     background-color: transparent;
     background-image: none;
+}
+
+.pg-editor-tabs.ui-tabs {
+/*     margin: 0;
+     padding: 0; */
+    border: 0;
+    margin-top: 2px;
+    margin-left: 3px;
+    background-color: transparent;
+    background-image: none;
+ }
+
+.pg-output-formats .ui-buttonset .ui-button {
+    font-size: 95%;
+    margin-right: -.35em;
 }
 
 .pg-editor-tabs .ui-icon.ui-icon-close {
@@ -72,10 +87,35 @@
     height: 24px;
 }
 
-.pg-toolbar-actions { }
-
 .pg-toolbar-context {
     right: 0;
+}
+
+.pg-output-formats /*, .pg-editor-tabs.ui-tabs*/ {
+    padding: 2px;
+}
+
+.pg-result .ui-state-error {
+    padding: 0.7em;
+}
+
+.pg-result .ui-widget pre {
+    font-family: monospace;
+    white-space: pre;
+    margin: 0;
+    padding: 0;
+}
+
+.pg-result .ui-widget pre.json {
+    font-size: 115%;
+}
+
+.pg-result .ui-widget {
+    overflow: auto;
+}
+
+.pg-result .ui-widget .ui-content {
+    margin: 0.5em;
 }
 
 .pg-logo {

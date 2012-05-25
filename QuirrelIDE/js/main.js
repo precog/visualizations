@@ -72,14 +72,18 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     var result = buildOutput(layout.getOutput());
 
+    $(layout).on("resizeCodeEditor", function() {
+        result.resize();
+    });
+
     $(precog).on("execute", function(_, data, lastExecution) {
-        result.set(data, "execute ("+lastExecution+")");
+//        result.set(data, "execute");
     });
     $(precog).on("completed", function(_, data) {
-        result.set(data, "completed");
+        result.set(data);
     });
     $(precog).on("failed", function(_, data) {
-        result.set(data, "failed");
+        result.set(data, "error");
     });
     $(editor).on("execute", function(_, code) {
         precog.query(code);

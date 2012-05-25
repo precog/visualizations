@@ -48,6 +48,9 @@ function() {
         },
         tabs : function(el, o) {
             return el.tabs(o);
+        },
+        buttonset : function(el) {
+            return el.buttonset();
         }
     };
 });

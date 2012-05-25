@@ -38,9 +38,8 @@ function(qs){
                 start = new Date().getTime();
             window.Precog.query(text, function(r) {
                 me.lastExecution = new Date().getTime() - start;
-                $(q).trigger("completed", r);
-            }, function(e, b) {
-                console.log("error: " + e + " " + b);
+                $(q).trigger("completed", [r]);
+            }, function(code, e) {
                 $(q).trigger("failed", e);
             })
         },
