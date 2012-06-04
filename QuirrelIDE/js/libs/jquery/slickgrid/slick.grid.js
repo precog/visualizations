@@ -376,18 +376,18 @@ if (typeof Slick === "undefined") {
     }
 
     function getMaxSupportedCssHeight() {
-      var increment = 1000000;
-      var supportedHeight = increment;
+      var supportedHeight = 1000000;
       // FF reports the height back but still renders blank after ~6M px
-      var testUpTo = ($.browser.mozilla) ? 5000000 : 1000000000;
+      var testUpTo = ($.browser.mozilla) ? 6000000 : 1000000000;
       var div = $("<div style='display:none' />").appendTo(document.body);
 
-      while (supportedHeight <= testUpTo) {
-        div.css("height", supportedHeight + increment);
-        if (div.height() !== supportedHeight + increment) {
+      while (true) {
+        var test = supportedHeight * 2;
+        div.css("height", test);
+        if (test > testUpTo || div.height() !== test) {
           break;
         } else {
-          supportedHeight += increment;
+          supportedHeight = test;
         }
       }
 
@@ -1149,6 +1149,9 @@ if (typeof Slick === "undefined") {
     // Rendering / Scrolling
 
     function scrollTo(y) {
+      y = Math.max(y, 0);
+      y = Math.min(y, th - viewportH);
+
       var oldOffset = offset;
 
       page = Math.min(n - 1, Math.floor(y / ph));
@@ -1384,6 +1387,7 @@ if (typeof Slick === "undefined") {
       }
 
       updateRowCount();
+      handleScroll();
       render();
     }
 
@@ -2273,6 +2277,11 @@ if (typeof Slick === "undefined") {
       }
     }
 
+    function scrollRowToTop(row) {
+      scrollTo(row * options.rowHeight);
+      render();
+    }
+
     function getColspan(row, cell) {
       var metadata = data.getItemMetadata && data.getItemMetadata(row);
       if (!metadata || !metadata.columns) {
@@ -2793,6 +2802,7 @@ if (typeof Slick === "undefined") {
       "resizeCanvas": resizeCanvas,
       "updateRowCount": updateRowCount,
       "scrollRowIntoView": scrollRowIntoView,
+      "scrollRowToTop": scrollRowToTop,
       "getCanvasNode": getCanvasNode,
       "focus": setFocus,
 

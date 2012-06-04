@@ -91,7 +91,8 @@ console.log("hiding " + map[last.type].name);
 console.log("showing " + map[type].name);
                 $(map[type].panel).show();
                 map[type].activate();
-                resize();
+                clearTimeout(this.kill);
+                this.kill = setTimeout(resize, 0);
             }
             if(map[type].display) {
                 map[type].display[0].checked = true;
@@ -102,9 +103,9 @@ console.log("showing " + map[type].name);
 
         return wrapper = {
             set : function(result, type) {
-console.log("SET " + type);
                 result = result || last.result || null;
-                type = type || last.current || 'json';
+                type = type || last.current || 'table';
+console.log("USED " + type);
                 if(map[type]) {
                     activatePanel(result, type);
                 } else {

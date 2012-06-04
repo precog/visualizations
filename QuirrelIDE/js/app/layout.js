@@ -97,7 +97,7 @@ define([
                 panels = {
                     defaults : defaults,
                     south : {
-                        size : 200,
+                        size : "50%",
                         closable : false
                     }
                 };
