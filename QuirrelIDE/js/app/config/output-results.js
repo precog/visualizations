@@ -2,6 +2,7 @@ define([
       "util/output-table"
     , "util/output-json"
     , "util/output-error"
+    , "util/output-message"
 ],
 
 function() {

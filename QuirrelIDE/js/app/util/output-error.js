@@ -13,9 +13,9 @@ function() {
             return elPanel;
         },
         update : function(error) {
-            var message = '<div>'+error.message+'</div>';
+            var message = '<p>'+error.message+'</p>';
             if("undefined" !== typeof error.lineNum) {
-                message += '<div>at line '+error.lineNum+', column '+error.colNum+'</div>';
+                message += '<p>at line '+error.lineNum+', column '+error.colNum+'</p>';
 
                 var indicator = [];
                 for(var i = 0; i < error.colNum-1; i++)
@@ -26,7 +26,7 @@ function() {
 
                 var line = error.line.replace(/\t/g, ' ');
 
-                message += '<pre>'+line+'\n'+indicator.join('')+'</pre>';
+                message += '<pre>'+(line || "&nbsp;")+'\n'+indicator.join('')+'</pre>';
             }
 console.log(JSON.stringify(error));
             elError.html(message);

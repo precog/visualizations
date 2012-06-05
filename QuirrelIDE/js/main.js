@@ -59,12 +59,12 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     $(editor).on("useSoftTabsChanged", function(_, value) {
-        console.log("useSoftTabsChanged " + value);
+//console.log("useSoftTabsChanged " + value);
         config.set("softTabs", value);
     });
 
     $(editor).on("tabSizeChanged", function(_, value) {
-        console.log("tabSizeChanged " + value);
+//console.log("tabSizeChanged " + value);
         config.set("tabSize", value);
     });
 
@@ -76,13 +76,8 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         output.resize();
     });
 
-    $(output).on("optionsChanged", function(_, options) {
-        editors.setOutputOptions(options);
-    });
-
     $(output).on("typeChanged", function(_, type) {
         editors.setOutputType(type);
-        editors.setOutputOptions(null);
     });
 
     $(precog).on("execute", function(_, data, lastExecution) {
@@ -104,13 +99,21 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     sync(editor, editors, config);
 
     $(editors).on("activated", function(_, index) {
-        var out = editors.getOutput();
-        output.set(out.result, out.type, out.options);
+        var result  = editors.getOutputResult(),
+            type    = editors.getOutputType(),
+            options = editors.getOutputOptions();
+//console.log("LOADED OPTIONS " + JSON.stringify(options));
+        output.set(result, type, options);
     });
 
     editors.load();
     if(!editors.count()) editors.add();
     editors.activate(0);
+
+    $(output).on("optionsChanged", function(_, options) {
+//console.log("SAVING OPTIONS " + JSON.stringify(options));
+        editors.setOutputOptions(options);
+    });
 
     theme.set(config.get("theme", "default"));
 
@@ -119,12 +122,12 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     config.monitor.bind("softTabs", function(_, value) {
-        console.log("from config softTabs " + value);
+//console.log("from config softTabs " + value);
         editor.setUseSoftTabs(value);
     });
 
     config.monitor.bind("tabSize", function(_, value) {
-        console.log("from config tabSize " + value);
+//console.log("from config tabSize " + value);
         editor.setTabSize(value);
     });
 });

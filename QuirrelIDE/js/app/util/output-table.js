@@ -21,13 +21,16 @@ function() {
             , autoHeight : false
             , forceFitColumns: true
             , multiColumnSort: true
-        };
+        },
+        wrapper;
     dataView.setPagingOptions({
         pageSize: 20
     });
     dataView.onRowCountChanged.subscribe(function (e, args) {
         if(!grid) return;
-        grid.updateRowCount();
+        try {
+            grid.updateRowCount();
+        } catch(_) {}
         grid.render();
     });
     dataView.onRowsChanged.subscribe(function (e, args) {
@@ -35,6 +38,15 @@ function() {
         grid.invalidateRows(args.rows);
         grid.render();
     });
+
+    function changePagingInfo(e, args) {
+        if(!grid) return;
+//console.log("PAGER EVENT " + JSON.stringify(args));
+        var options = {
+            pager : { pageSize : args.pageSize, pageNum : args.pageNum }
+        };
+        $(wrapper).trigger("optionsChanged", options);
+    }
 
     function formatValue(row, cell, value, columnDef, dataContext, subordinate) {
         if("undefined" === typeof value) {
@@ -82,6 +94,12 @@ function() {
                     });
                 }
             }
+        } else if(!value) {
+            columns.push({
+                id : "empty",
+                name : "No Records Match Your Query",
+                field : "empty"
+            });
         } else {
             columns.push({
                 id : "value",
@@ -108,13 +126,17 @@ function() {
         return result;
     }
 
-    function updateDataView(data) {
+    function updateDataView(data, options) {
         dataView.beginUpdate();
         dataView.setItems(data, "#id");
         dataView.endUpdate();
+        if(options.pager) {
+//console.log("USE PAGER OPTIONS " + JSON.stringify(options.pager));
+            dataView.setPagingOptions(options.pager);
+        }
     }
 
-    return {
+    return wrapper = {
         type : "table",
         name : "Table",
         panel : function() { return elPanel; },
@@ -122,13 +144,16 @@ function() {
             return $('<div></div>');
         },
         update : function(data, options) {
+            dataView.onPagingInfoChanged.unsubscribe(changePagingInfo);
             if(grid) grid.destroy();
+
+            if(!data || data.length == 0) data = [];
 
             var model = createModel(data[0]);
 
             data = transformData(model, data);
 
-            updateDataView(data);
+            updateDataView(data, options);
             grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
             grid.resizeCanvas();
 
@@ -148,9 +173,13 @@ function() {
                     return 0;
                 });
 
-                updateDataView(data);
+                updateDataView(data, options);
             });
             new Slick.Controls.Pager(dataView, grid, this.toolbar);
+            dataView.onPagingInfoChanged.subscribe(changePagingInfo);
+        },
+        deactivate : function() {
+
         },
         resize : function() {
             if(grid) grid.resizeCanvas();

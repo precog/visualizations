@@ -14,39 +14,51 @@ function(traverse) {
         }
 
         function load() {
+console.log("REINIT");
             $.jStorage.reInit();
             var value = $.jStorage.get(key, {});
             $.extend(params, value);
         }
 
-        var delayedSave = (function() {
-            var k = null;
-            return function() {
-                dirty = true;
-                if(k !== null) {
-                    clearInterval(k);
-                    k = null;
-                }
-                k = setTimeout(save, 100);
-            }
-        })();
+        var delayedSave = function() {
+            dirty = true;
+            clearInterval(this.kill);
+            this.kill = setTimeout(save, 100);
+        };
 
         load();
+
+        var enableDebug = true;
+
+        function debug(action, key, value) {
+            if(!enableDebug) return;
+            var s = ((("undefined" !== typeof value) && JSON.stringify(value)) || ""),
+                len = 70,
+                ellipsis = '...';
+            if(s.length > len - ellipsis.length) {
+                s = s.substr(0, len - ellipsis.length) + ellipsis;
+            }
+            console.log(((action && (action + " ")) || "") + key + ((s && ": " + s) || ""));
+        }
 
         var storage = {
                 get : function(key, alternative) {
                     var v = traverse.get(params, key);
+
+                    debug("get", key, v);
+
                     if("undefined" === typeof v)
                         return alternative;
                     else
                         return v;
                 },
                 set : function(key, value) {
-//                    console.log("SET " +key);
                     traverse.set(params, key, value);
+                    debug("set", key, value);
                     delayedSave();
                 },
                 remove : function(key) {
+                    debug("del", key);
                     traverse.remove(params, key);
                     delayedSave();
                 },

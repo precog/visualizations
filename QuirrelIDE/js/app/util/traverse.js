@@ -15,19 +15,16 @@ define([], function() {
             return ref;
         },
         set : function (o, key, value) {
+//console.log(key, JSON.stringify(value), splitPath(key));
             var path = splitPath(key),
                 ref = o,
-                segment = path.shift(),
-                next,
-                nextref;
+                segment = path.shift();
             while(path.length > 0) {
-                next = path.shift();
-                nextref = ref[segment];
-                if("undefined" === typeof nextref) {
-                    nextref = ref[segment] = {};
+                if("undefined" === typeof ref[segment]) {
+                    ref[segment] = {};
                 }
-                ref = nextref;
-                segment = next;
+                ref = ref[segment];
+                segment = path.shift();
             }
             ref[segment] = value;
         },

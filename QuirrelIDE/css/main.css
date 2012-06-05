@@ -106,8 +106,13 @@
     padding: 2px;
 }
 
-.pg-result .ui-state-error {
+.pg-result .ui-state-error, .pg-result .ui-state-highlight {
     padding: 0.7em;
+}
+
+.pg-result .ui-state-error p, .pg-result .ui-state-highlight p {
+    padding: 0;
+    margin: 0;
 }
 
 .pg-result .ui-widget pre {

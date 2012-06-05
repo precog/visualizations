@@ -25,7 +25,6 @@ function(ui, formats, tplToolbar) {
 
         var i = 0; // TODO replace with globally unique values
         $.each(formats, function(_, format) {
-            format.output = wrapper;
             if(format.display)
             {
                 var id = "radio" + (++i);
@@ -36,14 +35,12 @@ function(ui, formats, tplToolbar) {
                     + format.name
                     + '</label>').find("#"+id);
                 format.display.click(function() {
-console.log("change to " + format.type);
                     if(format.type === last.type)
                     {
                         last.current = format.type;
                         return;
                     }
                     wrapper.set(last.result, format.type);
-//                    $(wrapper).trigger("result", last);
                 });
             }
 
@@ -53,15 +50,13 @@ console.log("change to " + format.type);
             elToolbarContext.append(format.toolbar);
 
             $(format.toolbar).hide();
-console.log("hiding " + format.name);
             $(format.panel).hide();
             $(format).on("update", function() {
                 wrapper.set();
-//                $(wrapper).trigger("result", last);
             });
-//            console.log(format.panel);
-//            container.addClass("pg-result-panel");
-
+            $(format).on("optionsChanged", function(_, options) {
+                $(wrapper).trigger("optionsChanged", options);
+            });
         });
 
 
@@ -85,10 +80,8 @@ console.log("hiding " + format.name);
                     map[last.type].deactivate();
                     $(map[last.type].toolbar).hide();
                     $(map[last.type].panel).hide();
-console.log("hiding " + map[last.type].name);
                 }
                 $(map[type].toolbar).show();
-console.log("showing " + map[type].name);
                 $(map[type].panel).show();
                 map[type].activate();
                 clearTimeout(this.kill);
@@ -103,13 +96,18 @@ console.log("showing " + map[type].name);
 
         return wrapper = {
             set : function(result, type, options) {
-                result = result || last.result || null;
+                if("undefined" === typeof result)
+                    result = result || last.result || null;
                 type = type || last.current || 'table';
-console.log("USED " + type);
-                if(map[type]) {
+
+                if(result == null) {
+                    activatePanel({ message : "please, type and execute a query" }, type = "message", options);
+                } else if(result instanceof Array && result.length == 0) {
+                    activatePanel({ message : "empty dataset" }, type = "message", options);
+                } else if(map[type]) {
                     activatePanel(result, type, options);
                 } else {
-                    activatePanel({ message : "invalid result type: " + type }, "error", options);
+                    activatePanel({ message : "invalid result type: " + type }, type = "error", options);
                 }
 
                 if(result) last.result = result;
@@ -119,8 +117,12 @@ console.log("USED " + type);
                 }
                 if(map[type] && map[type].display) {
                     last.current = type;
-                    // change selection here
                 }
+
+                elOutputs.find("input[type=radio]").each(function() {
+                    $(this).attr("checked", $(this).attr("data-format") === type);
+                });
+                elOutputs.buttonset("refresh");
             },
             last : last,
             resize : resize

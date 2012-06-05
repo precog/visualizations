@@ -67,7 +67,11 @@ function(precog, md5, createStore, utils) {
                 var editor = createEditor(options);
                 store.set(editorKey(editor.id), editor);
                 list.push(editor.id);
+
+console.log("BEFORE");
+console.log(JSON.stringify(list));
                 store.set("list", list);
+console.log("AFTER");
                 $(editors).trigger("added", editor);
                 return editor;
             },
@@ -136,17 +140,20 @@ function(precog, md5, createStore, utils) {
             setCode : function(code, index) {
                 this.setField("code", code, index);
             },
-            getOutput : function(index) {
-                return this.getField("output", { result : null, type : null, options : null }, index);
-            },
-            setOutput : function(output, index) {
-                this.setField("output", output, index);
+            getOutputResult : function(index) {
+                return this.getField("output.result", null, index);
             },
             setOutputResult : function(result, index) {
                 this.setField("output.result", result, index);
             },
+            getOutputType : function(index) {
+                return this.getField("output.type", null, index);
+            },
             setOutputType : function(type, index) {
                 this.setField("output.type", type, index);
+            },
+            getOutputOptions : function(index) {
+                return this.getField("output.options", null, index);
             },
             setOutputOptions : function(options, index) {
                 this.setField("output.options", options, index);

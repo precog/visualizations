@@ -133,9 +133,9 @@
       }
 
       if (pagingInfo.pageSize == 0) {
-        $status.text("Showing all " + pagingInfo.totalRows + " rows");
+        $status.text("all " + pagingInfo.totalRows + " rows");
       } else {
-        $status.text("Showing page " + (pagingInfo.pageNum + 1) + " of " + pagingInfo.totalPages);
+        $status.text("page " + (pagingInfo.pageNum + 1) + " of " + pagingInfo.totalPages + " ("+pagingInfo.totalRows+" rows)");
       }
     }
 
