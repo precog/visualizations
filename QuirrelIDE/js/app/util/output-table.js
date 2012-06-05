@@ -15,7 +15,7 @@ function() {
         elOutput = elPanel.find('.pg-table'),
         dataView = new Slick.Data.DataView(),
         grid,
-        options = {
+        gridOptions = {
               enableCellNavigation: false
             , enableColumnReorder: true
             , autoHeight : false
@@ -26,18 +26,46 @@ function() {
         pageSize: 20
     });
     dataView.onRowCountChanged.subscribe(function (e, args) {
-        console.log("ROW COUNT");
         if(!grid) return;
         grid.updateRowCount();
         grid.render();
     });
     dataView.onRowsChanged.subscribe(function (e, args) {
-        console.log("ROW CHANGED");
         if(!grid) return;
         grid.invalidateRows(args.rows);
         grid.render();
     });
 
+    function formatValue(row, cell, value, columnDef, dataContext, subordinate) {
+        if("undefined" === typeof value) {
+            return "[undefined]";
+        } else if(value === null) {
+            return "[null]";
+        } else if(value instanceof Array) {
+            var result = [];
+            for(var i = 0; i < value.length; i++)
+            {
+                result.push(formatValue(row, cell, value[i], columnDef, dataContext, true));
+            }
+            return result.join("; ");
+        } else if("object" === typeof value) {
+            var result = [];
+            for(var key in value) {
+                if(value.hasOwnProperty(key)) {
+                    var pair = key + ": " + formatValue(row, cell, value[key], columnDef, dataContext, true);
+                    result.push(pair);
+                }
+            }
+            return result.join(", ");
+        } else if(value === "") {
+            return "[empty]";
+        } else if(isNaN(value)) {
+            value = value.toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+            return '"' + value.replace(/"/g, '\\"') + '"';
+        } else {
+            return value;
+        }
+    }
     function createModel(value) {
         var columns = [];
         if("object" === typeof value) {
@@ -48,6 +76,7 @@ function() {
                         , name : key
                         , field : key
                         , sortable: true
+                        , formatter : formatValue
 
                         , pgvalue : false
                     });
@@ -92,16 +121,15 @@ function() {
         toolbar : function() {
             return $('<div></div>');
         },
-        update : function(data) {
+        update : function(data, options) {
             if(grid) grid.destroy();
 
             var model = createModel(data[0]);
 
             data = transformData(model, data);
-            console.log(JSON.stringify(data));
 
             updateDataView(data);
-            grid = new Slick.Grid(elOutput, dataView, model, options);
+            grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
             grid.resizeCanvas();
 
             grid.onSort.subscribe(function (e, args) {

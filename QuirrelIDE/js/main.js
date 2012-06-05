@@ -70,26 +70,43 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     buildBarStatus(layout.getStatusBar(), editor, layout);
 
-    var result = buildOutput(layout.getOutput());
+    var output = buildOutput(layout.getOutput());
 
     $(layout).on("resizeCodeEditor", function() {
-        result.resize();
+        output.resize();
+    });
+
+    $(output).on("optionsChanged", function(_, options) {
+        editors.setOutputOptions(options);
+    });
+
+    $(output).on("typeChanged", function(_, type) {
+        editors.setOutputType(type);
+        editors.setOutputOptions(null);
     });
 
     $(precog).on("execute", function(_, data, lastExecution) {
-//        result.set(data, "execute");
+//        output.set(data, "execute");
     });
+
     $(precog).on("completed", function(_, data) {
-        result.set(data);
+        output.set(data);
+        editors.setOutputResult(data);
     });
     $(precog).on("failed", function(_, data) {
-        result.set(data, "error");
+        output.set(data, "error");
+        editors.setOutputResult(data);
     });
     $(editor).on("execute", function(_, code) {
         precog.query(code);
     });
 
     sync(editor, editors, config);
+
+    $(editors).on("activated", function(_, index) {
+        var out = editors.getOutput();
+        output.set(out.result, out.type, out.options);
+    });
 
     editors.load();
     if(!editors.count()) editors.add();

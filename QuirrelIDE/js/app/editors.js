@@ -99,6 +99,7 @@ function(precog, md5, createStore, utils) {
                 return this.get(list.indexOf(id));
             },
             getKey : function(index) {
+                if("undefined" === typeof index) index = this.current();
                 return editorKey(list[index]);
             },
             load : function() {
@@ -123,15 +124,32 @@ function(precog, md5, createStore, utils) {
             current : function() {
                 return currentIndex;
             },
-            setCode : function(code, index) {
-                if("undefined" === typeof index) index = this.current();
-                var key = this.getKey(index);
-                store.set(key + ".code", code);
+            setField : function(field, value, index) {
+                store.set(this.getKey(index) + "." + field, value);
+            },
+            getField : function(field, alt, index) {
+                return store.get(this.getKey(index) + "." + field, alt);
             },
             getCode : function(index) {
-                if("undefined" === typeof index) index = this.current();
-                var key = this.getKey(index);
-                return store.get(key + ".code", "");
+                return this.getField("code", "", index);
+            },
+            setCode : function(code, index) {
+                this.setField("code", code, index);
+            },
+            getOutput : function(index) {
+                return this.getField("output", { result : null, type : null, options : null }, index);
+            },
+            setOutput : function(output, index) {
+                this.setField("output", output, index);
+            },
+            setOutputResult : function(result, index) {
+                this.setField("output.result", result, index);
+            },
+            setOutputType : function(type, index) {
+                this.setField("output.type", type, index);
+            },
+            setOutputOptions : function(options, index) {
+                this.setField("output.options", options, index);
             },
             monitor : store.monitor
         };

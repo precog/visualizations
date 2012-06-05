@@ -25,6 +25,7 @@ function(ui, formats, tplToolbar) {
 
         var i = 0; // TODO replace with globally unique values
         $.each(formats, function(_, format) {
+            format.output = wrapper;
             if(format.display)
             {
                 var id = "radio" + (++i);
@@ -42,6 +43,7 @@ console.log("change to " + format.type);
                         return;
                     }
                     wrapper.set(last.result, format.type);
+//                    $(wrapper).trigger("result", last);
                 });
             }
 
@@ -52,10 +54,10 @@ console.log("change to " + format.type);
 
             $(format.toolbar).hide();
 console.log("hiding " + format.name);
-console.log(format.panel);
             $(format.panel).hide();
             $(format).on("update", function() {
                 wrapper.set();
+//                $(wrapper).trigger("result", last);
             });
 //            console.log(format.panel);
 //            container.addClass("pg-result-panel");
@@ -68,8 +70,6 @@ console.log(format.panel);
         function resize() {
             if(map[last.type]) {
                 var el = map[last.type].panel;
-console.log("resize");
-console.log(el);
                 el.css({
                     width  : el.parent().width() + "px",
                     height : el.parent().height() + "px"
@@ -78,7 +78,7 @@ console.log(el);
             }
         }
 
-        function activatePanel(result, type) {
+        function activatePanel(result, type, options) {
             if(type !== last.type) {
                 if(last.type && map[last.type])
                 {
@@ -98,22 +98,25 @@ console.log("showing " + map[type].name);
                 map[type].display[0].checked = true;
                 map[type].display.button("refresh");
             }
-            map[type].update(result);
+            map[type].update(result, options);
         }
 
         return wrapper = {
-            set : function(result, type) {
+            set : function(result, type, options) {
                 result = result || last.result || null;
                 type = type || last.current || 'table';
 console.log("USED " + type);
                 if(map[type]) {
-                    activatePanel(result, type);
+                    activatePanel(result, type, options);
                 } else {
-                    activatePanel({ message : "invalid result type: " + type }, "error");
+                    activatePanel({ message : "invalid result type: " + type }, "error", options);
                 }
 
                 if(result) last.result = result;
-                last.type = type;
+                if(last.type != type) {
+                    last.type = type;
+                    $(wrapper).trigger("typeChanged", type);
+                }
                 if(map[type] && map[type].display) {
                     last.current = type;
                     // change selection here

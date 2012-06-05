@@ -27,17 +27,17 @@ define([
         layouts.push(container.layout());
 
         var defaults = {
-                initClosed : false,
-                resizable : true,
-                slidable : true
+                  initClosed : false
+                , resizable : true
+                , slidable : true
             },
             toolbar = {
-                resizable : false,
-                closable : false,
-                slidable : false,
-                size: toolbarHeight,
-                spacing_open: 0,
-                spacing_closed: 0
+                  resizable : false
+                , closable : false
+                , slidable : false
+                , size: toolbarHeight
+                , spacing_open: 0
+                , spacing_closed: 0
             },
             statusbar = $.extend({}, toolbar, { size : statusbarHeight });
 
@@ -51,7 +51,10 @@ define([
         layouts.push(container.find('.pg-ide').layout({
             defaults : defaults,
             north : toolbar,
-            east : { size : 200 }
+            west : {
+                  size : 200
+                , initClosed : true
+            }
         }));
 
 
@@ -59,20 +62,27 @@ define([
         layouts.push(container.find('.pg-system').layout({
             defaults : defaults,
             north : {
-                size : "50%"
+                  size : "50%"
+                , initClosed : true
             }
         }));
 
         // console separation
         layouts.push(container.find('.pg-main').layout({
             defaults : defaults,
-            south : { size : "15%"}
+            south : {
+                  size : "15%"
+                , initClosed : true
+            }
         }));
 
         // editor-support separation
         layouts.push(container.find('.pg-editor-support').layout({
             defaults : defaults,
-            east : { size : "30%"}
+            east : {
+                  size : "30%"
+                , initClosed : true
+            }
         }));
 
         // editor separation
@@ -97,8 +107,8 @@ define([
                 panels = {
                     defaults : defaults,
                     south : {
-                        size : "50%",
-                        closable : false
+                          size : "50%"
+                        , closable : false
                     }
                 };
             } else {
@@ -106,8 +116,8 @@ define([
                 panels = {
                     defaults : defaults,
                     east : {
-                        size : "50%",
-                        closable : false
+                          size : "50%"
+                        , closable : false
                     }
                 };
             }
