@@ -12,10 +12,9 @@ define([], function() {
                 ref = ref[segment];
                 segment = path.shift();
             }
-            return ref;
+            return JSON.parse(JSON.stringify(ref)); // prevents object reference
         },
         set : function (o, key, value) {
-//console.log(key, JSON.stringify(value), splitPath(key));
             var path = splitPath(key),
                 ref = o,
                 segment = path.shift();
@@ -28,7 +27,7 @@ define([], function() {
             }
             var svalue = JSON.stringify(value);
             if(JSON.stringify(ref[segment]) !== svalue) {
-                ref[segment] = JSON.parse(svalue); // avoids object reference
+                ref[segment] = JSON.parse(svalue); // prevents object reference
                 return true;
             } else {
                 return false;

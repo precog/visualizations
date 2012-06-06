@@ -39,15 +39,6 @@ function() {
         grid.render();
     });
 
-    function changePagingInfo(e, args) {
-        if(!grid) return;
-//console.log("PAGER EVENT " + JSON.stringify(args));
-        var options = {
-            pager : { pageSize : args.pageSize, pageNum : args.pageNum }
-        };
-        $(wrapper).trigger("optionsChanged", options);
-    }
-
     function formatValue(row, cell, value, columnDef, dataContext, subordinate) {
         if("undefined" === typeof value) {
             return "[undefined]";
@@ -102,10 +93,11 @@ function() {
             });
         } else {
             columns.push({
-                id : "value",
-                name : "Value",
-                field : "value",
-                pgvalue : true
+                  id : "value"
+                , name : "Value"
+                , field : "value"
+                , pgvalue : true
+                , sortable: true
             });
         }
         return columns;
@@ -127,9 +119,11 @@ function() {
     }
 
     function updateDataView(data, options) {
-        if(options && options.pager) {
-//console.log("USE PAGER OPTIONS " + JSON.stringify(options.pager));
-            dataView.setPagingOptions(options.pager);
+        if(options) {
+            if(options.pager)
+                dataView.setPagingOptions(options.pager);
+            if(options.sort)
+                sortData(data, options.sort);
         }
         dataView.beginUpdate();
         dataView.setItems(data, "#id");
@@ -144,6 +138,22 @@ function() {
         }, 0);
     }
 
+    function sortData(data, cols) {
+        data.sort(function (dataRow1, dataRow2) {
+            for (var i = 0, l = cols.length; i < l; i++) {
+                var field = cols[i].field;
+                var sign = cols[i].asc ? 1 : -1;
+                var value1 = dataRow1[field], value2 = dataRow2[field];
+                var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
+                if (result != 0) {
+                    return result;
+                }
+            }
+            return 0;
+        });
+    }
+
+    var changePagerHandler;
     return wrapper = {
         type : "table",
         name : "Table",
@@ -152,37 +162,48 @@ function() {
             return $('<div></div>');
         },
         update : function(data, options) {
-            dataView.onPagingInfoChanged.unsubscribe(changePagingInfo);
+            if(changePagerHandler)
+                dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
             if(grid) grid.destroy();
-
             if(!data || data.length == 0) data = [];
 
             var model = createModel(data[0]);
 
             data = transformData(model, data);
 
-            updateDataView(data, options);
             grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
             grid.onSort.subscribe(function (e, args) {
-                var cols = args.sortCols;
-
-                data.sort(function (dataRow1, dataRow2) {
-                    for (var i = 0, l = cols.length; i < l; i++) {
-                        var field = cols[i].sortCol.field;
-                        var sign = cols[i].sortAsc ? 1 : -1;
-                        var value1 = dataRow1[field], value2 = dataRow2[field];
-                        var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
-                        if (result != 0) {
-                            return result;
-                        }
-                    }
-                    return 0;
+                if(!options) options = {};
+                options.sort = args.sortCols.map(function(def) {
+                    return {
+                        asc : def.sortAsc,
+                        field : def.sortCol.field
+                    };
                 });
-
+                $(wrapper).trigger("optionsChanged", options);
                 updateDataView(data, options);
             });
             new Slick.Controls.Pager(dataView, grid, this.toolbar);
-            dataView.onPagingInfoChanged.subscribe(changePagingInfo);
+
+            changePagerHandler = function(e, args) {
+                if(!options) options = {};
+                options.pager = { pageSize : args.pageSize, pageNum : args.pageNum };
+                $(wrapper).trigger("optionsChanged", options);
+            }
+
+            dataView.onPagingInfoChanged.subscribe(changePagerHandler);
+
+            if(options && options.sort) {
+                grid.setSortColumns(options.sort.map(function(col){
+                    return {
+                        columnId : col.field,
+                        sortAsc : col.asc
+                    };
+                }));
+            }
+
+            updateDataView(data, options);
+
             reducedResize();
         },
 //        deactivate : function() {

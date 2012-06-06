@@ -34,7 +34,7 @@ function(traverse) {
         function debug(action, key, value) {
             if(!enableDebug) return;
             var s = ((("undefined" !== typeof value) && JSON.stringify(value)) || ""),
-                len = 70,
+                len = 100,
                 ellipsis = '...';
             if(s.length > len - ellipsis.length) {
                 s = s.substr(0, len - ellipsis.length) + ellipsis;

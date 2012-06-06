@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-status.js" afterPath="$PROJECT_DIR$/js/app/bar-status.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/ui.js" afterPath="$PROJECT_DIR$/js/app/util/ui.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/toolbar.status.html" afterPath="$PROJECT_DIR$/js/templates/toolbar.status.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/output-table.js" afterPath="$PROJECT_DIR$/js/app/util/output-table.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/storage.js" afterPath="$PROJECT_DIR$/js/app/util/storage.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/traverse.js" afterPath="$PROJECT_DIR$/js/app/util/traverse.js" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,10 +44,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bar-status.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="bar-status.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="117" column="90" selection-start="4428" selection-end="4428" vertical-scroll-proportion="0.64190984">
+            <state line="97" column="48" selection-start="3397" selection-end="3397" vertical-scroll-proportion="-3.3454545">
               <folding />
             </state>
           </provider>
@@ -74,10 +71,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="storage.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="storage.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="31" selection-start="780" selection-end="780" vertical-scroll-proportion="-5.181818">
+            <state line="31" column="31" selection-start="780" selection-end="780" vertical-scroll-proportion="0.45755967">
               <folding />
             </state>
           </provider>
@@ -86,7 +83,7 @@
       <file leaf-file-name="traverse.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="45" selection-start="944" selection-end="944" vertical-scroll-proportion="0.0">
+            <state line="32" column="29" selection-start="1114" selection-end="1114" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -95,8 +92,19 @@
       <file leaf-file-name="output-table.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="123" column="13" selection-start="4162" selection-end="4162" vertical-scroll-proportion="-13.269231">
+            <state line="69" column="9" selection-start="2475" selection-end="2475" vertical-scroll-proportion="-7.6923075">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="slick.grid.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.grid.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1004" column="6" selection-start="33474" selection-end="33534" vertical-scroll-proportion="-9.846154">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -105,15 +113,6 @@
         <entry file="file://$PROJECT_DIR$/js/app/util/output-error.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="22" column="40" selection-start="728" selection-end="728" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="precog.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -138,16 +137,16 @@
         <option value="$PROJECT_DIR$/js/app/util/storagemonitor.js" />
         <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
         <option value="$PROJECT_DIR$/js/app/editors.js" />
-        <option value="$PROJECT_DIR$/js/app/util/traverse.js" />
-        <option value="$PROJECT_DIR$/js/app/util/storage.js" />
         <option value="$PROJECT_DIR$/js/app/util/precog.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-error.js" />
-        <option value="$PROJECT_DIR$/js/app/util/output-table.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
         <option value="$PROJECT_DIR$/js/app/util/ui.js" />
         <option value="$PROJECT_DIR$/js/templates/toolbar.status.html" />
         <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
+        <option value="$PROJECT_DIR$/js/app/util/traverse.js" />
+        <option value="$PROJECT_DIR$/js/app/util/output-table.js" />
+        <option value="$PROJECT_DIR$/js/app/util/storage.js" />
       </list>
     </option>
   </component>
@@ -230,28 +229,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -506,13 +483,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.core.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/config/output-results.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="25" column="30" selection-start="635" selection-end="635" vertical-scroll-proportion="0.0">
@@ -548,20 +518,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="45" selection-start="944" selection-end="944" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="31" selection-start="780" selection-end="780" vertical-scroll-proportion="-5.181818">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="42" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0">
@@ -572,13 +528,6 @@
     <entry file="file://$PROJECT_DIR$/js/app/util/output-error.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="40" selection-start="728" selection-end="728" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="123" column="13" selection-start="4162" selection-end="4162" vertical-scroll-proportion="-13.269231">
           <folding />
         </state>
       </provider>
@@ -613,7 +562,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="90" selection-start="4428" selection-end="4428" vertical-scroll-proportion="0.64190984">
+        <state line="97" column="48" selection-start="3397" selection-end="3397" vertical-scroll-proportion="-3.3454545">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="29" selection-start="1114" selection-end="1114" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.grid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1004" column="6" selection-start="33474" selection-end="33534" vertical-scroll-proportion="-9.846154">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="9" selection-start="2475" selection-end="2475" vertical-scroll-proportion="-7.6923075">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="31" selection-start="780" selection-end="780" vertical-scroll-proportion="0.45755967">
           <folding />
         </state>
       </provider>
