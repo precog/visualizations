@@ -119,16 +119,23 @@ function() {
     }
 
     function updateDataView(data, options) {
-        if(options) {
-            if(options.pager)
-                dataView.setPagingOptions(options.pager);
-            if(options.sort)
-                sortData(data, options.sort);
-        }
+        dataView.setItems([], "#id"); // forces correct refreshes of data
+
+        if(options && options.sort)
+            sortData(data, options.sort);
+
         dataView.beginUpdate();
         dataView.setItems(data, "#id");
         dataView.endUpdate();
-//        if(grid) grid.resizeCanvas();
+        if(options && options.pager && (("undefined" !== typeof options.pager.size) || ("undefined" !== typeof options.pager.pageNum)))
+        {
+            var pager = {};
+            if(options.pager.size)
+                pager.pageSize = options.pager.size;
+            if(options.pager.page)
+                pager.pageNum = options.pager.page;
+            dataView.setPagingOptions(pager);
+        }
     }
 
     function reducedResize() {
@@ -162,18 +169,32 @@ function() {
             return $('<div></div>');
         },
         update : function(data, options) {
+            if(!options) options = {};
             if(changePagerHandler)
                 dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
             if(grid) grid.destroy();
-            if(!data || data.length == 0) data = [];
 
-            var model = createModel(data[0]);
+            var model = createModel(data && data.length > 0 && data[0] || []);
 
             data = transformData(model, data);
 
             grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
+
+            changePagerHandler = function(e, args) {
+                options.pager = { size : args.pageSize, page : args.pageNum };
+                $(wrapper).trigger("optionsChanged", options);
+            }
+
+            if(options.sort) {
+                grid.setSortColumns(options.sort.map(function(col){
+                    return {
+                        columnId : col.field,
+                        sortAsc : col.asc
+                    };
+                }));
+            }
+
             grid.onSort.subscribe(function (e, args) {
-                if(!options) options = {};
                 options.sort = args.sortCols.map(function(def) {
                     return {
                         asc : def.sortAsc,
@@ -185,33 +206,12 @@ function() {
             });
             new Slick.Controls.Pager(dataView, grid, this.toolbar);
 
-            changePagerHandler = function(e, args) {
-                if(!options) options = {};
-                options.pager = { pageSize : args.pageSize, pageNum : args.pageNum };
-                $(wrapper).trigger("optionsChanged", options);
-            }
+            updateDataView(data, options);
 
             dataView.onPagingInfoChanged.subscribe(changePagerHandler);
 
-            if(options && options.sort) {
-                grid.setSortColumns(options.sort.map(function(col){
-                    return {
-                        columnId : col.field,
-                        sortAsc : col.asc
-                    };
-                }));
-            }
-
-            updateDataView(data, options);
-
             reducedResize();
         },
-//        deactivate : function() {
-//
-//        },
-//        activate : function() {
-//
-//        },
         resize : reducedResize
     };
 });

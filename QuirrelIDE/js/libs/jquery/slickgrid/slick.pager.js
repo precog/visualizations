@@ -131,7 +131,6 @@
       if (!state.canGotoPrev) {
         $container.find(".ui-icon-seek-prev").addClass("ui-state-disabled");
       }
-
       if (pagingInfo.pageSize == 0) {
         $status.text("all " + pagingInfo.totalRows + " rows");
       } else {

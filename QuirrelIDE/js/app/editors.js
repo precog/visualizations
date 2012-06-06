@@ -137,6 +137,7 @@ function(precog, md5, createStore, utils) {
                 this.setField("code", code, index);
             },
             getOutputResult : function(index) {
+//                console.log("GET DATA " + JSON.stringify(this.getField("output.result", null, index)));
                 return this.getField("output.result", null, index);
             },
             setOutputResult : function(result, index) {
