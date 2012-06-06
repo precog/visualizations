@@ -68,7 +68,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         config.set("tabSize", value);
     });
 
-    buildBarStatus(layout.getStatusBar(), editor, layout);
+    var status = buildBarStatus(layout.getStatusBar(), editor, layout);
 
     var output = buildOutput(layout.getOutput());
 
@@ -81,14 +81,16 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     $(precog).on("execute", function(_, data, lastExecution) {
-//        output.set(data, "execute");
+        status.startRequest();
     });
 
     $(precog).on("completed", function(_, data) {
+        status.endRequest(true);
         output.set(data);
         editors.setOutputResult(data);
     });
     $(precog).on("failed", function(_, data) {
+        status.endRequest(false);
         output.set(data, "error");
         editors.setOutputResult(data);
     });

@@ -39,7 +39,7 @@
     line-height: 34px;
 }
 
-.pg-statusbar .pg-toolbar-actions, .pg-statusbar .pg-toolbar-context {
+.pg-toolbar-context {
     position: absolute;
     margin: 0 5px;
     line-height: 24px;
@@ -54,6 +54,16 @@
     background: transparent;
     font-size: 100%;
     border: none;
+}
+
+.pg-statusbar .pg-toolbar-context .pg-container {
+    display: inline-block;
+}
+
+.pg-statusbar .pg-toolbar-context .pg-container.pg-progressbar {
+    width: 150px;
+    height: 14px;
+    margin-top: 4px;
 }
 
 .pg-editor-tabs.ui-tabs .ui-tabs-nav {
@@ -156,9 +166,6 @@
 .pg-ide .ui-layout-resizer {
     border-radius: 0;
 }
-
-
-
 
 .pg-ide .slick-header.ui-state-default {
     border: 0;

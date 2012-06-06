@@ -5,6 +5,7 @@ define([
     , "order!ui/jquery.ui.button"
     , "order!ui/jquery.ui.tabs"
     , "order!ui/jquery.ui.menu"
+    , "order!ui/jquery.ui.progressbar"
 //    , "jQuery/ui/jquery.ui.sortable"
 ],
 
@@ -51,6 +52,9 @@ function() {
         },
         buttonset : function(el) {
             return el.buttonset();
+        },
+        progressbar : function(el) {
+            return el.progressbar();
         }
     };
 });

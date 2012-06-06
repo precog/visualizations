@@ -7,6 +7,7 @@ define([
     function(ui, tplToolbar, tplMenu) {
 
         return function(el, editor, layout) {
+            var wrapper;
             el.append(tplToolbar);
 
             var menu = $('body').append(tplMenu).find(".pg-menu-editor-status:last");
@@ -82,5 +83,55 @@ define([
 
             updateTabSize();
             updateSoftTabs();
+
+            var elProgressBar = ui.progressbar(el.find(".pg-progressbar"));
+            elProgressBar.hide();
+            
+            var elExecutionTime = el.find(".pg-execution-time");
+            elExecutionTime.hide();
+            
+            var progress = {
+                startTime : null,
+                killProgress : null,
+                lastExecution : 2000,
+                start : function() {
+                    clearInterval(progress.killProgress);
+                    progress.startTime = new Date().getTime();
+                    progress.update();
+                    progress.killProgress = setInterval(function() { progress.update(); }, 50);
+                    elExecutionTime.hide();
+                    elProgressBar.show();
+                },
+                update : function() {
+                    var delta = new Date().getTime() - progress.startTime,
+                        percent = parseInt(delta / progress.lastExecution * 1000) / 10;
+                    if(percent > 100)
+                        percent = 100;
+                    else if(percent < 0)
+                        percent = 0;
+                    elProgressBar.progressbar("value", percent);
+                },
+                end : function(success) {
+                    if(success)
+                    {
+                        progress.lastExecution = new Date().getTime() - progress.startTime;
+                        elExecutionTime.html("query time " + progress.lastExecution + " ms");
+                    }
+                    elProgressBar.hide();
+                    elExecutionTime.show();
+                    clearInterval(progress.killProgress);
+                }
+            }
+
+
+            var lastRequest = 2;
+            return wrapper = {
+                startRequest : function() {
+                    progress.start();
+                },
+                endRequest : function(success) {
+                    progress.end(success);
+                }
+             }
         }
     });
