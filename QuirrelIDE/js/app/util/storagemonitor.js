@@ -35,7 +35,7 @@ function(traverse, buildStorage) {
         }
 
         storage.monitor = monitor = (function() {
-            var kill = null,
+            var killMonitor = null,
                 last = {},
                 paths = [],
                 pathsCounter = {};
@@ -73,15 +73,15 @@ function(traverse, buildStorage) {
                         this.end();
                         this.start(delay);
                     } else {
-                        kill = setInterval(loop, delay);
+                        killMonitor = setInterval(loop, delay);
                     }
                 },
                 end : function() {
-                    clearInterval(kill);
-                    kill = null;
+                    clearInterval(killMonitor);
+                    killMonitor = null;
                 },
                 monitoring : function() {
-                    return null !== kill;
+                    return null !== killMonitor;
                 },
                 bind : function(path, handler) {
                     pathsCounter[path] = (pathsCounter[path] && (++pathsCounter[path])) || 1;

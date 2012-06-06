@@ -32,15 +32,15 @@ function(require, ace, ui) {
             $(wrapper).trigger("changeSelection", editor.getSelection());
         });
         sess.on("change", (function() {
-            var kill;
+            var killChange;
 
             function trigger() {
                 $(wrapper).trigger("change", wrapper.get());
             };
 
             return function() {
-                clearInterval(kill);
-                kill = setTimeout(trigger, 250);
+                clearInterval(killChange);
+                killChange = setTimeout(trigger, 250);
             };
         })());
 

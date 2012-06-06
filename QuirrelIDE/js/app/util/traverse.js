@@ -26,7 +26,13 @@ define([], function() {
                 ref = ref[segment];
                 segment = path.shift();
             }
-            ref[segment] = value;
+            var svalue = JSON.stringify(value);
+            if(JSON.stringify(ref[segment]) !== svalue) {
+                ref[segment] = JSON.parse(svalue); // avoids object reference
+                return true;
+            } else {
+                return false;
+            }
         },
         remove : function(o, key) {
             var path = splitPath(key),

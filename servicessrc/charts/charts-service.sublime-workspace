@@ -640,21 +640,26 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigRendering.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObject.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigImage.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/DownloadAPIController.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/template/renderabledisplay.html",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/template/RenderableDisplay.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/BaseController.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/RenderableAPIController.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/Sample.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/Renderable.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigTemplate.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigGateway.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObjects.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/App.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/WKHtml.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/RenderableAPIController.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/DownloadAPIController.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/controller/Site.hx",
 		"/Users/francoponticelli/Desktop/charts1.html",
 		"/Users/francoponticelli/Desktop/temp.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObject.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigPdf.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigImage.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigObjects.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigTemplate.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigWKHtml.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/ConfigRendering.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/servicessrc/charts/src/model/Renderable.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/csv/Csv.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/csv/CsvDecoder.hx",
 		"/Users/francoponticelli/Projects/thx/src/thx/csv/CsvEncoder.hx",
@@ -762,12 +767,7 @@
 		"/Users/francoponticelli/Projects/thx/src/Dates.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Periodicity.hx",
 		"/Users/francoponticelli/Projects/reportgrid/client-libraries/doc/conf/template.html",
-		"/Users/francoponticelli/Projects/thx/src/thx/svg/LineInterpolator.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/chart/PivotTable.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/html/chart/Leadeboard.hx",
-		"/Users/francoponticelli/Projects/thx/build.hxml",
-		"/Users/francoponticelli/Projects/test/testint/src/build.hxml",
-		"/Users/francoponticelli/Projects/thx/src/Floats.hx"
+		"/Users/francoponticelli/Projects/thx/src/thx/svg/LineInterpolator.hx"
 	],
 	"find":
 	{
@@ -775,7 +775,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 91.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"/Users/francoponticelli/Projects/reportgrid/visualizations",

@@ -84,8 +84,8 @@ function(ui, formats, tplToolbar) {
                 $(map[type].toolbar).show();
                 $(map[type].panel).show();
                 map[type].activate();
-                clearTimeout(this.kill);
-                this.kill = setTimeout(resize, 0);
+                clearTimeout(this.killActivatePanel);
+                this.killActivatePanel = setTimeout(resize, 0);
             }
             if(map[type].display) {
                 map[type].display[0].checked = true;

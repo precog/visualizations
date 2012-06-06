@@ -14,7 +14,8 @@ function(traverse) {
         }
 
         function load() {
-console.log("REINIT");
+            if(enableDebug)
+                console.log("Load Storage Data");
             $.jStorage.reInit();
             var value = $.jStorage.get(key, {});
             $.extend(params, value);
@@ -22,13 +23,13 @@ console.log("REINIT");
 
         var delayedSave = function() {
             dirty = true;
-            clearInterval(this.kill);
-            this.kill = setTimeout(save, 100);
+            clearInterval(this.killDelayedSave);
+            this.killDelayedSave = setTimeout(save, 100);
         };
 
         load();
 
-        var enableDebug = true;
+        var enableDebug = false;
 
         function debug(action, key, value) {
             if(!enableDebug) return;
@@ -53,9 +54,11 @@ console.log("REINIT");
                         return v;
                 },
                 set : function(key, value) {
-                    traverse.set(params, key, value);
-                    debug("set", key, value);
-                    delayedSave();
+                    if(traverse.set(params, key, value))
+                    {
+                        delayedSave();
+                        debug("set", key, value);
+                    }
                 },
                 remove : function(key) {
                     debug("del", key);

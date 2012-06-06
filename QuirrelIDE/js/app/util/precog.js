@@ -40,6 +40,7 @@ function(qs){
                 me.lastExecution = new Date().getTime() - start;
                 $(q).trigger("completed", [r]);
             }, function(code, e) {
+                if("string" == typeof e) e = { message : e };
                 $(q).trigger("failed", e);
             })
         },

@@ -67,11 +67,7 @@ function(precog, md5, createStore, utils) {
                 var editor = createEditor(options);
                 store.set(editorKey(editor.id), editor);
                 list.push(editor.id);
-
-console.log("BEFORE");
-console.log(JSON.stringify(list));
                 store.set("list", list);
-console.log("AFTER");
                 $(editors).trigger("added", editor);
                 return editor;
             },

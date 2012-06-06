@@ -28,7 +28,6 @@ function() {
 
                 message += '<pre>'+(line || "&nbsp;")+'\n'+indicator.join('')+'</pre>';
             }
-console.log(JSON.stringify(error));
             elError.html(message);
         }
     };

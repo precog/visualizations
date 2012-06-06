@@ -94,7 +94,7 @@ function() {
                     });
                 }
             }
-        } else if(!value) {
+        } else if(null == value) {
             columns.push({
                 id : "empty",
                 name : "No Records Match Your Query",
@@ -115,8 +115,8 @@ function() {
         var result = [];
         if(model.length != 1 || !model[0].pgvalue) {
             for(var i = 0; i < data.length; i++) {
-                data[i]["#id"] = "#" + i;
-                result.push(data[i]);
+                var o = $.extend({}, data[i], { "#id" : "#" + i});
+                result.push(o);
             }
         } else {
             for(var i = 0; i < data.length; i++) {
@@ -127,13 +127,21 @@ function() {
     }
 
     function updateDataView(data, options) {
-        dataView.beginUpdate();
-        dataView.setItems(data, "#id");
-        dataView.endUpdate();
-        if(options.pager) {
+        if(options && options.pager) {
 //console.log("USE PAGER OPTIONS " + JSON.stringify(options.pager));
             dataView.setPagingOptions(options.pager);
         }
+        dataView.beginUpdate();
+        dataView.setItems(data, "#id");
+        dataView.endUpdate();
+//        if(grid) grid.resizeCanvas();
+    }
+
+    function reducedResize() {
+        clearInterval(this.killReducedResize);
+        this.killReducedResize = setTimeout(function() {
+            if(grid) grid.resizeCanvas();
+        }, 0);
     }
 
     return wrapper = {
@@ -155,8 +163,6 @@ function() {
 
             updateDataView(data, options);
             grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
-            grid.resizeCanvas();
-
             grid.onSort.subscribe(function (e, args) {
                 var cols = args.sortCols;
 
@@ -177,12 +183,14 @@ function() {
             });
             new Slick.Controls.Pager(dataView, grid, this.toolbar);
             dataView.onPagingInfoChanged.subscribe(changePagingInfo);
+            reducedResize();
         },
-        deactivate : function() {
-
-        },
-        resize : function() {
-            if(grid) grid.resizeCanvas();
-        }
+//        deactivate : function() {
+//
+//        },
+//        activate : function() {
+//
+//        },
+        resize : reducedResize
     };
 });
