@@ -6,7 +6,6 @@ define([
     , "order!ui/jquery.ui.tabs"
     , "order!ui/jquery.ui.menu"
     , "order!ui/jquery.ui.progressbar"
-//    , "jQuery/ui/jquery.ui.sortable"
 ],
 
 function() {

@@ -69,5 +69,3 @@ function(ui, editors, openDialog, exportLanguages, tplToolbar) {
         });
     }
 });
-
-//        tabs.tabs().find( ".ui-tabs-nav" ).sortable({ axis: "x" });

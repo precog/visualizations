@@ -44,7 +44,7 @@ define([
         elActions = elDialog.find(".pg-actions"),
         elText = elDialog.find(".pg-export textarea"),
         elForm = elDialog.find("form");
-//    elDialog.hide();
+
     elForm.attr("action", downloadQueryService);
 
     var clip;
@@ -106,16 +106,6 @@ define([
                             , type : "success"
                             , timeout : 2500
                         });
-                        /*
-                        var tip = $(clip.parentNode).tooltip({
-                            content : function() { return "copied to clipboard" },
-                            hide : false,
-                            position : { my: "left+15 top", at: "left bottom", collision: "flipfit" }
-                        });
-                        console.log(tip);
-                        tip.tooltip("open");
-*/
-//                        setTimeout(function() { tip.tooltip("close"); }, 2000);
                     }
                 });
         }
