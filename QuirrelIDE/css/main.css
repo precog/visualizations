@@ -166,7 +166,7 @@
 .pg-ide .ui-layout-resizer {
     border-radius: 0;
 }
-
+/*
 .pg-ide .slick-header.ui-state-default {
     border: 0;
 }
@@ -252,11 +252,13 @@
 .pg-ide .slick-sortable-placeholder {
     background: silver !important;
 }
+*/
 /*
 .pg-ide .slick-row.odd {
     background: #fafafa;
 }
 */
+/*
 .pg-ide .slick-row.ui-state-active {
     background: #F5F7D7;
 }
@@ -269,3 +271,4 @@
 .pg-ide .slick-cell.invalid {
     border-color: red;
 }
+*/

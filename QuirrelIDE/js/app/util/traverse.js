@@ -12,7 +12,10 @@ define([], function() {
                 ref = ref[segment];
                 segment = path.shift();
             }
-            return JSON.parse(JSON.stringify(ref)); // prevents object reference
+            if("undefined" === typeof ref)
+                return ref;
+            else
+                return JSON.parse(JSON.stringify(ref)); // prevents object reference
         },
         set : function (o, key, value) {
             var path = splitPath(key),
