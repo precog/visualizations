@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/app/util/dialog-export.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/templates/dialog.export.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/RGConst.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/RGConst.hx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PrecogIDE/css/ide/typography.css" afterPath="$PROJECT_DIR$/../PrecogIDE/css/ide/typography.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/traverse.js" afterPath="$PROJECT_DIR$/js/app/util/traverse.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-editor.js" afterPath="$PROJECT_DIR$/js/app/bar-editor.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/config/output-languages.js" afterPath="$PROJECT_DIR$/js/app/config/output-languages.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/ui.js" afterPath="$PROJECT_DIR$/js/app/util/ui.js" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,33 +32,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="storage.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="54" selection-start="919" selection-end="919" vertical-scroll-proportion="-9.272727">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="traverse.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="29" selection-start="880" selection-end="880" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="output-table.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="171" column="38" selection-start="5710" selection-end="5710" vertical-scroll-proportion="-14.423077">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="slick.core.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.core.js">
           <provider selected="true" editor-type-id="text-editor">
@@ -61,10 +41,64 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.css" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="184" column="28" selection-start="3490" selection-end="3490" vertical-scroll-proportion="0.89169675">
+            <state line="176" column="20" selection-start="3273" selection-end="3273" vertical-scroll-proportion="27.115385">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ui.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/ui.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="50" column="30" selection-start="1416" selection-end="1416" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bar-editor.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="3" column="32" selection-start="83" selection-end="83" vertical-scroll-proportion="-0.8181818">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bar-main.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/bar-main.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="30" selection-start="456" selection-end="456" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="layout.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dialog-export.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="50" column="0" selection-start="1454" selection-end="1454" vertical-scroll-proportion="0.48084053">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dom.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/dom.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -83,28 +117,28 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/app/util/output-message.js" />
-        <option value="$PROJECT_DIR$/js/app/output.js" />
-        <option value="$PROJECT_DIR$/js/app/util/storagemonitor.js" />
-        <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
         <option value="$PROJECT_DIR$/js/app/util/precog.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-error.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
-        <option value="$PROJECT_DIR$/js/app/util/ui.js" />
         <option value="$PROJECT_DIR$/js/templates/toolbar.status.html" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
         <option value="$PROJECT_DIR$/js/app/util/storage.js" />
         <option value="$PROJECT_DIR$/js/app/editors.js" />
         <option value="$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.pager.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-table.js" />
-        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/util/traverse.js" />
+        <option value="$PROJECT_DIR$/js/templates/dialog.export.html" />
+        <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
+        <option value="$PROJECT_DIR$/js/app/config/output-languages.js" />
+        <option value="$PROJECT_DIR$/css/main.css" />
+        <option value="$PROJECT_DIR$/js/app/util/ui.js" />
+        <option value="$PROJECT_DIR$/js/app/util/dialog-export.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1217" />
-    <option name="y" value="22" />
+    <option name="x" value="1306" />
+    <option name="y" value="26" />
     <option name="width" value="1181" />
     <option name="height" value="1327" />
   </component>
@@ -228,7 +262,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="slickgrid" />
+              <option name="myItemId" value="zclip" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -406,7 +440,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1217" y="22" width="1181" height="1327" extended-state="0" />
+    <frame x="1306" y="26" width="1181" height="1327" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -483,95 +517,46 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.editor.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="47" selection-start="1147" selection-end="1147" vertical-scroll-proportion="-3.7454545">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/dialog.export.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0">
+        <state line="5" column="6" selection-start="152" selection-end="152" vertical-scroll-proportion="0.0955414">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/output-error.js">
+    <entry file="file://$PROJECT_DIR$/js/app/config/output-formats.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="40" selection-start="728" selection-end="728" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
+    <entry file="file://$PROJECT_DIR$/js/app/util/utils.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="47" selection-start="2350" selection-end="2350" vertical-scroll-proportion="-17.653847">
+        <state line="8" column="3" selection-start="166" selection-end="166" vertical-scroll-proportion="0.14833127">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/ui.js">
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.dialog.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="10" selection-start="1352" selection-end="1352" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.pager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="133" column="0" selection-start="4329" selection-end="4329" vertical-scroll-proportion="0.6298701">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="139" column="2" selection-start="4302" selection-end="4302" vertical-scroll-proportion="0.6118665">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.dataview.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="796" column="16" selection-start="22640" selection-end="22649" vertical-scroll-proportion="0.7927136">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.grid.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="10" selection-start="1362" selection-end="1366" vertical-scroll-proportion="0.33246753">
+        <state line="35" column="6" selection-start="768" selection-end="768" vertical-scroll-proportion="0.62068963">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
+    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="97" column="48" selection-start="3397" selection-end="3397" vertical-scroll-proportion="0.2371134">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.status.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="29" selection-start="667" selection-end="681" vertical-scroll-proportion="0.24559194">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/storage.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="54" selection-start="919" selection-end="919" vertical-scroll-proportion="-9.272727">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="171" column="38" selection-start="5710" selection-end="5710" vertical-scroll-proportion="-14.423077">
+        <state line="27" column="29" selection-start="880" selection-end="880" vertical-scroll-proportion="0.50061804">
           <folding />
         </state>
       </provider>
@@ -583,16 +568,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
+    <entry file="file://$PROJECT_DIR$/js/app/config/output-languages.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="29" selection-start="880" selection-end="880" vertical-scroll-proportion="0.0">
+        <state line="28" column="81" selection-start="1000" selection-end="1000" vertical-scroll-proportion="0.5134474">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/bar-main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="30" selection-start="456" selection-end="456" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="28" selection-start="3490" selection-end="3490" vertical-scroll-proportion="0.89169675">
+        <state line="176" column="20" selection-start="3273" selection-end="3273" vertical-scroll-proportion="27.115385">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="32" selection-start="83" selection-end="83" vertical-scroll-proportion="-0.8181818">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/ui.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="30" selection-start="1416" selection-end="1416" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/dom.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="0" selection-start="1454" selection-end="1454" vertical-scroll-proportion="0.48084053">
           <folding />
         </state>
       </provider>

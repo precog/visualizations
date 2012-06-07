@@ -1,4 +1,4 @@
-.pg-ide, .pg-el {
+.pg-ide, .pg-el, .pg-el.ui-widget {
     font-size: 73%;
     font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
 }
@@ -166,11 +166,38 @@
 .pg-ide .ui-layout-resizer {
     border-radius: 0;
 }
+
+.pg-el.ui-widget .pg-export textarea {
+    resize: none;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 16px;
+    width: 799px;
+    height: 350px;
+    margin-top: 4px;
+    padding: 0;
+    border: 0;
+}
+
+.pg-el.ui-widget .pg-export textarea:focus {
+    outline: 0;
+}
+
+.pg-el.ui-widget .pg-dialog-export .pg-toolbar.pg-actions {
+    text-align: center;
+}
+
+
+/*
+.pg-ide .ui-dialog {
+    font-size: 25%;
+}
+*/
 /*
 .pg-ide .slick-header.ui-state-default {
     border: 0;
 }
-
+Query
 .pg-ide .slick-header-columns {
     background: url('jquery/images/header-columns-bg.gif') repeat-x center bottom;
     border-bottom: 1px solid silver;

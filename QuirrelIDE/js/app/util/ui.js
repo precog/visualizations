@@ -50,6 +50,22 @@ function() {
         tabs : function(el, o) {
             return el.tabs(o);
         },
+        radios : function(el, actions) { /* group, label, handler */
+            if(actions) {
+                this.uid = "undefined" == typeof this.uid ? 1 : this.uid + 1;
+                el.find("*").remove();
+                $(actions).each(function(i, action) {
+                    var name = action.group,
+                        id = "pg-buttonset-" + this.uid + "-" + i,
+                        label = action.label;
+                    var btn = el.append('<input type="radio" id="'+id+'" name="'+name+'" /><label for="'+id+'">'+label+'</label>').find("#"+id);
+                    btn.click(function() {
+                        action.handler(action);
+                    });
+                });
+            }
+            return el.buttonset();
+        },
         buttonset : function(el) {
             return el.buttonset();
         },

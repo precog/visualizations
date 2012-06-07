@@ -1,8 +1,12 @@
 define([
-    "util/converters"
+      "util/converters"
+    , "util/precog"
 ],
 
-function(convert) {
+function(convert, precog) {
+    var tokenId = precog.config.tokenId,
+        service = precog.config.analyticsService
+    ;
     return [{
         token: "qrl",
         name : "Quirrel",

@@ -1,15 +1,17 @@
 define([
       "order!util/ui"
     , "app/editors"
+    , "order!util/dialog-export"
 
+    , "config/output-languages"
     , "text!templates/toolbar.editor.html"
 ],
 
-function(ui, editors, tplToolbar) {
+function(ui, editors, openDialog, exportLanguages, tplToolbar) {
 
     return function(el) {
         el.append(tplToolbar);
-        var right = el.find('.pg-toolbar-context'),
+        var elContext = el.find('.pg-toolbar-context'),
             autoGoToTab = false,
             tabs = ui.tabs(el.find('.pg-editor-tabs'), {
                 tabTemplate: "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close'>Remove Tab</span></li>",
@@ -21,7 +23,8 @@ function(ui, editors, tplToolbar) {
                         editors.activate(ui.index);
                     }
                 }
-            });
+            }),
+            index = 0;
 
         tabs.on({
             click : function(){
@@ -37,9 +40,15 @@ function(ui, editors, tplToolbar) {
             }
         }, 'li a');
 
-        var index = 0;
-        ui.button(right, {
-            icon : "ui-icon-plusthick",
+        ui.button(elContext, {
+            icon : "ui-icon-arrowthickstop-1-s",
+            handler : function() {
+                openDialog("Download Query", exportLanguages, editors.getCode());
+            }
+        });
+
+        ui.button(elContext, {
+            icon : "ui-icon-plus",
             handler : function() {
                 autoGoToTab = true;
                 editors.add();
