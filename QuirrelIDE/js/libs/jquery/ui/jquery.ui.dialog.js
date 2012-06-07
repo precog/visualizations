@@ -87,7 +87,6 @@ $.widget("ui.dialog", {
 			options = this.options,
 
 			title = options.title || "&#160;",
-			titleId = $.ui.dialog.getTitleId( this.element ),
 
 			uiDialog = ( this.uiDialog = $( "<div>" ) )
 				.addClass( uiDialogClasses + options.dialogClass )
@@ -104,10 +103,6 @@ $.widget("ui.dialog", {
 						that.close( event );
 						event.preventDefault();
 					}
-				})
-				.attr({
-					role: "dialog",
-					"aria-labelledby": titleId
 				})
 				.mousedown(function( event ) {
 					that.moveToTop( false, event );
@@ -140,10 +135,22 @@ $.widget("ui.dialog", {
 				.appendTo( uiDialogTitlebarClose ),
 
 			uiDialogTitle = $( "<span>" )
+				.uniqueId()
 				.addClass( "ui-dialog-title" )
-				.attr( "id", titleId )
 				.html( title )
-				.prependTo( uiDialogTitlebar );
+				.prependTo( uiDialogTitlebar ),
+
+			uiDialogButtonPane = ( this.uiDialogButtonPane = $( "<div>" ) )
+				.addClass( "ui-dialog-buttonpane ui-widget-content ui-helper-clearfix" ),
+
+			uiButtonSet = ( this.uiButtonSet = $( "<div>" ) )
+				.addClass( "ui-dialog-buttonset" )
+				.appendTo( uiDialogButtonPane );
+
+		uiDialog.attr({
+			role: "dialog",
+			"aria-labelledby": uiDialogTitle.attr( "id" )
+		});
 
 		uiDialogTitlebar.find( "*" ).add( uiDialogTitlebar ).disableSelection();
 		this._hoverable( uiDialogTitlebarClose );
@@ -326,7 +333,7 @@ $.widget("ui.dialog", {
 		// if there are no tabbable elements, set focus on the dialog itself
 		hasFocus = this.element.find( ":tabbable" );
 		if ( !hasFocus.length ) {
-			hasFocus = uiDialog.find( ".ui-dialog-buttonpane :tabbable" );
+			hasFocus = this.uiDialogButtonPane.find( ":tabbable" );
 			if ( !hasFocus.length ) {
 				hasFocus = uiDialog;
 			}
@@ -345,7 +352,8 @@ $.widget("ui.dialog", {
 			hasButtons = false;
 
 		// if we already have a button pane, remove it
-		this.uiDialog.find( ".ui-dialog-buttonpane" ).remove();
+		this.uiDialogButtonPane.remove();
+		this.uiButtonSet.empty();
 
 		if ( typeof buttons === "object" && buttons !== null ) {
 			$.each( buttons, function() {
@@ -353,12 +361,6 @@ $.widget("ui.dialog", {
 			});
 		}
 		if ( hasButtons ) {
-			uiDialogButtonPane = $( "<div>" )
-				.addClass( "ui-dialog-buttonpane  ui-widget-content ui-helper-clearfix" );
-			uiButtonSet = $( "<div>" )
-				.addClass( "ui-dialog-buttonset" )
-				.appendTo( uiDialogButtonPane );
-
 			$.each( buttons, function( name, props ) {
 				props = $.isFunction( props ) ?
 					{ click: props, text: name } :
@@ -369,13 +371,13 @@ $.widget("ui.dialog", {
 					.click(function() {
 						props.click.apply( that.element[0], arguments );
 					})
-					.appendTo( uiButtonSet );
+					.appendTo( that.uiButtonSet );
 				if ( $.fn.button ) {
 					button.button();
 				}
 			});
 			this.uiDialog.addClass( "ui-dialog-buttons" );
-			uiDialogButtonPane.appendTo( this.uiDialog );
+			this.uiDialogButtonPane.appendTo( this.uiDialog );
 		} else {
 			this.uiDialog.removeClass( "ui-dialog-buttons" );
 		}

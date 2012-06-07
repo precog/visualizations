@@ -2,15 +2,38 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/app/util/dialog-export.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/templates/dialog.export.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/RGConst.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/RGConst.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PrecogIDE/css/ide/typography.css" afterPath="$PROJECT_DIR$/../PrecogIDE/css/ide/typography.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/jquery.noty.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/noty_theme_default.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/noty_theme_facebook.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/noty_theme_growl.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/noty_theme_mitgux.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/jquery/noty/noty_theme_twitter.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/noty/jquery.noty.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/noty/promise.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/i18n/jquery.ui.datepicker-ge.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-editor.js" afterPath="$PROJECT_DIR$/js/app/bar-editor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/config/output-languages.js" afterPath="$PROJECT_DIR$/js/app/config/output-languages.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/ui.js" afterPath="$PROJECT_DIR$/js/app/util/ui.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/dialog-export.js" afterPath="$PROJECT_DIR$/js/app/util/dialog-export.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/i18n/jquery.ui.datepicker-ar.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/i18n/jquery.ui.datepicker-ar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.effects.core.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.effects.core.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.accordion.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.accordion.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.autocomplete.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.autocomplete.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.button.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.button.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.core.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.core.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.datepicker.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.datepicker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.dialog.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.dialog.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.draggable.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.draggable.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.droppable.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.droppable.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.menu.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.menu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.mouse.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.mouse.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.resizable.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.resizable.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.selectable.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.selectable.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.slider.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.slider.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.sortable.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.sortable.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.spinner.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.spinner.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tabs.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tabs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tooltip.js" afterPath="$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tooltip.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/dialog.export.html" afterPath="$PROJECT_DIR$/js/templates/dialog.export.html" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,15 +55,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="slick.core.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.core.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="22" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
@@ -68,17 +82,35 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bar-main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/bar-main.js">
+      <file leaf-file-name="dialog-export.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="30" selection-start="456" selection-end="456" vertical-scroll-proportion="0.0">
+            <state line="38" column="27" selection-start="1394" selection-end="1394" vertical-scroll-proportion="0.64771324">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="layout.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+      <file leaf-file-name="jquery.noty.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/jquery/noty/jquery.noty.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="21" column="17" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="70" selection-start="716" selection-end="716" vertical-scroll-proportion="-10.625">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jquery.noty.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/jquery/noty/jquery.noty.js">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
@@ -86,11 +118,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dialog-export.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
+      <file leaf-file-name="jquery.ui.tooltip.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tooltip.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="0" selection-start="1454" selection-end="1454" vertical-scroll-proportion="0.48084053">
-              <folding />
+            <state line="246" column="80" selection-start="6442" selection-end="6442" vertical-scroll-proportion="-11.653846">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jquery.zclip.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/jquery/zclip/jquery.zclip.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="268" column="45" selection-start="7626" selection-end="7632" vertical-scroll-proportion="-9.846154">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -117,8 +162,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/app/util/precog.js" />
-        <option value="$PROJECT_DIR$/js/app/util/output-error.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
         <option value="$PROJECT_DIR$/js/templates/toolbar.status.html" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
@@ -127,11 +170,13 @@
         <option value="$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.pager.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-table.js" />
         <option value="$PROJECT_DIR$/js/app/util/traverse.js" />
-        <option value="$PROJECT_DIR$/js/templates/dialog.export.html" />
         <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
         <option value="$PROJECT_DIR$/js/app/config/output-languages.js" />
         <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/util/ui.js" />
+        <option value="$PROJECT_DIR$/js/app/output.js" />
+        <option value="$PROJECT_DIR$/js/templates/dialog.export.html" />
+        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/app/util/dialog-export.js" />
       </list>
     </option>
@@ -283,6 +328,58 @@
               <option name="myItemId" value="libs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jquery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jquery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="noty" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -360,6 +457,46 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jquery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="QuirrelIDE" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jquery" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="noty" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope">
@@ -385,11 +522,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/css/jquery/noty" />
+      <recent name="$PROJECT_DIR$/js/libs/jquery/noty" />
+      <recent name="$PROJECT_DIR$/js/libs/jquery/zclip" />
       <recent name="$PROJECT_DIR$/js/app/util" />
       <recent name="$PROJECT_DIR$/images" />
-      <recent name="$PROJECT_DIR$/js/libs/jquery/slickgrid" />
-      <recent name="$PROJECT_DIR$/css/jquery/datatables" />
-      <recent name="$PROJECT_DIR$/js/libs/jquery/datatables" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/css/jquery/images" />
@@ -517,64 +654,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.editor.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/templates/dialog.export.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="152" selection-end="152" vertical-scroll-proportion="0.0955414">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/config/output-formats.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/utils.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="3" selection-start="166" selection-end="166" vertical-scroll-proportion="0.14833127">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.dialog.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="6" selection-start="768" selection-end="768" vertical-scroll-proportion="0.62068963">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/traverse.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="29" selection-start="880" selection-end="880" vertical-scroll-proportion="0.50061804">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/slickgrid/slick.core.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="22" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/config/output-languages.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="81" selection-start="1000" selection-end="1000" vertical-scroll-proportion="0.5134474">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -624,9 +703,71 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/output.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="42" selection-start="101" selection-end="101" vertical-scroll-proportion="0.056532662">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/templates/dialog.export.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="24" selection-start="101" selection-end="101" vertical-scroll-proportion="0.03821656">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/zclip/jquery.zclip.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="268" column="45" selection-start="7626" selection-end="7632" vertical-scroll-proportion="-9.846154">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/ui/jquery.ui.tooltip.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="246" column="80" selection-start="6442" selection-end="6442" vertical-scroll-proportion="-11.653846">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/noty/promise.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/noty/jquery.noty.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/jquery/noty/jquery.noty.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="17" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="70" selection-start="716" selection-end="716" vertical-scroll-proportion="-10.625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="0" selection-start="1454" selection-end="1454" vertical-scroll-proportion="0.48084053">
+        <state line="38" column="27" selection-start="1394" selection-end="1394" vertical-scroll-proportion="0.64771324">
           <folding />
         </state>
       </provider>

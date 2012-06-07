@@ -171,12 +171,12 @@ $.widget("ui.resizable", $.ui.mouse, {
 			this._handles.hide();
 			$(this.element)
 				.addClass("ui-resizable-autohide")
-				.hover(function() {
+				.mouseenter(function() {
 					if (o.disabled) return;
 					$(this).removeClass("ui-resizable-autohide");
 					that._handles.show();
-				},
-				function(){
+				})
+				.mouseleave(function(){
 					if (o.disabled) return;
 					if (!that.resizing) {
 						$(this).addClass("ui-resizable-autohide");
@@ -190,13 +190,13 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 	},
 
-	destroy: function() {
+	_destroy: function() {
 
 		this._mouseDestroy();
 
 		var _destroy = function(exp) {
 			$(exp).removeClass("ui-resizable ui-resizable-disabled ui-resizable-resizing")
-				.removeData("resizable").unbind(".resizable").find('.ui-resizable-handle').remove();
+				.removeData("resizable").removeData("ui-resizable").unbind(".resizable").find('.ui-resizable-handle').remove();
 		};
 
 		//TODO: Unwrap at same DOM position

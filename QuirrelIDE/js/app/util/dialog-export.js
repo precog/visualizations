@@ -6,9 +6,11 @@ define([
     , "order!ui/jquery.ui.position"
     , "order!ui/jquery.ui.resizable"
     , "order!ui/jquery.ui.dialog"
+    , "jlib/noty/jquery.noty"
     , "jlib/zclip/jquery.zclip"
 ], function(tplDialog, ui, dom) {
-    var elDialog = $('body')
+    var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
+        elDialog = $('body')
             .append(tplDialog)
             .find('.pg-dialog-export')
             .dialog({
@@ -22,18 +24,30 @@ define([
                 , buttons : [{
                     text : "Copy",
                     click : function() {
+                        elDialog.dialog("close");
                         return true;
                     }
                 }, {
                     text : "Download",
                     click : function() {
-
+                        noty({
+                            text : "code downloaded"
+                            , theme : "noty_theme_growl"
+                            , type : "success"
+                            , timeout : 2500
+                        });
+                        elForm.submit();
+                        elDialog.dialog("close");
                     }
                 }]
             }),
         elActions = elDialog.find(".pg-actions"),
-        elText = elDialog.find(".pg-export textarea");
-    elDialog.hide();
+        elText = elDialog.find(".pg-export textarea"),
+        elForm = elDialog.find("form");
+//    elDialog.hide();
+    elForm.attr("action", downloadQueryService);
+
+    var clip;
 
     function selectCode() {
         setTimeout(function() { dom.selectText(elText.get(0)); }, 100);
@@ -43,13 +57,18 @@ define([
         selectCode();
     });
 
-    return function(title, actions, code) {
-        console.log(JSON.stringify(actions));
-        console.log(JSON.stringify(code));
+    function reposition() {
+        elDialog.dialog("option", "position", "center");
+    }
 
+    elDialog.bind("dialogopen", function() { $(window).on("resize", reposition); });
+    elDialog.bind("dialogclose", function() { $(window).off("resize", reposition); });
+
+    return function(title, actions, code) {
         elActions.find("*").remove();
 
         function execute(action) {
+            elDialog.find("input[name=name]").val("precog." + action.token);
             elText.text(action.handler(code));
             selectCode();
         }
@@ -69,5 +88,36 @@ define([
         elDialog.dialog("option", "position", "center");
         elDialog.dialog("option", "title", title);
         elDialog.dialog("open");
+
+        if(clip) {
+            $(window).trigger("resize"); // triggers reposition of the Flash overlay
+        } else {
+            clip = elDialog.dialog("widget").find('.ui-dialog-buttonpane button.ui-button:first')
+                .css({ zIndex : 1000000 })
+                .zclip({
+                    path:'js/libs/jquery/zclip/ZeroClipboard.swf',
+                    copy:function(){
+                        return ""+elText.val();
+                    },
+                    afterCopy : function() {
+                        noty({
+                              text : "copied to clipboard"
+                            , theme : "noty_theme_growl"
+                            , type : "success"
+                            , timeout : 2500
+                        });
+                        /*
+                        var tip = $(clip.parentNode).tooltip({
+                            content : function() { return "copied to clipboard" },
+                            hide : false,
+                            position : { my: "left+15 top", at: "left bottom", collision: "flipfit" }
+                        });
+                        console.log(tip);
+                        tip.tooltip("open");
+*/
+//                        setTimeout(function() { tip.tooltip("close"); }, 2000);
+                    }
+                });
+        }
     };
 });
