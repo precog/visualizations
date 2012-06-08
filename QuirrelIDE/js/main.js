@@ -20,10 +20,11 @@ require([
     , "editor/editor.ace"
     , "app/editorsync"
     , "app/output"
+    , "app/folders"
     , "util/precog"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, precog) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, precog) {
     precog.cache.disable();
 
     var layout = createLayout(config.get("ioPanesVertical"));
@@ -33,7 +34,10 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     $(theme).on("changed", function() {
         // refreshes the panes layout after theme changing
-        layout.refresh();
+//        setTimeout(function(){
+//            $(document.window).trigger("refresh");
+            layout.refresh();
+//        }, 1000);
     });
 
     $(theme).on("change", function(e, name) {
@@ -106,6 +110,14 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
             options = editors.getOutputOptions();
 //console.log("LOADED OPTIONS " + JSON.stringify(options));
         output.set(result, type, options);
+    });
+
+    var folders = buildFolders(layout.getSystem());
+
+    $(folders).on("querypath", function(e, path) {
+        editors.add({ code : "/" + path });
+        editors.activate(editors.count()-1);
+        editor.triggerExecute();
     });
 
     editors.load();

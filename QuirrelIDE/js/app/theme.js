@@ -17,10 +17,34 @@ function(themes) {
         return UI_BASE_THEME_URL + name + "/jquery-ui.css";
     }
 
+    function pollCSS(url, callback) {
+        function poll() {
+            try {
+                var sheets = document.styleSheets;
+                for(var j=0, k=sheets.length; j<k; j++) {
+                    if(sheets[j].href == url) {
+                        sheets[j].cssRules;
+                    }
+                }
+                // If you made it here, success!
+                setTimeout(callback, 0);
+            } catch(e) {
+                // Keep polling
+                setTimeout(poll, 50);
+            }
+        };
+        poll();
+    }
+
     function setUITheme(name, callback) {
         var url = themeUrl(name),
             cssLink = $('<link href="'+url+'" type="text/css" rel="Stylesheet" class="ui-theme" />');
-        cssLink.on("load", callback);
+        if($.browser.safari) {
+            // no onload event
+            pollCSS(url, callback);
+        } else {
+            cssLink.on("load", callback);
+        }
         $("head").append(cssLink);
 
 
@@ -42,7 +66,6 @@ function(themes) {
         map : function() { return map; },
         groups : function() { return groups; },
         getEditorTheme : function(name, editor) {
-            console.log(name);
             return map[name].editor[editor];
         }
     };

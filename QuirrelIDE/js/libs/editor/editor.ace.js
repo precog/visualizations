@@ -105,6 +105,7 @@ function(require, ace, ui) {
             focus : function() {
                 editor.focus();
             },
+            triggerExecute : execute,
             orientButton : orientButton
         };
 

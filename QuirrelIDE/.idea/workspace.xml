@@ -2,773 +2,41 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_glass_55_fbf9ee_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_glass_95_fef1ec_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_highlight-soft_75_cccccc_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-icons_2e83ff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-icons_888888_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.menu.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.spinner.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/jquery.ui.tooltip.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_diagonals-thick_8_333333_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_flat_65_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_glass_40_111111_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_glass_55_1c1c1c_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_highlight-hard_100_f9f9f9_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_highlight-hard_40_aaaaaa_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_highlight-soft_50_aaaaaa_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_inset-hard_45_cd0a0a_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-bg_inset-hard_55_ffeb80_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_4ca300_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_bbbbbb_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_ededed_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_ffcf29_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_diagonals-thick_75_f3d8d8_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_dots-small_65_a6a6a6_2x2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_flat_0_333333_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_flat_65_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_glass_55_fbf8ee_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_highlight-hard_100_eeeeee_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_highlight-hard_100_f6f6f6_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-bg_highlight-soft_15_cc0000_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-icons_004276_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-icons_cc0000_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_diagonals-thick_15_0b3e6f_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_dots-medium_30_0b58a2_4x4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_dots-small_20_333333_2x2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_dots-small_30_a32d00_2x2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_dots-small_40_00498f_2x2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_flat_40_292929_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_gloss-wave_20_111111_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-icons_00498f_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-icons_98d2fb_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-icons_9ccdfc_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_flat_0_eeeeee_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_flat_55_994d53_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_flat_55_fafafa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_gloss-wave_30_3d3644_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_highlight-soft_100_dcd9de_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_highlight-soft_100_eae6ea_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_highlight-soft_25_30273a_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-bg_highlight-soft_45_5f5964_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_734d99_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_8d78a5_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_a8a3ae_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_ebccce_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_diagonals-small_25_c5ddfc_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_diagonals-thick_20_e69700_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_diagonals-thick_22_1484e6_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_diagonals-thick_26_2293f7_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_flat_0_e69700_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_flat_0_e6b900_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_highlight-soft_100_f9f9f9_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-bg_inset-hard_100_eeeeee_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-icons_0a82eb_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-icons_0b54d5_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-icons_5fa5e3_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-icons_fcdd4a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/excite-bike/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_flat_0_eeeeee_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_flat_55_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_glass_65_ffffff_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_highlight-soft_100_f6f6f6_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_highlight-soft_25_0073ea_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-bg_highlight-soft_50_dddddd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-icons_0073ea_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-icons_666666_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-icons_ff0084_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/flick/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_glass_65_ffffff_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_glass_75_dadada_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_glass_75_e6e6e6_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_diagonals-small_40_db4865_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_diagonals-small_50_93c3cd_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_diagonals-small_50_ff3853_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_diagonals-small_75_ccd232_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_dots-medium_80_ffff38_4x4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_dots-small_35_35414f_2x2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_flat_75_ba9217_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-bg_white-lines_85_f7f7ba_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_88a206_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_c02669_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_e1e463_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_ffeb33_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/hot-sneaks/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_flat_75_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_glass_100_f5f0e5_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_glass_25_cb842e_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_glass_70_ede4d4_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_highlight-hard_100_f4f0ec_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_highlight-hard_65_fee4bd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_highlight-hard_75_f5f5b5_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-bg_inset-soft_100_f4f0ec_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_c47a23_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_cb672b_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_f08000_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_f35f07_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_ff7519_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/humanity/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_diagonals-small_0_aaaaaa_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_diagonals-thick_15_444444_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_diagonals-thick_95_ffdc2e_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_glass_55_fbf5d0_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_highlight-hard_30_285c00_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_highlight-soft_33_3a8104_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_highlight-soft_50_4eb305_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_highlight-soft_60_4ca20b_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-bg_inset-soft_10_285c00_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-icons_4eb305_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-icons_72b42d_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/le-frog/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_glass_15_5f391b_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_gloss-wave_20_1c160d_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_gloss-wave_25_453326_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_gloss-wave_30_44372c_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_highlight-soft_20_201913_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_highlight-soft_20_619226_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-bg_inset-soft_10_201913_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_9bcc60_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_add978_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_e3ddc9_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_f1fd86_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/mint-choc/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_flat_0_eeeeee_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_flat_55_c0402a_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_flat_55_eeeeee_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_glass_100_f8f8f8_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_glass_35_dddddd_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_glass_60_eeeeee_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_inset-hard_75_999999_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-bg_inset-soft_50_c9c9c9_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-icons_3383bb_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-icons_70b2e1_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-icons_999999_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/images/ui-icons_fbc856_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/overcast/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_diagonal-maze_20_6e4f1c_10x10.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_diagonal-maze_40_000000_10x10.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_10_eceadf_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_10_f8f7f6_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_15_eceadf_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_15_f7f3de_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_15_ffffff_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_65_654b24_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-bg_fine-grain_68_b83400_60x60.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_3572ac_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_8c291d_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_b83400_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_fbdb93_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/pepper-grinder/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_flat_55_fbec88_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_glass_75_d0e5f5_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_glass_85_dfeffc_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_glass_95_fef1ec_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_inset-hard_100_f5f8f9_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-bg_inset-hard_100_fcfdfd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_217bc0_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_2e83ff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_469bdd_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_6da8d5_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_d8e7f3_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/images/ui-icons_f9bd01_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/redmond/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_glass_55_fbf9ee_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_glass_65_ffffff_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_glass_75_dadada_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_glass_75_e6e6e6_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_glass_95_fef1ec_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-icons_2e83ff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-icons_454545_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-icons_888888_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/smoothness/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_glass_55_fcf0ba_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_gloss-wave_100_ece8da_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-hard_100_f5f3e5_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-hard_100_fafaf4_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-hard_15_459e00_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-hard_95_cccccc_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-soft_25_67b021_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_highlight-soft_95_ffedad_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-bg_inset-soft_15_2b2922_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_808080_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_847e71_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_8dc262_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_eeeeee_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/south-street/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_flat_55_999999_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_flat_75_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_glass_45_0078ae_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_glass_55_f8da4e_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_glass_75_79c9ec_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_gloss-wave_45_e14f1c_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_gloss-wave_50_6eac2c_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_gloss-wave_75_2191c0_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_0078ae_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_056b93_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_d8e7f3_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_e0fdff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_f5e175_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_f7a50d_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/images/ui-icons_fcd113_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/start/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_diagonals-medium_20_d34d17_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_flat_30_cccccc_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_flat_50_5c5c5c_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_gloss-wave_45_817865_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_gloss-wave_60_fece2f_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_gloss-wave_70_ffdd57_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_gloss-wave_90_fff9e5_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_highlight-soft_100_feeebd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-bg_inset-soft_30_ffffff_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_3d3d3d_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_bd7b00_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_d19405_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_eb990f_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_ed9f26_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_fadc7a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/images/ui-icons_ffe180_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/sunny/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_10_4f4221_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_20_372806_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_25_675423_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_25_d5ac5d_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_8_261803_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_diamond_8_443113_10x8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_flat_75_ddd4b0_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-bg_highlight-hard_65_fee4bd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_070603_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_e8e2b5_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_e9cd86_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_efec9f_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_f2ec64_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_f9f2bd_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/images/ui-icons_ff7519_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/swanky-purse/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_diagonals-small_50_262626_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_flat_0_303030_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_flat_0_4c4c4c_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_glass_40_0a0a0a_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_glass_55_f1fbe5_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_glass_60_000000_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_gloss-wave_55_000000_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_gloss-wave_85_9fda58_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-bg_gloss-wave_95_f6ecd5_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_000000_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_1f1f1f_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_9fda58_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_b8ec79_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/trontastic/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_flat_30_cccccc_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_flat_50_5c5c5c_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_glass_20_555555_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_glass_40_0078a3_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_glass_40_ffc73d_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_gloss-wave_25_333333_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_highlight-soft_80_eeeeee_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_inset-soft_25_000000_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-bg_inset-soft_30_f58400_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-icons_4b8e0b_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-icons_a83300_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-icons_cccccc_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-darkness/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_flat_10_000000_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-icons_222222_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-icons_228ef1_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-icons_ef8c08_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-icons_ffd27a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/images/ui-icons_ffffff_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/ui-lightness/jquery.ui.theme.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_glass_95_fef1ec_1x400.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_gloss-wave_16_121212_500x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_highlight-hard_15_888888_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_highlight-hard_55_555555_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_highlight-soft_35_adadad_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_highlight-soft_60_dddddd_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-bg_inset-soft_15_121212_1x100.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_666666_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_aaaaaa_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_bbbbbb_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_c98000_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_cccccc_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_cd0a0a_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/images/ui-icons_f29a00_256x240.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery-ui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.accordion.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.all.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.autocomplete.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.button.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.core.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.datepicker.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.dialog.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.progressbar.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.resizable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.selectable.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.slider.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.tabs.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/jquery/ui/vader/jquery.ui.theme.css" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_flat_75_ffffff_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_glass_65_ffffff_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_glass_65_ffffff_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_glass_75_dadada_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_glass_75_dadada_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/base/images/ui-bg_glass_75_e6e6e6_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_glass_75_e6e6e6_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_222222_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-icons_222222_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/black-tie/images/ui-icons_ffffff_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-icons_ffffff_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/blitzer/images/ui-icons_ffffff_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-icons_ffffff_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_diagonals-thick_90_eeeeee_40x40.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_flat_15_cd0a0a_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_flat_15_cd0a0a_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_glass_100_e4f1fb_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_glass_100_e4f1fb_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_glass_50_3baae3_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_glass_50_3baae3_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_glass_80_d7ebf9_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_glass_80_d7ebf9_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_highlight-hard_100_f2f5f7_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_highlight-hard_100_f2f5f7_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_highlight-hard_70_000000_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_highlight-hard_70_000000_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_highlight-soft_100_deedf7_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_highlight-soft_100_deedf7_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-bg_highlight-soft_25_ffef8f_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-bg_highlight-soft_25_ffef8f_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-icons_2694e8_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-icons_2694e8_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-icons_2e83ff_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-icons_2e83ff_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-icons_3d80b3_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-icons_3d80b3_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-icons_72a7cf_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/images/ui-icons_72a7cf_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/images/ui-icons_ffffff_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-icons_ffffff_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/cupertino/jquery-ui.css" afterPath="$PROJECT_DIR$/css/jquery/ui/blue/jquery-ui.css" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_flat_30_cccccc_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_flat_30_cccccc_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_flat_50_5c5c5c_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_flat_50_5c5c5c_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_glass_40_ffc73d_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_glass_40_ffc73d_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_highlight-hard_20_0972a5_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_highlight-hard_20_0972a5_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_highlight-soft_33_003147_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_highlight-soft_33_003147_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_highlight-soft_35_222222_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_highlight-soft_35_222222_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_highlight-soft_44_444444_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_highlight-soft_44_444444_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_highlight-soft_80_eeeeee_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_highlight-soft_80_eeeeee_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-bg_loop_25_000000_21x21.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-bg_loop_25_000000_21x21.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-icons_4b8e0b_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-icons_4b8e0b_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-icons_a83300_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-icons_a83300_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/images/ui-icons_cccccc_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/images/ui-icons_cccccc_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery-ui.css" afterPath="$PROJECT_DIR$/css/jquery/ui/dark/jquery-ui.css" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/dot-luv/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/eggplant/images/ui-icons_454545_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-icons_454545_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_flat_0_c5c5c5_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_flat_0_c5c5c5_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_glass_55_ffffff_1x400.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_glass_55_ffffff_1x400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_highlight-soft_75_e3e3e3_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_highlight-soft_75_e3e3e3_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-bg_inset-soft_95_fef1ec_1x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-bg_inset-soft_95_fef1ec_1x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-icons_2e2e2e_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-icons_2e2e2e_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-icons_2e83ff_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-icons_2e83ff_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-icons_888888_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-icons_888888_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/images/ui-icons_cd0a0a_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/franco/jquery.ui.all.css" afterPath="$PROJECT_DIR$/css/jquery/ui/gray/jquery-ui.css" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_100_000000_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_100_000000_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_100_14171a_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_100_14171a_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_50_e5692c_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_50_e5692c_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_65_3c454d_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_65_3c454d_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_75_000000_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_75_000000_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_75_282e33_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_75_282e33_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_75_3c454d_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_75_3c454d_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-bg_flat_95_000000_40x100.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-bg_flat_95_000000_40x100.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-icons_000000_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-icons_000000_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/images/ui-icons_cc3e22_256x240.png" afterPath="$PROJECT_DIR$/css/jquery/ui/black/images/ui-icons_cc3e22_256x240.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/css/jquery/ui/matthew/jquery.ui.all.css" afterPath="$PROJECT_DIR$/css/jquery/ui/black/jquery-ui.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default-rtl/d.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default-rtl/d.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default-rtl/dots.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default-rtl/throbber.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/d.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/d.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/throbber.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/app/folders.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.checkbox.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.contextmenu.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.dnd.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.hotkeys.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.html.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.json.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.rules.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.sort.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.state.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.themes.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.ui.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.unique.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/jstree.xml.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default-rtl/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/libs/jquery/jstree/vakata.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/templates/toolbar.folders.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/config/themes.js" afterPath="$PROJECT_DIR$/js/app/config/themes.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/layout.js" afterPath="$PROJECT_DIR$/js/app/layout.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/theme.js" afterPath="$PROJECT_DIR$/js/app/theme.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/precog.js" afterPath="$PROJECT_DIR$/js/app/util/precog.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" afterPath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/dialog.export.html" afterPath="$PROJECT_DIR$/js/templates/dialog.export.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/layout.full.html" afterPath="$PROJECT_DIR$/js/templates/layout.full.html" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -790,57 +58,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="themes.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/config/themes.js">
+      <file leaf-file-name="folders.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/folders.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="29" selection-start="934" selection-end="934" vertical-scroll-proportion="-10.363636">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jquery-ui.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/css/jquery/ui/black/jquery-ui.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="81" selection-start="1608" selection-end="1608" vertical-scroll-proportion="-11.538462">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jquery-ui.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/css/jquery/ui/dark/jquery-ui.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="0" selection-start="3504" selection-end="3717" vertical-scroll-proportion="-27.692308">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jquery-ui.css" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/css/jquery/ui/blue/jquery-ui.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="86" column="50" selection-start="4998" selection-end="4998" vertical-scroll-proportion="0.5244755">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="jquery-ui.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/css/jquery/ui/gray/jquery-ui.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="92" column="19" selection-start="5561" selection-end="5561" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dialog.export.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/templates/dialog.export.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="58" selection-start="192" selection-end="192" vertical-scroll-proportion="-2.5">
+            <state line="35" column="2" selection-start="1104" selection-end="1104" vertical-scroll-proportion="0.39591315">
               <folding />
             </state>
           </provider>
@@ -849,7 +70,81 @@
       <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="146" column="0" selection-start="2773" selection-end="2773" vertical-scroll-proportion="-13.923077">
+            <state line="210" column="1" selection-start="3693" selection-end="3693" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="toolbar.folders.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/templates/toolbar.folders.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="3" column="0" selection-start="73" selection-end="73" vertical-scroll-proportion="-1.875">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="precog.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="36" column="26" selection-start="978" selection-end="978" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jstree.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/jquery/jstree/jstree.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1453" column="37" selection-start="54222" selection-end="54233" vertical-scroll-proportion="-6.1153846">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="theme.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/theme.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="41" column="30" selection-start="1174" selection-end="1174" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/main.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="105" column="0" selection-start="2937" selection-end="2937" vertical-scroll-proportion="-7.1153846">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="editors.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/editors.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="66" column="41" selection-start="1554" selection-end="1566" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="editorsync.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/editorsync.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="editor.ace.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="107" column="12" selection-start="3480" selection-end="3494" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -868,29 +163,29 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
-        <option value="$PROJECT_DIR$/js/app/util/ui.js" />
-        <option value="$PROJECT_DIR$/js/templates/toolbar.output.html" />
-        <option value="$PROJECT_DIR$/js/app/output.js" />
-        <option value="$PROJECT_DIR$/js/app/layout.js" />
-        <option value="$PROJECT_DIR$/js/main.js" />
-        <option value="$PROJECT_DIR$/js/app/theme.js" />
-        <option value="$PROJECT_DIR$/css/jquery/ui/dark-hive/jquery-ui.css" />
-        <option value="$PROJECT_DIR$/css/jquery/ui/matthew/jquery-ui.css" />
-        <option value="$PROJECT_DIR$/js/templates/dialog.export.html" />
-        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/config/themes.js" />
         <option value="$PROJECT_DIR$/css/jquery/ui/black/jquery-ui.css" />
         <option value="$PROJECT_DIR$/css/jquery/ui/dark/jquery-ui.css" />
         <option value="$PROJECT_DIR$/css/jquery/ui/gray/jquery-ui.css" />
         <option value="$PROJECT_DIR$/css/jquery/ui/blue/jquery-ui.css" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/app/system.js" />
+        <option value="$PROJECT_DIR$/js/templates/layout.full.html" />
+        <option value="$PROJECT_DIR$/js/templates/toolbar.folders.html" />
+        <option value="$PROJECT_DIR$/js/app/layout.js" />
+        <option value="$PROJECT_DIR$/js/app/theme.js" />
+        <option value="$PROJECT_DIR$/js/app/util/precog.js" />
+        <option value="$PROJECT_DIR$/css/main.css" />
+        <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/app/folders.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1111" />
+    <option name="x" value="1234" />
     <option name="y" value="22" />
-    <option name="width" value="1181" />
+    <option name="width" value="1298" />
     <option name="height" value="1327" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -1023,7 +318,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="zclip" />
+              <option name="myItemId" value="jstree" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1049,7 +344,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
+              <option name="myItemId" value="jstree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="themes" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1075,7 +374,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="noty" />
+              <option name="myItemId" value="jstree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="themes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="default" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1094,6 +401,10 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="libs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="editor" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1147,173 +458,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gray" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dark" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="blue" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="black" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="noty" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1332,11 +477,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/js/libs/jquery/jstree" />
       <recent name="$PROJECT_DIR$/css/jquery/noty" />
       <recent name="$PROJECT_DIR$/js/libs/jquery/noty" />
       <recent name="$PROJECT_DIR$/js/libs/jquery/zclip" />
       <recent name="$PROJECT_DIR$/js/app/util" />
-      <recent name="$PROJECT_DIR$/images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/css/jquery/images" />
@@ -1387,13 +532,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1111" y="22" width="1181" height="1327" extended-state="0" />
+    <frame x="1234" y="22" width="1298" height="1327" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2885572" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25129533" sideWeight="0.71144277" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22823529" sideWeight="0.71144277" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -1403,7 +549,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2885572" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1464,95 +609,110 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/app/config/output-results.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.main.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="275" vertical-scroll-proportion="-0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/output.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.editor.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="41" selection-start="290" selection-end="290" vertical-scroll-proportion="-3.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app/layout.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="32" selection-start="169" selection-end="169" vertical-scroll-proportion="-1.8846154">
+        <state line="39" column="21" selection-start="1147" selection-end="1147" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="97" column="27" selection-start="2748" selection-end="2748" vertical-scroll-proportion="-18.76923">
-          <folding />
-        </state>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/d.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/theme.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="3" selection-start="1397" selection-end="1397" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/d.gif">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/jstree/themes/default/throbber.gif">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/templates/dialog.export.html">
+    <entry file="file://$PROJECT_DIR$/js/libs/jquery/jstree/jstree.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="58" selection-start="192" selection-end="192" vertical-scroll-proportion="-2.5">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="0" selection-start="2773" selection-end="2773" vertical-scroll-proportion="-13.923077">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/config/themes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="29" selection-start="934" selection-end="934" vertical-scroll-proportion="-10.363636">
+        <state line="1453" column="37" selection-start="54222" selection-end="54233" vertical-scroll-proportion="-6.1153846">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/jquery/ui/black/jquery-ui.css">
+    <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="81" selection-start="1608" selection-end="1608" vertical-scroll-proportion="-11.538462">
+        <state line="36" column="26" selection-start="978" selection-end="978" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/jquery/ui/dark/jquery-ui.css">
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.folders.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="0" selection-start="3504" selection-end="3717" vertical-scroll-proportion="-27.692308">
+        <state line="3" column="0" selection-start="73" selection-end="73" vertical-scroll-proportion="-1.875">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/jquery/ui/gray/jquery-ui.css">
+    <entry file="file://$PROJECT_DIR$/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="19" selection-start="5561" selection-end="5561" vertical-scroll-proportion="0.0">
+        <state line="210" column="1" selection-start="3693" selection-end="3693" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/jquery/ui/blue/jquery-ui.css">
+    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="50" selection-start="4998" selection-end="4998" vertical-scroll-proportion="0.5244755">
+        <state line="66" column="41" selection-start="1554" selection-end="1566" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editorsync.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="107" column="12" selection-start="3480" selection-end="3494" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="105" column="0" selection-start="2937" selection-end="2937" vertical-scroll-proportion="-7.1153846">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/theme.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="30" selection-start="1174" selection-end="1174" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="2" selection-start="1104" selection-end="1104" vertical-scroll-proportion="0.39591315">
           <folding />
         </state>
       </provider>

@@ -15,17 +15,26 @@
     border:0 !important;
 }
 
-.pg-system, .pg-main, .pg-editor-support, .pg-editor, .pg-io, .pg-input, .pg-output {
+.pg-system, .pg-main, .pg-editor-support, .pg-editor,
+.pg-io, .pg-input, .pg-output, .pg-folders, .pg-queries,
+.slick-header
+{
     border:0 !important;
 }
 
+.pg-statusbar {
+/*    border:0 !important; */
+}
+
 .pg-toolbar {
+    border-top: 0 !important;
     border-bottom: 0 !important;
     vertical-align: baseline !important;
 }
 
-.pg-statusbar, .pg-support, .pg-input > .pg-toolbar, .pg-filesystem {
-    border-top: 0 !important;
+.pg-toolbar-actions, .pg-toolbar-context {
+    margin: 5px;
+    line-height: 24px;
 }
 
 .ui-layout-resizer-dragging {
@@ -35,12 +44,14 @@
 
 .pg-mainbar .pg-toolbar-actions, .pg-mainbar .pg-toolbar-context {
     position: absolute;
-    margin: 5px;
-    line-height: 34px;
+    line-height: 36px;
+}
+
+.pg-mainbar {
+    height: 38px;
 }
 
 .pg-mainbar .pg-toolbar-actions {
-    line-height: 38px;
 }
 
 
@@ -62,7 +73,6 @@
 .pg-statusbar .pg-toolbar-context .pg-container.pg-progressbar {
     width: 150px;
     height: 14px;
-    margin-top: 4px;
 }
 
 .pg-editor-tabs.ui-tabs .ui-tabs-nav {
@@ -71,6 +81,10 @@
     border: 0;
     background-color: transparent;
     background-image: none;
+}
+
+.pg-execution-time, .slick-pager {
+    font-weight: normal;
 }
 
 .pg-editor-tabs.ui-tabs {
@@ -98,7 +112,7 @@
 
 .pg-toolbar-context {
     position: absolute;
-    margin: 0 5px;
+/*    margin: 0 5px; */
 /*    line-height: 24px; */
     right: 0;
     top: 0;
@@ -108,8 +122,8 @@
     float:left;
 }
 
-.pg-output .pg-toolbar-context, .pg-toolbar .pg-toolbar-context {
-    margin: 5px;
+.pg-statusbar .pg-toolbar-actions {
+    margin: 0;
 }
 
 .pg-output .pg-toolbar-context .slick-pager {
@@ -118,7 +132,7 @@
 }
 
 .pg-output-formats /*, .pg-editor-tabs.ui-tabs*/ {
-    padding: 2px;
+/*    padding: 2px; */
 }
 
 .pg-result .ui-state-error, .pg-result .ui-state-highlight {
@@ -192,6 +206,9 @@
     text-align: center;
 }
 
+.pg-tree {
+    overflow : auto;
+}
 
 /*
 .pg-ide .ui-dialog {

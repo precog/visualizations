@@ -11,7 +11,7 @@ define([
 
  function(template, ui) {
     var toolbarMainHeight = 38,
-        toolbarHeight = 34,
+        toolbarHeight = 36,
         statusbarHeight = 24;
     return function(container, isvertical) {
         var layout, layouts = [];
@@ -54,7 +54,7 @@ define([
             north : $.extend({}, toolbar, { size : toolbarMainHeight }),
             west : {
                   size : 200
-                , initClosed : true
+                , initClosed : false
             }
         }));
 
@@ -62,10 +62,22 @@ define([
         // system separation
         layouts.push(container.find('.pg-system').layout({
             defaults : defaults,
-            north : {
+            south : {
                   size : "50%"
                 , initClosed : true
             }
+        }));
+
+        // folder-system separation
+        layouts.push(container.find('.pg-folders').layout({
+            defaults : defaults,
+            north : toolbar
+        }));
+
+        // folder-system separation
+        layouts.push(container.find('.pg-queries').layout({
+            defaults : defaults,
+            north : toolbar
         }));
 
         // console separation
@@ -170,13 +182,14 @@ define([
         return layout = {
             container : container,
             refresh : refreshLayouts,
-            getBarMain : function() { return container.find('.pg-mainbar'); },
-            getBarEditor : function() { return container.find('.pg-input .pg-toolbar'); },
+            getBarEditor  : function() { return container.find('.pg-input .pg-toolbar'); },
+            getBarMain    : function() { return container.find('.pg-mainbar'); },
             getCodeEditor : function() { return container.find('.pg-input .pg-code-editor'); },
-            getStatusBar : function() { return container.find('.pg-statusbar'); },
-            getOutput : function() { return container.find('.pg-output'); },
+            getOutput     : function() { return container.find('.pg-output'); },
+            getStatusBar  : function() { return container.find('.pg-statusbar'); },
+            getSystem     : function() { return container.find('.pg-folders'); },
             setIoVertical : buildIO,
-            isIoVertical : function() { return isvertical; }
+            isIoVertical  : function() { return isvertical; }
         };
     };
 });
