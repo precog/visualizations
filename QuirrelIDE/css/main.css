@@ -39,11 +39,6 @@
     line-height: 34px;
 }
 
-.pg-toolbar-context {
-    position: absolute;
-    margin: 0 5px;
-    line-height: 24px;
-}
 
 .pg-statusbar .pg-toolbar-actions {
     font-weight: normal;
@@ -99,8 +94,14 @@
 
 .pg-toolbar-context {
     position: absolute;
+    margin: 0 5px;
+/*    line-height: 24px; */
     right: 0;
     top: 0;
+}
+
+.pg-toolbar-context.pg-stacked-context > div {
+    float:left;
 }
 
 .pg-output .pg-toolbar-context, .pg-toolbar .pg-toolbar-context {

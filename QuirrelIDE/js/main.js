@@ -70,7 +70,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     var status = buildBarStatus(layout.getStatusBar(), editor, layout);
 
-    var output = buildOutput(layout.getOutput());
+    var output = buildOutput(layout.getOutput(), editors); // TODO editors should not be passed here
 
     $(layout).on("resizeCodeEditor", function() {
         output.resize();

@@ -1,17 +1,21 @@
 define([
       "util/ui"
-    , "app/config/output-results"
+    , "config/output-results"
+    , "config/output-formats"
+    , "order!util/dialog-export"
     , "text!templates/toolbar.output.html"
 ],
 
-function(ui, formats, tplToolbar) {
+function(ui, formats, exportLanguages, openDialog, tplToolbar) {
     var map = {};
 
     $.each(formats, function(_, format) {
         map[format.type] = format;
     });
 
-    return function(el) {
+    var radioIndex = this.radioIndex = ("undefined" !== typeof this.radioIndex && this.radioIndex || 0) + 1;
+
+    return function(el, editors) {
         var wrapper,
             last = {
                 result : null,
@@ -19,15 +23,22 @@ function(ui, formats, tplToolbar) {
                 current : null
             },
             elToolbar = el.find('.pg-toolbar').append(tplToolbar),
-            elToolbarContext = el.find('.pg-toolbar-context'),
+            elToolbarTypeContext = el.find('.pg-toolbar-context .pg-toolbar-result-type'),
+            elToolbarMainContext = el.find('.pg-toolbar-context .pg-toolbar-result-general'),
             elOutputs = elToolbar.find('.pg-output-formats'),
             elResult  = el.find('.pg-result');
 
-        var i = 0; // TODO replace with globally unique values
-        $.each(formats, function(_, format) {
+        ui.button(elToolbarMainContext, {
+            icon : "ui-icon-arrowthickstop-1-s",
+            handler : function() {
+                openDialog("Download Query", exportLanguages, editors.getOutputResult());
+            }
+        });
+
+        $.each(formats, function(i, format) {
             if(format.display)
             {
-                var id = "radio" + (++i);
+                var id = "pg-output-type-radio-" + radioIndex + "-" + (++i);
                 format.display = elOutputs.append('<input type="radio" id="'+ id
                     + '" name="radio" data-format="'
                     + format.type
@@ -47,7 +58,7 @@ function(ui, formats, tplToolbar) {
             format.panel = format.panel();
             elResult.append(format.panel);
             format.toolbar = format.toolbar();
-            elToolbarContext.append(format.toolbar);
+            elToolbarTypeContext.append(format.toolbar);
 
             $(format.toolbar).hide();
             $(format.panel).hide();
