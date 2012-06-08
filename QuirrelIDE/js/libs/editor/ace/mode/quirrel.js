@@ -1,4 +1,3 @@
-//['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/quirrel_highlight_rules', 'ace/range']
 define(function(require, exports, module) {
     "use strict";
 
