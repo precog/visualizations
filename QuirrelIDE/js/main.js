@@ -117,7 +117,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         editors.setOutputOptions(options);
     });
 
-    theme.set(config.get("theme", "default"));
+    theme.set(config.get("theme", "franco"));
 
     config.monitor.bind("theme", function(e, name) {
         theme.set(name);

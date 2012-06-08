@@ -14,7 +14,7 @@ function(themes) {
     });
 
     function themeUrl(name) {
-        return UI_BASE_THEME_URL + name + "/jquery.ui.all.css";
+        return UI_BASE_THEME_URL + name + "/jquery-ui.css";
     }
 
     function setUITheme(name, callback) {
@@ -42,6 +42,7 @@ function(themes) {
         map : function() { return map; },
         groups : function() { return groups; },
         getEditorTheme : function(name, editor) {
+            console.log(name);
             return map[name].editor[editor];
         }
     };

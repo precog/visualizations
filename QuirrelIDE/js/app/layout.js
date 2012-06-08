@@ -10,7 +10,8 @@ define([
 ],
 
  function(template, ui) {
-    var toolbarHeight = 34,
+    var toolbarMainHeight = 38,
+        toolbarHeight = 34,
         statusbarHeight = 24;
     return function(container, isvertical) {
         var layout, layouts = [];
@@ -50,7 +51,7 @@ define([
         // main seperation
         layouts.push(container.find('.pg-ide').layout({
             defaults : defaults,
-            north : toolbar,
+            north : $.extend({}, toolbar, { size : toolbarMainHeight }),
             west : {
                   size : 200
                 , initClosed : true

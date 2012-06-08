@@ -58,6 +58,16 @@
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana, Arial, sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #555555; background: #000000 url(images/ui-bg_loop_25_000000_21x21.png) 50% 50% repeat; color: #ffffff; }
 .ui-widget-content a { color: #ffffff; }
+.ui-widget-content.odd {
+    background-color: #333333;
+    background-image: none;
+    /*    color: #000000; */
+}
+.ui-widget-content .slick-cell {
+    border-top: 0;
+    border-bottom: 0;
+    line-height: 24px;
+}
 .ui-widget-header { border: 1px solid #333333; background: #444444 url(images/ui-bg_highlight-soft_44_444444_1x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
 .ui-widget-header a { color: #ffffff; }
 

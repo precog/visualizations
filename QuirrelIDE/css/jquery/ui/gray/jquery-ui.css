@@ -58,6 +58,20 @@
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: 'Lucida Sans Unicode','Lucida Grande',arial,helvetica,sans-serif; font-size: 1em; }
 .ui-widget-content { border: 1px solid #c5c5c5; background: #ffffff url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #2e2e2e; }
 .ui-widget-content a { color: #2e2e2e; }
+.ui-widget-content.odd {
+    background-color: #edf2f9;
+    background-image: none;
+    /*    color: #000000; */
+}
+.ui-widget-content .slick-cell {
+    border-top: 0;
+    border-bottom: 0;
+    line-height: 24px;
+}
+
+.ui-widget-content .slick-row:last-child {
+    border-bottom: 1px dotted silver;
+}
 .ui-widget-header { border: 1px solid #c5c5c5; background: #e3e3e3 url(images/ui-bg_highlight-soft_75_e3e3e3_1x100.png) 50% 50% repeat-x; color: #2e2e2e; font-weight: bold; }
 .ui-widget-header a { color: #2e2e2e; }
 

@@ -39,6 +39,10 @@
     line-height: 34px;
 }
 
+.pg-mainbar .pg-toolbar-actions {
+    line-height: 38px;
+}
+
 
 .pg-statusbar .pg-toolbar-actions {
     font-weight: normal;
@@ -171,7 +175,7 @@
 .pg-el.ui-widget .pg-export textarea {
     resize: none;
     font-family: monospace;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 16px;
     width: 799px;
     height: 350px;
