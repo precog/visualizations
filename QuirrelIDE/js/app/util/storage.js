@@ -7,7 +7,6 @@ function(traverse) {
     return function(key, defaults) {
         var dirty  = false,
             params = $.extend({}, defaults);
-
         function save() {
             $.jStorage.set(key, params)
             dirty = false;
@@ -17,7 +16,7 @@ function(traverse) {
             if(enableDebug)
                 console.log("Load Storage Data");
             $.jStorage.reInit();
-            var value = $.jStorage.get(key, {});
+            var value = $.jStorage.get(key);
             $.extend(params, value);
         }
 

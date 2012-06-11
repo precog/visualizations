@@ -45,7 +45,6 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     });
 
     var editor = buildEditor(layout.getCodeEditor(), config.get("ioPanesVertical"));
-
     editor.setTabSize(config.get("tabSize"));
     editor.setUseSoftTabs(config.get("softTabs"));
 
