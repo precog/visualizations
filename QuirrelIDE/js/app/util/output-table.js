@@ -23,6 +23,9 @@ function() {
             , multiColumnSort: true
         },
         wrapper;
+
+    grid = new Slick.Grid(elOutput, dataView, [], gridOptions);
+
     dataView.setPagingOptions({
         pageSize: 20
     });
@@ -172,13 +175,18 @@ function() {
             if(!options) options = {};
             if(changePagerHandler)
                 dataView.onPagingInfoChanged.unsubscribe(changePagerHandler);
-            if(grid) grid.destroy();
+            try {
+                if(grid) grid.destroy();
+            } catch(e) {}
+
 
             var model = createModel(data && data.length > 0 && data[0] || []);
 
             data = transformData(model, data);
 
-            grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
+            try {
+                grid = new Slick.Grid(elOutput, dataView, model, gridOptions);
+            } catch(e) {}
 
             changePagerHandler = function(e, args) {
                 options.pager = { size : args.pageSize, page : args.pageNum };

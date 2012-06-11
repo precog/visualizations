@@ -33,13 +33,12 @@ function(precog, ui, tplToolbar){
         });
 
         function triggerQuery(path) {
-//            path = "/" + path.substr(basePath.length === 1 ? 1 : basePath.length + 1);
             $(wrapper).trigger("querypath", path);
         }
 
         function addFolder(name, path, callback, parent) {
             if(!parent) parent = -1;
-            tree.jstree(
+            return tree.jstree(
                   "create_node"
                 , parent
                 , {
@@ -78,6 +77,7 @@ function(precog, ui, tplToolbar){
                     subpath = base + subpath;
                     addFolder(subpath.split("/").pop(), subpath, function(){
                         if(levels > 1) {
+                            var $this = $(this);
                             loadAtPath(subpath, levels-1, this);
                         }
                     }, parent || -1);
@@ -86,7 +86,7 @@ function(precog, ui, tplToolbar){
         }
 
         ui.button(elContext, {
-            label   : "refresh",
+            icon   : "ui-icon-refresh",
             handler : function() { wrapper.refresh(); }
         });
 

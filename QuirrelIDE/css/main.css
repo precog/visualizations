@@ -210,6 +210,14 @@
     overflow : auto;
 }
 
+.pg-structure.jstree.jstree-default {
+    background-color: transparent;
+}
+
+.pg-structure ins.jstree-themeicon {
+/*    display: none; */
+}
+
 /*
 .pg-ide .ui-dialog {
     font-size: 25%;
