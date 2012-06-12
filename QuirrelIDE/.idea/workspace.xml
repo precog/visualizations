@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/folders.js" afterPath="$PROJECT_DIR$/js/app/folders.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" afterPath="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/dialog.lineinput.html" afterPath="$PROJECT_DIR$/js/templates/dialog.lineinput.html" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,7 +27,7 @@
       <file leaf-file-name="folders.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/app/folders.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="90" column="35" selection-start="3378" selection-end="3378" vertical-scroll-proportion="0.33273703">
+            <state line="29" column="39" selection-start="1028" selection-end="1028" vertical-scroll-proportion="0.38908765">
               <folding />
             </state>
           </provider>
@@ -751,7 +748,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app/folders.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="35" selection-start="3378" selection-end="3378" vertical-scroll-proportion="0.33273703">
+        <state line="29" column="39" selection-start="1028" selection-end="1028" vertical-scroll-proportion="0.38908765">
           <folding />
         </state>
       </provider>

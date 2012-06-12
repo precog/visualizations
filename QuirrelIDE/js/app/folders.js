@@ -27,6 +27,10 @@ define([
             }
         }
 
+        function getAllVirtualPaths() {
+            return store.get("virtuals", {});
+        }
+
         function getVirtualPaths(parent) {
             return store.get("virtuals."+parent, []);
         }
@@ -80,10 +84,8 @@ define([
 
             function createNodeAt(path, name) {
                 if(!(name && path)) {
-                    console.log("INVALID NODE CREATION: " + name + " AT " + path);
                     return;
                 }
-                console.log("CREATE NODE " + name + " AT " + path);
                 // create path in config
                 setVirtualPath(path, name);
                 // traverse the tree from the root to path
@@ -94,22 +96,17 @@ define([
                     var list = tree.find("li"),
                         len  = list.length;
                     for(var i = 0; i < len; i++) {
-                        console.log($(list.get(i)).attr("data"));
                         if($(list.get(i)).attr("data") === path) {
                             parent = list.get(i);
                             break;
                         }
                     }
                 }
-                console.log(parent);
-                console.log(name);
-                console.log(path);
                 if(!parent) return;
                 // create visual node
                 var p = ("/" === path ? "/" : path + "/") + name;
-                console.log(p);
                 if(map[p]) return; // node already exists in the tree
-                console.log(name, p, parent);
+                map[p] = true;
                 addFolder(name, p, null, parent);
             }
 
@@ -246,13 +243,26 @@ define([
             wrapper.refresh();
 
 
-            store.monitor.bind("pathAdded", function(_, path) {
-                if(path.substring(0, 1) === '/') path = path.substring(1);
-                var parts = path.split("/"),
-                    name = parts.pop(),
-                    parent = "/" + parts.join("/");
-                console.log(parent, name);
-                createNodeAt(parent, name);
+            store.monitor.bind("virtuals", function(_, paths) {
+                var current = getAllVirtualPaths(),
+                    toadd = [];
+                for(var path in paths) {
+                    if(current.hasOwnProperty(path)) {
+                        if(!current[paths]) {
+                            var list = paths[path];
+                            for(var i = 0; i < list.length; i++) {
+                                toadd.push({
+                                    path : path,
+                                    name : list[i]
+                                });
+                            }
+                        }
+                    }
+                }
+                for(var i = 0; i < toadd.length; i++) {
+                    var o = toadd[i];
+                    createNodeAt(o.path, o.name);
+                }
             });
 
             return wrapper;
