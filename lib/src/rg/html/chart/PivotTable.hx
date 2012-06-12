@@ -316,7 +316,7 @@ class PivotTable
 		ready.dispatch();
 	}
 
-	function onClick(dp, ?_, ?_)
+	function onClick(dp, _, _)
 	{
 		click(dp);
 	}

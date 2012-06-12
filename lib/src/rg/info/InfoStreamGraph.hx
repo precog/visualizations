@@ -26,9 +26,9 @@ using rg.info.Info;
 		effect = GradientVertical(1.25);
 	}
 
-	public static function filters()
+	public static function filters() : Array<Dynamic>
 	{
-		return [{
+		var arr : Array<Dynamic> = [{
 			field : "interpolation",
 			validator : function(v : Dynamic) return Std.is(v, String),
 			filter : function(v : Dynamic) return [{
@@ -56,6 +56,7 @@ using rg.info.Info;
 				field : "segment",
 				value : new InfoSegment().feed(v)
 			}]
-		}].concat(cast InfoCartesianChart.filters());
+		}];
+		return arr.concat(cast InfoCartesianChart.filters());
 	}
 }

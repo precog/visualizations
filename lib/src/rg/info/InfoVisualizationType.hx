@@ -16,7 +16,7 @@ import rg.visualization.Visualizations;
 		replace = true;
 	}
 
-	public static function filters()
+	public static function filters() : Array<Dynamic>
 	{
 		return [{
 			field : "visualization",

@@ -33,9 +33,9 @@ using rg.info.Info;
 		sensibleradius = 100;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
-		return [{
+		var result : Array<FieldFilter> = [{
 			field : "symbol",
 			validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
 			filter: function(v : Dynamic) return [ {
@@ -89,6 +89,7 @@ using rg.info.Info;
 				field : "segment",
 				value : new InfoSegment().feed(v)
 			}]
-		}].concat(cast InfoCartesianChart.filters());
+		}];
+		return result.concat(InfoCartesianChart.filters());
 	}
 }

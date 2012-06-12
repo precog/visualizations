@@ -27,7 +27,7 @@ using rg.info.Info;
 		colorscale = false;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "animation",

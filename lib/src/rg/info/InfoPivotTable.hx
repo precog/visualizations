@@ -46,7 +46,7 @@ using rg.info.Info;
 		columnAxes = 1;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "columnaxes",

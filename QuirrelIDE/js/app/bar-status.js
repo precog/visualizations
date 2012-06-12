@@ -1,5 +1,5 @@
 define([
-      "order!util/ui"
+    "order!util/ui"
     , "text!templates/toolbar.status.html"
     , "text!templates/menu.editor.status.html"
 ],
@@ -10,15 +10,15 @@ define([
             var wrapper;
             el.append(tplToolbar);
 
-            var menu = $('body').append(tplMenu).find(".pg-menu-editor-status:last");
-            ui.menu(menu);
-            menu.hide();
-            menu.mouseleave(function() {
-                menu.hide();
-            }).click(function() {
-                menu.hide();
-            });
-
+            var menu = ui.contextmenu(tplMenu);
+            /*            ui.menu(menu);
+             menu.hide();
+             menu.mouseleave(function() {
+             menu.hide();
+             }).click(function() {
+             menu.hide();
+             });
+             */
             el.find('.pg-editor-settings-trigger').click(function() {
                 if(menu.is(":visible")) {
                     menu.hide();
@@ -86,10 +86,10 @@ define([
 
             var elProgressBar = ui.progressbar(el.find(".pg-progressbar"));
             elProgressBar.hide();
-            
+
             var elExecutionTime = el.find(".pg-execution-time");
             elExecutionTime.hide();
-            
+
             var progress = {
                 startTime : null,
                 killProgress : null,
@@ -132,6 +132,6 @@ define([
                 endRequest : function(success) {
                     progress.end(success);
                 }
-             }
+            }
         }
     });

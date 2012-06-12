@@ -13,7 +13,7 @@ package rg.info;
 	public var right : Null<Int>;
 	public function new() { }
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "top",

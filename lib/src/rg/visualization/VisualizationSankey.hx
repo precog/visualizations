@@ -304,9 +304,11 @@ class VisualizationSankey extends VisualizationSvg
 
 	function weightBalance(graph : Graph<NodeData, Dynamic>, nodef : GEdge<NodeData, Dynamic> -> DataPoint)
 	{
-		var layout = new GraphLayout(graph, new HeaviestNodeLayer().lay(graph));
+		var layout : GraphLayout<NodeData, Dynamic> = new GraphLayout(graph, new HeaviestNodeLayer().lay(graph));
 		layout = new EdgeSplitter().split(layout, [], nodef);
-		layout = GreedySwitchDecrosser.best().decross(layout);
+		layout = cast GreedySwitchDecrosser
+			.best()
+			.decross(cast layout);
 		return layout;
 	}
 

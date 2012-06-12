@@ -21,7 +21,7 @@ using rg.info.Info;
 		colorScaleMode = ColorScaleMode.FromCssInterpolation();
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "contour",

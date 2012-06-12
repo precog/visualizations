@@ -57,7 +57,7 @@ using rg.info.Info;
 		paddingLabel = 10;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "animation",

@@ -14,7 +14,7 @@ import rg.axis.Stats;
 	public var totalover : Float -> Stats<Dynamic> -> String;
 	public var axisvalue : Dynamic -> String -> String;
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "total",

@@ -45,7 +45,7 @@ using Arrays;
 		radius = function(_, _) return 10;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "url",

@@ -27,13 +27,13 @@ using rg.info.Info;
 		padding = new InfoPadding();
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
-		return [{
+		return cast [{
 			field : "layout",
 			validator : function(v : String) return Std.is(v, String) && Arrays.exists(Visualizations.layouts, v.toLowerCase()),
-			filter : function(v : String) {
-				return [{
+			filter : function(v : Dynamic) {
+				return cast [{
 					field : "layout",
 					value : v.toLowerCase()
 				}];
@@ -41,21 +41,21 @@ using rg.info.Info;
 		}, {
 			field : "width",
 			validator : function(v) return Std.is(v, Float),
-			filter : function(v) return [{
+			filter : function(v : Dynamic) return cast [{
 				value : Math.round(v),
 				field : "width"
 			}]
 		}, {
 			field : "height",
 			validator : function(v) return Std.is(v, Float),
-			filter : function(v) return [{
+			filter : function(v : Dynamic) return cast [{
 				value : Math.round(v),
 				field : "height"
 			}]
 		}, {
 			field : "visualization",
 			validator : function(v) return Arrays.exists(Visualizations.svg, v.toLowerCase()),
-			filter : function(v) return [{
+			filter : function(v : Dynamic) return cast [{
 				value : v.toLowerCase(),
 				field : "type"
 			}]

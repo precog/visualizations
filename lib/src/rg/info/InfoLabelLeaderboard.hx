@@ -19,7 +19,7 @@ import rg.util.Properties;
 		super();
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "rank",

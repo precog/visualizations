@@ -16,7 +16,7 @@ using rg.info.Info;
 		forcelegacy = false;
 	}
 
-	public static function filter()
+	public static function filter() : Array<FieldFilter>
 	{
 		return [{
 			field : "ready",

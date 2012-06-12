@@ -17,7 +17,7 @@ import thx.error.Error;
 
 	public static function filters() : Array<FieldFilter>
 	{
-		return cast [{
+		return [{
 			field : "data",
 			validator : function(v) return Std.is(v, Array),
 			filter : function(v)

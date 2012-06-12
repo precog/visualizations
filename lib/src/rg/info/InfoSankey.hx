@@ -50,7 +50,7 @@ using rg.info.Info;
 		thinbackedges = false;
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 				field : "label",

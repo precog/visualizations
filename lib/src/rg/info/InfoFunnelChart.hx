@@ -31,7 +31,7 @@ using rg.info.Info;
 		arrowSize = 30;
 	}
 
-	public static function filters()
+	public static function filters() : Array<Dynamic>
 	{
 		return [{
 			field : "animation",

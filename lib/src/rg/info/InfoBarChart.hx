@@ -32,7 +32,7 @@ using rg.info.Info;
 
 	public static function filters()
 	{
-		return [{
+		var result : Array<Dynamic> = [{
 			field : "stacked",
 			validator : function(v) return Std.is(v, Bool),
 			filter : null
@@ -82,6 +82,7 @@ using rg.info.Info;
 				field : "segment",
 				value : new InfoSegment().feed(v)
 			}]
-		}].concat(cast InfoCartesianChart.filters());
+		}];
+		return result.concat(cast InfoCartesianChart.filters());
 	}
 }

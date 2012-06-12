@@ -15,10 +15,10 @@ function() {
         update : function(error) {
             var message = '<p>'+error.message+'</p>';
             if("undefined" !== typeof error.lineNum) {
-                message += '<p>at line '+error.lineNum+', column '+error.colNum+'</p>';
-
+                message += '<p>Error at line '+error.lineNum+', column '+(error.colNum+1)+':</p><br>';
+/*
                 var indicator = [];
-                for(var i = 0; i < error.colNum-1; i++)
+                for(var i = 0; i < error.colNum; i++)
                 {
                     indicator.push(' ');
                 }
@@ -26,7 +26,9 @@ function() {
 
                 var line = error.line.replace(/\t/g, ' ');
 
-                message += '<pre>'+(line || "&nbsp;")+'\n'+indicator.join('')+'</pre>';
+                message += '<pre>'+(line || "&nbsp;")+'\n'+indicator.join('')+'</pre><br>';
+*/
+                message += '<pre>'+error.detail+'</pre>';
             }
             elError.html(message);
         }

@@ -1,5 +1,5 @@
 define([
-      "order!util/ui"
+    "order!util/ui"
     , "text!templates/toolbar.main.html"
     , "text!templates/menu.settings.html"
     , "util/fullscreen"
@@ -7,9 +7,9 @@ define([
 ], function(ui, tplToolbar, tplMenu, fullscreen, theme) {
     function buildItems(menu, groups) {
         $.each(groups, function(key) {
-            menu.append('<li class="ui-state-disabled"><a href="#">'+key+' themes:</a></li>');
+            menu.append('<li class="ui-state-disabled ui-menu-item" role="presentation"><a href="#">'+key+' themes:</a></li>');
             $.each(this, function() {
-                menu.append('<li data-editor-theme="'+this.token+'" class="editor-theme"><a href="#">'+this.name+'</a></li>');
+                menu.append('<li data-editor-theme="'+this.token+'" class="editor-theme ui-menu-item" role="presentation"><a href="#">'+this.name+'</a></li>');
             })
         });
     }
@@ -17,9 +17,9 @@ define([
     return function(el) {
         el.append(tplToolbar);
         var right = el.find(".pg-toolbar-context"),
-            menu = $('body').append(tplMenu).find("ul.pg-settings-menu:last");
+            menu = ui.contextmenu(tplMenu);
 
-        buildItems(menu, theme.groups());
+        buildItems(menu.find("ul:first"), theme.groups());
 
         $(theme).on("change", function(e, name) {
             menu.find('.editor-theme').each(function() {
@@ -35,26 +35,18 @@ define([
             theme.set($(this).attr("data-editor-theme"));
         });
 
-        ui.menu(menu);
-        menu.hide();
-        menu.mouseleave(function() {
-            menu.hide();
-        }).click(function() {
-            menu.hide();
-        });
-
         ui.button(right, {
-           icon : "ui-icon-gear"
+            icon : "ui-icon-gear"
         }).mouseenter(function() {
-           var pos = $(this).offset(),
-               w = $(this).outerWidth(),
-               h = $(this).outerHeight();
-           menu.css({
-               position : "absolute",
-               top : (pos.top + h) + "px",
-               left : (pos.left + w - menu.outerWidth()) + "px"
-           }).show();
-        });
+                var pos = $(this).offset(),
+                    w = $(this).outerWidth(),
+                    h = $(this).outerHeight();
+                menu.css({
+                    position : "absolute",
+                    top : (pos.top + h) + "px",
+                    left : (pos.left + w - menu.outerWidth()) + "px"
+                }).show();
+            });
 
         ui.button(right, {
             icon : fullscreen.isFullScreen() ? "ui-icon-newwin" : "ui-icon-arrow-4-diag",

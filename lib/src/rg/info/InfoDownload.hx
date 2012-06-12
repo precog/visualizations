@@ -25,7 +25,7 @@ import rg.RGConst;
 		formats = ['pdf', 'png', 'jpg', 'svg'];
 	}
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "handler",

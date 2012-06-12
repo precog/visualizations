@@ -46,6 +46,22 @@ function() {
                 disabled: o.disabled
             });
         },
+        contextmenu : function(el, o) {
+            if("string" === typeof el) {
+                el = $("body").append(el).find("div:last ul");
+            } else {
+                el = $(el);
+            }
+            var parent = el.parent(),
+                o = this.menu(el, o);
+            parent.hide();
+            parent.mouseleave(function() {
+                parent.hide();
+            }).click(function() {
+                parent.hide();
+            });
+            return parent;
+        },
         tabs : function(el, o) {
             return el.tabs(o);
         },

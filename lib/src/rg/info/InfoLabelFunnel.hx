@@ -12,7 +12,7 @@ import rg.axis.Stats;
 {
 	public var arrow : DataPoint -> Stats<Dynamic> -> String;
 
-	public static function filters()
+	public static function filters() : Array<FieldFilter>
 	{
 		return [{
 			field : "arrow",

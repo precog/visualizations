@@ -6,18 +6,18 @@
 package rg.data;
 import rg.util.DataPoints;
 
-class Segmenter 
+class Segmenter
 {
 	var on : String;
 	var transform : Array<DataPoint> -> Array<DataPoint>;
 	var scale : Array<DataPoint> -> Array<DataPoint>;
-	public function new(on : String, transform : Array<DataPoint> -> Array<DataPoint>, scale : Array<DataPoint> -> Array<DataPoint>) 
+	public function new(on : String, transform : Array<DataPoint> -> Array<DataPoint>, scale : Array<DataPoint> -> Array<DataPoint>)
 	{
 		this.on = on;
 		this.transform = transform;
 		this.scale = scale;
 	}
-	
+
 	public function segment(data : Array<DataPoint>) : Array<Array<DataPoint>>
 	{
 		var segmented = if (null == on)
