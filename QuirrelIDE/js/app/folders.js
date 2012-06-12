@@ -87,7 +87,30 @@ define([
                 // create path in config
                 setVirtualPath(path, name);
                 // traverse the tree from the root to path
+                var parent;
+                if(path == basePath) {
+                    parent = -1;
+                } else {
+                    var list = tree.find("li"),
+                        len  = list.length;
+                    for(var i = 0; i < len; i++) {
+                        console.log($(list.get(i)).attr("data"));
+                        if($(list.get(i)).attr("data") === path) {
+                            parent = list.get(i);
+                            break;
+                        }
+                    }
+                }
+                console.log(parent);
+                console.log(name);
+                console.log(path);
+                if(!parent) return;
                 // create visual node
+                var p = ("/" === path ? "/" : path + "/") + name;
+                console.log(p);
+                if(map[p]) return; // node already exists in the tree
+                console.log(name, p, parent);
+                addFolder(name, p, null, parent);
             }
 
             function requestNodeCreationAt(path) {
@@ -99,7 +122,7 @@ define([
                     if(null != name && name.match(/^[a-z0-9]+$/i))
                         return null; // OK
                     else
-                        return "path name cannot be empty and it can only be composed of all alphanumeric characters";
+                        return "path name cannot be empty and it can only be composed of alpha-numeric characters";
                 }, function(name) {
                     createNodeAt(path, name);
                 });
@@ -168,6 +191,7 @@ define([
                             .dblclick(function(e) {
                                 var path = $(e.currentTarget).closest("li").attr("data");
                                 triggerQuery(path);
+                                menu.hide();
                                 e.preventDefault(); return false;
                             });
                         if(callback) callback.apply(el, [path]);

@@ -7,7 +7,6 @@ define([
     , "order!ui/jquery.ui.resizable"
     , "order!ui/jquery.ui.dialog"
 ], function(tplDialog, ui, dom) {
-    console.log(tplDialog);
     var currentHandler,
         currentValidator,
         elDialog = $('body')
@@ -18,6 +17,7 @@ define([
                 , autoOpen : false
                 , resizable : false
                 , dialogClass : "pg-el"
+                , width : "400px"
                 , closeOnEscape: true
                 , buttons : [{
                     text : "Close",

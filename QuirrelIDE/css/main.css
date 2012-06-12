@@ -218,6 +218,17 @@
 /*    display: none; */
 }
 
+.pg-dialog-lineinput .pg-error,
+.pg-dialog-lineinput .pg-message {
+    margin: 10px 0;
+    padding: 8px;
+    overflow: auto;
+}
+
+.pg-dialog-lineinput input[type="text"] {
+    width: 295px;
+}
+
 /*
 .pg-ide .ui-dialog {
     font-size: 25%;

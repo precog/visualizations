@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="" />
+    <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/folders.js" afterPath="$PROJECT_DIR$/js/app/folders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" afterPath="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/dialog.lineinput.html" afterPath="$PROJECT_DIR$/js/templates/dialog.lineinput.html" />
+    </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,10 +27,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="folders.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="folders.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/app/folders.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="56" selection-start="2395" selection-end="2395" vertical-scroll-proportion="-3.4615386">
+            <state line="90" column="35" selection-start="3378" selection-end="3378" vertical-scroll-proportion="0.33273703">
               <folding />
             </state>
           </provider>
@@ -43,16 +48,25 @@
       <file leaf-file-name="dialog-export.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="25" column="40" selection-start="895" selection-end="895" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dialog-lineinput.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="dialog-lineinput.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/util/dialog-lineinput.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="59" selection-start="1088" selection-end="1088" vertical-scroll-proportion="0.40190148">
+            <state line="30" column="42" selection-start="1019" selection-end="1019" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dialog.lineinput.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/templates/dialog.lineinput.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="12" selection-start="12" selection-end="31" vertical-scroll-proportion="-0.0">
               <folding />
             </state>
           </provider>
@@ -61,7 +75,7 @@
       <file leaf-file-name="layout.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/layout.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="137" column="40" selection-start="4091" selection-end="4100" vertical-scroll-proportion="-7.1538463">
+            <state line="137" column="40" selection-start="4091" selection-end="4100" vertical-scroll-proportion="-49.846153">
               <folding />
             </state>
           </provider>
@@ -88,7 +102,7 @@
       <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="0" selection-start="3834" selection-end="3834" vertical-scroll-proportion="0.0">
+            <state line="232" column="20" selection-start="4049" selection-end="4049" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -125,13 +139,13 @@
         <option value="$PROJECT_DIR$/js/templates/menu.settings.html" />
         <option value="$PROJECT_DIR$/js/templates/menu.context.system.root.html" />
         <option value="$PROJECT_DIR$/js/templates/dialog.create.virtualfolder.html" />
-        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/bar-main.js" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-error.js" />
         <option value="$PROJECT_DIR$/js/templates/dialog.lineinput.html" />
-        <option value="$PROJECT_DIR$/js/app/folders.js" />
+        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" />
+        <option value="$PROJECT_DIR$/js/app/folders.js" />
       </list>
     </option>
   </component>
@@ -663,26 +677,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/text.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="219" column="0" selection-start="3834" selection-end="3834" vertical-scroll-proportion="0.0">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -707,20 +707,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="137" column="40" selection-start="4091" selection-end="4100" vertical-scroll-proportion="-7.1538463">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/templates/dialog.lineinput.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="6" selection-start="283" selection-end="283" vertical-scroll-proportion="0.08035714">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/bar-main.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="38" selection-start="290" selection-end="290" vertical-scroll-proportion="0.0">
@@ -728,16 +714,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+    <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="56" selection-start="2395" selection-end="2395" vertical-scroll-proportion="-3.4615386">
+        <state line="25" column="40" selection-start="895" selection-end="895" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/templates/dialog.lineinput.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="12" selection-start="12" selection-end="31" vertical-scroll-proportion="-0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="232" column="20" selection-start="4049" selection-end="4049" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/dialog-lineinput.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="59" selection-start="1088" selection-end="1088" vertical-scroll-proportion="0.40190148">
+        <state line="30" column="42" selection-start="1019" selection-end="1019" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="137" column="40" selection-start="4091" selection-end="4100" vertical-scroll-proportion="-49.846153">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="90" column="35" selection-start="3378" selection-end="3378" vertical-scroll-proportion="0.33273703">
           <folding />
         </state>
       </provider>
