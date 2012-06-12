@@ -1,53 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../charts/bin/js/charts.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../charts/bin/js/reportgrid-charts.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../charts/charts.sublime-project" afterPath="$PROJECT_DIR$/../charts/charts.sublime-project" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../charts/version" afterPath="$PROJECT_DIR$/../charts/version" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/data/Segmenter.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/data/Segmenter.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/html/chart/PivotTable.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/html/chart/PivotTable.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/FieldFilter.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/FieldFilter.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoAnimation.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoAnimation.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoBarChart.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoBarChart.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoCartesianChart.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoCartesianChart.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoDataSource.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoDataSource.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoDownload.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoDownload.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoFunnelChart.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoFunnelChart.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoGeneral.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoGeneral.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoGeo.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoGeo.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoHeatGrid.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoHeatGrid.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabel.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabel.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelAxis.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelAxis.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelFunnel.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelFunnel.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelLeaderboard.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelLeaderboard.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelPivotTable.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelPivotTable.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelSankey.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLabelSankey.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLayout.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLayout.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLeaderboard.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLeaderboard.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoLineChart.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoLineChart.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoMap.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoMap.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoPadding.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoPadding.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoPieChart.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoPieChart.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoPivotTable.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoPivotTable.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoSankey.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoSankey.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoScatterGraph.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoScatterGraph.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoSegment.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoSegment.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoStreamGraph.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoStreamGraph.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/info/InfoVisualizationType.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/info/InfoVisualizationType.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/svg/widget/Map.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/svg/widget/Map.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lib/src/rg/visualization/VisualizationSankey.hx" afterPath="$PROJECT_DIR$/../lib/src/rg/visualization/VisualizationSankey.hx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-main.js" afterPath="$PROJECT_DIR$/js/app/bar-main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-status.js" afterPath="$PROJECT_DIR$/js/app/bar-status.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/folders.js" afterPath="$PROJECT_DIR$/js/app/folders.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/output-error.js" afterPath="$PROJECT_DIR$/js/app/util/output-error.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/ui.js" afterPath="$PROJECT_DIR$/js/app/util/ui.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/menu.editor.status.html" afterPath="$PROJECT_DIR$/js/templates/menu.editor.status.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/menu.settings.html" afterPath="$PROJECT_DIR$/js/templates/menu.settings.html" />
-    </list>
+    <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="" />
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
