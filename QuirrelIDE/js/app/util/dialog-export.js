@@ -2,13 +2,13 @@ define([
       "text!templates/dialog.export.html"
     , "order!util/ui"
     , "util/dom"
+    , "util/notification"
     , "order!ui/jquery.ui.draggable"
     , "order!ui/jquery.ui.position"
     , "order!ui/jquery.ui.resizable"
     , "order!ui/jquery.ui.dialog"
-    , "jlib/noty/jquery.noty"
     , "jlib/zclip/jquery.zclip"
-], function(tplDialog, ui, dom) {
+], function(tplDialog, ui, dom, notification) {
     var downloadQueryService = "http://api.reportgrid.com/services/viz/proxy/download-code.php",
         elDialog = $('body')
             .append(tplDialog)
@@ -30,12 +30,7 @@ define([
                 }, {
                     text : "Download",
                     click : function() {
-                        noty({
-                            text : "code downloaded"
-                            , theme : "noty_theme_growl"
-                            , type : "success"
-                            , timeout : 2500
-                        });
+                        notification.quick("code downloaded");
                         elForm.submit();
                         elDialog.dialog("close");
                     }
@@ -100,12 +95,7 @@ define([
                         return ""+elText.val();
                     },
                     afterCopy : function() {
-                        noty({
-                              text : "copied to clipboard"
-                            , theme : "noty_theme_growl"
-                            , type : "success"
-                            , timeout : 2500
-                        });
+                        notification.quick("copied to clipboard");
                     }
                 });
         }

@@ -1,6 +1,10 @@
-.pg-ide, .pg-el, .pg-el.ui-widget {
+.pg-ide, .pg-el, .pg-el.ui-widget, .ui-pnotify, .ui-pnotify-history-container {
     font-size: 73%;
     font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+}
+
+.ui-pnotify-history-container {
+    right: 50% !important;
 }
 
 .pg-pane {
@@ -228,7 +232,6 @@
 .pg-dialog-lineinput input[type="text"] {
     width: 295px;
 }
-
 /*
 .pg-ide .ui-dialog {
     font-size: 25%;
