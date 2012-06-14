@@ -42,6 +42,8 @@ define([
             // progress
             // complete
 
+            var k;
+
             o.hide = false;
             o.text = '<div class="pg-message">'+text+'</div><div class="pg-progress-bar"></div>';
             o.before_open = function(pn) {
@@ -50,7 +52,12 @@ define([
                 $message = pn.find("div.pg-message");
             };
 
-            o.progressStart = function() {
+            o.progressStart = function(message) {
+                clearInterval(k);
+                pnotify.show();
+                $message.removeClass("ui-state-error")
+                $message.html(message);
+                $progress.show();
                 $progress.progressbar({
                     value : 0
                 });
@@ -66,18 +73,21 @@ define([
 
             o.progressComplete = function(message) {
                 $message.html(message);
-                $progress.remove();
-                setTimeout(function() {
+                $progress.hide();
+                k = setTimeout(function() {
                     pnotify.hide();
                 }, longtimeout);
             };
 
-            o.progressError = function(message) {
-                $progress.destroy();
-                $message.addClass("ui-state-error").html(message);
+            o.progressError = function(err) {
+                $progress.hide();
+                $message.addClass("ui-state-error").html(err);
+                k = setTimeout(function() {
+                    pnotify.hide();
+                }, longtimeout);
             };
 
-            return this.success(title, o);
+            return o.el = this.success(title, o);
         }
     }
 });

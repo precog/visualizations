@@ -11,14 +11,7 @@ define([
             el.append(tplToolbar);
 
             var menu = ui.contextmenu(tplMenu);
-            /*            ui.menu(menu);
-             menu.hide();
-             menu.mouseleave(function() {
-             menu.hide();
-             }).click(function() {
-             menu.hide();
-             });
-             */
+
             el.find('.pg-editor-settings-trigger').click(function() {
                 if(menu.is(":visible")) {
                     menu.hide();

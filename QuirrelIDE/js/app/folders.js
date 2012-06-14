@@ -13,7 +13,7 @@ define([
     , "order!jlib/jstree/jstree"
     , "order!jlib/jstree/jstree.themes"
 ],
-    function(precog, md5, createStore, ui,  utils, notification, vopenRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
+    function(precog, md5, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
             STORE_KEY = "pg-quirrel-virtualpaths-"+md5(precog.config.tokenId),
             basePath = precog.config.basePath || "/",
@@ -252,27 +252,72 @@ define([
                 e.preventDefault(); return false;
             });
 
+            function pollStatus(noty, id) {
+                $.ajax({
+                    url: UPLOAD_SERVICE,
+                    data: { uuid : id },
+                    success: function(data) {
+                        if(data.done === data.total) {
+                            var message;
+                            if(data.failures) {
+                                if(data.total - data.failures === 0) {
+                                    message = 'all of the ' +data.failures+ ' events failed to be stored';
+                                } else {
+                                    message = (data.total - data.failures) + ' events have been stored correctly and ' + data.failures + ' failed to be stored';
+                                }
+                                noty.progressError(message);
+                            } else {
+                                message = 'all of the ' + data.total + ' events have been stored correctly and can now be used in your queries';
+                                noty.progressComplete(message);
+                            }
+
+                        } else {
+                            if(data.total > 0) {
+                                noty.el.find(".pg-ingest-message").html(
+                                    "ingested " + data.done + " events" + (data.failures ? " (" + data.failures + " failures)" : "") + " of " + data.total
+                                );
+                            }
+                            noty.progressStep(data.done / data.total);
+                            setTimeout(function() {
+                                pollStatus(noty, id);
+                            }, 500);
+                        }
+                    },
+                    error : function(e) {
+                        noty.progressError("An error occurred while uploading your file. No events will be stored in Precog: " + err.error);
+                    },
+                    dataType: "json"
+                });
+            }
+
             function uploadFile(file, path) {
                 if(!file) return;
-                var id = utils.guid();
 
-                var noty = { text : "'" + file.fileName+"' is going to be uploaded now" };
+                var filename = file.fileName || file.name,
+                    id = utils.guid();
+
+                var noty = { text : "starting upload of '" + filename+"'" };
 
                 notification.progress("upload file", noty);
 
                 function progressHandlingFunction(e) {
                     noty.progressStep(e.loaded / e.total);
                 }
-                function beforeSendHandler(a, b) {
-                    noty.progressStart();
+                function beforeSendHandler() {
+                    noty.progressStart('<div class="pg-ingest-phase">Phase 1 of 2</div><div class="pg-ingest-message">' + "uploading '" + filename + "'</div>");
                 }
-                function completeHandler(a, b) {
-                    noty.progressComplete("'"+file.fileName+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be ingested and you will receive a notification as soon as it is ready for consumption.");
-                    // TODO: start polling for data store completion
+                function completeHandler() {
+                    noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be ingested and you will receive a notification as soon as it is ready for consumption.");
+                    noty.progressStart('<div class="pg-ingest-phase">Phase 2 of 2</div><div class="pg-ingest-message">storing events</div>');
+                    pollStatus(noty, id);
                 }
-                function errorHandler(a, b) {
-                    noty.progressError("An error occurred while uploading your file. No events will be stored in Precog");
+                function errorHandler(e) {
+                    var err = JSON.parse(e.responseText);
+                    noty.progressError("An error occurred while uploading your file. No events will be stored in Precog: " + err.error);
                 }
+
+                var formData = new FormData();
+                formData.append("file", file);
 
                 $.ajax({
                     url: UPLOAD_SERVICE,  //server script to process data
@@ -289,22 +334,24 @@ define([
                     success: completeHandler,
                     error: errorHandler,
                     // Form data
-                    data: file,
+                    data: formData,
                     headers : {
-                          "Content-Type"  : "multipart/form-data"
-                        , "X-File-Name"   : file.fileName
-                        , "X-File-Size"   : file.fileSize
-                        , "X-File-Type"   : file.type
-                        , "X-Precog-Path" : path
-                        , "X-Precog-UUID" : id
+//                          "Content-Type"     : "multipart/form-data"
+                          "X-File-Name"      : filename
+                        , "X-File-Size"      : file.fileSize || file.size
+                        , "X-File-Type"      : file.type
+                        , "X-Precog-Path"    : path
+                        , "X-Precog-UUID"    : id
+                        , "X-Precog-Token"   : precog.config.tokenId
+                        , "X-Precog-Service" : precog.config.analyticsService
                     },
                     //Options to tell JQuery not to process data or worry about content-type
                     cache: false,
                     contentType: false,
                     processData: false
                 });
-            }
 
+            }
             function traverseFiles (files, path) {
                 if (typeof files !== "undefined") {
                     for (var i=0, l=files.length; i<l; i++) {

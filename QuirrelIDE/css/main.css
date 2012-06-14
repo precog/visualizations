@@ -7,6 +7,10 @@
     right: 50% !important;
 }
 
+.ui-pnotify .ui-state-error {
+    padding: 8px;
+}
+
 .pg-pane {
 /*    border: 3px !important; */
 }
@@ -231,6 +235,14 @@
 
 .pg-dialog-lineinput input[type="text"] {
     width: 295px;
+}
+
+.pg-ingest-phase, .pg-ingest-message {
+    text-align: center;
+}
+
+.pg-ingest-phase {
+    font-weight: bold;
 }
 /*
 .pg-ide .ui-dialog {
