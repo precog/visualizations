@@ -1,6 +1,6 @@
 define([
       "util/querystring"
-    , "http://api.reportgrid.com/js/precog.js"
+    , "https://api.reportgrid.com/js/precog.js"
 ],
 
 function(qs){

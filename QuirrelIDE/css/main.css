@@ -45,6 +45,10 @@
     line-height: 24px;
 }
 
+.pg-toolbar-context .pg-toolbar-result-type {
+    line-height: 16px;
+}
+
 .pg-statusbar .pg-toolbar-context {
     margin: 0 5px 0 0;
 }
