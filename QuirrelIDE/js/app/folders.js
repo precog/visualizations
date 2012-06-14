@@ -284,7 +284,8 @@ define([
                         }
                     },
                     error : function(e) {
-                        noty.progressError("An error occurred while uploading your file. No events will be stored in Precog: " + err.error);
+                        var err = JSON.parse(e.responseText);
+                        noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + err.error);
                     },
                     dataType: "json"
                 });
@@ -313,7 +314,7 @@ define([
                 }
                 function errorHandler(e) {
                     var err = JSON.parse(e.responseText);
-                    noty.progressError("An error occurred while uploading your file. No events will be stored in Precog: " + err.error);
+                    noty.progressError("An error occurred while uploading your file. No events have been stored in Precog: " + err.error);
                 }
 
                 var formData = new FormData();

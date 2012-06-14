@@ -91,6 +91,7 @@ function status($id) {
 function parsejson($content) {
 	$records = array();
 	$errors  = 0;
+	$total   = 0;
 	try {
 		$json = json_decode($content, true);
 		if(null == $json) {
@@ -104,14 +105,19 @@ function parsejson($content) {
 		// try one json per line
 		$lines = explode("\n", $content);
 		foreach ($lines as $key => $value) {
-				$record = json_decode($value, true);
-			if(null == $record)
+			if(!$value) continue;
+			$value = trim($value);
+			$total++;
+			if(!(substr($value, 0, 1) == '{' && substr($value, -1) == '}') || null == ($record = json_decode($value, true)))
 				$errors++;
 			else
 				$records[] = $record;
 		}
 	}
-	return array( "records" => $records, "failures" => $errors);
+	if($errors == $total) // all errors, invalid file format
+		return null;
+	else
+		return array( "records" => $records, "failures" => $errors);
 }
 
 function track($file, $format, $path, $token, $service) {
@@ -125,8 +131,8 @@ function track($file, $format, $path, $token, $service) {
 			$result = parsejson($content);
 			break;
 	}
-	if(!$result) {
-		clierror("invalid content for " . $format);
+	if(null == $result) {
+		clierror($file, "invalid content for " . $format);
 	}
 	// calculate totals
 	$total = count($result['records']) + $result['failures'];
