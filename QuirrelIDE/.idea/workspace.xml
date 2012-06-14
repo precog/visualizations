@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-status.js" afterPath="$PROJECT_DIR$/js/app/bar-status.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/folders.js" afterPath="$PROJECT_DIR$/js/app/folders.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/notification.js" afterPath="$PROJECT_DIR$/js/app/util/notification.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/upload.php" afterPath="$PROJECT_DIR$/upload.php" />
     </list>
     <ignored path="PrecogIDE2.iws" />
@@ -50,7 +46,7 @@
       <file leaf-file-name="bar-status.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="0" selection-start="319" selection-end="319" vertical-scroll-proportion="-0.64420485">
+            <state line="112" column="0" selection-start="4189" selection-end="4189" vertical-scroll-proportion="0.6826127">
               <folding />
             </state>
           </provider>
@@ -113,7 +109,7 @@
       <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="240" column="17" selection-start="4239" selection-end="4239" vertical-scroll-proportion="-29.5">
+            <state line="68" column="0" selection-start="1244" selection-end="1244" vertical-scroll-proportion="-3.8363636">
               <folding />
             </state>
           </provider>
@@ -145,8 +141,8 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/app/util/dialog-export.js" />
         <option value="$PROJECT_DIR$/js/app/util/notification.js" />
-        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/folders.js" />
+        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
       </list>
     </option>
@@ -750,13 +746,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="240" column="17" selection-start="4239" selection-end="4239" vertical-scroll-proportion="-29.5">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/util/notification.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="83" column="16" selection-start="2863" selection-end="2898" vertical-scroll-proportion="-15.145454">
@@ -771,9 +760,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="0" selection-start="1244" selection-end="1244" vertical-scroll-proportion="-3.8363636">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="319" selection-end="319" vertical-scroll-proportion="-0.64420485">
+        <state line="112" column="0" selection-start="4189" selection-end="4189" vertical-scroll-proportion="0.6826127">
           <folding />
         </state>
       </provider>

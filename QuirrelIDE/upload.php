@@ -46,7 +46,7 @@ function changestatuspermissions($file) {
 }
 
 function removestatus($file) {
-	@unlink(statusfile($file));
+	unlink(statusfile($file));
 }
 
 function tmpstatusfile($id) {
@@ -56,6 +56,7 @@ function tmpstatusfile($id) {
 }
 
 function cliterminate($file) {
+	unlink($file);
 	sleep(5);
 	removestatus($file);
 	die;
@@ -90,24 +91,25 @@ function status($id) {
 function parsejson($content) {
 	$records = array();
 	$errors  = 0;
-
-	$json = json_decode($content, true);
-	if(null == $json) {
-		// try one json per line
-		$lines = explode("\n", $content);
-		foreach ($lines as $key => $value) {
-			$record = json_decode($value, true);
-			if(null == $record) {
-				$records[] = $record;
-			} else {
-				$errors++;
-			}
+	try {
+		$json = json_decode($content, true);
+		if(null == $json) {
+			throw new Exception("Invalid JSON", 1);
 		}
-	} else {
 		if(isset($json[0])) // is indexed
 			$records = $json;
 		else
 			$records[] = array($json);
+	} catch(Exception $e) {
+		// try one json per line
+		$lines = explode("\n", $content);
+		foreach ($lines as $key => $value) {
+				$record = json_decode($value, true);
+			if(null == $record)
+				$errors++;
+			else
+				$records[] = $record;
+		}
 	}
 	return array( "records" => $records, "failures" => $errors);
 }

@@ -45,6 +45,10 @@
     line-height: 24px;
 }
 
+.pg-statusbar .pg-toolbar-context {
+    margin: 0 5px 0 0;
+}
+
 .ui-layout-resizer-dragging {
 /*    background-color: #000 !important; */
 }
@@ -79,8 +83,36 @@
 }
 
 .pg-statusbar .pg-toolbar-context .pg-container.pg-progressbar {
-    width: 150px;
-    height: 14px;
+    margin: 2px 0 0 0;
+    width: 200px;
+    height: 18px;
+}
+
+@keyframes progressbg
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+
+@-moz-keyframes progressbg /* Firefox */
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+
+@-webkit-keyframes progressbg /* Safari and Chrome */
+{
+    0%   {background-position: 0 0;}
+    100% {background-position: 20px 0;}
+}
+
+.pg-statusbar .ui-progressbar-value {
+    background-image: url(images/progress-background.png);
+    animation: progressbg 1s linear infinite;
+    /* Firefox: */
+    -moz-animation: progressbg 1s linear infinite;
+    /* Safari and Chrome: */
+    -webkit-animation: progressbg 1s linear infinite;
 }
 
 .pg-editor-tabs.ui-tabs .ui-tabs-nav {
