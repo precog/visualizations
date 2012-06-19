@@ -7,6 +7,7 @@ package rg.info;
 import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
+using rg.info.filter.FilterDescription;
 
 @:keep class InfoLabelPivotTable extends InfoLabelAxis
 {
@@ -14,6 +15,15 @@ import rg.axis.Stats;
 	public var totalover : Float -> Stats<Dynamic> -> String;
 	public var axisvalue : Dynamic -> String -> String;
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"total".toFunction(),
+			"totalover".toFunction(),
+			"axisvalue".toFunction()
+		].concat(InfoLabelAxis.filters());
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -30,4 +40,5 @@ import rg.axis.Stats;
 			filter : null
 		}].concat(InfoLabelAxis.filters());
 	}
+*/
 }

@@ -7,6 +7,7 @@ package rg.info;
 
 import rg.data.DataPoint;
 import rg.axis.Stats;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoSankey
@@ -50,6 +51,35 @@ using rg.info.Info;
 		thinbackedges = false;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"label".toInfo(InfoLabelSankey),
+			"layerwidth".toFloat(["layerWidth"]),
+			"nodespacing".toFloat(["nodeSpacing"]),
+			"dummyspacing".toFloat(["dummySpacing"]),
+			"extrawidth".toFloat(["extraWidth"]),
+			"backedgespacing".toFloat(["backEdgeSpacing"]),
+			"extraheight".toFloat(["extraHeight"]),
+			"extraradius".toFloat(["extraRadius"]),
+			"imagewidth".toFloat(["imageWidth"]),
+			"imageheight".toFloat(["imageHeight"]),
+			"imagespacing".toFloat(["imageSpacing"]),
+			"labelnodespacing".toFloat(["labelNodeSpacing"]),
+			"imagepath".toFunction(["imagePath"]),
+			"click".toFunction(["click"]),
+			"clickedge".toFunction(["clickEdge"]),
+			"layoutmap".toObject(),
+			"layoutmethod".toStr(),
+			"nodeclass".toFunctionOrString(),
+			"edgeclass".toFunctionOrString(),
+			"displayentry".toFunctionOrBool(),
+			"displayexit".toFunctionOrBool(),
+			"stackbackedges".toBool(),
+			"thinbackedges".toBool()
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -206,4 +236,5 @@ using rg.info.Info;
 				filter : null
 			}];
 	}
+*/
 }

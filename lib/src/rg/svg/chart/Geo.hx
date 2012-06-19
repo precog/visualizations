@@ -85,7 +85,7 @@ class Geo extends Chart
 				feature.svg.attr("r").float(map.radius(feature.dp, variableDependent.stats));
 			if (null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp, variableDependent.stats)))
 			{
-				var c = Reflect.field(feature.dp, "#centroid");
+				var c = Reflect.field(feature.dp, "$centroid");
 				var label = new Label(mapcontainer, true, false, false);
 				label.text = text;
 				label.place(c[0], c[1], 0);
@@ -105,7 +105,7 @@ class Geo extends Chart
 		else
 		{
 			tooltip.html(text.split("\n").join("<br>"));
-			var centroid = Reflect.field(dp, "#centroid");
+			var centroid = Reflect.field(dp, "$centroid");
 			moveTooltip(centroid[0] + width / 2, centroid[1] + height / 2, RGColors.extractColor(n));
 		}
 	}

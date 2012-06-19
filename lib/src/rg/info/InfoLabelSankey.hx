@@ -7,6 +7,7 @@ package rg.info;
 import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
+using rg.info.filter.FilterDescription;
 
 @:keep class InfoLabelSankey extends InfoLabel
 {
@@ -14,11 +15,15 @@ import rg.axis.Stats;
 	public var edgeover : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
 	public var node : DataPoint -> Stats<Dynamic> -> String;
 
-	public function new()
+	public static function filters() : Array<FilterDescription>
 	{
-		super();
+		return [
+			"edge".toFunction(),
+			"edgeover".toFunction(),
+			"node".toFunction()
+		].concat(InfoLabel.filters());
 	}
-
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -35,4 +40,5 @@ import rg.axis.Stats;
 			filter : null
 		}].concat(InfoLabel.filters());
 	}
+*/
 }

@@ -9,6 +9,7 @@ import rg.axis.Stats;
 import thx.color.Hsl;
 import thx.color.NamedColors;
 import rg.util.RGColors;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoPivotTable
@@ -46,6 +47,30 @@ using rg.info.Info;
 		columnAxes = 1;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"columnaxes".toInt(["columnAxes"]),
+			"displayheatmap".toBool(["displayHeatmap"]),
+			"displaycolumntotal".toBool(["displayColumnTotal"]),
+			"displayrowtotal".toBool(["displayRowTotal"]),
+			"startcolor".toTry(["heatmapColorStart"],
+				function(value : Dynamic) return Hsl.toHsl(RGColors.parse(value, defaultStartColor.toCss())),
+				"value is not a parsable color '{0}'"
+			),
+			"endcolor".toTry(["heatmapColorEnd"],
+				function(value : Dynamic) return Hsl.toHsl(RGColors.parse(value, defaultEndColor.toCss())),
+				"value is not a parsable color '{0}'"
+			),
+			"label".toInfo(InfoLabelPivotTable),
+			"click".toFunction(),
+			"cellclass".toFunction(),
+			"valueclass".toFunction(),
+			"headerclass".toFunction(),
+			"totalclass".toFunction()
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -119,4 +144,5 @@ using rg.info.Info;
 			filter : null
 		}];
 	}
+*/
 }

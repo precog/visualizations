@@ -165,7 +165,6 @@ class Sankey extends Chart
 			var count = stackbackedges
 				? Iterators.filter(layout.graph.edges.iterator(), function(edge) { return layout.cell(edge.tail).layer >= layout.cell(edge.head).layer; }).length
 				: 1;
-			trace(count);
 			availableheight -= (1 + backEdgeSpacing) * count;
 		} else {
 			if(stackbackedges)

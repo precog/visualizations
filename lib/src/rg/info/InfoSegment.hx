@@ -5,6 +5,7 @@
 
 package rg.info;
 import rg.data.DataPoint;
+using rg.info.filter.FilterDescription;
 
 @:keep class InfoSegment
 {
@@ -13,6 +14,15 @@ import rg.data.DataPoint;
 	public var scale : Null<Array<DataPoint> -> Array<DataPoint>>;
 	public function new() { }
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"on".toStr(),
+			"transform".toFunction(),
+			"scale".toFunction()
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -29,4 +39,5 @@ import rg.data.DataPoint;
 			filter : null
 		}];
 	}
+*/
 }

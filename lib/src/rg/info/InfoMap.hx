@@ -13,6 +13,11 @@ import thx.color.Colors;
 import thx.error.Error;
 import thx.geo.Azimuthal;
 import rg.RGConst;
+import rg.info.filter.TransformResult;
+import rg.info.filter.ITransformer;
+import rg.info.filter.Pairs;
+import thx.util.Message;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 using Arrays;
 
@@ -45,6 +50,84 @@ using Arrays;
 		radius = function(_, _) return 10;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"url".toStr(),
+			"type".toStr(),
+			"scale".toFloat(),
+			"projection".toStr(),
+			"classname".toStr(),
+			"translate".toArray(),
+			"origin".toArray(),
+			"parallels".toArray(),
+			"mode".toTry(
+				function(v) return Type.createEnum(ProjectionMode, Strings.ucfirst(v.toLowerCase()), []),
+				"value is not a valid projection mode '{0}'"
+			),
+			"property".toStrOrNull(),
+			"usejsonp".toBool(),
+			"template".simplified(
+				fromTemplate,
+				(function(v) return Std.is(v, String) && isValidTemplate(v)).make("invalid template value '{0}'")
+			),
+			"label".toInfo(InfoLabel),
+			"click".toFunction(),
+			"color".simplified(
+				ColorScaleModes.createFromDynamic,
+				(function(v) return Std.is(v, String) || Reflect.isFunction(v)).make("invalid template value '{0}'")
+			),
+			"radius".toFunctionOrFloat(),
+			new FilterDescription("mapping", new MapTransformer())
+		];
+	}
+
+	static function isValidTemplate(t : String)
+	{
+		return ["world", "world-countries", "usa-states", "usa-state-centroids", "usa-counties"].exists(t.toLowerCase());
+	}
+
+	static function fromTemplate(t : String)
+	{
+		switch(t.toLowerCase())
+		{
+			case "world", "world-countries":
+				return [{
+					field : "projection",
+					value : "mercator"
+				}, {
+					field : "url",
+					value : RGConst.BASE_URL_GEOJSON + "world-countries.json.js"
+				}];
+			case "usa-states":
+				return [{
+					field : "projection",
+					value : "albersusa"
+				}, {
+					field : "url",
+					value : RGConst.BASE_URL_GEOJSON + "usa-states.json.js"
+				}];
+			case "usa-state-centroids":
+				return [{
+					field : "projection",
+					value : "albersusa"
+				}, {
+					field : "url",
+					value : RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"
+				}];
+			case "usa-counties":
+				return [{
+					field : "projection",
+					value : "albersusa"
+				}, {
+					field : "url",
+					value : RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"
+				}];
+			default:
+				return throw new Error("invalid template");
+		}
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -148,50 +231,21 @@ using Arrays;
 			}
 		}];
 	}
+*/
+}
 
-	static function isValidTemplate(t : String)
-	{
-		return ["world", "world-countries", "usa-states", "usa-state-centroids", "usa-counties"].exists(t.toLowerCase());
-	}
+class MapTransformer implements ITransformer<Dynamic, Pairs>
+{
+	public function new() { }
 
-	static function fromTemplate(t : String)
+	public function transform(value : Dynamic) : TransformResult<Pairs>
 	{
-		switch(t.toLowerCase())
-		{
-			case "world", "world-countries":
-				return [{
-					field : "projection",
-					value : "mercator"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "world-countries.json.js"
-				}];
-			case "usa-states":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-states.json.js"
-				}];
-			case "usa-state-centroids":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"
-				}];
-			case "usa-counties":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"
-				}];
-			default:
-				return throw new Error("invalid template");
-		}
+		return if(Std.is(value, String)) {
+			TransformResult.Success(new Pairs(["mappingurl"], value));
+		} else if(Types.isAnonymous(value)) {
+			TransformResult.Success(new Pairs(["mapping"], value));
+		} else {
+			TransformResult.Failure(new Message("value should be url string or an object", [value]));
+		};
 	}
 }

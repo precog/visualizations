@@ -11,6 +11,15 @@ using Arrays;
 
 class ColorScaleModes
 {
+	public static function canParse(v : Dynamic) : Bool {
+		try {
+			createFromDynamic(v);
+			return true;
+		} catch(e : Dynamic) {
+			return false;
+		}
+	}
+
 	public static function createFromDynamic(v : Dynamic) : ColorScaleMode
 	{
 		if (Reflect.isFunction(v))

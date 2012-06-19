@@ -6,6 +6,9 @@
 package rg.info;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
+
+using rg.info.filter.FilterDescription;
+
 using rg.info.Info;
 
 @:keep class InfoBarChart extends InfoCartesianChart
@@ -30,6 +33,26 @@ using rg.info.Info;
 		horizontal = false;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"stacked".toBool(),
+			"horizontal".toBool(),
+			"effect".simplified(
+				GradientEffects.parse,
+				ReturnMessageIfNot.isString.or(GradientEffects.canParse.make("invalid gradient effect: {0}"))
+			),
+			"barpadding".toFloat(["barPadding"]),
+			"barpaddingaxis".toFloat(["barPaddingAxis"]),
+			"barpaddingdatapoint".toFloat(["barPaddingDataPoint"]),
+			"segmenton".simplified(["segment"],
+				function(value) return new InfoSegment().feed({ on : value }),
+				ReturnMessageIfNot.isString
+			),
+			"segment".toInfo(InfoSegment)
+		].concat(InfoCartesianChart.filters());
+	}
+/*
 	public static function filters()
 	{
 		var result : Array<Dynamic> = [{
@@ -85,4 +108,5 @@ using rg.info.Info;
 		}];
 		return result.concat(cast InfoCartesianChart.filters());
 	}
+*/
 }

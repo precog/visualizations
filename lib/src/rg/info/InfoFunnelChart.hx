@@ -8,6 +8,9 @@ import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
+import rg.info.filter.TransformResult;
+import thx.util.Message;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoFunnelChart
@@ -31,6 +34,25 @@ using rg.info.Info;
 		arrowSize = 30;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"animation".toInfo(InfoAnimation),
+			"label".toInfo(InfoLabelFunnel),
+			"sort".toFunction(["sortDataPoint"]),
+			"click".toFunction(),
+			"segmentpadding".toFloat(["padding"]),
+			"flatness".toFloat(),
+			"effect".custom(function(value : Dynamic) {
+				if(GradientEffects.canParse(value))
+					return TransformResult.Success(GradientEffects.parse(value));
+				else
+					return TransformResult.Failure(new Message("'{0}' is not a valid effect", value));
+			}),
+			"arrowsize".toFloat(["arrowSize"])
+		];
+	}
+/*
 	public static function filters() : Array<Dynamic>
 	{
 		return [{
@@ -85,4 +107,5 @@ using rg.info.Info;
 			}]
 		}];
 	}
+*/
 }

@@ -5,6 +5,7 @@ package rg.info;
  * @author Franco Ponticelli
  */
 
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoGeneral
@@ -16,6 +17,14 @@ using rg.info.Info;
 		forcelegacy = false;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"ready".toFunction(),
+			"forcelegacy".toBool()
+		];
+	}
+/*
 	public static function filter() : Array<FieldFilter>
 	{
 		return [{
@@ -28,4 +37,5 @@ using rg.info.Info;
 			value : null
 		}];
 	}
+*/
 }

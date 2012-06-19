@@ -9,6 +9,7 @@ import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
 import rg.svg.widget.LabelOrientation;
 import thx.error.Error;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 using Arrays;
 
@@ -70,6 +71,30 @@ using Arrays;
 		}
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"labelradius".toFloat(),
+			"dontfliplabel".toBool(),
+			"labelorientation".toTry(
+					filterOrientation,
+					"invalid orientation value '{0}'"
+				),
+			"innerradius".toFloat(),
+			"outerradius".toFloat(),
+			"overradius".toFloat(),
+			"tooltipradius".toFloat(),
+			"animation".toInfo(InfoAnimation),
+			"label".toInfo(InfoLabel),
+			"sort".toFunction(["sortDataPoint"]),
+			"click".toFunction(),
+			"effect".simplified(
+				GradientEffects.parse,
+				ReturnMessageIfNot.isString.or(GradientEffects.canParse.make("invalid gradient effect: {0}"))
+			)
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -137,4 +162,5 @@ using Arrays;
 			}]
 		}];
 	}
+*/
 }

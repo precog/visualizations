@@ -15,7 +15,7 @@ define([
 ],
     function(precog, md5, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
-//var UPLOAD_SERVICE = "https://appserver07.reportgrid.com/services/viz/precog/upload/upload.php",
+//var UPLOAD_SERVICE = "https://appserver07.reportgrid.com/services/viz/precog/ide/upload.php",
             STORE_KEY = "pg-quirrel-virtualpaths-"+md5(precog.config.tokenId),
             basePath = precog.config.basePath || "/",
             store = createStore(STORE_KEY, { virtuals : { }});

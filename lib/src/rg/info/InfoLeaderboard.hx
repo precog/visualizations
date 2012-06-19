@@ -6,6 +6,7 @@
 package rg.info;
 import rg.data.DataPoint;
 import thx.math.Equations;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoLeaderboard
@@ -27,6 +28,19 @@ using rg.info.Info;
 		colorscale = false;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"animation".toInfo(InfoAnimation, function(info) { info.ease = Equations.linear; }),
+			"label".toInfo(InfoLabelLeaderboard),
+			"click".toFunction(),
+			"sort".toFunction(["sortDataPoint"]),
+			"displaybar".toBool(),
+			"usemax".toBool(),
+			"colorscale".toBool(),
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -72,4 +86,5 @@ using rg.info.Info;
 			filter : null
 		}];
 	}
+*/
 }

@@ -7,6 +7,9 @@ package rg.info;
 
 import thx.math.Equations;
 
+using rg.info.filter.FilterDescription;
+
+
 @:keep class InfoAnimation
 {
 	public var animated : Bool;
@@ -22,6 +25,16 @@ import thx.math.Equations;
 		ease = Equations.elasticf();
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"animated".toBool(),
+			"duration".toInt(),
+			"delay".toInt(),
+			"ease".toFunction()
+		];
+	}
+/*
 	public static function filters() : Array<Dynamic>
 	{
 		return [{
@@ -42,4 +55,5 @@ import thx.math.Equations;
 			filter : null
 		}];
 	}
+*/
 }

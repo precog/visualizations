@@ -147,8 +147,8 @@ class Map
 								.attr("d").string(path.path(feature.geometry))
 						;
 					var dp = { };
-					Reflect.setField(dp, "#centroid", centroid);
-					Reflect.setField(dp, "#data", feature.properties);
+					Reflect.setField(dp, "$centroid", centroid);
+					Reflect.setField(dp, "$data", feature.properties);
 					if (null != feature.id)
 					{
 						map.set(id(feature.id), {

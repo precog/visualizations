@@ -7,6 +7,7 @@ package rg.info;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.util.SymbolCache;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 
 @:keep class InfoScatterGraph extends InfoCartesianChart
@@ -22,6 +23,19 @@ using rg.info.Info;
 		symbol = function(dp, s) return SymbolCache.cache.get("circle", 16);
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"symbol".toFunctionOrString(),
+			"symbolstyle".toFunctionOrString(["symbolStyle"]),
+			"segmenton".simplified(["segment"],
+				function(value) return new InfoSegment().feed({ on : value }),
+				ReturnMessageIfNot.isString
+			),
+			"segment".toInfo(InfoSegment)
+		].concat(InfoCartesianChart.filters());
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		var result : Array<FieldFilter> = [{
@@ -55,4 +69,5 @@ using rg.info.Info;
 		}];
 		return result.concat(InfoCartesianChart.filters());
 	}
+*/
 }

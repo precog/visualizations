@@ -6,6 +6,11 @@
 package rg.info;
 import rg.data.DataPoint;
 import rg.axis.Stats;
+import thx.util.Message;
+
+using rg.info.filter.FilterDescription;
+using rg.info.filter.TransformResult;
+
 using rg.info.Info;
 
 @:keep class InfoCartesianChart
@@ -57,6 +62,34 @@ using rg.info.Info;
 		paddingLabel = 10;
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"animation".toInfo(InfoAnimation),
+			"click".toFunction(),
+			"label".toInfo(InfoLabelAxis),
+			"displaytickmarks".toFunctionOrBool(["displayMinorTick", "displayMajorTick", "displayLabelTick"]),
+			"displaytickminor".toFunctionOrBool(["displayMinorTick"]),
+			"displaytickmajor".toFunctionOrBool(["displayMajorTick"]),
+			"displayticklabel".toFunctionOrBool(["displayLabelTick"]),
+			"displayanchorlinetick".toFunctionOrBool(["displayAnchorLineTick"]),
+			"displayrules".toFunctionOrBool(["displayMinorRule", "displayMajorRule"]),
+			"displayruleminor".toFunctionOrBool(["displayMinorRule"]),
+			"displayrulemajor".toFunctionOrBool(["displayMajorRule"]),
+			"displayanchorlinerule".toFunctionOrBool(["displayAnchorLineRule"]),
+			"lengthtick".toFloat(["lengthTickMajor", "lengthTickMinor"]),
+			"lengthtickminor".toFloat(["lengthTickMinor"]),
+			"lengthtickmajor".toFloat(["lengthTickMajor"]),
+			"paddingtick".toFloat(["paddingTickMajor", "paddingTickMinor"]),
+			"paddingtickminor".toFloat(["paddingTickMinor"]),
+			"paddingtickmajor".toFloat(["paddingTickMajor"]),
+			"paddingticklabel".toFloat(["paddingLabel"]),
+			"labelorientation".toFunctionOrString(["labelOrientation"]),
+			"labelanchor".toFunctionOrString(["labelAnchor"]),
+			"labelangle".toFloat(["labelAngle"]),
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -227,4 +260,5 @@ using rg.info.Info;
 			}]
 		}];
 	}
+*/
 }

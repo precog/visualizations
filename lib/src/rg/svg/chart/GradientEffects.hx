@@ -7,12 +7,9 @@ package rg.svg.chart;
 
 @:keep class GradientEffects
 {
-	public static function canParse(d : Dynamic)
+	public static function canParse(s : String)
 	{
-		if (!Std.is(d, String))
-			return false;
-		var s : String = d,
-			parts = s.toLowerCase().split(":");
+		var parts = s.toLowerCase().split(":");
 		return switch(parts[0])
 		{
 			case "gradient", "noeffect", "none", "flat": true;

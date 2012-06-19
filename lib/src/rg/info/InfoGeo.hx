@@ -7,6 +7,7 @@ package rg.info;
 
 import rg.data.DataPoint;
 import rg.axis.Stats;
+using rg.info.filter.FilterDescription;
 using rg.info.Info;
 using Arrays;
 
@@ -21,6 +22,13 @@ using Arrays;
 		map = [new InfoMap().feed({ template : "world" })];
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"map".toInfoArray(InfoMap)
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -36,4 +44,5 @@ using Arrays;
 			}
 		}];
 	}
+*/
 }

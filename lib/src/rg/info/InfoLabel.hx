@@ -8,6 +8,7 @@ import rg.data.Variable;
 import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.axis.IAxis;
+using rg.info.filter.FilterDescription;
 
 @:keep class InfoLabel
 {
@@ -17,6 +18,15 @@ import rg.axis.IAxis;
 
 	public function new() { }
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"title".toFunctionOrString(),
+			"datapoint".toFunction(),
+			"datapointover".toFunction()
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -36,4 +46,5 @@ import rg.axis.IAxis;
 			filter : null
 		}];
 	}
+*/
 }

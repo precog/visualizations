@@ -5,10 +5,9 @@
 
 package rg.html.widget;
 
-class DownloaderPositions 
+class DownloaderPositions
 {
-
-	public static function parse(v : String) 
+	public static function parse(v : String)
 	{
 		switch(v.toLowerCase())
 		{

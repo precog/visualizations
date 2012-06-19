@@ -7,6 +7,8 @@ package rg.info;
 import rg.data.DataPoint;
 import thx.error.Error;
 
+using rg.info.filter.FilterDescription;
+
 @:keep class InfoDataSource
 {
 	public var loader : (Array<DataPoint> -> Void) -> Void;
@@ -15,6 +17,15 @@ import thx.error.Error;
 	{
 	}
 
+	public static function filters() : Array<FilterDescription>
+	{
+		return [
+			"data".toDataFunctionFromArray(["loader"]),
+			"datapoints".toDataFunctionFromArray(["loader"]), // alias for "data"
+			"load".toLoaderFunction(["loader"])
+		];
+	}
+/*
 	public static function filters() : Array<FieldFilter>
 	{
 		return [{
@@ -49,4 +60,5 @@ import thx.error.Error;
 			}
 		}];
 	}
+*/
 }
