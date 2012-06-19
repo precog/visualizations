@@ -130,6 +130,12 @@ using Arrays;
 		return stackAsync(asyncTransform(t));
 	}
 
+	public function firstElement() {
+		return transform(function(data) {
+			return data[0];
+		});
+	}
+
 	public function stackCross()
 	{
 		return stackTransform(Transformers.crossStack);
