@@ -816,7 +816,6 @@ Dynamics.string = function(v) {
 	}
 }
 Dynamics.compare = function(a,b) {
-	if(!Types.sameType(a,b)) throw new thx.error.Error("cannot compare 2 different types",null,null,{ fileName : "Dynamics.hx", lineNumber : 131, className : "Dynamics", methodName : "compare"});
 	if(null == a && null == b) return 0;
 	if(null == a) return -1;
 	if(null == b) return 1;
@@ -1043,7 +1042,7 @@ Dynamics.same = function(a,b) {
 	}
 	return (function($this) {
 		var $r;
-		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 370, className : "Dynamics", methodName : "same"});
+		throw new thx.error.Error("Unable to compare values: {0} and {1}",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 368, className : "Dynamics", methodName : "same"});
 		return $r;
 	}(this));
 }
@@ -2082,22 +2081,6 @@ Types.isAnonymous = function(v) {
 }
 Types["as"] = function(value,type) {
 	return js.Boot.__instanceof(value,type)?value:null;
-}
-Types.sameType = function(a,b) {
-	if(null == a && b == null) return true;
-	if(null == a || b == null) return false;
-	var tb = Type["typeof"](b);
-	var $e = (tb);
-	switch( $e[1] ) {
-	case 6:
-		var c = $e[2];
-		return js.Boot.__instanceof(a,c);
-	case 7:
-		var e = $e[2];
-		return js.Boot.__instanceof(a,e);
-	default:
-		return Type["typeof"](a) == tb;
-	}
 }
 Types.isPrimitive = function(v) {
 	return (function($this) {
@@ -5704,7 +5687,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.29.8627"};
+	r.info.charts = { version : "1.4.31.8630"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
