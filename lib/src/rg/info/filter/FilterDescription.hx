@@ -133,7 +133,9 @@ class FilterDescription {
 				function(vin : Dynamic, msg : Message) {
 					var field = Reflect.field(vin, "execute");
 					if(null != field && Reflect.isFunction(field)) {
-						return TransformResult.Success(field);
+						return TransformResult.Success(function(handler) {
+							Reflect.callMethod(vin, field, [handler]);
+						});
 					} else {
 						return TransformResult.Failure(new Message("parameter must be an array of values"));
 					}

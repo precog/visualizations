@@ -67,26 +67,28 @@ using Arrays;
 			),
 			"property".toStrOrNull(),
 			"usejsonp".toBool(),
-			"template".simplified(
-				fromTemplate,
-				(function(v) return Std.is(v, String) && isValidTemplate(v)).make("invalid template value '{0}'")
-			),
+			new FilterDescription("template", new TemplateTransformer()),
+//			"template".simplified(
+//				fromTemplate,
+//				(function(v) return Std.is(v, String) && isValidTemplate(v)).make("invalid template value '{0}'")
+//			),
 			"label".toInfo(InfoLabel),
 			"click".toFunction(),
-			"color".simplified(
+			"color".simplified(["colorScaleMode"],
 				ColorScaleModes.createFromDynamic,
-				(function(v) return Std.is(v, String) || Reflect.isFunction(v)).make("invalid template value '{0}'")
+				(function(v) return Std.is(v, String) || Reflect.isFunction(v)).make("invalid color mode value '{0}'")
 			),
 			"radius".toFunctionOrFloat(),
 			new FilterDescription("mapping", new MapTransformer())
 		];
 	}
-
+/*
 	static function isValidTemplate(t : String)
 	{
 		return ["world", "world-countries", "usa-states", "usa-state-centroids", "usa-counties"].exists(t.toLowerCase());
 	}
-
+*/
+/*
 	static function fromTemplate(t : String)
 	{
 		switch(t.toLowerCase())
@@ -127,6 +129,7 @@ using Arrays;
 				return throw new Error("invalid template");
 		}
 	}
+*/
 /*
 	public static function filters() : Array<FieldFilter>
 	{
@@ -241,11 +244,42 @@ class MapTransformer implements ITransformer<Dynamic, Pairs>
 	public function transform(value : Dynamic) : TransformResult<Pairs>
 	{
 		return if(Std.is(value, String)) {
-			TransformResult.Success(new Pairs(["mappingurl"], value));
+			TransformResult.Success(new Pairs(["mappingurl"], [value]));
 		} else if(Types.isAnonymous(value)) {
-			TransformResult.Success(new Pairs(["mapping"], value));
+			TransformResult.Success(new Pairs(["mapping"], [value]));
 		} else {
 			TransformResult.Failure(new Message("value should be url string or an object", [value]));
 		};
+	}
+}
+
+class TemplateTransformer implements ITransformer<Dynamic, Pairs>
+{
+	public function new() { }
+
+	public function transform(value : Dynamic) : TransformResult<Pairs>
+	{
+		value = null == value ? "" : "" + value;
+		return switch(value.toLowerCase())
+		{
+			case "world", "world-countries":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["mercator", RGConst.BASE_URL_GEOJSON + "world-countries.json.js"]));
+			case "usa-states":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-states.json.js"]));
+			case "usa-state-centroids":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"]));
+			case "usa-counties":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"]));
+			default:
+				TransformResult.Failure(new Message("{0} is not a valid map template", [value]));
+		}
 	}
 }

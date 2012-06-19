@@ -22,8 +22,9 @@ using rg.info.filter.FilterDescription;
 		var descriptions : Array<FilterDescription> = Reflect.callMethod(cl, method, []),
 			value;
 		for(description in descriptions) {
-			if(null != (value = Reflect.field(ob, description.name)))
+			if(Reflect.hasField(ob, description.name))
 			{
+				value = Reflect.field(ob, description.name);
 				switch (description.transformer.transform(value)) {
 					case Success(pairs):
 						for(pair in pairs)

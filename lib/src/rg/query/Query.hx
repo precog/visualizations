@@ -374,8 +374,9 @@ using Arrays;
 	{
 		if(null == name)
 			name = "";
+		var me = this;
 		return stackTransform(function(arr : Array<Array<Dynamic>>) {
-			_first._store.set(name, arr.copy());
+			me._first._store.set(name, arr.copy());
 			return arr;
 		});
 	}
