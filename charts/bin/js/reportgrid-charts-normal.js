@@ -5704,7 +5704,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.27.8620"};
+	r.info.charts = { version : "1.4.28.8625"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -6425,18 +6425,34 @@ rg.data.IndependentVariableProcessor.prototype = {
 	}
 	,__class__: rg.data.IndependentVariableProcessor
 }
-rg.data.Segmenter = function(on,transform,scale) {
+rg.data.Segmenter = function(on,transform,scale,values) {
 	this.on = on;
 	this.transform = transform;
 	this.scale = scale;
+	this.values = values;
 };
 rg.data.Segmenter.__name__ = ["rg","data","Segmenter"];
 rg.data.Segmenter.prototype = {
 	on: null
 	,transform: null
 	,scale: null
+	,values: null
 	,segment: function(data) {
-		var segmented = null == this.on?[data]:rg.util.DataPoints.partition(data,this.on);
+		var _g2 = this;
+		var segmented;
+		if(null == this.on) segmented = [data]; else if(this.values.length > 0) {
+			segmented = [];
+			var _g = 0, _g1 = this.values;
+			while(_g < _g1.length) {
+				var value = [_g1[_g]];
+				++_g;
+				segmented.push(Arrays.filter(data,(function(value) {
+					return function(dp) {
+						return Reflect.field(dp,_g2.on) == value[0];
+					};
+				})(value)));
+			}
+		} else segmented = rg.util.DataPoints.partition(data,this.on);
 		if(null != this.scale) {
 			var _g1 = 0, _g = segmented.length;
 			while(_g1 < _g) {
@@ -8629,15 +8645,17 @@ rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototyp
 	,__class__: rg.info.InfoScatterGraph
 });
 rg.info.InfoSegment = function() {
+	this.values = [];
 };
 rg.info.InfoSegment.__name__ = ["rg","info","InfoSegment"];
 rg.info.InfoSegment.filters = function() {
-	return [rg.info.filter.FilterDescription.toStr("on"),rg.info.filter.FilterDescription.toFunction("transform"),rg.info.filter.FilterDescription.toFunction("scale")];
+	return [rg.info.filter.FilterDescription.toStr("on"),rg.info.filter.FilterDescription.toFunction("transform"),rg.info.filter.FilterDescription.toFunction("scale"),rg.info.filter.FilterDescription.toArray("values")];
 }
 rg.info.InfoSegment.prototype = {
 	on: null
 	,transform: null
 	,scale: null
+	,values: null
 	,__class__: rg.info.InfoSegment
 }
 rg.info.InfoStreamGraph = function() {
@@ -8767,7 +8785,7 @@ rg.info.filter.FilterDescription.toStrOrNull = function(name,maps) {
 }
 rg.info.filter.FilterDescription.toArray = function(name,maps) {
 	return rg.info.filter.FilterDescription.custom(name,maps,function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v)?rg.info.filter.TransformResult.Success(v):rg.info.filter.TransformResult.Failure(new thx.util.Message("expected object but was '{0}'",v));
+		return js.Boot.__instanceof(v,Array)?rg.info.filter.TransformResult.Success(v):rg.info.filter.TransformResult.Failure(new thx.util.Message("expected array but was '{0}'",v));
 	});
 }
 rg.info.filter.FilterDescription.toObject = function(name,maps) {
@@ -15392,7 +15410,14 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 		}
 		if(null != this.infoBar.segment.on) {
 			var segmenton = this.infoBar.segment.on, svalues = new thx.collection.Set();
-			dps.forEach(function(dp,_) {
+			if(this.infoBar.segment.values.length != 0) {
+				var _g = 0, _g1 = this.infoBar.segment.values;
+				while(_g < _g1.length) {
+					var value = _g1[_g];
+					++_g;
+					svalues.add(value);
+				}
+			} else dps.forEach(function(dp,_) {
 				svalues.add(Reflect.field(dp,segmenton));
 			});
 			var _g1 = 0, _g = values.length;
@@ -15648,7 +15673,7 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
-		var results = [], segmenter = new rg.data.Segmenter(this.infoLine.segment.on,this.infoLine.segment.transform,this.infoLine.segment.scale);
+		var results = [], segmenter = new rg.data.Segmenter(this.infoLine.segment.on,this.infoLine.segment.transform,this.infoLine.segment.scale,this.infoLine.segment.values);
 		var _g1 = 0, _g = this.dependentVariables.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -16026,7 +16051,7 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
-		var results = [], segmenter = new rg.data.Segmenter(this.infoScatter.segment.on,this.infoScatter.segment.transform,this.infoScatter.segment.scale);
+		var results = [], segmenter = new rg.data.Segmenter(this.infoScatter.segment.on,this.infoScatter.segment.transform,this.infoScatter.segment.scale,this.infoScatter.segment.values);
 		var _g = 0, _g1 = this.dependentVariables;
 		while(_g < _g1.length) {
 			var variable = _g1[_g];
@@ -16077,7 +16102,7 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 		this.chart = chart;
 	}
 	,transformData: function(dps) {
-		var segmenter = new rg.data.Segmenter(this.infoStream.segment.on,this.infoStream.segment.transform,this.infoStream.segment.scale);
+		var segmenter = new rg.data.Segmenter(this.infoStream.segment.on,this.infoStream.segment.transform,this.infoStream.segment.scale,this.infoStream.segment.values);
 		return segmenter.segment(dps);
 	}
 	,__class__: rg.visualization.VisualizationStreamGraph

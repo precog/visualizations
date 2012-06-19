@@ -42,7 +42,7 @@ class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataP
 	override function transformData(dps : Array<DataPoint>) : Array<Array<DataPoint>>
 	{
 		var results = [],
-			segmenter = new Segmenter(infoScatter.segment.on, infoScatter.segment.transform, infoScatter.segment.scale);
+			segmenter = new Segmenter(infoScatter.segment.on, infoScatter.segment.transform, infoScatter.segment.scale, infoScatter.segment.values);
 		for (variable in dependentVariables)
 			results.push(DataPoints.filterByDependents(dps, [variable]));
 		return results;

@@ -91,7 +91,12 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 		{
 			var segmenton = infoBar.segment.on,
 				svalues = new Set();
-			dps.each(function(dp, _) { svalues.add(Reflect.field(dp, segmenton)); });
+			if(infoBar.segment.values.length != 0) {
+				for(value in infoBar.segment.values)
+					svalues.add(value);
+			} else {
+				dps.each(function(dp, _) { svalues.add(Reflect.field(dp, segmenton)); });
+			}
 			for (i in 0...values.length)
 			{
 				for (j in 0...dependentVariables.length)

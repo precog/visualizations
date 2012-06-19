@@ -12,14 +12,19 @@ using rg.info.filter.FilterDescription;
 	public var on : String;
 	public var transform : Null<Array<DataPoint> -> Array<DataPoint>>;
 	public var scale : Null<Array<DataPoint> -> Array<DataPoint>>;
-	public function new() { }
+	public var values : Array<String>;
+	public function new()
+	{
+		values = [];
+	}
 
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
 			"on".toStr(),
 			"transform".toFunction(),
-			"scale".toFunction()
+			"scale".toFunction(),
+			"values".toArray()
 		];
 	}
 /*

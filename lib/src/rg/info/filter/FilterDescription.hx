@@ -53,7 +53,7 @@ class FilterDescription {
 	public static function toArray(name : String, ?maps : Array<String>)
 	{
 		return custom(name, maps, function(v : Dynamic) {
-			return Types.isAnonymous(v) ? TransformResult.Success(v) : TransformResult.Failure(new Message("expected object but was '{0}'", v));
+			return Std.is(v, Array) ? TransformResult.Success(v) : TransformResult.Failure(new Message("expected array but was '{0}'", v));
 		});
 	}
 
