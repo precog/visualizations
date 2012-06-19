@@ -8,8 +8,7 @@ ReportGrid.barChart("#chart1", {
 	axes : ["emoticon", "count"],
 	datapoints : data,
 	options : {
-		horizontal : true,
-		download : true
+		horizontal : true
 	}
 });
 
@@ -18,8 +17,7 @@ ReportGrid.barChart("#chart2", {
 	datapoints : data,
 	options : {
 		horizontal : true,
-		labelorientation : "align",
-		download : true
+		labelorientation : "align"
 	}
 });
 
@@ -27,8 +25,7 @@ ReportGrid.barChart("#chart3", {
 	axes : ["emoticon", "count"],
 	datapoints : data,
 	options : {
-		horizontal : false,
-		download : true
+		horizontal : false
 	}
 });
 
@@ -37,8 +34,7 @@ ReportGrid.barChart("#chart4", {
 	datapoints : data,
 	options : {
 		horizontal : false,
-		labelorientation : "align",
-		download : true
+		labelorientation : "align"
 	}
 });
 

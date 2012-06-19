@@ -30,8 +30,9 @@ function transform(dp) {
 	}];
 }
 
-var data = data();
-data = Arrays.flatten(data.map(transform));
+var tmp = data(), data = [];
+tmp = tmp.map(transform);
+tmp.forEach(function(arr) { data = data.concat(arr); });
 
 ReportGrid.lineChart("#chart", {
 	axes : ["time:day",

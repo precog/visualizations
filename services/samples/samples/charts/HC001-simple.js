@@ -7,7 +7,6 @@ ReportGrid.barChart("#chart", {
 	datapoints : data(),
 	options : {
 		displayrules : true,
-		horizontal : true,
-		download : true
+		horizontal : true
 	}
 });

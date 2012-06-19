@@ -9,9 +9,10 @@ class RG
 {
 	public static function getTokenId() : String
 	{
-		if(untyped __js__("ReportGrid.$"))
+		try {
 			return Strings.trim(untyped __js__("ReportGrid.$.Config.tokenId"), '"');
-		else
+		} catch(e : Dynamic) {
 			return null;
+		}
 	}
 }

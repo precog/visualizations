@@ -86,7 +86,7 @@ using rg.info.Info;
 			"paddingticklabel".toFloat(["paddingLabel"]),
 			"labelorientation".toFunctionOrString(["labelOrientation"]),
 			"labelanchor".toFunctionOrString(["labelAnchor"]),
-			"labelangle".toFloat(["labelAngle"]),
+			"labelangle".toFunctionOrFloat(["labelAngle"]),
 		];
 	}
 /*
