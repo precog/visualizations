@@ -1,7 +1,7 @@
 <?php
 
 define('ISCLI', PHP_SAPI === 'cli');
-$GLOBALS['allowedformats'] = array("json");
+$GLOBALS['allowedformats'] = array("json", "csv");
 
 // UTILS
 function get_request_headers() {
@@ -117,7 +117,35 @@ function parsejson($content) {
 	if($errors == $total) // all errors, invalid file format
 		return null;
 	else
-		return array( "records" => $records, "failures" => $errors);
+		return array("records" => $records, "failures" => $errors);
+}
+
+function parsecsv($content) {
+	$records = array();
+
+	try {
+		$lines = preg_split("/\r\n|\n|\r/", $content);
+
+		while(!($line = array_shift($lines))) {}
+		$headers = str_getcsv($line);
+		$len = count($headers);
+
+		foreach ($lines as $key => $line) {
+			if(!$line) continue;
+			$values = str_getcsv($line);
+			$ob = array();
+			for($i = 0; $i < $len; $i++) {
+				$ob[$headers[$i]] = is_numeric($values[$i]) ? 0+$values[$i] : $values[$i];
+			}
+			$records[] = $ob;
+		}
+	} catch(Exception $e) {
+		return null;
+	}
+	if(0 == count($records)) // all errors, invalid file format
+		return null;
+	else
+		return array("records" => $records, "failures" => 0);
 }
 
 function track($file, $format, $path, $token, $service) {
@@ -127,6 +155,9 @@ function track($file, $format, $path, $token, $service) {
 	$result;
 	// parse contents
 	switch($format) {
+		case "csv":
+			$result = parsecsv($content);
+			break;
 		case "json":
 			$result = parsejson($content);
 			break;

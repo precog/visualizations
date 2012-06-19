@@ -37,8 +37,8 @@ $viz_categories = array(
 
 if(LOCAL)
 {
-	define('REPORTGRID_VIZ_API', HOST.'/rg/js/reportgrid-charts.js' . (AUTHCODE_LOCALHOST ? ('authCode=' . urlencode(AUTHCODE_LOCALHOST)) : ''));
-	define('REPORTGRID_QUERY_API', HOST.'/rg/js/reportgrid-query.js');
+	define('REPORTGRID_VIZ_API', HOST.'/rg/charts/js/reportgrid-charts.js' . (AUTHCODE_LOCALHOST ? ('authCode=' . urlencode(AUTHCODE_LOCALHOST)) : ''));
+	define('REPORTGRID_QUERY_API', HOST.'/rg/query/js/reportgrid-query.js');
 	define('REPORTGRID_CSS_API', HOST.'/rg/css/rg-charts.css');
 	define('REPORTGRID_CORE_API', HOST.'/rg/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
 	define('SAMPLE_CSS', HOST.'/rg/charts/service/samples/css/sample.css');
