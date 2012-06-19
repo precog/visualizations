@@ -12,10 +12,10 @@ function() {
         panel : function() {
             return elPanel;
         },
-        update : function(error) {
+        update : function(error, options) {
             var message = '<p>'+error.message+'</p>';
             if("undefined" !== typeof error.lineNum) {
-                message += '<p>Error at line '+error.lineNum+', column '+(error.colNum+1)+':</p><br>';
+                message += '<p>Error at line '+error.lineNum+', column '+error.colNum+':</p><br>';
 /*
                 var indicator = [];
                 for(var i = 0; i < error.colNum; i++)

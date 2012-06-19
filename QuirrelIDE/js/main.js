@@ -80,7 +80,11 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
     $(layout).on("resizeCodeEditor", function() {
         output.resize();
     });
-
+/*
+    $(output).on("syntaxError", function(_, pos) {
+        editors.highlightSyntaxError(pos.line, pos.column);
+    });
+*/
     $(output).on("typeChanged", function(_, type) {
         editors.setOutputType(type);
     });
@@ -98,6 +102,7 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
         status.endRequest(false);
         output.set(data, "error");
         editors.setOutputResult(data);
+        editor.highlightSyntax(data.lineNum, data.colNum, data.detail, "error");
     });
     $(editor).on("execute", function(_, code) {
         precog.query(code);
