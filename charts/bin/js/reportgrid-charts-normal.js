@@ -5704,7 +5704,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.28.8625"};
+	r.info.charts = { version : "1.4.29.8627"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -20473,9 +20473,9 @@ dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
 dhx.BaseTransition._id = 0;
 dhx.BaseTransition._inheritid = 0;
-rg.RGConst.BASE_URL_GEOJSON = "http://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/up.json";
-rg.RGConst.LEGACY_RENDERING_STATIC = "http://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
+rg.RGConst.BASE_URL_GEOJSON = "https://api.reportgrid.com/geo/json/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/up.json";
+rg.RGConst.LEGACY_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
 rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;
 rg.app.charts.App.chartsLoaded = 0;
