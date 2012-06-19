@@ -126,6 +126,7 @@ class TickmarksOrtho extends Layer
 	function redraw()
 	{
 		desiredSize = Math.max(paddingMinor + lengthMinor, paddingMajor + lengthMajor);
+
 		var ticks = maxTicks(),
 			data = axis.ticks(min, max, ticks);
 		// ticks

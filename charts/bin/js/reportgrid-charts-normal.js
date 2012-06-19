@@ -1069,7 +1069,8 @@ Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
 	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
 }
-Floats.range = function(start,stop,step) {
+Floats.range = function(start,stop,step,inclusive) {
+	if(inclusive == null) inclusive = false;
 	if(step == null) step = 1.0;
 	if(null == stop) {
 		stop = start;
@@ -1077,7 +1078,9 @@ Floats.range = function(start,stop,step) {
 	}
 	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
 	var range = [], i = -1.0, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	if(inclusive) {
+		if(step < 0) while((j = start + step * ++i) >= stop) range.push(j); else while((j = start + step * ++i) <= stop) range.push(j);
+	} else if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
 }
 Floats.min = function(a,b) {
@@ -1138,7 +1141,7 @@ Floats.formatf = function(param,params,culture) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 152, className : "Floats", methodName : "formatf"});
 			return $r;
 		}(this));
 	}
@@ -5687,7 +5690,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.31.8630"};
+	r.info.charts = { version : "1.4.32.8639"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -6024,8 +6027,8 @@ rg.axis.AxisNumeric.prototype = {
 			minors = null;
 		} else {
 			var mM = 5, mm = 20, stepM = rg.axis.AxisNumeric._step(span,mM), stepm = rg.axis.AxisNumeric._step(span,mm);
-			minors = Floats.range(start,end + stepM,stepm);
-			majors = Floats.range(start,end * 1.0001,stepM);
+			minors = Floats.range(start,end,stepm,true);
+			majors = Floats.range(start,end,stepM,true);
 		}
 		return rg.axis.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.axis.Tickmark(d,true,(d - start) / (end - start));
@@ -9858,6 +9861,11 @@ rg.query.BaseQuery.prototype = {
 	}
 	,transform: function(t) {
 		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
+	}
+	,firstElement: function() {
+		return this.transform(function(data) {
+			return data[0];
+		});
 	}
 	,stackCross: function() {
 		return this.stackTransform(rg.query.Transformers.crossStack);
