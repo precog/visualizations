@@ -1,12 +1,11 @@
 (function () { "use strict";
-var $_, $hxClasses = {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+var $estr = function() { return js.Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
 var Arrays = function() { }
-$hxClasses["Arrays"] = Arrays;
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
 	if(null != condition) {
@@ -92,12 +91,6 @@ Arrays.flatten = function(arr) {
 	}
 	return r;
 }
-Arrays.map = function(arr,f) {
-	return arr.map(f);
-}
-Arrays.reduce = function(arr,f,initialValue) {
-	return arr.reduce(f,initialValue);
-}
 Arrays.order = function(arr,f) {
 	arr.sort(null == f?Dynamics.compare:f);
 	return arr;
@@ -133,7 +126,7 @@ Arrays.format = function(v,param,params,culture) {
 		var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
 		if(null != max && max < v.length) {
 			var elipsis = null == params[4]?" ...":params[4];
-			return v.copy().splice(0,max).map(function(d,i) {
+			return v.slice().splice(0,max).map(function(d,i) {
 				return Dynamics.format(d,params[0],null,null,culture);
 			}).join(sep) + elipsis;
 		} else return v.map(function(d,i) {
@@ -146,15 +139,6 @@ Arrays.format = function(v,param,params,culture) {
 		throw "Unsupported array format: " + format;
 	}
 }
-Arrays.indexOf = function(arr,el) {
-	return arr.indexOf(el);
-}
-Arrays.each = function(arr,f) {
-	arr.forEach(f);
-}
-Arrays.all = function(arr,f) {
-	return Iterators.all(arr.iterator(),f);
-}
 Arrays.string = function(arr) {
 	return "[" + arr.map(function(v,_) {
 		return Dynamics.string(v);
@@ -162,9 +146,6 @@ Arrays.string = function(arr) {
 }
 Arrays.last = function(arr) {
 	return arr[arr.length - 1];
-}
-Arrays.first = function(arr) {
-	return arr[0];
 }
 Arrays.firstf = function(arr,f) {
 	var _g = 0;
@@ -216,11 +197,7 @@ Arrays.rotate = function(a) {
 	}
 	return result;
 }
-Arrays.prototype = {
-	__class__: Arrays
-}
 var Bools = function() { }
-$hxClasses["Bools"] = Bools;
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
 	return (Bools.formatf(param,params,culture))(v);
@@ -246,17 +223,20 @@ Bools.formatf = function(param,params,culture) {
 		throw "Unsupported bool format: " + format;
 	}
 }
+Bools.canParse = function(s) {
+	s = s.toLowerCase();
+	return s == "true" || s == "false";
+}
+Bools.parse = function(s) {
+	return s.toLowerCase() == "true";
+}
 Bools.compare = function(a,b) {
 	return a == b?0:a?-1:1;
-}
-Bools.prototype = {
-	__class__: Bools
 }
 var Bytes = function(length,b) {
 	this.length = length;
 	this.b = b;
 };
-$hxClasses["Bytes"] = Bytes;
 Bytes.__name__ = ["Bytes"];
 Bytes.alloc = function(length) {
 	var a = new Array();
@@ -292,12 +272,6 @@ Bytes.ofString = function(s) {
 Bytes.prototype = {
 	length: null
 	,b: null
-	,get: function(pos) {
-		return this.b[pos];
-	}
-	,set: function(pos,v) {
-		this.b[pos] = v & 255;
-	}
 	,blit: function(pos,src,srcpos,len) {
 		if(len == null) len = src.length - srcpos;
 		if(srcpos + len > src.length) len = src.length - srcpos;
@@ -350,21 +324,14 @@ Bytes.prototype = {
 	,toString: function() {
 		return this.readString(0,this.length);
 	}
-	,getData: function() {
-		return this.b;
-	}
 	,__class__: Bytes
 }
 var BytesBuffer = function() {
 	this.b = new Array();
 };
-$hxClasses["BytesBuffer"] = BytesBuffer;
 BytesBuffer.__name__ = ["BytesBuffer"];
 BytesBuffer.prototype = {
 	b: null
-	,addByte: function($byte) {
-		this.b.push($byte);
-	}
 	,add: function(src) {
 		var b1 = this.b;
 		var b2 = src.b;
@@ -389,21 +356,16 @@ BytesBuffer.prototype = {
 		this.b = null;
 		return bytes;
 	}
-	,writeByte: function(b) {
-		this.b.push(b);
-	}
 	,__class__: BytesBuffer
 }
 var BytesUtil = function() { }
-$hxClasses["BytesUtil"] = BytesUtil;
 BytesUtil.__name__ = ["BytesUtil"];
-BytesUtil.EMPTY = null;
 BytesUtil.cleanHexFormat = function(hex) {
 	var e = StringTools.replace(hex,":","");
 	e = e.split("|").join("");
 	var ereg = new EReg("([\\s]*)","g");
 	e = ereg.replace(e,"");
-	if(StringTools.startsWith(e,"0x")) e = e.substr(2);
+	if(StringTools.startsWith(e,"0x")) e = HxOverrides.substr(e,2,null);
 	if((e.length & 1) == 1) e = "0" + e;
 	return e.toLowerCase();
 }
@@ -423,17 +385,9 @@ BytesUtil.toHex = function(b,separator) {
 	}
 	return StringTools.rtrim(sb.b.join(""));
 }
-BytesUtil.prototype = {
-	__class__: BytesUtil
-}
 var Constants = function() { }
-$hxClasses["Constants"] = Constants;
 Constants.__name__ = ["Constants"];
-Constants.prototype = {
-	__class__: Constants
-}
 var DateTools = function() { }
-$hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
 DateTools.getMonthDays = function(d) {
 	var month = d.getMonth();
@@ -442,14 +396,10 @@ DateTools.getMonthDays = function(d) {
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 	return isB?29:28;
 }
-DateTools.prototype = {
-	__class__: DateTools
-}
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
-$hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	r: null
@@ -497,7 +447,6 @@ EReg.prototype = {
 	,__class__: EReg
 }
 var Dates = function() { }
-$hxClasses["Dates"] = Dates;
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
 	return (Dates.formatf(param,params,culture))(d);
@@ -604,7 +553,13 @@ Dates.interpolate = function(f,a,b,equation) {
 Dates.interpolatef = function(a,b,equation) {
 	var f = Floats.interpolatef(a.getTime(),b.getTime(),equation);
 	return function(v) {
-		return Date.fromTime(f(v));
+		return (function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(f(v));
+			$r = d;
+			return $r;
+		}(this));
 	};
 }
 Dates.snap = function(time,period,mode) {
@@ -617,15 +572,33 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.floor(time / 3600000.0) * 3600000.0;
 	case "day":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0).getTime();
 	case "week":
 		return Math.floor(time / 604800000.) * 604800000.;
 	case "month":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
 	case "year":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear(),0,1,0,0,0).getTime();
 	default:
 		return 0;
@@ -637,15 +610,33 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.ceil(time / 3600000.0) * 3600000.0;
 	case "day":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + 1,0,0,0).getTime();
 	case "week":
 		return Math.ceil(time / 604800000.) * 604800000.;
 	case "month":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear(),d.getMonth() + 1,1,0,0,0).getTime();
 	case "year":
-		var d = Date.fromTime(time);
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this));
 		return new Date(d.getFullYear() + 1,0,1,0,0,0).getTime();
 	default:
 		return 0;
@@ -657,22 +648,46 @@ Dates.snap = function(time,period,mode) {
 	case "hour":
 		return Math.round(time / 3600000.0) * 3600000.0;
 	case "day":
-		var d = Date.fromTime(time), mod = d.getHours() >= 12?1:0;
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this)), mod = d.getHours() >= 12?1:0;
 		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + mod,0,0,0).getTime();
 	case "week":
 		return Math.round(time / 604800000.) * 604800000.;
 	case "month":
-		var d = Date.fromTime(time), mod = d.getDate() > Math.round(DateTools.getMonthDays(d) / 2)?1:0;
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this)), mod = d.getDate() > Math.round(DateTools.getMonthDays(d) / 2)?1:0;
 		return new Date(d.getFullYear(),d.getMonth() + mod,1,0,0,0).getTime();
 	case "year":
-		var d = Date.fromTime(time), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
+		var d = (function($this) {
+			var $r;
+			var d1 = new Date();
+			d1.setTime(time);
+			$r = d1;
+			return $r;
+		}(this)), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
 		return new Date(d.getFullYear() + mod,0,1,0,0,0).getTime();
 	default:
 		return 0;
 	}
 }
 Dates.snapToWeekDay = function(time,day) {
-	var d = Date.fromTime(time).getDay();
+	var d = ((function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(time);
+		$r = d1;
+		return $r;
+	}(this))).getDay();
 	var s = 0;
 	switch(day.toLowerCase()) {
 	case "sunday":
@@ -706,18 +721,20 @@ Dates.canParse = function(s) {
 }
 Dates.parse = function(s) {
 	var parts = s.split(".");
-	var date = Date.fromString(StringTools.replace(parts[0],"T"," "));
-	if(parts.length > 1) date = Date.fromTime(date.getTime() + Std.parseInt(parts[1]));
+	var date = HxOverrides.strDate(StringTools.replace(parts[0],"T"," "));
+	if(parts.length > 1) date = (function($this) {
+		var $r;
+		var d = new Date();
+		d.setTime(date.getTime() + Std.parseInt(parts[1]));
+		$r = d;
+		return $r;
+	}(this));
 	return date;
 }
 Dates.compare = function(a,b) {
 	return Floats.compare(a.getTime(),b.getTime());
 }
-Dates.prototype = {
-	__class__: Dates
-}
 var Dynamics = function() { }
-$hxClasses["Dynamics"] = Dynamics;
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
 	return (Dynamics.formatf(param,params,nullstring,culture))(v);
@@ -930,8 +947,8 @@ Dynamics.same = function(a,b) {
 		var c = $e[2];
 		var ca = Type.getClassName(c), cb = Type.getClassName(Type.getClass(b));
 		if(ca != cb) return false;
-		if(Std["is"](a,String) && a != b) return false;
-		if(Std["is"](a,Array)) {
+		if(js.Boot.__instanceof(a,String) && a != b) return false;
+		if(js.Boot.__instanceof(a,Array)) {
 			var aa = a, ab = b;
 			if(aa.length != ab.length) return false;
 			var _g1 = 0, _g = aa.length;
@@ -941,8 +958,8 @@ Dynamics.same = function(a,b) {
 			}
 			return true;
 		}
-		if(Std["is"](a,Date)) return a.getTime() == b.getTime();
-		if(Std["is"](a,Hash) || Std["is"](a,IntHash)) {
+		if(js.Boot.__instanceof(a,Date)) return a.getTime() == b.getTime();
+		if(js.Boot.__instanceof(a,Hash) || js.Boot.__instanceof(a,IntHash)) {
 			var ha = a, hb = b;
 			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
 			if(ka.length != kb.length) return false;
@@ -956,7 +973,7 @@ Dynamics.same = function(a,b) {
 		}
 		var t = false;
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
-			var va = t?Iterators.array(a):Iterators.array(a.iterator()), vb = t?Iterators.array(b):Iterators.array(b.iterator());
+			var va = t?Iterators.array(a):Iterators.array($iterator(a)()), vb = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(va.length != vb.length) return false;
 			var _g1 = 0, _g = va.length;
 			while(_g1 < _g) {
@@ -994,7 +1011,7 @@ Dynamics.same = function(a,b) {
 		while(_g < fa.length) {
 			var field = fa[_g];
 			++_g;
-			fb.remove(field);
+			HxOverrides.remove(fb,field);
 			if(!Reflect.hasField(b,field)) return false;
 			var va = Reflect.field(a,field);
 			if(Reflect.isFunction(va)) continue;
@@ -1006,8 +1023,8 @@ Dynamics.same = function(a,b) {
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
 			if(t && !Iterators.isIterator(b)) return false;
 			if(!t && !Iterables.isIterable(b)) return false;
-			var aa = t?Iterators.array(a):Iterators.array(a.iterator());
-			var ab = t?Iterators.array(b):Iterators.array(b.iterator());
+			var aa = t?Iterators.array(a):Iterators.array($iterator(a)());
+			var ab = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(aa.length != ab.length) return false;
 			var _g1 = 0, _g = aa.length;
 			while(_g1 < _g) {
@@ -1030,14 +1047,7 @@ Dynamics.same = function(a,b) {
 		return $r;
 	}(this));
 }
-Dynamics.number = function(v) {
-	return Number(v);
-}
-Dynamics.prototype = {
-	__class__: Dynamics
-}
 var Enums = function() { }
-$hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
 	var cons = e[0];
@@ -1055,11 +1065,7 @@ Enums.compare = function(a,b) {
 	if((v = a[1] - b[1]) != 0) return v;
 	return Arrays.compare(a.slice(2),b.slice(2));
 }
-Enums.prototype = {
-	__class__: Enums
-}
 var Floats = function() { }
-$hxClasses["Floats"] = Floats;
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
 	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
@@ -1138,8 +1144,11 @@ Floats.formatf = function(param,params,culture) {
 		}(this));
 	}
 }
+Floats.canParse = function(s) {
+	return Floats._reparse.match(s);
+}
 Floats.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
+	if(HxOverrides.substr(s,0,1) == "+") s = HxOverrides.substr(s,1,null);
 	return Std.parseFloat(s);
 }
 Floats.compare = function(a,b) {
@@ -1156,13 +1165,9 @@ Floats.uninterpolatef = function(a,b) {
 		return (x - a) * b;
 	};
 }
-Floats.prototype = {
-	__class__: Floats
-}
 var Hash = function() {
 	this.h = { };
 };
-$hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
 	h: null
@@ -1186,7 +1191,7 @@ Hash.prototype = {
 		for( var key in this.h ) {
 		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
 		}
-		return a.iterator();
+		return HxOverrides.iter(a);
 	}
 	,iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
@@ -1198,15 +1203,65 @@ Hash.prototype = {
 	}
 	,__class__: Hash
 }
+var HxOverrides = function() { }
+HxOverrides.__name__ = ["HxOverrides"];
+HxOverrides.strDate = function(s) {
+	switch(s.length) {
+	case 8:
+		var k = s.split(":");
+		var d = new Date();
+		d.setTime(0);
+		d.setUTCHours(k[0]);
+		d.setUTCMinutes(k[1]);
+		d.setUTCSeconds(k[2]);
+		return d;
+	case 10:
+		var k = s.split("-");
+		return new Date(k[0],k[1] - 1,k[2],0,0,0);
+	case 19:
+		var k = s.split(" ");
+		var y = k[0].split("-");
+		var t = k[1].split(":");
+		return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+	default:
+		throw "Invalid date format : " + s;
+	}
+}
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+}
+HxOverrides.substr = function(s,pos,len) {
+	if(pos != null && pos != 0 && len != null && len < 0) return "";
+	if(len == null) len = s.length;
+	if(pos < 0) {
+		pos = s.length + pos;
+		if(pos < 0) pos = 0;
+	} else if(len < 0) len = s.length + len - pos;
+	return s.substr(pos,len);
+}
+HxOverrides.remove = function(a,obj) {
+	var i = 0;
+	var l = a.length;
+	while(i < l) {
+		if(a[i] == obj) {
+			a.splice(i,1);
+			return true;
+		}
+		i++;
+	}
+	return false;
+}
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
+}
 var I32 = function() { }
-$hxClasses["I32"] = I32;
 I32.__name__ = ["I32"];
-I32.abs = function(v) {
-	return Math.abs(v) | 0;
-}
-I32.add = function(a,b) {
-	return a + b;
-}
 I32.baseEncode = function(v,radix) {
 	if(radix < 2 || radix > 36) throw "radix out of range";
 	var sb = "";
@@ -1221,34 +1276,9 @@ I32.baseEncode = function(v,radix) {
 	if(v < 0) return "-" + sb;
 	return sb;
 }
-I32.div = function(a,b) {
-	return a / b | 0;
-}
-I32.eq = function(a,b) {
-	return a == b;
-}
-I32.lt = function(a,b) {
-	return a < b;
-}
-I32.mod = function(a,b) {
-	return a % b;
-}
-I32.ofInt = function(v) {
-	return v;
-}
-I32.sub = function(a,b) {
-	return a - b;
-}
-I32.toInt = function(v) {
-	return v & -1;
-}
-I32.prototype = {
-	__class__: I32
-}
 var IntHash = function() {
 	this.h = { };
 };
-$hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
 	h: null
@@ -1268,7 +1298,7 @@ IntHash.prototype = {
 		for( var key in this.h ) {
 		if(this.h.hasOwnProperty(key)) a.push(key | 0);
 		}
-		return a.iterator();
+		return HxOverrides.iter(a);
 	}
 	,iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
@@ -1281,7 +1311,6 @@ IntHash.prototype = {
 	,__class__: IntHash
 }
 var IntHashes = function() { }
-$hxClasses["IntHashes"] = IntHashes;
 IntHashes.__name__ = ["IntHashes"];
 IntHashes.count = function(hash) {
 	var i = 0;
@@ -1292,11 +1321,7 @@ IntHashes.count = function(hash) {
 	}
 	return i;
 }
-IntHashes.prototype = {
-	__class__: IntHashes
-}
 var Ints = function() { }
-$hxClasses["Ints"] = Ints;
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
 	if(step == null) step = 1;
@@ -1346,49 +1371,17 @@ Ints.canParse = function(s) {
 	return Ints._reparse.match(s);
 }
 Ints.parse = function(s) {
-	if(s.substr(0,1) == "+") s = s.substr(1);
+	if(HxOverrides.substr(s,0,1) == "+") s = HxOverrides.substr(s,1,null);
 	return Std.parseInt(s);
 }
-Ints.compare = function(a,b) {
-	return a - b;
-}
-Ints.prototype = {
-	__class__: Ints
-}
 var Iterables = function() { }
-$hxClasses["Iterables"] = Iterables;
 Iterables.__name__ = ["Iterables"];
-Iterables.count = function(it) {
-	return Iterators.count(it.iterator());
-}
-Iterables.array = function(it) {
-	return Iterators.array(it.iterator());
-}
-Iterables.map = function(it,f) {
-	return Iterators.map(it.iterator(),f);
-}
-Iterables.each = function(it,f) {
-	return Iterators.each(it.iterator(),f);
-}
-Iterables.filter = function(it,f) {
-	return Iterators.filter(it.iterator(),f);
-}
-Iterables.firstf = function(it,f) {
-	return Iterators.firstf(it.iterator(),f);
-}
-Iterables.order = function(it,f) {
-	return Arrays.order(Iterators.array(it.iterator()),f);
-}
 Iterables.isIterable = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"iterator")) return false;
 	return Reflect.isFunction(Reflect.field(v,"iterator"));
 }
-Iterables.prototype = {
-	__class__: Iterables
-}
 var Iterators = function() { }
-$hxClasses["Iterators"] = Iterators;
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
 	var i = 0;
@@ -1429,13 +1422,6 @@ Iterators.filter = function(it,f) {
 	}
 	return result;
 }
-Iterators.all = function(it,f) {
-	while( it.hasNext() ) {
-		var v = it.next();
-		if(!f(v)) return false;
-	}
-	return true;
-}
 Iterators.firstf = function(it,f) {
 	while( it.hasNext() ) {
 		var v = it.next();
@@ -1443,29 +1429,22 @@ Iterators.firstf = function(it,f) {
 	}
 	return null;
 }
-Iterators.order = function(it,f) {
-	return Arrays.order(Iterators.array(it),f);
-}
 Iterators.isIterator = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) return false;
 	return Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
 }
-Iterators.prototype = {
-	__class__: Iterators
-}
 var Lambda = function() { }
-$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
-		var $it0 = it.iterator();
+		var $it0 = $iterator(it)();
 		while( $it0.hasNext() ) {
 			var x = $it0.next();
 			if(x == elt) return true;
 		}
 	} else {
-		var $it1 = it.iterator();
+		var $it1 = $iterator(it)();
 		while( $it1.hasNext() ) {
 			var x = $it1.next();
 			if(cmp(x,elt)) return true;
@@ -1473,14 +1452,13 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
-Lambda.prototype = {
-	__class__: Lambda
-}
-var List = function() { }
-$hxClasses["List"] = List;
+var List = function() {
+	this.length = 0;
+};
 List.__name__ = ["List"];
 List.prototype = {
 	h: null
+	,length: null
 	,iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
@@ -1494,11 +1472,7 @@ List.prototype = {
 	,__class__: List
 }
 var Objects = function() { }
-$hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
-Objects.keys = function(o) {
-	return Reflect.fields(o);
-}
 Objects.entries = function(o) {
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(o);
@@ -1565,11 +1539,7 @@ Objects.formatf = function(param,params,culture) {
 		}(this));
 	}
 }
-Objects.prototype = {
-	__class__: Objects
-}
 var Reflect = function() { }
-$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
 	return Object.prototype.hasOwnProperty.call(o,field);
@@ -1582,12 +1552,6 @@ Reflect.field = function(o,field) {
 	}
 	return v;
 }
-Reflect.setField = function(o,field,value) {
-	o[field] = value;
-}
-Reflect.callMethod = function(o,func,args) {
-	return func.apply(o,args);
-}
 Reflect.fields = function(o) {
 	var a = [];
 	if(o != null) {
@@ -1599,7 +1563,7 @@ Reflect.fields = function(o) {
 	return a;
 }
 Reflect.isFunction = function(f) {
-	return typeof(f) == "function" && f.__name__ == null;
+	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
 }
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
@@ -1609,57 +1573,39 @@ Reflect.compareMethods = function(f1,f2) {
 Reflect.isObject = function(v) {
 	if(v == null) return false;
 	var t = typeof(v);
-	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+	return t == "string" || t == "object" && !v.__enum__ || t == "function" && (v.__name__ || v.__ename__);
 }
 Reflect.deleteField = function(o,f) {
 	if(!Reflect.hasField(o,f)) return false;
 	delete(o[f]);
 	return true;
 }
-Reflect.prototype = {
-	__class__: Reflect
-}
 var Std = function() { }
-$hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
-Std["is"] = function(v,t) {
-	return js.Boot.__instanceof(v,t);
-}
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
 }
-Std["int"] = function(x) {
-	return x | 0;
-}
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
-	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
+	if(v == 0 && HxOverrides.cca(x,1) == 120) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
 }
 Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
-Std.prototype = {
-	__class__: Std
-}
 var StringBuf = function() {
 	this.b = new Array();
 };
-$hxClasses["StringBuf"] = StringBuf;
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
 	add: function(x) {
 		this.b[this.b.length] = x == null?"null":x;
 	}
-	,toString: function() {
-		return this.b.join("");
-	}
 	,b: null
 	,__class__: StringBuf
 }
 var StringTools = function() { }
-$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
 	return encodeURIComponent(s);
@@ -1668,23 +1614,23 @@ StringTools.urlDecode = function(s) {
 	return decodeURIComponent(s.split("+").join(" "));
 }
 StringTools.startsWith = function(s,start) {
-	return s.length >= start.length && s.substr(0,start.length) == start;
+	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
 }
 StringTools.isSpace = function(s,pos) {
-	var c = s.charCodeAt(pos);
+	var c = HxOverrides.cca(s,pos);
 	return c >= 9 && c <= 13 || c == 32;
 }
 StringTools.ltrim = function(s) {
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,r)) r++;
-	if(r > 0) return s.substr(r,l - r); else return s;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
 }
 StringTools.rtrim = function(s) {
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
-	if(r > 0) return s.substr(0,l - r); else return s;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
 }
 StringTools.trim = function(s) {
 	return StringTools.ltrim(StringTools.rtrim(s));
@@ -1693,7 +1639,7 @@ StringTools.rpad = function(s,c,l) {
 	var sl = s.length;
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
-		s += c.substr(0,l - sl);
+		s += HxOverrides.substr(c,0,l - sl);
 		sl = l;
 	} else {
 		s += c;
@@ -1707,7 +1653,7 @@ StringTools.lpad = function(s,c,l) {
 	if(sl >= l) return s;
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
-		ns += c.substr(0,l - sl);
+		ns += HxOverrides.substr(c,0,l - sl);
 		sl = l;
 	} else {
 		ns += c;
@@ -1728,9 +1674,6 @@ StringTools.hex = function(n,digits) {
 	if(digits != null) while(s.length < digits) s = "0" + s;
 	return s;
 }
-StringTools.fastCodeAt = function(s,index) {
-	return s.cca(index);
-}
 StringTools.stripWhite = function(s) {
 	var l = s.length;
 	var i = 0;
@@ -1741,11 +1684,7 @@ StringTools.stripWhite = function(s) {
 	}
 	return sb.b.join("");
 }
-StringTools.prototype = {
-	__class__: StringTools
-}
 var Strings = function() { }
-$hxClasses["Strings"] = Strings;
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
@@ -1784,10 +1723,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			return function(f,a1) {
+			return function(f,i) {
 				return (function() {
-					return function(a2) {
-						return f(a1,a2);
+					return function(v) {
+						return f(i,v);
 					};
 				})();
 			};
@@ -1843,38 +1782,35 @@ Strings.formatOnef = function(param,params,culture) {
 Strings.rtrim = function(value,charlist) {
 	var len = value.length;
 	while(len > 0) {
-		var c = value.substr(len - 1,1);
+		var c = HxOverrides.substr(value,len - 1,1);
 		if(charlist.indexOf(c) < 0) break;
 		len--;
 	}
-	return value.substr(0,len);
+	return HxOverrides.substr(value,0,len);
 }
 Strings.ltrim = function(value,charlist) {
 	var start = 0;
 	while(start < value.length) {
-		var c = value.substr(start,1);
+		var c = HxOverrides.substr(value,start,1);
 		if(charlist.indexOf(c) < 0) break;
 		start++;
 	}
-	return value.substr(start);
-}
-Strings.trim = function(value,charlist) {
-	return Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+	return HxOverrides.substr(value,start,null);
 }
 Strings.collapse = function(value) {
 	return Strings._reCollapse.replace(StringTools.trim(value)," ");
 }
 Strings.ucfirst = function(value) {
-	return value == null?null:value.charAt(0).toUpperCase() + value.substr(1);
+	return value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null);
 }
 Strings.lcfirst = function(value) {
-	return value == null?null:value.charAt(0).toLowerCase() + value.substr(1);
+	return value == null?null:value.charAt(0).toLowerCase() + HxOverrides.substr(value,1,null);
 }
 Strings.empty = function(value) {
 	return value == null || value == "";
 }
 Strings.ucwords = function(value) {
-	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + value.substr(1),Strings.__upperMatch);
+	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
 }
 Strings.__upperMatch = function(re) {
 	return re.matched(0).toUpperCase();
@@ -1966,16 +1902,13 @@ Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
 	return function(s) {
-		if(s.length > maxlen) return s.substr(0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+		if(s.length > maxlen) return HxOverrides.substr(s,0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
 	};
 }
 Strings.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
 }
-Strings.prototype = {
-	__class__: Strings
-}
-var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+var ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
 ValueType.TNull.__enum__ = ValueType;
@@ -2000,11 +1933,9 @@ ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
 var Type = function() { }
-$hxClasses["Type"] = Type;
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
-	if(o.__enum__ != null) return null;
 	return o.__class__;
 }
 Type.getEnum = function(o) {
@@ -2061,8 +1992,8 @@ Type.createEnum = function(e,constr,params) {
 Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
-	a.remove("__class__");
-	a.remove("__properties__");
+	HxOverrides.remove(a,"__class__");
+	HxOverrides.remove(a,"__properties__");
 	return a;
 }
 Type["typeof"] = function(v) {
@@ -2082,7 +2013,7 @@ Type["typeof"] = function(v) {
 		if(c != null) return ValueType.TClass(c);
 		return ValueType.TObject;
 	case "function":
-		if(v.__name__ != null) return ValueType.TObject;
+		if(v.__name__ || v.__ename__) return ValueType.TObject;
 		return ValueType.TFunction;
 	case "undefined":
 		return ValueType.TNull;
@@ -2106,20 +2037,7 @@ Type.enumEq = function(a,b) {
 	}
 	return true;
 }
-Type.enumConstructor = function(e) {
-	return e[0];
-}
-Type.enumParameters = function(e) {
-	return e.slice(2);
-}
-Type.enumIndex = function(e) {
-	return e[1];
-}
-Type.prototype = {
-	__class__: Type
-}
 var Types = function() { }
-$hxClasses["Types"] = Types;
 Types.__name__ = ["Types"];
 Types.typeName = function(o) {
 	return (function($this) {
@@ -2163,7 +2081,7 @@ Types.isAnonymous = function(v) {
 	return Reflect.isObject(v) && null == Type.getClass(v);
 }
 Types["as"] = function(value,type) {
-	return Std["is"](value,type)?value:null;
+	return js.Boot.__instanceof(value,type)?value:null;
 }
 Types.sameType = function(a,b) {
 	if(null == a && b == null) return true;
@@ -2173,10 +2091,10 @@ Types.sameType = function(a,b) {
 	switch( $e[1] ) {
 	case 6:
 		var c = $e[2];
-		return Std["is"](a,c);
+		return js.Boot.__instanceof(a,c);
 	case 7:
 		var e = $e[2];
-		return Std["is"](a,e);
+		return js.Boot.__instanceof(a,e);
 	default:
 		return Type["typeof"](a) == tb;
 	}
@@ -2206,23 +2124,17 @@ Types.isPrimitive = function(v) {
 		return $r;
 	}(this));
 }
-Types.prototype = {
-	__class__: Types
-}
 var chx = {}
 chx.crypt = {}
 chx.crypt.IBlockCipher = function() { }
-$hxClasses["chx.crypt.IBlockCipher"] = chx.crypt.IBlockCipher;
 chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
 	blockSize: null
 	,encryptBlock: null
 	,decryptBlock: null
 	,__class__: chx.crypt.IBlockCipher
-	,__properties__: {get_blockSize:"__getBlockSize"}
 }
 chx.crypt.IPad = function() { }
-$hxClasses["chx.crypt.IPad"] = chx.crypt.IPad;
 chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
 chx.crypt.IPad.prototype = {
 	blockSize: null
@@ -2233,15 +2145,13 @@ chx.crypt.IPad.prototype = {
 	,blockOverhead: null
 	,getBytesReadPerBlock: null
 	,__class__: chx.crypt.IPad
-	,__properties__: {set_blockSize:"setBlockSize"}
 }
 chx.crypt.PadPkcs1Type1 = function(size) {
-	this["blockSize"] = size;
+	this.blockSize = size;
 	this.setPadCount(8);
 	this.typeByte = 1;
 	this.setPadByte(255);
 };
-$hxClasses["chx.crypt.PadPkcs1Type1"] = chx.crypt.PadPkcs1Type1;
 chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
 chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
 chx.crypt.PadPkcs1Type1.prototype = {
@@ -2309,13 +2219,11 @@ chx.crypt.PadPkcs1Type1.prototype = {
 		return x;
 	}
 	,__class__: chx.crypt.PadPkcs1Type1
-	,__properties__: {set_padByte:"setPadByte",get_padByte:"getPadByte",set_blockSize:"setBlockSize"}
 }
 chx.crypt.RSAEncrypt = function(nHex,eHex) {
 	this.init();
 	if(nHex != null) this.setPublic(nHex,eHex);
 };
-$hxClasses["chx.crypt.RSAEncrypt"] = chx.crypt.RSAEncrypt;
 chx.crypt.RSAEncrypt.__name__ = ["chx","crypt","RSAEncrypt"];
 chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSAEncrypt.prototype = {
@@ -2368,7 +2276,7 @@ chx.crypt.RSAEncrypt.prototype = {
 		this.e = ie;
 	}
 	,verify: function(data) {
-		return this.doBufferDecrypt(data,this.doPublic.$bind(this),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+		return this.doBufferDecrypt(data,$bind(this,this.doPublic),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
 	}
 	,doBufferDecrypt: function(src,f,pf) {
 		var bs = this.__getBlockSize();
@@ -2402,10 +2310,8 @@ chx.crypt.RSAEncrypt.prototype = {
 		return sb.b.join("");
 	}
 	,__class__: chx.crypt.RSAEncrypt
-	,__properties__: {get_blockSize:"__getBlockSize"}
 }
 chx.crypt.RSA = function() { }
-$hxClasses["chx.crypt.RSA"] = chx.crypt.RSA;
 chx.crypt.RSA.__name__ = ["chx","crypt","RSA"];
 chx.crypt.RSA.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSA.__super__ = chx.crypt.RSAEncrypt;
@@ -2473,9 +2379,7 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 });
 chx.formats = {}
 chx.formats.Base64 = function() { }
-$hxClasses["chx.formats.Base64"] = chx.formats.Base64;
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
-chx.formats.Base64.enc = null;
 chx.formats.Base64.decode = function(s) {
 	s = StringTools.stripWhite(s);
 	s = StringTools.replace(s,"=","");
@@ -2490,12 +2394,8 @@ chx.formats.Base64.decode = function(s) {
 		return $r;
 	}(this));
 }
-chx.formats.Base64.prototype = {
-	__class__: chx.formats.Base64
-}
 chx.io = {}
 chx.io.Input = function() { }
-$hxClasses["chx.io.Input"] = chx.io.Input;
 chx.io.Input.__name__ = ["chx","io","Input"];
 chx.io.Input.prototype = {
 	bigEndian: null
@@ -2529,10 +2429,8 @@ chx.io.Input.prototype = {
 		return b;
 	}
 	,__class__: chx.io.Input
-	,__properties__: {set_bigEndian:"__setEndian"}
 }
 chx.io.BytesInput = function() { }
-$hxClasses["chx.io.BytesInput"] = chx.io.BytesInput;
 chx.io.BytesInput.__name__ = ["chx","io","BytesInput"];
 chx.io.BytesInput.__super__ = chx.io.Input;
 chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
@@ -2573,7 +2471,6 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 	,__class__: chx.io.BytesInput
 });
 chx.io.Output = function() { }
-$hxClasses["chx.io.Output"] = chx.io.Output;
 chx.io.Output.__name__ = ["chx","io","Output"];
 chx.io.Output.prototype = {
 	bigEndian: null
@@ -2600,10 +2497,8 @@ chx.io.Output.prototype = {
 		return b;
 	}
 	,__class__: chx.io.Output
-	,__properties__: {set_bigEndian:"setBigEndian"}
 }
 chx.io.BytesOutput = function() { }
-$hxClasses["chx.io.BytesOutput"] = chx.io.BytesOutput;
 chx.io.BytesOutput.__name__ = ["chx","io","BytesOutput"];
 chx.io.BytesOutput.__super__ = chx.io.Output;
 chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
@@ -2623,7 +2518,6 @@ chx.lang.Exception = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
-$hxClasses["chx.lang.Exception"] = chx.lang.Exception;
 chx.lang.Exception.__name__ = ["chx","lang","Exception"];
 chx.lang.Exception.prototype = {
 	message: null
@@ -2636,7 +2530,6 @@ chx.lang.Exception.prototype = {
 chx.lang.IOException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
-$hxClasses["chx.lang.IOException"] = chx.lang.IOException;
 chx.lang.IOException.__name__ = ["chx","lang","IOException"];
 chx.lang.IOException.__super__ = chx.lang.Exception;
 chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
@@ -2645,7 +2538,6 @@ chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
 chx.lang.EofException = function(msg,cause) {
 	chx.lang.IOException.call(this,msg,cause);
 };
-$hxClasses["chx.lang.EofException"] = chx.lang.EofException;
 chx.lang.EofException.__name__ = ["chx","lang","EofException"];
 chx.lang.EofException.__super__ = chx.lang.IOException;
 chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
@@ -2658,7 +2550,6 @@ chx.lang.FatalException = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
-$hxClasses["chx.lang.FatalException"] = chx.lang.FatalException;
 chx.lang.FatalException.__name__ = ["chx","lang","FatalException"];
 chx.lang.FatalException.prototype = {
 	message: null
@@ -2668,7 +2559,6 @@ chx.lang.FatalException.prototype = {
 chx.lang.NullPointerException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
-$hxClasses["chx.lang.NullPointerException"] = chx.lang.NullPointerException;
 chx.lang.NullPointerException.__name__ = ["chx","lang","NullPointerException"];
 chx.lang.NullPointerException.__super__ = chx.lang.Exception;
 chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
@@ -2677,7 +2567,6 @@ chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
 chx.lang.OutsideBoundsException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
-$hxClasses["chx.lang.OutsideBoundsException"] = chx.lang.OutsideBoundsException;
 chx.lang.OutsideBoundsException.__name__ = ["chx","lang","OutsideBoundsException"];
 chx.lang.OutsideBoundsException.__super__ = chx.lang.Exception;
 chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype,{
@@ -2686,7 +2575,6 @@ chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype
 chx.lang.UnsupportedException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
-$hxClasses["chx.lang.UnsupportedException"] = chx.lang.UnsupportedException;
 chx.lang.UnsupportedException.__name__ = ["chx","lang","UnsupportedException"];
 chx.lang.UnsupportedException.__super__ = chx.lang.Exception;
 chx.lang.UnsupportedException.prototype = $extend(chx.lang.Exception.prototype,{
@@ -2696,46 +2584,9 @@ var dhx = {}
 dhx.Access = function(selection) {
 	this.selection = selection;
 };
-$hxClasses["dhx.Access"] = dhx.Access;
 dhx.Access.__name__ = ["dhx","Access"];
-dhx.Access.getData = function(d) {
-	return Reflect.field(d,"__dhx_data__");
-}
-dhx.Access.setData = function(d,v) {
-	d["__dhx_data__"] = v;
-}
-dhx.Access.emptyHtmlDom = function(v) {
-	return { __dhx_data__ : v};
-}
-dhx.Access.eventName = function(event) {
-	return "__dhx_on__" + event;
-}
-dhx.Access.getEvent = function(d,event) {
-	return Reflect.field(d,"__dhx_on__" + event);
-}
-dhx.Access.hasEvent = function(d,event) {
-	return null != Reflect.field(d,"__dhx_on__" + event);
-}
-dhx.Access.addEvent = function(d,event,listener) {
-	d["__dhx_on__" + event] = listener;
-}
-dhx.Access.removeEvent = function(d,event) {
-	Reflect.deleteField(d,"__dhx_on__" + event);
-}
-dhx.Access.setTransition = function(d,id) {
-	if(Reflect.hasField(d,"__dhx_transition__")) Reflect.field(d,"__dhx_transition__").owner = id; else d["__dhx_transition__"] = { owner : id};
-}
-dhx.Access.getTransition = function(d) {
-	return Reflect.field(d,"__dhx_transition__");
-}
-dhx.Access.resetTransition = function(d) {
-	Reflect.deleteField(d,"__dhx_transition__");
-}
 dhx.Access.prototype = {
 	selection: null
-	,_that: function() {
-		return this.selection;
-	}
 	,__class__: dhx.Access
 }
 dhx.AccessAttribute = function(name,selection) {
@@ -2743,7 +2594,6 @@ dhx.AccessAttribute = function(name,selection) {
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
-$hxClasses["dhx.AccessAttribute"] = dhx.AccessAttribute;
 dhx.AccessAttribute.__name__ = ["dhx","AccessAttribute"];
 dhx.AccessAttribute.__super__ = dhx.Access;
 dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
@@ -2793,7 +2643,6 @@ dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataAttribute = function(name,selection) {
 	dhx.AccessAttribute.call(this,name,selection);
 };
-$hxClasses["dhx.AccessDataAttribute"] = dhx.AccessDataAttribute;
 dhx.AccessDataAttribute.__name__ = ["dhx","AccessDataAttribute"];
 dhx.AccessDataAttribute.__super__ = dhx.AccessAttribute;
 dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
@@ -2834,24 +2683,20 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 dhx.AccessClassed = function(selection) {
 	dhx.Access.call(this,selection);
 };
-$hxClasses["dhx.AccessClassed"] = dhx.AccessClassed;
 dhx.AccessClassed.__name__ = ["dhx","AccessClassed"];
 dhx.AccessClassed.escapeERegChars = function(s) {
 	return dhx.AccessClassed._escapePattern.customReplace(s,function(e) {
 		return "\\" + e.matched(0);
 	});
 }
-dhx.AccessClassed.getRe = function(name) {
-	return new EReg("(^|\\s+)" + dhx.AccessClassed.escapeERegChars(name) + "(\\s+|$)","g");
-}
 dhx.AccessClassed.__super__ = dhx.Access;
 dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 	remove: function(name) {
 		this.selection.eachNode((function(f,a1) {
-			return function(a2,a3) {
-				return f(a1,a2,a3);
+			return function(a2,i) {
+				return f(a1,a2,i);
 			};
-		})(this._remove.$bind(this),name));
+		})($bind(this,this._remove),name));
 		return this.selection;
 	}
 	,_remove: function(name,node,i) {
@@ -2867,10 +2712,10 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 	}
 	,add: function(name) {
 		this.selection.eachNode((function(f,a1) {
-			return function(a2,a3) {
-				return f(a1,a2,a3);
+			return function(a2,i) {
+				return f(a1,a2,i);
 			};
-		})(this._add.$bind(this),name));
+		})($bind(this,this._add),name));
 		return this.selection;
 	}
 	,_add: function(name,node,i) {
@@ -2891,7 +2736,6 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataClassed = function(selection) {
 	dhx.AccessClassed.call(this,selection);
 };
-$hxClasses["dhx.AccessDataClassed"] = dhx.AccessDataClassed;
 dhx.AccessDataClassed.__name__ = ["dhx","AccessDataClassed"];
 dhx.AccessDataClassed.__super__ = dhx.AccessClassed;
 dhx.AccessDataClassed.prototype = $extend(dhx.AccessClassed.prototype,{
@@ -2900,7 +2744,6 @@ dhx.AccessDataClassed.prototype = $extend(dhx.AccessClassed.prototype,{
 dhx.AccessHtml = function(selection) {
 	dhx.Access.call(this,selection);
 };
-$hxClasses["dhx.AccessHtml"] = dhx.AccessHtml;
 dhx.AccessHtml.__name__ = ["dhx","AccessHtml"];
 dhx.AccessHtml.__super__ = dhx.Access;
 dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
@@ -2920,7 +2763,6 @@ dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataHtml = function(selection) {
 	dhx.AccessHtml.call(this,selection);
 };
-$hxClasses["dhx.AccessDataHtml"] = dhx.AccessDataHtml;
 dhx.AccessDataHtml.__name__ = ["dhx","AccessDataHtml"];
 dhx.AccessDataHtml.__super__ = dhx.AccessHtml;
 dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
@@ -2938,7 +2780,6 @@ dhx.AccessStyle = function(name,selection) {
 	dhx.Access.call(this,selection);
 	this.name = name;
 };
-$hxClasses["dhx.AccessStyle"] = dhx.AccessStyle;
 dhx.AccessStyle.__name__ = ["dhx","AccessStyle"];
 dhx.AccessStyle._getPropertyName = function(key) {
 	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
@@ -2978,9 +2819,9 @@ dhx.AccessStyle.__super__ = dhx.Access;
 dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 	name: null
 	,get: function() {
-		var me = this;
+		var _g = this;
 		return this.selection.firstNode(function(node) {
-			return dhx.AccessStyle.getComputedStyleValue(node,me.name);
+			return dhx.AccessStyle.getComputedStyleValue(node,_g.name);
 		});
 	}
 	,getFloat: function() {
@@ -2988,24 +2829,24 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 		if(dhx.AccessStyle.refloat.match(v)) return Std.parseFloat(dhx.AccessStyle.refloat.matched(1)); else return Math.NaN;
 	}
 	,string: function(v,priority) {
-		var me = this;
+		var _g = this;
 		this.selection.eachNode(function(node,i) {
-			dhx.AccessStyle.setStyleProperty(node,me.name,v,priority);
+			dhx.AccessStyle.setStyleProperty(node,_g.name,v,priority);
 		});
 		return this.selection;
 	}
 	,'float': function(v,priority) {
-		var me = this;
+		var _g = this;
 		this.selection.eachNode(function(node,i) {
-			dhx.AccessStyle.setStyleProperty(node,me.name,v,priority);
+			dhx.AccessStyle.setStyleProperty(node,_g.name,v,priority);
 		});
 		return this.selection;
 	}
 	,color: function(v,priority) {
-		var me = this;
+		var _g = this;
 		var s = v.toRgbString();
 		this.selection.eachNode(function(node,i) {
-			dhx.AccessStyle.setStyleProperty(node,me.name,s,priority);
+			dhx.AccessStyle.setStyleProperty(node,_g.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -3014,15 +2855,14 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataStyle = function(name,selection) {
 	dhx.AccessStyle.call(this,name,selection);
 };
-$hxClasses["dhx.AccessDataStyle"] = dhx.AccessDataStyle;
 dhx.AccessDataStyle.__name__ = ["dhx","AccessDataStyle"];
 dhx.AccessDataStyle.__super__ = dhx.AccessStyle;
 dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
 	stringf: function(v,priority) {
-		var me = this;
+		var _g = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__dhx_data__"),i);
-			if(s == null) dhx.AccessStyle.removeStyleProperty(node,me.name); else dhx.AccessStyle.setStyleProperty(node,me.name,s,priority);
+			if(s == null) dhx.AccessStyle.removeStyleProperty(node,_g.name); else dhx.AccessStyle.setStyleProperty(node,_g.name,s,priority);
 		});
 		return this.selection;
 	}
@@ -3031,7 +2871,6 @@ dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
 dhx.AccessText = function(selection) {
 	dhx.Access.call(this,selection);
 };
-$hxClasses["dhx.AccessText"] = dhx.AccessText;
 dhx.AccessText.__name__ = ["dhx","AccessText"];
 dhx.AccessText.__super__ = dhx.Access;
 dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
@@ -3053,7 +2892,6 @@ dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataText = function(selection) {
 	dhx.AccessText.call(this,selection);
 };
-$hxClasses["dhx.AccessDataText"] = dhx.AccessDataText;
 dhx.AccessDataText.__name__ = ["dhx","AccessDataText"];
 dhx.AccessDataText.__super__ = dhx.AccessText;
 dhx.AccessDataText.prototype = $extend(dhx.AccessText.prototype,{
@@ -3071,7 +2909,6 @@ dhx.AccessTween = function(transition,tweens) {
 	this.transition = transition;
 	this.tweens = tweens;
 };
-$hxClasses["dhx.AccessTween"] = dhx.AccessTween;
 dhx.AccessTween.__name__ = ["dhx","AccessTween"];
 dhx.AccessTween.prototype = {
 	transition: null
@@ -3091,9 +2928,6 @@ dhx.AccessTween.prototype = {
 			return Floats.interpolatef(a,value);
 		};
 	}
-	,_that: function() {
-		return this.transition;
-	}
 	,__class__: dhx.AccessTween
 }
 dhx.AccessTweenAttribute = function(name,transition,tweens) {
@@ -3101,7 +2935,6 @@ dhx.AccessTweenAttribute = function(name,transition,tweens) {
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
-$hxClasses["dhx.AccessTweenAttribute"] = dhx.AccessTweenAttribute;
 dhx.AccessTweenAttribute.__name__ = ["dhx","AccessTweenAttribute"];
 dhx.AccessTweenAttribute.__super__ = dhx.AccessTween;
 dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
@@ -3152,7 +2985,6 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 dhx.AccessDataTweenAttribute = function(name,transition,tweens) {
 	dhx.AccessTweenAttribute.call(this,name,transition,tweens);
 };
-$hxClasses["dhx.AccessDataTweenAttribute"] = dhx.AccessDataTweenAttribute;
 dhx.AccessDataTweenAttribute.__name__ = ["dhx","AccessDataTweenAttribute"];
 dhx.AccessDataTweenAttribute.__super__ = dhx.AccessTweenAttribute;
 dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.prototype,{
@@ -3167,7 +2999,6 @@ dhx.AccessTweenStyle = function(name,transition,tweens) {
 	dhx.AccessTween.call(this,transition,tweens);
 	this.name = name;
 };
-$hxClasses["dhx.AccessTweenStyle"] = dhx.AccessTweenStyle;
 dhx.AccessTweenStyle.__name__ = ["dhx","AccessTweenStyle"];
 dhx.AccessTweenStyle.__super__ = dhx.AccessTween;
 dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
@@ -3188,7 +3019,7 @@ dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
 	}
 	,__class__: dhx.AccessTweenStyle
 });
-dhx.HostType = $hxClasses["dhx.HostType"] = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
+dhx.HostType = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
 dhx.HostType.UnknownServer = ["UnknownServer",0];
 dhx.HostType.UnknownServer.toString = $estr;
 dhx.HostType.UnknownServer.__enum__ = dhx.HostType;
@@ -3201,7 +3032,7 @@ dhx.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__en
 dhx.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
-dhx.EnvironmentType = $hxClasses["dhx.EnvironmentType"] = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
+dhx.EnvironmentType = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
 dhx.EnvironmentType.Mobile = ["Mobile",0];
 dhx.EnvironmentType.Mobile.toString = $estr;
 dhx.EnvironmentType.Mobile.__enum__ = dhx.EnvironmentType;
@@ -3214,7 +3045,7 @@ dhx.EnvironmentType.Server.__enum__ = dhx.EnvironmentType;
 dhx.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
 dhx.EnvironmentType.UnknownEnvironment.toString = $estr;
 dhx.EnvironmentType.UnknownEnvironment.__enum__ = dhx.EnvironmentType;
-dhx.OSType = $hxClasses["dhx.OSType"] = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
+dhx.OSType = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
 dhx.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = dhx.OSType; $x.toString = $estr; return $x; }
 dhx.OSType.IOs = ["IOs",1];
 dhx.OSType.IOs.toString = $estr;
@@ -3232,11 +3063,7 @@ dhx.OSType.UnknownOs = ["UnknownOs",5];
 dhx.OSType.UnknownOs.toString = $estr;
 dhx.OSType.UnknownOs.__enum__ = dhx.OSType;
 dhx.ClientHost = function() { }
-$hxClasses["dhx.ClientHost"] = dhx.ClientHost;
 dhx.ClientHost.__name__ = ["dhx","ClientHost"];
-dhx.ClientHost.host = null;
-dhx.ClientHost.environment = null;
-dhx.ClientHost.os = null;
 dhx.ClientHost.isIE = function() {
 	return (function($this) {
 		var $r;
@@ -3256,29 +3083,16 @@ dhx.ClientHost.userAgent = function() {
 dhx.ClientHost.hasNavigator = function() {
 	return typeof navigator !== 'undefined';
 }
-dhx.ClientHost.prototype = {
-	__class__: dhx.ClientHost
-}
 var js = {}
 js.Lib = function() { }
-$hxClasses["js.Lib"] = js.Lib;
 js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
-}
-js.Lib.prototype = {
-	__class__: js.Lib
 }
 dhx.Group = function(nodes) {
 	this.nodes = nodes;
 };
-$hxClasses["dhx.Group"] = dhx.Group;
 dhx.Group.__name__ = ["dhx","Group"];
-dhx.Group.current = null;
 dhx.Group.merge = function(source,target) {
 	if(target.length != source.length) throw "Group length not equal";
 	var _g1 = 0, _g = target.length;
@@ -3307,23 +3121,13 @@ dhx.Group.prototype = {
 		}
 	}
 	,iterator: function() {
-		return this.nodes.iterator();
-	}
-	,get: function(i) {
-		return this.nodes[i];
-	}
-	,count: function() {
-		return this.nodes.length;
-	}
-	,push: function(node) {
-		this.nodes.push(node);
+		return HxOverrides.iter(this.nodes);
 	}
 	,__class__: dhx.Group
 }
 dhx.BaseSelection = function(groups) {
 	this.groups = groups;
 };
-$hxClasses["dhx.BaseSelection"] = dhx.BaseSelection;
 dhx.BaseSelection.__name__ = ["dhx","BaseSelection"];
 dhx.BaseSelection.listenerEnterLeave = function(f,dom,i) {
 	var e = dhx.Dom.event, target = e.relatedTarget;
@@ -3370,7 +3174,7 @@ dhx.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 		var i = _g++;
 		node = nodeByKey.get(key = join(nodeData = groupData[i],i));
 		if(null != node) {
-			node["__dhx_data__"] = nodeData;
+			node.__dhx_data__ = nodeData;
 			updateHtmlDoms[i] = node;
 			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
 		} else {
@@ -3405,7 +3209,7 @@ dhx.BaseSelection.bind = function(group,groupData,update,enter,exit) {
 		node = group.nodes[i];
 		nodeData = groupData[i];
 		if(null != node) {
-			node["__dhx_data__"] = nodeData;
+			node.__dhx_data__ = nodeData;
 			updateHtmlDoms[i] = node;
 			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
 		} else {
@@ -3448,9 +3252,6 @@ dhx.BaseSelection.prototype = {
 		return this._selectAll(function(el) {
 			return dhx.Dom.selectionEngine.selectAll(selector,el);
 		});
-	}
-	,_this: function() {
-		return this;
 	}
 	,append: function(name) {
 		var qname = dhx.Namespace.qualify(name);
@@ -3500,7 +3301,7 @@ dhx.BaseSelection.prototype = {
 		while(_g < _g1.length) {
 			var group = _g1[_g];
 			++_g;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node = $it0.next();
 				if(null != node) return f(node);
@@ -3528,7 +3329,7 @@ dhx.BaseSelection.prototype = {
 			sg.parentNode = group.parentNode;
 			subgroups.push(sg);
 			var i = -1;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node = $it0.next();
 				if(null != node && f(node,++i)) subgroup.push(node);
@@ -3543,7 +3344,7 @@ dhx.BaseSelection.prototype = {
 			var group = _g1[_g];
 			++_g;
 			var i = -1;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node = $it0.next();
 				if(null != node) results.push(f(node,++i));
@@ -3553,11 +3354,11 @@ dhx.BaseSelection.prototype = {
 	}
 	,onNode: function(type,listener,capture) {
 		if(capture == null) capture = false;
-		var i = type.indexOf("."), typo = i < 0?type:type.substr(0,i);
+		var i = type.indexOf("."), typo = i < 0?type:HxOverrides.substr(type,0,i);
 		if((typo == "mouseenter" || typo == "mouseleave") && !dhx.ClientHost.isIE()) {
-			listener = (function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
+			listener = (function(f,f1) {
+				return function(a1,i1) {
+					return f(f1,a1,i1);
 				};
 			})(dhx.BaseSelection.listenerEnterLeave,listener);
 			if(typo == "mouseenter") typo = "mouseover"; else typo = "mouseout";
@@ -3597,13 +3398,13 @@ dhx.BaseSelection.prototype = {
 			++_g;
 			subgroups.push(subgroup = new dhx.Group([]));
 			subgroup.parentNode = group.parentNode;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node1 = $it0.next();
 				if(null != node1) {
 					subgroup.parentNode = node1;
 					subgroup.nodes.push(subnode = selectf(node1));
-					if(null != subnode) subnode["__dhx_data__"] = Reflect.field(node1,"__dhx_data__");
+					if(null != subnode) subnode.__dhx_data__ = Reflect.field(node1,"__dhx_data__");
 				} else subgroup.nodes.push(null);
 			}
 		}
@@ -3615,7 +3416,7 @@ dhx.BaseSelection.prototype = {
 		while(_g < _g1.length) {
 			var group = _g1[_g];
 			++_g;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node = $it0.next();
 				if(null != node) {
@@ -3631,7 +3432,6 @@ dhx.BaseSelection.prototype = {
 dhx.UnboundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
-$hxClasses["dhx.UnboundSelection"] = dhx.UnboundSelection;
 dhx.UnboundSelection.__name__ = ["dhx","UnboundSelection"];
 dhx.UnboundSelection.__super__ = dhx.BaseSelection;
 dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
@@ -3677,18 +3477,9 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 dhx.Selection = function(groups) {
 	dhx.UnboundSelection.call(this,groups);
 };
-$hxClasses["dhx.Selection"] = dhx.Selection;
 dhx.Selection.__name__ = ["dhx","Selection"];
-dhx.Selection.__properties__ = {get_current:"getCurrent"}
-dhx.Selection.current = null;
 dhx.Selection.create = function(groups) {
 	return new dhx.Selection(groups);
-}
-dhx.Selection.getCurrent = function() {
-	return dhx.Dom.selectNode(dhx.Group.current);
-}
-dhx.Selection.getCurrentNode = function() {
-	return dhx.Group.current;
 }
 dhx.Selection.__super__ = dhx.UnboundSelection;
 dhx.Selection.prototype = $extend(dhx.UnboundSelection.prototype,{
@@ -3698,7 +3489,6 @@ dhx.Selection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	,__class__: dhx.Selection
 });
 dhx.ISelectorEngine = function() { }
-$hxClasses["dhx.ISelectorEngine"] = dhx.ISelectorEngine;
 dhx.ISelectorEngine.__name__ = ["dhx","ISelectorEngine"];
 dhx.ISelectorEngine.prototype = {
 	select: null
@@ -3707,7 +3497,6 @@ dhx.ISelectorEngine.prototype = {
 }
 dhx.NativeSelectorEngine = function() {
 };
-$hxClasses["dhx.NativeSelectorEngine"] = dhx.NativeSelectorEngine;
 dhx.NativeSelectorEngine.__name__ = ["dhx","NativeSelectorEngine"];
 dhx.NativeSelectorEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.NativeSelectorEngine.supported = function() {
@@ -3733,7 +3522,6 @@ dhx.NativeSelectorEngine.prototype = {
 }
 dhx.SizzleEngine = function() {
 };
-$hxClasses["dhx.SizzleEngine"] = dhx.SizzleEngine;
 dhx.SizzleEngine.__name__ = ["dhx","SizzleEngine"];
 dhx.SizzleEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.SizzleEngine.supported = function() {
@@ -3752,7 +3540,6 @@ dhx.SizzleEngine.prototype = {
 	,__class__: dhx.SizzleEngine
 }
 dhx.Dom = function() { }
-$hxClasses["dhx.Dom"] = dhx.Dom;
 dhx.Dom.__name__ = ["dhx","Dom"];
 dhx.Dom.select = function(selector) {
 	return dhx.Dom.doc.select(selector);
@@ -3766,29 +3553,20 @@ dhx.Dom.selectNode = function(node) {
 dhx.Dom.selectNodeData = function(node) {
 	return dhx.ResumeSelection.create([new dhx.Group([node])]);
 }
-dhx.Dom.event = null;
-dhx.Dom.prototype = {
-	__class__: dhx.Dom
-}
 dhx.Namespace = function() { }
-$hxClasses["dhx.Namespace"] = dhx.Namespace;
 dhx.Namespace.__name__ = ["dhx","Namespace"];
 dhx.Namespace.qualify = function(name) {
 	var i = name.indexOf(":");
 	if(i < 0) return null; else {
-		var space = dhx.Namespace.prefix.get(name.substr(0,i));
+		var space = dhx.Namespace.prefix.get(HxOverrides.substr(name,0,i));
 		if(null == space) throw "unable to find a namespace for " + space;
-		return new dhx.NSQualifier(space,name.substr(i + 1));
+		return new dhx.NSQualifier(space,HxOverrides.substr(name,i + 1,null));
 	}
-}
-dhx.Namespace.prototype = {
-	__class__: dhx.Namespace
 }
 dhx.NSQualifier = function(space,local) {
 	this.space = space;
 	this.local = local;
 };
-$hxClasses["dhx.NSQualifier"] = dhx.NSQualifier;
 dhx.NSQualifier.__name__ = ["dhx","NSQualifier"];
 dhx.NSQualifier.prototype = {
 	space: null
@@ -3798,7 +3576,6 @@ dhx.NSQualifier.prototype = {
 dhx.BoundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
-$hxClasses["dhx.BoundSelection"] = dhx.BoundSelection;
 dhx.BoundSelection.__name__ = ["dhx","BoundSelection"];
 dhx.BoundSelection.__super__ = dhx.BaseSelection;
 dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
@@ -3863,7 +3640,6 @@ dhx.UpdateSelection = function(update,choice) {
 	dhx.BoundSelection.call(this,update);
 	this._choice = choice;
 };
-$hxClasses["dhx.UpdateSelection"] = dhx.UpdateSelection;
 dhx.UpdateSelection.__name__ = ["dhx","UpdateSelection"];
 dhx.UpdateSelection.__super__ = dhx.BoundSelection;
 dhx.UpdateSelection.prototype = $extend(dhx.BoundSelection.prototype,{
@@ -3888,7 +3664,6 @@ dhx.DataChoice = function(update,enter,exit) {
 	this._exit = exit;
 	dhx.UpdateSelection.call(this,this._update,this);
 };
-$hxClasses["dhx.DataChoice"] = dhx.DataChoice;
 dhx.DataChoice.__name__ = ["dhx","DataChoice"];
 dhx.DataChoice.merge = function(groups,dc) {
 	dhx.Group.merge(groups,dc._update);
@@ -3909,7 +3684,6 @@ dhx.DataChoice.prototype = $extend(dhx.UpdateSelection.prototype,{
 dhx.ResumeSelection = function(groups) {
 	dhx.BoundSelection.call(this,groups);
 };
-$hxClasses["dhx.ResumeSelection"] = dhx.ResumeSelection;
 dhx.ResumeSelection.__name__ = ["dhx","ResumeSelection"];
 dhx.ResumeSelection.create = function(groups) {
 	return new dhx.ResumeSelection(groups);
@@ -3925,7 +3699,6 @@ dhx.PreEnterSelection = function(enter,choice) {
 	this.groups = enter;
 	this._choice = choice;
 };
-$hxClasses["dhx.PreEnterSelection"] = dhx.PreEnterSelection;
 dhx.PreEnterSelection.__name__ = ["dhx","PreEnterSelection"];
 dhx.PreEnterSelection.prototype = {
 	groups: null
@@ -3955,12 +3728,12 @@ dhx.PreEnterSelection.prototype = {
 			++_g;
 			subgroups.push(subgroup = new dhx.Group([]));
 			subgroup.parentNode = group.parentNode;
-			var $it0 = group.nodes.iterator();
+			var $it0 = HxOverrides.iter(group.nodes);
 			while( $it0.hasNext() ) {
 				var node1 = $it0.next();
 				if(null != node1) {
 					subgroup.nodes.push(subnode = selectf(group.parentNode));
-					subnode["__dhx_data__"] = Reflect.field(node1,"__dhx_data__");
+					subnode.__dhx_data__ = Reflect.field(node1,"__dhx_data__");
 				} else subgroup.nodes.push(null);
 			}
 		}
@@ -3973,7 +3746,6 @@ dhx.EnterSelection = function(enter,choice) {
 	dhx.BoundSelection.call(this,enter);
 	this._choice = choice;
 };
-$hxClasses["dhx.EnterSelection"] = dhx.EnterSelection;
 dhx.EnterSelection.__name__ = ["dhx","EnterSelection"];
 dhx.EnterSelection.__super__ = dhx.BoundSelection;
 dhx.EnterSelection.prototype = $extend(dhx.BoundSelection.prototype,{
@@ -3990,7 +3762,6 @@ dhx.ExitSelection = function(exit,choice) {
 	dhx.UnboundSelection.call(this,exit);
 	this._choice = choice;
 };
-$hxClasses["dhx.ExitSelection"] = dhx.ExitSelection;
 dhx.ExitSelection.__name__ = ["dhx","ExitSelection"];
 dhx.ExitSelection.__super__ = dhx.UnboundSelection;
 dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
@@ -4004,7 +3775,6 @@ dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	,__class__: dhx.ExitSelection
 });
 dhx.Svg = function() { }
-$hxClasses["dhx.Svg"] = dhx.Svg;
 dhx.Svg.__name__ = ["dhx","Svg"];
 dhx.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
@@ -4024,15 +3794,11 @@ dhx.Svg.mouse = function(dom) {
 	point = point.matrixTransform(dom.getScreenCTM().inverse());
 	return [point.x,point.y];
 }
-dhx.Svg.prototype = {
-	__class__: dhx.Svg
-}
 dhx.Timer = function() { }
-$hxClasses["dhx.Timer"] = dhx.Timer;
 dhx.Timer.__name__ = ["dhx","Timer"];
 dhx.Timer.timer = function(f,delay) {
 	if(delay == null) delay = 0.0;
-	var now = Date.now().getTime(), found = false, t0, t1 = dhx.Timer.queue;
+	var now = new Date().getTime(), found = false, t0, t1 = dhx.Timer.queue;
 	if(!Math.isFinite(delay)) return;
 	while(null != t1) {
 		if(Reflect.compareMethods(f,t1.f)) {
@@ -4052,7 +3818,7 @@ dhx.Timer.timer = function(f,delay) {
 	}
 }
 dhx.Timer.step = function() {
-	var elapsed, now = Date.now().getTime(), t1 = dhx.Timer.queue;
+	var elapsed, now = new Date().getTime(), t1 = dhx.Timer.queue;
 	while(null != t1) {
 		elapsed = now - t1.then;
 		if(elapsed > t1.delay) t1.flush = t1.f(elapsed);
@@ -4078,9 +3844,6 @@ dhx.Timer._flush = function() {
 	}
 	return then;
 }
-dhx.Timer.prototype = {
-	__class__: dhx.Timer
-}
 dhx.BaseTransition = function(selection) {
 	this.selection = selection;
 	var tid = this._transitionId = dhx.BaseTransition._inheritid > 0?dhx.BaseTransition._inheritid:++dhx.BaseTransition._id;
@@ -4091,14 +3854,13 @@ dhx.BaseTransition = function(selection) {
 	this._delay = [];
 	this._duration = [];
 	this._ease = dhx.BaseTransition.DEFAULT_EASE;
-	this._step = this.step.$bind(this);
+	this._step = $bind(this,this.step);
 	selection.eachNode(function(n,_) {
-		if(Reflect.hasField(n,"__dhx_transition__")) Reflect.field(n,"__dhx_transition__").owner = tid; else n["__dhx_transition__"] = { owner : tid};
+		if(Reflect.hasField(n,"__dhx_transition__")) Reflect.field(n,"__dhx_transition__").owner = tid; else n.__dhx_transition__ = { owner : tid};
 	});
 	this.delay(null,0);
 	this.duration(null,250);
 };
-$hxClasses["dhx.BaseTransition"] = dhx.BaseTransition;
 dhx.BaseTransition.__name__ = ["dhx","BaseTransition"];
 dhx.BaseTransition.CUBIC_EQUATION = function(t) {
 	return Math.pow(t,3);
@@ -4232,7 +3994,6 @@ dhx.BaseTransition.prototype = {
 dhx.UnboundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
-$hxClasses["dhx.UnboundTransition"] = dhx.UnboundTransition;
 dhx.UnboundTransition.__name__ = ["dhx","UnboundTransition"];
 dhx.UnboundTransition.__super__ = dhx.BaseTransition;
 dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
@@ -4247,7 +4008,6 @@ dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 dhx.BoundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
-$hxClasses["dhx.BoundTransition"] = dhx.BoundTransition;
 dhx.BoundTransition.__name__ = ["dhx","BoundTransition"];
 dhx.BoundTransition.__super__ = dhx.BaseTransition;
 dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
@@ -4268,7 +4028,6 @@ haxe.BaseCode = function(base) {
 	this.base = base;
 	this.nbits = nbits;
 };
-$hxClasses["haxe.BaseCode"] = haxe.BaseCode;
 haxe.BaseCode.__name__ = ["haxe","BaseCode"];
 haxe.BaseCode.prototype = {
 	base: null
@@ -4320,7 +4079,6 @@ haxe.Http = function(url) {
 	this.params = new Hash();
 	this.async = true;
 };
-$hxClasses["haxe.Http"] = haxe.Http;
 haxe.Http.__name__ = ["haxe","Http"];
 haxe.Http.prototype = {
 	url: null
@@ -4403,7 +4161,6 @@ haxe.Http.prototype = {
 }
 haxe.Md5 = function() {
 };
-$hxClasses["haxe.Md5"] = haxe.Md5;
 haxe.Md5.__name__ = ["haxe","Md5"];
 haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
@@ -4449,7 +4206,7 @@ haxe.Md5.prototype = {
 		}
 		var i = 0;
 		while(i < str.length) {
-			blks[i >> 2] |= str.charCodeAt(i) << (str.length * 8 + i) % 4 * 8;
+			blks[i >> 2] |= HxOverrides.cca(str,i) << (str.length * 8 + i) % 4 * 8;
 			i++;
 		}
 		blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8;
@@ -4573,7 +4330,6 @@ haxe.Timer = function(time_ms) {
 		me.run();
 	},time_ms);
 };
-$hxClasses["haxe.Timer"] = haxe.Timer;
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
 	var t = new haxe.Timer(time_ms);
@@ -4598,7 +4354,6 @@ var hxevents = {}
 hxevents.Dispatcher = function() {
 	this.handlers = new Array();
 };
-$hxClasses["hxevents.Dispatcher"] = hxevents.Dispatcher;
 hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
 hxevents.Dispatcher.prototype = {
 	handlers: null
@@ -4625,7 +4380,7 @@ hxevents.Dispatcher.prototype = {
 		return null;
 	}
 	,dispatch: function(e) {
-		var list = this.handlers.copy();
+		var list = this.handlers.slice();
 		var _g = 0;
 		while(_g < list.length) {
 			var l = list[_g];
@@ -4643,7 +4398,6 @@ hxevents.Dispatcher.prototype = {
 hxevents.Notifier = function() {
 	this.handlers = new Array();
 };
-$hxClasses["hxevents.Notifier"] = hxevents.Notifier;
 hxevents.Notifier.__name__ = ["hxevents","Notifier"];
 hxevents.Notifier.prototype = {
 	handlers: null
@@ -4670,7 +4424,7 @@ hxevents.Notifier.prototype = {
 		return null;
 	}
 	,dispatch: function() {
-		var list = this.handlers.copy();
+		var list = this.handlers.slice();
 		var _g = 0;
 		while(_g < list.length) {
 			var l = list[_g];
@@ -4686,17 +4440,16 @@ hxevents.Notifier.prototype = {
 	,__class__: hxevents.Notifier
 }
 js.Boot = function() { }
-$hxClasses["js.Boot"] = js.Boot;
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
 	var t = typeof(o);
-	if(t == "function" && (o.__name__ != null || o.__ename__ != null)) t = "object";
+	if(t == "function" && (o.__name__ || o.__ename__)) t = "object";
 	switch(t) {
 	case "object":
 		if(o instanceof Array) {
-			if(o.__enum__ != null) {
+			if(o.__enum__) {
 				if(o.length == 2) return o[0];
 				var str = o[0] + "(";
 				s += "\t";
@@ -4791,70 +4544,15 @@ js.Boot.__instanceof = function(o,cl) {
 		return true;
 	default:
 		if(o == null) return false;
-		return o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
+		if(cl == Class && o.__name__ != null) return true; else null;
+		if(cl == Enum && o.__ename__ != null) return true; else null;
+		return o.__enum__ == cl;
 	}
 }
-js.Boot.__init = function() {
-	js.Lib.isIE = typeof document!='undefined' && document.all != null && typeof window!='undefined' && window.opera == null;
-	js.Lib.isOpera = typeof window!='undefined' && window.opera != null;
-	Array.prototype.copy = Array.prototype.slice;
-	Array.prototype.insert = function(i,x) {
-		this.splice(i,0,x);
-	};
-	Array.prototype.remove = Array.prototype.indexOf?function(obj) {
-		var idx = this.indexOf(obj);
-		if(idx == -1) return false;
-		this.splice(idx,1);
-		return true;
-	}:function(obj) {
-		var i = 0;
-		var l = this.length;
-		while(i < l) {
-			if(this[i] == obj) {
-				this.splice(i,1);
-				return true;
-			}
-			i++;
-		}
-		return false;
-	};
-	Array.prototype.iterator = function() {
-		return { cur : 0, arr : this, hasNext : function() {
-			return this.cur < this.arr.length;
-		}, next : function() {
-			return this.arr[this.cur++];
-		}};
-	};
-	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
-	String.prototype.charCodeAt = function(i) {
-		var x = this.cca(i);
-		if(x != x) return undefined;
-		return x;
-	};
-	var oldsub = String.prototype.substr;
-	String.prototype.substr = function(pos,len) {
-		if(pos != null && pos != 0 && len != null && len < 0) return "";
-		if(len == null) len = this.length;
-		if(pos < 0) {
-			pos = this.length + pos;
-			if(pos < 0) pos = 0;
-		} else if(len < 0) len = this.length + len - pos;
-		return oldsub.apply(this,[pos,len]);
-	};
-	Function.prototype["$bind"] = function(o) {
-		var f = function() {
-			return f.method.apply(f.scope,arguments);
-		};
-		f.scope = o;
-		f.method = this;
-		return f;
-	};
-}
-js.Boot.prototype = {
-	__class__: js.Boot
+js.Boot.__cast = function(o,t) {
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 }
 js.Scroll = function() { }
-$hxClasses["js.Scroll"] = js.Scroll;
 js.Scroll.__name__ = ["js","Scroll"];
 js.Scroll.getTop = function() {
 	var sy = window.pageYOffset;
@@ -4874,9 +4572,6 @@ js.Scroll.getLeft = function() {
 	}
 	return document.documentElement.scrollLeft;
 }
-js.Scroll.prototype = {
-	__class__: js.Scroll
-}
 var math = {}
 math.BigInteger = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
@@ -4884,53 +4579,37 @@ math.BigInteger = function() {
 	this.chunks = new Array();
 	switch(math.BigInteger.defaultAm) {
 	case 1:
-		this.am = this.am1.$bind(this);
+		this.am = $bind(this,this.am1);
 		break;
 	case 2:
-		this.am = this.am2.$bind(this);
+		this.am = $bind(this,this.am2);
 		break;
 	case 3:
-		this.am = this.am3.$bind(this);
+		this.am = $bind(this,this.am3);
 		break;
 	default:
 		throw "am error";
 		null;
 	}
 };
-$hxClasses["math.BigInteger"] = math.BigInteger;
 math.BigInteger.__name__ = ["math","BigInteger"];
-math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
-math.BigInteger.DB = null;
-math.BigInteger.DM = null;
-math.BigInteger.DV = null;
-math.BigInteger.BI_FP = null;
-math.BigInteger.FV = null;
-math.BigInteger.F1 = null;
-math.BigInteger.F2 = null;
-math.BigInteger.ZERO = null;
-math.BigInteger.ONE = null;
-math.BigInteger.BI_RM = null;
-math.BigInteger.BI_RC = null;
-math.BigInteger.lowprimes = null;
-math.BigInteger.lplim = null;
-math.BigInteger.defaultAm = null;
 math.BigInteger.initBiRc = function() {
 	math.BigInteger.BI_RC = new Array();
-	var rr = "0".charCodeAt(0);
+	var rr = HxOverrides.cca("0",0);
 	var _g = 0;
 	while(_g < 10) {
 		var vv = _g++;
 		math.BigInteger.BI_RC[rr] = vv;
 		rr++;
 	}
-	rr = "a".charCodeAt(0);
+	rr = HxOverrides.cca("a",0);
 	var _g = 10;
 	while(_g < 37) {
 		var vv = _g++;
 		math.BigInteger.BI_RC[rr] = vv;
 		rr++;
 	}
-	rr = "A".charCodeAt(0);
+	rr = HxOverrides.cca("A",0);
 	var _g = 10;
 	while(_g < 37) {
 		var vv = _g++;
@@ -4990,7 +4669,7 @@ math.BigInteger.ofString = function(s,base) {
 	me.sign = 0;
 	var i = s.length, mi = false, sh = 0;
 	while(--i >= 0) {
-		var x = k == 8?s.charCodeAt(i) & 255:math.BigInteger.intAt(s,i);
+		var x = k == 8?HxOverrides.cca(s,i) & 255:math.BigInteger.intAt(s,i);
 		if(x < 0) {
 			if(s.charAt(i) == "-") mi = true;
 			continue;
@@ -5007,7 +4686,7 @@ math.BigInteger.ofString = function(s,base) {
 		sh += k;
 		if(sh >= math.BigInteger.DB) sh -= math.BigInteger.DB;
 	}
-	if(k == 8 && (s.charCodeAt(0) & 128) != 0) {
+	if(k == 8 && (HxOverrides.cca(s,0) & 128) != 0) {
 		me.sign = -1;
 		if(sh > 0) me.chunks[me.t - 1] |= (1 << math.BigInteger.DB - sh) - 1 << sh;
 	}
@@ -5075,7 +4754,7 @@ math.BigInteger.nbits = function(x) {
 	return r;
 }
 math.BigInteger.intAt = function(s,i) {
-	var c = math.BigInteger.BI_RC[s.charCodeAt(i)];
+	var c = math.BigInteger.BI_RC[HxOverrides.cca(s,i)];
 	if(c == null) return -1;
 	return c;
 }
@@ -5149,7 +4828,7 @@ math.BigInteger.prototype = {
 		var r = "";
 		this.divRemTo(d,y,z);
 		while(y.sigNum() > 0) {
-			r = I32.baseEncode(a + z.toInt32(),b).substr(1) + r;
+			r = HxOverrides.substr(I32.baseEncode(a + z.toInt32(),b),1,null) + r;
 			y.divRemTo(d,y,z);
 		}
 		return I32.baseEncode(z.toInt32(),b) + r;
@@ -5677,7 +5356,6 @@ math.BigInteger.prototype = {
 }
 math.prng = {}
 math.prng.IPrng = function() { }
-$hxClasses["math.prng.IPrng"] = math.prng.IPrng;
 math.prng.IPrng.__name__ = ["math","prng","IPrng"];
 math.prng.IPrng.prototype = {
 	size: null
@@ -5688,7 +5366,6 @@ math.prng.IPrng.prototype = {
 }
 math.reduction = {}
 math.reduction.ModularReduction = function() { }
-$hxClasses["math.reduction.ModularReduction"] = math.reduction.ModularReduction;
 math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
 math.reduction.ModularReduction.prototype = {
 	convert: null
@@ -5705,7 +5382,6 @@ math.reduction.Barrett = function(m) {
 	this.mu = this.r2.div(m);
 	this.m = m;
 };
-$hxClasses["math.reduction.Barrett"] = math.reduction.Barrett;
 math.reduction.Barrett.__name__ = ["math","reduction","Barrett"];
 math.reduction.Barrett.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Barrett.prototype = {
@@ -5749,7 +5425,6 @@ math.reduction.Barrett.prototype = {
 math.reduction.Classic = function(m) {
 	this.m = m;
 };
-$hxClasses["math.reduction.Classic"] = math.reduction.Classic;
 math.reduction.Classic.__name__ = ["math","reduction","Classic"];
 math.reduction.Classic.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Classic.prototype = {
@@ -5782,7 +5457,6 @@ math.reduction.Montgomery = function(x) {
 	this.um = (1 << math.BigInteger.DB - 15) - 1;
 	this.mt2 = 2 * this.m.t;
 };
-$hxClasses["math.reduction.Montgomery"] = math.reduction.Montgomery;
 math.reduction.Montgomery.__name__ = ["math","reduction","Montgomery"];
 math.reduction.Montgomery.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Montgomery.prototype = {
@@ -5836,18 +5510,13 @@ math.reduction.Montgomery.prototype = {
 }
 var rg = {}
 rg.RGConst = function() { }
-$hxClasses["rg.RGConst"] = rg.RGConst;
 rg.RGConst.__name__ = ["rg","RGConst"];
-rg.RGConst.prototype = {
-	__class__: rg.RGConst
-}
 rg.app = {}
 rg.app.charts = {}
 rg.app.charts.App = function(notifier) {
 	this.layouts = new Hash();
 	this.globalNotifier = notifier;
 };
-$hxClasses["rg.app.charts.App"] = rg.app.charts.App;
 rg.app.charts.App.__name__ = ["rg","app","charts","App"];
 rg.app.charts.App.nextid = function() {
 	return ":RGVIZ-" + ++rg.app.charts.App.lastid;
@@ -5859,7 +5528,7 @@ rg.app.charts.App.prototype = {
 	layouts: null
 	,globalNotifier: null
 	,visualization: function(el,jsoptions) {
-		var me = this;
+		var _g = this;
 		rg.app.charts.App.chartsCounter++;
 		var node = el.node(), id = node.id;
 		if(null == id) node.id = id = rg.app.charts.App.nextid();
@@ -5867,10 +5536,10 @@ rg.app.charts.App.prototype = {
 		var visualization = null;
 		params.options.marginheight = 29;
 		var ivariables = Arrays.filter(variables,function(v) {
-			return Std["is"](v,rg.data.VariableIndependent);
+			return js.Boot.__instanceof(v,rg.data.VariableIndependent);
 		});
 		var dvariables = Arrays.filter(variables,function(v) {
-			return Std["is"](v,rg.data.VariableDependent);
+			return js.Boot.__instanceof(v,rg.data.VariableDependent);
 		});
 		loader.onLoad.addOnce(function(data) {
 			new rg.data.IndependentVariableProcessor().process(data,ivariables);
@@ -5906,9 +5575,9 @@ rg.app.charts.App.prototype = {
 		if(!uselegacy && (null != download.position || null != download.handler)) {
 			var downloader = new rg.interactive.RGDownloader(visualization.container,download.service);
 			if(null != download.handler) visualization.addReadyOnce(function() {
-				download.handler(downloader.download.$bind(downloader));
+				download.handler($bind(downloader,downloader.download));
 			}); else visualization.addReadyOnce(function() {
-				var widget = new rg.html.widget.DownloaderMenu(downloader.download.$bind(downloader),download.position,download.formats,visualization.container);
+				var widget = new rg.html.widget.DownloaderMenu($bind(downloader,downloader.download),download.position,download.formats,visualization.container);
 				brandPadding = 24;
 			});
 		}
@@ -5918,10 +5587,10 @@ rg.app.charts.App.prototype = {
 			});
 			visualization.addReadyOnce(function() {
 				rg.app.charts.App.chartsLoaded++;
-				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) me.globalNotifier.dispatch();
+				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) _g.globalNotifier.dispatch();
 			});
 		}
-		haxe.Timer.delay(loader.load.$bind(loader),0);
+		haxe.Timer.delay($bind(loader,loader.load),0);
 		return visualization;
 	}
 	,getLayout: function(id,options,container,replace) {
@@ -5936,7 +5605,6 @@ rg.app.charts.App.prototype = {
 	,__class__: rg.app.charts.App
 }
 rg.app.charts.JSBridge = function() { }
-$hxClasses["rg.app.charts.JSBridge"] = rg.app.charts.JSBridge;
 rg.app.charts.JSBridge.__name__ = ["rg","app","charts","JSBridge"];
 rg.app.charts.JSBridge.log = function(msg) {
 	var c = (window.console && window.console.warn) || alert;
@@ -6013,19 +5681,19 @@ rg.app.charts.JSBridge.main = function() {
 		return scache.get(type,null == size?100:size);
 	};
 	r.date = { range : function(a,b,p) {
-		if(Std["is"](a,String)) a = thx.date.DateParser.parse(a);
+		if(js.Boot.__instanceof(a,String)) a = thx.date.DateParser.parse(a);
 		if(null == a) a = rg.util.Periodicity.defaultRange(p)[0];
-		if(Std["is"](a,Date)) a = a.getTime();
-		if(Std["is"](b,String)) b = thx.date.DateParser.parse(b);
+		if(js.Boot.__instanceof(a,Date)) a = a.getTime();
+		if(js.Boot.__instanceof(b,String)) b = thx.date.DateParser.parse(b);
 		if(null == b) b = rg.util.Periodicity.defaultRange(p)[1];
-		if(Std["is"](b,Date)) b = b.getTime();
+		if(js.Boot.__instanceof(b,Date)) b = b.getTime();
 		return rg.util.Periodicity.range(a,b,p);
 	}, formatPeriodicity : function(date,periodicity) {
-		var d = Std["is"](date,Date)?date.getTime():Std["is"](date,Float)?date:thx.date.DateParser.parse(date).getTime();
+		var d = js.Boot.__instanceof(date,Date)?date.getTime():js.Boot.__instanceof(date,Float)?date:thx.date.DateParser.parse(date).getTime();
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.humanize = function(v) {
-		if(Std["is"](v,String) && v.indexOf("time:") >= 0) return v.substr(v.indexOf("time:") + "time:".length);
+		if(js.Boot.__instanceof(v,String) && v.indexOf("time:") >= 0) return HxOverrides.substr(v,v.indexOf("time:") + "time:".length,null);
 		return rg.util.RGStrings.humanize(v);
 	};
 	var rand = new thx.math.Random(666);
@@ -6036,7 +5704,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.26.8324"};
+	r.info.charts = { version : "1.4.27.8620"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -6045,7 +5713,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 	while(_g < _g1.length) {
 		var field = [_g1[_g]];
 		++_g;
-		if(field[0].substr(0,1) == "_" || !Reflect.isFunction(Reflect.field(inst,field[0]))) continue;
+		if(HxOverrides.substr(field[0],0,1) == "_" || !Reflect.isFunction(Reflect.field(inst,field[0]))) continue;
 		query[field[0]] = (function(field) {
 			return function() {
 				var ob = rg.query.Query.create(), f = Reflect.field(ob,field[0]);
@@ -6056,7 +5724,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 	return query;
 }
 rg.app.charts.JSBridge.select = function(el) {
-	var s = Std["is"](el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
+	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
 	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 196, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
@@ -6069,11 +5737,7 @@ rg.app.charts.JSBridge.chartopt = function(ob,viz) {
 	ob.options.visualization = null != viz?viz:ob.options.visualization;
 	return ob;
 }
-rg.app.charts.JSBridge.prototype = {
-	__class__: rg.app.charts.JSBridge
-}
 rg.app.charts.MVPOptions = function() { }
-$hxClasses["rg.app.charts.MVPOptions"] = rg.app.charts.MVPOptions;
 rg.app.charts.MVPOptions.__name__ = ["rg","app","charts","MVPOptions"];
 rg.app.charts.MVPOptions.a1 = function(params,handler) {
 	var authcode = ReportGrid.authCode, authorized = false;
@@ -6111,7 +5775,7 @@ rg.app.charts.MVPOptions.a2 = function(params,handler) {
 	};
 	var api = ReportGrid.token;
 	if(params.options.a || null == api) changeAndToggle(null); else api(function(result) {
-		changeAndToggle((result.expires <= 0 || result.expires >= Date.now().getTime()) && result.permissions.read);
+		changeAndToggle((result.expires <= 0 || result.expires >= new Date().getTime()) && result.permissions.read);
 	},function(err) {
 		changeAndToggle(null);
 	});
@@ -6123,7 +5787,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(Std["is"](v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 118, className : "rg.app.charts.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(js.Boot.__instanceof(v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 118, className : "rg.app.charts.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
 	chain.addAction(rg.app.charts.MVPOptions.a1);
@@ -6132,7 +5796,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 		var axes = params.axes, hasdependent = false;
 		if(null == axes) axes = [];
 		params.axes = axes = axes.map(function(v,_) {
-			return Std["is"](v,String)?{ type : v}:v;
+			return js.Boot.__instanceof(v,String)?{ type : v}:v;
 		});
 		var _g1 = 0, _g = axes.length;
 		while(_g1 < _g) {
@@ -6204,12 +5868,8 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	});
 	chain.execute(parameters);
 }
-rg.app.charts.MVPOptions.prototype = {
-	__class__: rg.app.charts.MVPOptions
-}
 rg.axis = {}
 rg.axis.IAxis = function() { }
-$hxClasses["rg.axis.IAxis"] = rg.axis.IAxis;
 rg.axis.IAxis.__name__ = ["rg","axis","IAxis"];
 rg.axis.IAxis.prototype = {
 	scale: null
@@ -6220,17 +5880,14 @@ rg.axis.IAxis.prototype = {
 	,__class__: rg.axis.IAxis
 }
 rg.axis.IAxisDiscrete = function() { }
-$hxClasses["rg.axis.IAxisDiscrete"] = rg.axis.IAxisDiscrete;
 rg.axis.IAxisDiscrete.__name__ = ["rg","axis","IAxisDiscrete"];
 rg.axis.IAxisDiscrete.__interfaces__ = [rg.axis.IAxis];
 rg.axis.IAxisDiscrete.prototype = {
 	scaleDistribution: null
 	,range: null
 	,__class__: rg.axis.IAxisDiscrete
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.IAxisOrdinal = function() { }
-$hxClasses["rg.axis.IAxisOrdinal"] = rg.axis.IAxisOrdinal;
 rg.axis.IAxisOrdinal.__name__ = ["rg","axis","IAxisOrdinal"];
 rg.axis.IAxisOrdinal.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.IAxisOrdinal.prototype = {
@@ -6243,7 +5900,6 @@ rg.axis.IAxisOrdinal.prototype = {
 rg.axis.AxisOrdinal = function() {
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
 };
-$hxClasses["rg.axis.AxisOrdinal"] = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
 rg.axis.AxisOrdinal.__interfaces__ = [rg.axis.IAxisOrdinal];
 rg.axis.AxisOrdinal.prototype = {
@@ -6284,10 +5940,10 @@ rg.axis.AxisOrdinal.prototype = {
 		}(this));
 	}
 	,allTicks: function() {
-		var me = this;
+		var _g = this;
 		var f = this.first(), l = this.last();
 		return this.range(f,l).map(function(d,i) {
-			return me.toTickmark(f,l,d);
+			return _g.toTickmark(f,l,d);
 		});
 	}
 	,setScaleDistribution: function(v) {
@@ -6303,13 +5959,11 @@ rg.axis.AxisOrdinal.prototype = {
 		return new rg.axis.Stats(type);
 	}
 	,__class__: rg.axis.AxisOrdinal
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.AxisOrdinalFixedValues = function(arr) {
 	rg.axis.AxisOrdinal.call(this);
 	this._values = arr;
 };
-$hxClasses["rg.axis.AxisOrdinalFixedValues"] = rg.axis.AxisOrdinalFixedValues;
 rg.axis.AxisOrdinalFixedValues.__name__ = ["rg","axis","AxisOrdinalFixedValues"];
 rg.axis.AxisOrdinalFixedValues.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalFixedValues.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -6323,7 +5977,6 @@ rg.axis.AxisGroupByTime = function(groupby) {
 	rg.axis.AxisOrdinalFixedValues.call(this,rg.axis.AxisGroupByTime.valuesByGroup(groupby));
 	this.groupBy = groupby;
 };
-$hxClasses["rg.axis.AxisGroupByTime"] = rg.axis.AxisGroupByTime;
 rg.axis.AxisGroupByTime.__name__ = ["rg","axis","AxisGroupByTime"];
 rg.axis.AxisGroupByTime.valuesByGroup = function(groupby) {
 	return Ints.range(rg.axis.AxisGroupByTime.defaultMin(groupby),rg.axis.AxisGroupByTime.defaultMax(groupby) + 1);
@@ -6361,16 +6014,12 @@ rg.axis.AxisGroupByTime.prototype = $extend(rg.axis.AxisOrdinalFixedValues.proto
 });
 rg.axis.AxisNumeric = function() {
 };
-$hxClasses["rg.axis.AxisNumeric"] = rg.axis.AxisNumeric;
 rg.axis.AxisNumeric.__name__ = ["rg","axis","AxisNumeric"];
 rg.axis.AxisNumeric.__interfaces__ = [rg.axis.IAxis];
 rg.axis.AxisNumeric._step = function(span,m) {
 	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
 	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 	return step;
-}
-rg.axis.AxisNumeric.nice = function(v) {
-	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
 }
 rg.axis.AxisNumeric.niceMin = function(d,v) {
 	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
@@ -6398,7 +6047,7 @@ rg.axis.AxisNumeric.prototype = {
 		return rg.axis.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.axis.Tickmark(d,true,(d - start) / (end - start));
 		}):minors.map(function(d,i) {
-			return new rg.axis.Tickmark(d,majors.remove(d),(d - start) / (end - start));
+			return new rg.axis.Tickmark(d,HxOverrides.remove(majors,d),(d - start) / (end - start));
 		}),maxTicks);
 	}
 	,min: function(stats,meta) {
@@ -6420,7 +6069,6 @@ rg.axis.AxisOrdinalStats = function(variable) {
 	rg.axis.AxisOrdinal.call(this);
 	this.variable = variable;
 };
-$hxClasses["rg.axis.AxisOrdinalStats"] = rg.axis.AxisOrdinalStats;
 rg.axis.AxisOrdinalStats.__name__ = ["rg","axis","AxisOrdinalStats"];
 rg.axis.AxisOrdinalStats.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -6434,7 +6082,6 @@ rg.axis.AxisTime = function(periodicity) {
 	this.periodicity = periodicity;
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
 };
-$hxClasses["rg.axis.AxisTime"] = rg.axis.AxisTime;
 rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
 rg.axis.AxisTime.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.AxisTime.prototype = {
@@ -6445,12 +6092,24 @@ rg.axis.AxisTime.prototype = {
 		case "day":
 			if(units <= 31) return true;
 			if(units < 121) {
-				var d = Date.fromTime(value).getDate();
+				var d = ((function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(value);
+					$r = d1;
+					return $r;
+				}(this))).getDate();
 				return rg.util.Periodicity.firstInSeries("month",value) || rg.util.Periodicity.firstInSeries("week",value);
 			}
 			return rg.util.Periodicity.firstInSeries("month",value);
 		case "week":
-			if(units < 31) return true; else return Date.fromTime(value).getDate() <= 7;
+			if(units < 31) return true; else return ((function($this) {
+				var $r;
+				var d = new Date();
+				d.setTime(value);
+				$r = d;
+				return $r;
+			}(this))).getDate() <= 7;
 			break;
 		default:
 			var series = Reflect.field(rg.axis.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
@@ -6468,9 +6127,9 @@ rg.axis.AxisTime.prototype = {
 		}
 	}
 	,ticks: function(start,end,upperBound) {
-		var me = this;
+		var _g = this;
 		var span = end - start, units = rg.util.Periodicity.unitsBetween(start,end,this.periodicity), values = this.range(start,end), range = values.map(function(value,i) {
-			return new rg.axis.TickmarkTime(value,values,me.isMajor(units,value),me.periodicity,me.scaleDistribution);
+			return new rg.axis.TickmarkTime(value,values,_g.isMajor(units,value),_g.periodicity,_g.scaleDistribution);
 		});
 		return rg.axis.Tickmarks.bound(range,upperBound);
 	}
@@ -6499,10 +6158,8 @@ rg.axis.AxisTime.prototype = {
 		return new rg.axis.StatsNumeric(type);
 	}
 	,__class__: rg.axis.AxisTime
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.ITickmark = function() { }
-$hxClasses["rg.axis.ITickmark"] = rg.axis.ITickmark;
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
 	delta: null
@@ -6510,9 +6167,8 @@ rg.axis.ITickmark.prototype = {
 	,value: null
 	,label: null
 	,__class__: rg.axis.ITickmark
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
-rg.axis.ScaleDistribution = $hxClasses["rg.axis.ScaleDistribution"] = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
+rg.axis.ScaleDistribution = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
 rg.axis.ScaleDistribution.ScaleFit.toString = $estr;
 rg.axis.ScaleDistribution.ScaleFit.__enum__ = rg.axis.ScaleDistribution;
@@ -6526,7 +6182,6 @@ rg.axis.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
 rg.axis.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.axis.ScaleDistribution.ScaleAfter.__enum__ = rg.axis.ScaleDistribution;
 rg.axis.ScaleDistributions = function() { }
-$hxClasses["rg.axis.ScaleDistributions"] = rg.axis.ScaleDistributions;
 rg.axis.ScaleDistributions.__name__ = ["rg","axis","ScaleDistributions"];
 rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
 	switch( (scale)[1] ) {
@@ -6540,15 +6195,11 @@ rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
 		return (pos + 1) / values;
 	}
 }
-rg.axis.ScaleDistributions.prototype = {
-	__class__: rg.axis.ScaleDistributions
-}
 rg.axis.Stats = function(type,sortf) {
 	this.type = type;
 	this.sortf = sortf;
 	this.reset();
 };
-$hxClasses["rg.axis.Stats"] = rg.axis.Stats;
 rg.axis.Stats.__name__ = ["rg","axis","Stats"];
 rg.axis.Stats.prototype = {
 	min: null
@@ -6574,7 +6225,7 @@ rg.axis.Stats.prototype = {
 		return this;
 	}
 	,addMany: function(it) {
-		var $it0 = it.iterator();
+		var $it0 = $iterator(it)();
 		while( $it0.hasNext() ) {
 			var v = $it0.next();
 			this.count++;
@@ -6592,7 +6243,6 @@ rg.axis.StatsNumeric = function(type,sortf) {
 	if(null == sortf) sortf = Floats.compare;
 	rg.axis.Stats.call(this,type,sortf);
 };
-$hxClasses["rg.axis.StatsNumeric"] = rg.axis.StatsNumeric;
 rg.axis.StatsNumeric.__name__ = ["rg","axis","StatsNumeric"];
 rg.axis.StatsNumeric.__super__ = rg.axis.Stats;
 rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
@@ -6609,7 +6259,7 @@ rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
 	}
 	,addMany: function(it) {
 		rg.axis.Stats.prototype.addMany.call(this,it);
-		var $it0 = it.iterator();
+		var $it0 = $iterator(it)();
 		while( $it0.hasNext() ) {
 			var v = $it0.next();
 			this.tot += v;
@@ -6623,7 +6273,6 @@ rg.axis.Tickmark = function(value,major,delta) {
 	this.major = major;
 	this.delta = delta;
 };
-$hxClasses["rg.axis.Tickmark"] = rg.axis.Tickmark;
 rg.axis.Tickmark.__name__ = ["rg","axis","Tickmark"];
 rg.axis.Tickmark.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.Tickmark.prototype = {
@@ -6644,7 +6293,6 @@ rg.axis.Tickmark.prototype = {
 		return rg.util.RGStrings.humanize(this.getValue());
 	}
 	,__class__: rg.axis.Tickmark
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
@@ -6653,7 +6301,6 @@ rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	this.scaleDistribution = scaleDistribution;
 	this.major = major;
 };
-$hxClasses["rg.axis.TickmarkOrdinal"] = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkOrdinal.__name__ = ["rg","axis","TickmarkOrdinal"];
 rg.axis.TickmarkOrdinal.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
@@ -6682,13 +6329,11 @@ rg.axis.TickmarkOrdinal.prototype = {
 		return rg.util.RGStrings.humanize(this.values[this.pos]);
 	}
 	,__class__: rg.axis.TickmarkOrdinal
-	,__properties__: {get_label:"getLabel",get_value:"getValue",get_major:"getMajor",get_delta:"getDelta"}
 }
 rg.axis.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
 	rg.axis.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
 	this.periodicity = periodicity;
 };
-$hxClasses["rg.axis.TickmarkTime"] = rg.axis.TickmarkTime;
 rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
 rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
@@ -6699,7 +6344,6 @@ rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
 	,__class__: rg.axis.TickmarkTime
 });
 rg.axis.Tickmarks = function() { }
-$hxClasses["rg.axis.Tickmarks"] = rg.axis.Tickmarks;
 rg.axis.Tickmarks.__name__ = ["rg","axis","Tickmarks"];
 rg.axis.Tickmarks.bound = function(tickmarks,max) {
 	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
@@ -6722,34 +6366,26 @@ rg.axis.Tickmarks.reduce = function(arr,max) {
 	do result.push(arr[Math.round(keep * i++)]); while(max > result.length);
 	return result;
 }
-rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
-	return new rg.axis.Tickmark(value,major,(value - start) / (end - start));
-}
-rg.axis.Tickmarks.prototype = {
-	__class__: rg.axis.Tickmarks
-}
 rg.data = {}
 rg.data.DataLoader = function(loader) {
 	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 11, className : "rg.data.DataLoader", methodName : "new"}); else null;
 	this.loader = loader;
 	this.onLoad = new hxevents.Dispatcher();
 };
-$hxClasses["rg.data.DataLoader"] = rg.data.DataLoader;
 rg.data.DataLoader.__name__ = ["rg","data","DataLoader"];
 rg.data.DataLoader.prototype = {
 	loader: null
 	,onLoad: null
 	,load: function() {
-		var me = this;
+		var _g = this;
 		this.loader(function(datapoints) {
-			me.onLoad.dispatch(datapoints);
+			_g.onLoad.dispatch(datapoints);
 		});
 	}
 	,__class__: rg.data.DataLoader
 }
 rg.data.DependentVariableProcessor = function() {
 };
-$hxClasses["rg.data.DependentVariableProcessor"] = rg.data.DependentVariableProcessor;
 rg.data.DependentVariableProcessor.__name__ = ["rg","data","DependentVariableProcessor"];
 rg.data.DependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6759,7 +6395,7 @@ rg.data.DependentVariableProcessor.prototype = {
 			++_g;
 			var values = rg.util.DataPoints.values(data,variable.type);
 			if(values.length == 0) continue;
-			if(null == variable.axis) variable.setAxis(new rg.factory.FactoryAxis().create(variable.type,Std["is"](values[0],Float),variable,null));
+			if(null == variable.axis) variable.setAxis(new rg.factory.FactoryAxis().create(variable.type,js.Boot.__instanceof(values[0],Float),variable,null));
 			variable.stats.addMany(values);
 			var discrete;
 			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.axis.IAxisDiscrete))) {
@@ -6772,7 +6408,6 @@ rg.data.DependentVariableProcessor.prototype = {
 }
 rg.data.IndependentVariableProcessor = function() {
 };
-$hxClasses["rg.data.IndependentVariableProcessor"] = rg.data.IndependentVariableProcessor;
 rg.data.IndependentVariableProcessor.__name__ = ["rg","data","IndependentVariableProcessor"];
 rg.data.IndependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6795,7 +6430,6 @@ rg.data.Segmenter = function(on,transform,scale) {
 	this.transform = transform;
 	this.scale = scale;
 };
-$hxClasses["rg.data.Segmenter"] = rg.data.Segmenter;
 rg.data.Segmenter.__name__ = ["rg","data","Segmenter"];
 rg.data.Segmenter.prototype = {
 	on: null
@@ -6828,7 +6462,6 @@ rg.data.Variable = function(type,scaleDistribution) {
 	this.scaleDistribution = scaleDistribution;
 	this.meta = { };
 };
-$hxClasses["rg.data.Variable"] = rg.data.Variable;
 rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype = {
 	type: null
@@ -6857,24 +6490,22 @@ rg.data.Variable.prototype = {
 	,getMinF: function() {
 		if(null == this.minf) {
 			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 50, className : "rg.data.Variable", methodName : "getMinF"});
-			this.setMinF(($_=this.axis,$_.min.$bind($_)));
+			this.setMinF(($_=this.axis,$bind($_,$_.min)));
 		}
 		return this.minf;
 	}
 	,getMaxF: function() {
 		if(null == this.maxf) {
 			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 61, className : "rg.data.Variable", methodName : "getMaxF"});
-			this.setMaxF(($_=this.axis,$_.max.$bind($_)));
+			this.setMaxF(($_=this.axis,$bind($_,$_.max)));
 		}
 		return this.maxf;
 	}
 	,__class__: rg.data.Variable
-	,__properties__: {set_maxf:"setMaxF",get_maxf:"getMaxF",set_minf:"setMinF",get_minf:"getMinF"}
 }
 rg.data.VariableDependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
-$hxClasses["rg.data.VariableDependent"] = rg.data.VariableDependent;
 rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
 rg.data.VariableDependent.__super__ = rg.data.Variable;
 rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
@@ -6883,7 +6514,6 @@ rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 rg.data.VariableIndependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
-$hxClasses["rg.data.VariableIndependent"] = rg.data.VariableIndependent;
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
@@ -6892,7 +6522,6 @@ rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
 rg.factory = {}
 rg.factory.FactoryAxis = function() {
 };
-$hxClasses["rg.factory.FactoryAxis"] = rg.factory.FactoryAxis;
 rg.factory.FactoryAxis.__name__ = ["rg","factory","FactoryAxis"];
 rg.factory.FactoryAxis.prototype = {
 	create: function(type,isnumeric,variable,samples) {
@@ -6900,7 +6529,7 @@ rg.factory.FactoryAxis.prototype = {
 	}
 	,createDiscrete: function(type,variable,samples,groupBy) {
 		if(type.indexOf("time:") >= 0) {
-			if(null != groupBy) return new rg.axis.AxisGroupByTime(type.substr(type.indexOf("time:") + "time:".length)); else return new rg.axis.AxisTime(type.substr(type.indexOf("time:") + "time:".length));
+			if(null != groupBy) return new rg.axis.AxisGroupByTime(HxOverrides.substr(type,type.indexOf("time:") + "time:".length,null)); else return new rg.axis.AxisTime(HxOverrides.substr(type,type.indexOf("time:") + "time:".length,null));
 		} else if(null != samples && samples.length > 0) return new rg.axis.AxisOrdinalFixedValues(samples);
 		return new rg.axis.AxisOrdinalStats(variable);
 	}
@@ -6908,7 +6537,6 @@ rg.factory.FactoryAxis.prototype = {
 }
 rg.factory.FactoryGeoProjection = function() {
 };
-$hxClasses["rg.factory.FactoryGeoProjection"] = rg.factory.FactoryGeoProjection;
 rg.factory.FactoryGeoProjection.__name__ = ["rg","factory","FactoryGeoProjection"];
 rg.factory.FactoryGeoProjection.prototype = {
 	create: function(info) {
@@ -6949,7 +6577,6 @@ rg.factory.FactoryGeoProjection.prototype = {
 }
 rg.factory.FactoryHtmlVisualization = function() {
 };
-$hxClasses["rg.factory.FactoryHtmlVisualization"] = rg.factory.FactoryHtmlVisualization;
 rg.factory.FactoryHtmlVisualization.__name__ = ["rg","factory","FactoryHtmlVisualization"];
 rg.factory.FactoryHtmlVisualization.prototype = {
 	create: function(type,container,options) {
@@ -6971,7 +6598,6 @@ rg.factory.FactoryHtmlVisualization.prototype = {
 }
 rg.factory.FactoryLayout = function() {
 };
-$hxClasses["rg.factory.FactoryLayout"] = rg.factory.FactoryLayout;
 rg.factory.FactoryLayout.__name__ = ["rg","factory","FactoryLayout"];
 rg.factory.FactoryLayout.size = function(container,info,heightmargin) {
 	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
@@ -6991,7 +6617,6 @@ rg.factory.FactoryLayout.prototype = {
 }
 rg.factory.FactorySvgVisualization = function() {
 };
-$hxClasses["rg.factory.FactorySvgVisualization"] = rg.factory.FactorySvgVisualization;
 rg.factory.FactorySvgVisualization.__name__ = ["rg","factory","FactorySvgVisualization"];
 rg.factory.FactorySvgVisualization.prototype = {
 	create: function(type,layout,options) {
@@ -7042,21 +6667,20 @@ rg.factory.FactoryVariable = function() {
 	this.independentFactory = new rg.factory.FactoryVariableIndependent();
 	this.dependentFactory = new rg.factory.FactoryVariableDependent();
 };
-$hxClasses["rg.factory.FactoryVariable"] = rg.factory.FactoryVariable;
 rg.factory.FactoryVariable.__name__ = ["rg","factory","FactoryVariable"];
 rg.factory.FactoryVariable.prototype = {
 	independentFactory: null
 	,dependentFactory: null
 	,createVariables: function(arr) {
-		var me = this;
+		var _g = this;
 		return arr.map(function(info,_) {
 			switch( (info.variableType)[1] ) {
 			case 1:
-				return me.independentFactory.create(info);
+				return _g.independentFactory.create(info);
 			case 2:
-				return me.dependentFactory.create(info,null);
+				return _g.dependentFactory.create(info,null);
 			case 0:
-				return me.dependentFactory.create(info,null);
+				return _g.dependentFactory.create(info,null);
 			}
 		});
 	}
@@ -7064,7 +6688,6 @@ rg.factory.FactoryVariable.prototype = {
 }
 rg.factory.FactoryVariableDependent = function() {
 };
-$hxClasses["rg.factory.FactoryVariableDependent"] = rg.factory.FactoryVariableDependent;
 rg.factory.FactoryVariableDependent.__name__ = ["rg","factory","FactoryVariableDependent"];
 rg.factory.FactoryVariableDependent.prototype = {
 	create: function(info,isnumeric) {
@@ -7079,22 +6702,15 @@ rg.factory.FactoryVariableDependent.prototype = {
 }
 rg.factory.FactoryVariableIndependent = function() {
 };
-$hxClasses["rg.factory.FactoryVariableIndependent"] = rg.factory.FactoryVariableIndependent;
 rg.factory.FactoryVariableIndependent.__name__ = ["rg","factory","FactoryVariableIndependent"];
 rg.factory.FactoryVariableIndependent.convertBound = function(axis,value) {
 	if(null == value || Reflect.isFunction(value)) return value;
-	if(Std["is"](axis,rg.axis.AxisTime)) {
-		if(Std["is"](value,Date)) value = ((function($this) {
-			var $r;
-			var $t = value;
-			if(Std["is"]($t,Date)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).getTime();
-		if(Std["is"](value,Float)) return function(_,_1) {
+	if(js.Boot.__instanceof(axis,rg.axis.AxisTime)) {
+		if(js.Boot.__instanceof(value,Date)) value = (js.Boot.__cast(value , Date)).getTime();
+		if(js.Boot.__instanceof(value,Float)) return function(_,_1) {
 			return value;
 		};
-		if(Std["is"](value,String)) return function(_,_1) {
+		if(js.Boot.__instanceof(value,String)) return function(_,_1) {
 			return thx.date.DateParser.parse(value).getTime();
 		};
 		throw new thx.error.Error("invalid value '{0}' for time bound",[value],null,{ fileName : "FactoryVariableIndependent.hx", lineNumber : 46, className : "rg.factory.FactoryVariableIndependent", methodName : "convertBound"});
@@ -7118,7 +6734,6 @@ rg.frame = {}
 rg.frame.Frame = function() {
 	this.x = this.y = this.width = this.height = 0;
 };
-$hxClasses["rg.frame.Frame"] = rg.frame.Frame;
 rg.frame.Frame.__name__ = ["rg","frame","Frame"];
 rg.frame.Frame.prototype = {
 	x: null
@@ -7137,13 +6752,13 @@ rg.frame.Frame.prototype = {
 	}
 	,__class__: rg.frame.Frame
 }
-rg.frame.FrameLayout = $hxClasses["rg.frame.FrameLayout"] = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.frame.FrameLayout = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
 rg.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.frame.Orientation = $hxClasses["rg.frame.Orientation"] = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.frame.Orientation = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.frame.Orientation.Vertical = ["Vertical",0];
 rg.frame.Orientation.Vertical.toString = $estr;
 rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
@@ -7156,7 +6771,6 @@ rg.frame.Stack = function(width,height,orientation) {
 	this.width = width;
 	this.height = height;
 };
-$hxClasses["rg.frame.Stack"] = rg.frame.Stack;
 rg.frame.Stack.__name__ = ["rg","frame","Stack"];
 rg.frame.Stack.prototype = {
 	children: null
@@ -7170,7 +6784,7 @@ rg.frame.Stack.prototype = {
 		if(null == child) return this;
 		if(pos >= this.children.length) return this.addItem(child);
 		if(pos < 0) pos = 0;
-		this.children.insert(pos,child);
+		this.children.splice(pos,0,child);
 		var f = child;
 		f.setParent(this);
 		this.reflow();
@@ -7186,7 +6800,7 @@ rg.frame.Stack.prototype = {
 	}
 	,addItems: function(it) {
 		var added = false;
-		var $it0 = it.iterator();
+		var $it0 = $iterator(it)();
 		while( $it0.hasNext() ) {
 			var child = $it0.next();
 			if(null == child) continue;
@@ -7199,7 +6813,7 @@ rg.frame.Stack.prototype = {
 		return this;
 	}
 	,removeChild: function(child) {
-		if(!this.children.remove(child)) return false;
+		if(!HxOverrides.remove(this.children,child)) return false;
 		var f = child;
 		f.setParent(null);
 		this.reflow();
@@ -7352,13 +6966,11 @@ rg.frame.Stack.prototype = {
 		return this;
 	}
 	,__class__: rg.frame.Stack
-	,__properties__: {get_length:"getLength"}
 }
 rg.frame.StackItem = function(disposition) {
 	rg.frame.Frame.call(this);
 	this.setDisposition(disposition);
 };
-$hxClasses["rg.frame.StackItem"] = rg.frame.StackItem;
 rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
 rg.frame.StackItem.__super__ = rg.frame.Frame;
 rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
@@ -7374,7 +6986,6 @@ rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
 		return v;
 	}
 	,__class__: rg.frame.StackItem
-	,__properties__: {set_disposition:"setDisposition"}
 });
 rg.html = {}
 rg.html.chart = {}
@@ -7390,7 +7001,6 @@ rg.html.chart.Leadeboard = function(container) {
 	this.useMax = false;
 	this.colorScale = false;
 };
-$hxClasses["rg.html.chart.Leadeboard"] = rg.html.chart.Leadeboard;
 rg.html.chart.Leadeboard.__name__ = ["rg","html","chart","Leadeboard"];
 rg.html.chart.Leadeboard.prototype = {
 	variableIndependent: null
@@ -7438,37 +7048,31 @@ rg.html.chart.Leadeboard.prototype = {
 		var name = this.variableDependent.type;
 		if(null != this.sortDataPoint) dps.sort(this.sortDataPoint);
 		if(null == this.variableDependent.stats) return;
-		var stats = this.stats = (function($this) {
-			var $r;
-			var $t = $this.variableDependent.stats;
-			if(Std["is"]($t,rg.axis.StatsNumeric)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this));
-		var choice = this.list.selectAll("li").data(dps,this.id.$bind(this));
+		var stats = this.stats = js.Boot.__cast(this.variableDependent.stats , rg.axis.StatsNumeric);
+		var choice = this.list.selectAll("li").data(dps,$bind(this,this.id));
 		var enterli = choice.enter().append("li");
-		enterli.attr("title").stringf(this.lTitle.$bind(this));
+		enterli.attr("title").stringf($bind(this,this.lTitle));
 		enterli.append("div").attr("class").stringf(function(_,i) {
 			return i % 2 == 0?"rg_background fill-0":"rg_background";
 		});
 		var enterlabels = enterli.append("div").attr("class").string("rg_labels");
-		if(null != this.labelRank.$bind(this)) {
-			var rank = enterlabels.append("div").text().stringf(this.lRank.$bind(this));
+		if(null != $bind(this,this.labelRank)) {
+			var rank = enterlabels.append("div").text().stringf($bind(this,this.lRank));
 			if(this.colorScale) rank.attr("class").stringf(function(_,i) {
 				return "rg_rank fill fill-" + i;
 			}); else rank.attr("class").string("rg_rank");
 		}
-		if(null != this.labelDataPoint.$bind(this)) enterlabels.append("span").attr("class").string("rg_description color-0").text().stringf(this.lDataPoint.$bind(this));
-		if(null != this.labelValue.$bind(this)) enterlabels.append("span").attr("class").string("rg_value color-2").text().stringf(this.lValue.$bind(this));
+		if(null != $bind(this,this.labelDataPoint)) enterlabels.append("span").attr("class").string("rg_description color-0").text().stringf($bind(this,this.lDataPoint));
+		if(null != $bind(this,this.labelValue)) enterlabels.append("span").attr("class").string("rg_value color-2").text().stringf($bind(this,this.lValue));
 		enterli.append("div").attr("class").string("clear");
 		if(this.displayBar) {
 			var barpadding = enterli.append("div").attr("class").string("rg_barpadding"), enterbar = barpadding.append("div").attr("class").string("rg_barcontainer");
 			enterbar.append("div").attr("class").string("rg_barback fill-0");
-			enterbar.append("div").attr("class").string("rg_bar fill-0").style("width").stringf(this.backgroundSize.$bind(this));
+			enterbar.append("div").attr("class").string("rg_bar fill-0").style("width").stringf($bind(this,this.backgroundSize));
 			enterli.append("div").attr("class").string("clear");
 		}
-		if(null != this.click) enterli.on("click.user",this.onClick.$bind(this));
-		if(this.animated) enterli.style("opacity")["float"](0).eachNode(this.fadeIn.$bind(this)); else enterli.style("opacity")["float"](1);
+		if(null != this.click) enterli.on("click.user",$bind(this,this.onClick));
+		if(this.animated) enterli.style("opacity")["float"](0).eachNode($bind(this,this.fadeIn)); else enterli.style("opacity")["float"](1);
 		if(this.animated) choice.exit().transition().ease(this.animationEase).duration(null,this.animationDuration).style("opacity")["float"](0).remove(); else choice.exit().remove();
 		this.ready.dispatch();
 	}
@@ -7505,7 +7109,6 @@ thx.color.Rgb = function(r,g,b) {
 	this.green = Ints.clamp(g,0,255);
 	this.blue = Ints.clamp(b,0,255);
 };
-$hxClasses["thx.color.Rgb"] = thx.color.Rgb;
 thx.color.Rgb.__name__ = ["thx","color","Rgb"];
 thx.color.Rgb.fromInt = function(v) {
 	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
@@ -7549,9 +7152,6 @@ thx.color.Rgb.prototype = {
 		if(prefix == null) prefix = "";
 		return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
 	}
-	,toCss: function() {
-		return this.hex("#");
-	}
 	,toRgbString: function() {
 		return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
 	}
@@ -7563,7 +7163,6 @@ thx.color.Hsl = function(h,s,l) {
 	this.lightness = l = Floats.normalize(l);
 	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
 };
-$hxClasses["thx.color.Hsl"] = thx.color.Hsl;
 thx.color.Hsl.__name__ = ["thx","color","Hsl"];
 thx.color.Hsl._c = function(d,s,l) {
 	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
@@ -7601,7 +7200,6 @@ thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
 });
 thx.math = {}
 thx.math.Equations = function() { }
-$hxClasses["thx.math.Equations"] = thx.math.Equations;
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
 	return v;
@@ -7623,9 +7221,6 @@ thx.math.Equations.elasticf = function(a,p) {
 		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
 	};
 }
-thx.math.Equations.prototype = {
-	__class__: thx.math.Equations
-}
 rg.html.chart.PivotTable = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -7636,7 +7231,6 @@ rg.html.chart.PivotTable = function(container) {
 	this.colorEnd = rg.html.chart.PivotTable.defaultColorEnd;
 	this.incolumns = 1;
 };
-$hxClasses["rg.html.chart.PivotTable"] = rg.html.chart.PivotTable;
 rg.html.chart.PivotTable.__name__ = ["rg","html","chart","PivotTable"];
 rg.html.chart.PivotTable.prototype = {
 	displayColumnTotal: null
@@ -7671,7 +7265,7 @@ rg.html.chart.PivotTable.prototype = {
 	}
 	,labelAxisValue: function(v,axis) {
 		if(axis.indexOf("time:") >= 0) {
-			var p = axis.substr(axis.indexOf("time:") + "time:".length);
+			var p = HxOverrides.substr(axis,axis.indexOf("time:") + "time:".length,null);
 			return rg.util.Periodicity.format(p,v);
 		} else return rg.util.RGStrings.humanize(v);
 	}
@@ -7769,11 +7363,11 @@ rg.html.chart.PivotTable.prototype = {
 				var cell = _g3[_g2];
 				++_g2;
 				var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
-				if(null != this.click) td.onNode("click",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+				if(null != this.click) td.onNode("click",(function(f,dp) {
+					return function(_,_1) {
+						return f(dp,_,_1);
 					};
-				})(this.onClick.$bind(this),cell));
+				})($bind(this,this.onClick),cell));
 				if(this.displayHeatMap && !Math.isNaN(v = Reflect.field(cell,this.cellVariable.type) / d.stats.max)) {
 					var c = color(v);
 					td.style("color").color(thx.color.Rgb.contrastBW(c)).style("background-color").color(c);
@@ -7893,7 +7487,7 @@ rg.html.chart.PivotTable.prototype = {
 			var i = _g1++;
 			variable = this.columnVariables[i];
 			column_headers.push(variable.type);
-			var tmp = columns.copy();
+			var tmp = columns.slice();
 			columns = [];
 			var _g2 = 0;
 			while(_g2 < tmp.length) {
@@ -7921,7 +7515,7 @@ rg.html.chart.PivotTable.prototype = {
 					while(_g31 < _g21) {
 						var j = _g31++;
 						name = headers[j];
-						if(name.indexOf("time:") >= 0 && Dates.snap(Reflect.field(dp,name),name.substr(name.indexOf("time:") + "time:".length)) == column[0].values[j] || Reflect.field(dp,name) == column[0].values[j]) return true;
+						if(name.indexOf("time:") >= 0 && Dates.snap(Reflect.field(dp,name),HxOverrides.substr(name,name.indexOf("time:") + "time:".length,null)) == column[0].values[j] || Reflect.field(dp,name) == column[0].values[j]) return true;
 					}
 					return false;
 				};
@@ -7952,7 +7546,7 @@ rg.html.chart.PivotTable.prototype = {
 			var i = _g1++;
 			variable = this.rowVariables[i];
 			row_headers.push(variable.type);
-			var tmp = rows.copy();
+			var tmp = rows.slice();
 			rows = [];
 			var _g2 = 0;
 			while(_g2 < tmp.length) {
@@ -7982,7 +7576,7 @@ rg.html.chart.PivotTable.prototype = {
 					while(_g3 < _g2) {
 						var j = _g3++;
 						name1 = headers1[j];
-						if(name1.indexOf("time:") >= 0 && Dates.snap(Reflect.field(d,name1),name1.substr(name1.indexOf("time:") + "time:".length)) != row[0].values[j] || Reflect.field(d,name1) != row[0].values[j]) return false;
+						if(name1.indexOf("time:") >= 0 && Dates.snap(Reflect.field(d,name1),HxOverrides.substr(name1,name1.indexOf("time:") + "time:".length,null)) != row[0].values[j] || Reflect.field(d,name1) != row[0].values[j]) return false;
 					}
 					return true;
 				};
@@ -8045,7 +7639,6 @@ rg.html.widget.DownloaderMenu = function(handler,position,formats,container) {
 	this.title = rg.html.widget.DownloaderMenu.DEFAULT_TITLE;
 	this.build(position,container);
 };
-$hxClasses["rg.html.widget.DownloaderMenu"] = rg.html.widget.DownloaderMenu;
 rg.html.widget.DownloaderMenu.__name__ = ["rg","html","widget","DownloaderMenu"];
 rg.html.widget.DownloaderMenu.prototype = {
 	handler: null
@@ -8087,24 +7680,24 @@ rg.html.widget.DownloaderMenu.prototype = {
 		var options = this.menu.append("div").attr("class").string("options");
 		var title = options.append("div").attr("class").string("title").html().string(this.title);
 		var list = options.append("ul").selectAll("li").data(this.formats);
-		list.enter().append("li").on("click.download",this.click.$bind(this)).html().stringf(function(d,i) {
+		list.enter().append("li").on("click.download",$bind(this,this.click)).html().stringf(function(d,i) {
 			return d;
 		});
 	}
 	,click: function(format,_) {
-		var me = this;
+		var _g = this;
 		this.menu.classed().add("downloading");
 		this.handler(format,this.backgroundColor,function(_1) {
-			me.menu.classed().remove("downloading");
+			_g.menu.classed().remove("downloading");
 			return true;
 		},function(e) {
-			me.menu.classed().remove("downloading");
+			_g.menu.classed().remove("downloading");
 			js.Lib.alert("ERROR: " + e);
 		});
 	}
 	,__class__: rg.html.widget.DownloaderMenu
 }
-rg.html.widget.DownloaderPosition = $hxClasses["rg.html.widget.DownloaderPosition"] = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.html.widget.DownloaderPosition = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
 rg.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
 rg.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
 rg.html.widget.DownloaderPosition.TopLeft.toString = $estr;
@@ -8125,7 +7718,6 @@ rg.html.widget.DownloaderPosition.After = ["After",6];
 rg.html.widget.DownloaderPosition.After.toString = $estr;
 rg.html.widget.DownloaderPosition.After.__enum__ = rg.html.widget.DownloaderPosition;
 rg.html.widget.DownloaderPositions = function() { }
-$hxClasses["rg.html.widget.DownloaderPositions"] = rg.html.widget.DownloaderPositions;
 rg.html.widget.DownloaderPositions.__name__ = ["rg","html","widget","DownloaderPositions"];
 rg.html.widget.DownloaderPositions.parse = function(v) {
 	switch(v.toLowerCase()) {
@@ -8145,9 +7737,6 @@ rg.html.widget.DownloaderPositions.parse = function(v) {
 		return rg.html.widget.DownloaderPosition.ElementSelector(v);
 	}
 }
-rg.html.widget.DownloaderPositions.prototype = {
-	__class__: rg.html.widget.DownloaderPositions
-}
 rg.html.widget.Logo = function(container,padright) {
 	this.mapvalues = new Hash();
 	this.padRight = padright;
@@ -8155,9 +7744,8 @@ rg.html.widget.Logo = function(container,padright) {
 	this.container = container;
 	this.create();
 	var timer = new haxe.Timer(5000);
-	timer.run = this.live.$bind(this);
+	timer.run = $bind(this,this.live);
 };
-$hxClasses["rg.html.widget.Logo"] = rg.html.widget.Logo;
 rg.html.widget.Logo.__name__ = ["rg","html","widget","Logo"];
 rg.html.widget.Logo.pageIsBranded = function() {
 	var _g = 0, _g1 = rg.html.widget.Logo.getLogos();
@@ -8276,14 +7864,11 @@ rg.html.widget.Tooltip = function(el) {
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("rg_container");
 	this.background = this.container.append("div").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("rg_content");
-	this.content.onNode("DOMSubtreeModified",this.resize.$bind(this));
+	this.content.onNode("DOMSubtreeModified",$bind(this,this.resize));
 	this.anchortype = "bottomright";
 	this.anchordistance = 0;
 };
-$hxClasses["rg.html.widget.Tooltip"] = rg.html.widget.Tooltip;
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
-rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
-rg.html.widget.Tooltip.instance = null;
 rg.html.widget.Tooltip.getInstance = function() {
 	if(null == rg.html.widget.Tooltip.instance) {
 		rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
@@ -8372,35 +7957,39 @@ rg.html.widget.Tooltip.prototype = {
 }
 rg.info = {}
 rg.info.Info = function() { }
-$hxClasses["rg.info.Info"] = rg.info.Info;
 rg.info.Info.__name__ = ["rg","info","Info"];
 rg.info.Info.feed = function(info,ob) {
 	if(null == ob) return info;
 	var cl = Type.getClass(info), method = Reflect.field(cl,"filters");
-	if(null == method) {
-		Objects.copyTo(ob,info);
-		return info;
-	}
-	var filters = method.apply(cl,[]), value;
+	if(null == method) return info;
+	var descriptions = method.apply(cl,[]), value;
 	var _g = 0;
-	while(_g < filters.length) {
-		var filter = filters[_g];
+	while(_g < descriptions.length) {
+		var description = descriptions[_g];
 		++_g;
-		if(Reflect.hasField(ob,filter.field)) {
-			if(null != filter.validator && !filter.validator(value = Reflect.field(ob,filter.field))) throw new thx.error.Error("the parameter '{0}' can't have value '{1}'",[filter.field,value],null,{ fileName : "Info.hx", lineNumber : 34, className : "rg.info.Info", methodName : "feed"});
-			var items = null == filter.filter?[{ field : filter.field, value : value}]:filter.filter(value);
-			var _g1 = 0;
-			while(_g1 < items.length) {
-				var item = items[_g1];
-				++_g1;
-				info[item.field] = item.value;
+		if(Reflect.hasField(ob,description.name)) {
+			value = Reflect.field(ob,description.name);
+			var $e = (description.transformer.transform(value));
+			switch( $e[1] ) {
+			case 0:
+				var pairs = $e[2];
+				var $it0 = pairs.iterator();
+				while( $it0.hasNext() ) {
+					var pair = $it0.next();
+					info[pair.name] = pair.value;
+				}
+				break;
+			case 1:
+				var reasons = $e[2];
+				rg.info.Info.warn(description.name,reasons);
+				break;
 			}
 		}
 	}
 	return info;
 }
-rg.info.Info.prototype = {
-	__class__: rg.info.Info
+rg.info.Info.warn = function(name,message) {
+	rg.info.Info.warner("the parameter " + name + " has not been applied because: " + Std.string(message));
 }
 rg.info.InfoAnimation = function() {
 	this.animated = false;
@@ -8408,18 +7997,9 @@ rg.info.InfoAnimation = function() {
 	this.delay = 150;
 	this.ease = thx.math.Equations.elasticf();
 };
-$hxClasses["rg.info.InfoAnimation"] = rg.info.InfoAnimation;
 rg.info.InfoAnimation.__name__ = ["rg","info","InfoAnimation"];
 rg.info.InfoAnimation.filters = function() {
-	return [{ field : "animated", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "duration", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "delay", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "ease", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toBool("animated"),rg.info.filter.FilterDescription.toInt("duration"),rg.info.filter.FilterDescription.toInt("delay"),rg.info.filter.FilterDescription.toFunction("ease")];
 }
 rg.info.InfoAnimation.prototype = {
 	animated: null
@@ -8467,126 +8047,9 @@ rg.info.InfoCartesianChart = function() {
 	this.paddingTickMajor = 1;
 	this.paddingLabel = 10;
 };
-$hxClasses["rg.info.InfoCartesianChart"] = rg.info.InfoCartesianChart;
 rg.info.InfoCartesianChart.__name__ = ["rg","info","InfoCartesianChart"];
 rg.info.InfoCartesianChart.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelAxis(),v)}];
-	}},{ field : "displaytickmarks", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displaytickminor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displaytickmajor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMajorTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayticklabel", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayLabelTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayanchorlinetick", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayAnchorLineTick", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayrules", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v},{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayruleminor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMinorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayrulemajor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayMajorRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "displayanchorlinerule", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayAnchorLineRule", value : Std["is"](v,Bool)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "lengthtick", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMajor", value : v},{ field : "lengthTickMinor", value : v}];
-	}},{ field : "lengthtickminor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMinor", value : v}];
-	}},{ field : "lengthtickmajor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "lengthTickMajor", value : v}];
-	}},{ field : "paddingtick", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMajor", value : v},{ field : "paddingTickMinor", value : v}];
-	}},{ field : "paddingtickminor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMinor", value : v}];
-	}},{ field : "paddingtickmajor", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingTickMajor", value : v}];
-	}},{ field : "paddingticklabel", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "paddingLabel", value : v}];
-	}},{ field : "labelorientation", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "labelOrientation", value : Std["is"](v,String)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "labelanchor", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "labelAnchor", value : Std["is"](v,String)?function(_) {
-			return v;
-		}:v}];
-	}},{ field : "labelangle", validator : function(v) {
-		return Reflect.isFunction(v) || Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "labelAngle", value : Std["is"](v,Float)?function(_) {
-			return v;
-		}:v}];
-	}}];
+	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelAxis),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmarks",["displayMinorTick","displayMajorTick","displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickminor",["displayMinorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmajor",["displayMajorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayticklabel",["displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinetick",["displayAnchorLineTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrules",["displayMinorRule","displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayruleminor",["displayMinorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrulemajor",["displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinerule",["displayAnchorLineRule"]),rg.info.filter.FilterDescription.toFloat("lengthtick",["lengthTickMajor","lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickminor",["lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickmajor",["lengthTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingtick",["paddingTickMajor","paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickminor",["paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickmajor",["paddingTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingticklabel",["paddingLabel"]),rg.info.filter.FilterDescription.toFunctionOrString("labelorientation",["labelOrientation"]),rg.info.filter.FilterDescription.toFunctionOrString("labelanchor",["labelAnchor"]),rg.info.filter.FilterDescription.toFunctionOrFloat("labelangle",["labelAngle"])];
 }
 rg.info.InfoCartesianChart.prototype = {
 	animation: null
@@ -8619,38 +8082,11 @@ rg.info.InfoBarChart = function() {
 	this.barPaddingDataPoint = 2;
 	this.horizontal = false;
 };
-$hxClasses["rg.info.InfoBarChart"] = rg.info.InfoBarChart;
 rg.info.InfoBarChart.__name__ = ["rg","info","InfoBarChart"];
 rg.info.InfoBarChart.filters = function() {
-	return [{ field : "stacked", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "horizontal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
-	}},{ field : "barpadding", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPadding", value : v}];
-	}},{ field : "barpaddingaxis", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPaddingAxis", value : v}];
-	}},{ field : "barpaddingdatapoint", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "barPaddingDataPoint", value : v}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
-	}}].concat(rg.info.InfoCartesianChart.filters());
+	return [rg.info.filter.FilterDescription.toBool("stacked"),rg.info.filter.FilterDescription.toBool("horizontal"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}"))),rg.info.filter.FilterDescription.toFloat("barpadding",["barPadding"]),rg.info.filter.FilterDescription.toFloat("barpaddingaxis",["barPaddingAxis"]),rg.info.filter.FilterDescription.toFloat("barpaddingdatapoint",["barPaddingDataPoint"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
+	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoBarChart.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
@@ -8665,26 +8101,9 @@ rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 });
 rg.info.InfoDataSource = function() {
 };
-$hxClasses["rg.info.InfoDataSource"] = rg.info.InfoDataSource;
 rg.info.InfoDataSource.__name__ = ["rg","info","InfoDataSource"];
 rg.info.InfoDataSource.filters = function() {
-	return [{ field : "data", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
-			handler(v);
-		}}];
-	}},{ field : "datapoints", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "loader", value : function(handler) {
-			handler(v);
-		}}];
-	}},{ field : "load", validator : function(v) {
-		return Reflect.isFunction(v) || null != Reflect.field(v,"execute");
-	}, filter : function(v) {
-		return [{ field : "loader", value : Reflect.isObject(v)?v.execute.$bind(v):v}];
-	}}];
+	return [rg.info.filter.FilterDescription.toDataFunctionFromArray("data",["loader"]),rg.info.filter.FilterDescription.toDataFunctionFromArray("datapoints",["loader"]),rg.info.filter.FilterDescription.toLoaderFunction("load",["loader"])];
 }
 rg.info.InfoDataSource.prototype = {
 	loader: null
@@ -8692,20 +8111,18 @@ rg.info.InfoDataSource.prototype = {
 }
 rg.info.InfoDomType = function() {
 };
-$hxClasses["rg.info.InfoDomType"] = rg.info.InfoDomType;
 rg.info.InfoDomType.__name__ = ["rg","info","InfoDomType"];
 rg.info.InfoDomType.filters = function() {
-	return [{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.visualization.Visualizations.visualizations,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : Arrays.exists(rg.visualization.Visualizations.html,v.toLowerCase())?rg.info.DomKind.Html:rg.info.DomKind.Svg, field : "kind"}];
-	}}];
+	return [rg.info.filter.FilterDescription.custom("visualization",["kind"],function(value) {
+		var v = null == value?null:("" + Std.string(value)).toLowerCase();
+		if(Arrays.exists(rg.visualization.Visualizations.visualizations,v)) return rg.info.filter.TransformResult.Success(Arrays.exists(rg.visualization.Visualizations.html,v)?rg.info.DomKind.Html:rg.info.DomKind.Svg); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("'{0}' value is not a vailid visualization kind",[value]));
+	})];
 }
 rg.info.InfoDomType.prototype = {
 	kind: null
 	,__class__: rg.info.InfoDomType
 }
-rg.info.DomKind = $hxClasses["rg.info.DomKind"] = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
+rg.info.DomKind = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
 rg.info.DomKind.Html = ["Html",0];
 rg.info.DomKind.Html.toString = $estr;
 rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
@@ -8717,22 +8134,11 @@ rg.info.InfoDownload = function() {
 	this.legacyservice = rg.RGConst.LEGACY_RENDERING_STATIC;
 	this.formats = ["pdf","png","jpg","svg"];
 };
-$hxClasses["rg.info.InfoDownload"] = rg.info.InfoDownload;
 rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
 rg.info.InfoDownload.filters = function() {
-	return [{ field : "handler", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "service", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "legacyservice", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "formats", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "position", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "position", value : rg.html.widget.DownloaderPositions.parse(v)}];
-	}}];
+	return [rg.info.filter.FilterDescription.toFunction("handler"),rg.info.filter.FilterDescription.toStr("service"),rg.info.filter.FilterDescription.toStr("legacyservice"),rg.info.filter.FilterDescription.toArray("formats"),rg.info.filter.FilterDescription.custom("position",null,function(value) {
+		if(js.Boot.__instanceof(value,String) || value.nodeName) return rg.info.filter.TransformResult.Success(rg.html.widget.DownloaderPositions.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("invalid downloader position: {0}",value));
+	})];
 }
 rg.info.InfoDownload.prototype = {
 	handler: null
@@ -8750,36 +8156,11 @@ rg.info.InfoFunnelChart = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.25);
 	this.arrowSize = 30;
 };
-$hxClasses["rg.info.InfoFunnelChart"] = rg.info.InfoFunnelChart;
 rg.info.InfoFunnelChart.__name__ = ["rg","info","InfoFunnelChart"];
 rg.info.InfoFunnelChart.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelFunnel(),v)}];
-	}},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "segmentpadding", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "padding", value : v}];
-	}},{ field : "flatness", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "effect", validator : rg.svg.chart.GradientEffects.canParse, filter : function(v) {
-		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
-	}},{ field : "arrowsize", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "arrowSize", value : v}];
-	}}];
+	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelFunnel),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFloat("segmentpadding",["padding"]),rg.info.filter.FilterDescription.toFloat("flatness"),rg.info.filter.FilterDescription.custom("effect",null,function(value) {
+		if(rg.svg.chart.GradientEffects.canParse(value)) return rg.info.filter.TransformResult.Success(rg.svg.chart.GradientEffects.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("'{0}' is not a valid effect",value));
+	}),rg.info.filter.FilterDescription.toFloat("arrowsize",["arrowSize"])];
 }
 rg.info.InfoFunnelChart.prototype = {
 	animation: null
@@ -8795,14 +8176,9 @@ rg.info.InfoFunnelChart.prototype = {
 rg.info.InfoGeneral = function() {
 	this.forcelegacy = false;
 };
-$hxClasses["rg.info.InfoGeneral"] = rg.info.InfoGeneral;
 rg.info.InfoGeneral.__name__ = ["rg","info","InfoGeneral"];
-rg.info.InfoGeneral.filter = function() {
-	return [{ field : "ready", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, value : null},{ field : "forcelegacy", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, value : null}];
+rg.info.InfoGeneral.filters = function() {
+	return [rg.info.filter.FilterDescription.toFunction("ready"),rg.info.filter.FilterDescription.toBool("forcelegacy")];
 }
 rg.info.InfoGeneral.prototype = {
 	ready: null
@@ -8813,16 +8189,9 @@ rg.info.InfoGeo = function() {
 	this.label = new rg.info.InfoLabel();
 	this.map = [rg.info.Info.feed(new rg.info.InfoMap(),{ template : "world"})];
 };
-$hxClasses["rg.info.InfoGeo"] = rg.info.InfoGeo;
 rg.info.InfoGeo.__name__ = ["rg","info","InfoGeo"];
 rg.info.InfoGeo.filters = function() {
-	return [{ field : "map", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v) || Std["is"](v,Array);
-	}, filter : function(v) {
-		return [{ field : "map", value : (Std["is"](v,Array)?v:[v]).map(function(d,i) {
-			return rg.info.Info.feed(new rg.info.InfoMap(),d);
-		})}];
-	}}];
+	return [rg.info.filter.FilterDescription.toInfoArray("map",null,rg.info.InfoMap)];
 }
 rg.info.InfoGeo.prototype = {
 	map: null
@@ -8833,16 +8202,11 @@ rg.info.InfoHeatGrid = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
 };
-$hxClasses["rg.info.InfoHeatGrid"] = rg.info.InfoHeatGrid;
 rg.info.InfoHeatGrid.__name__ = ["rg","info","InfoHeatGrid"];
 rg.info.InfoHeatGrid.filters = function() {
-	return [{ field : "contour", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "color", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "colorScaleMode", value : rg.svg.chart.ColorScaleModes.createFromDynamic(v)}];
-	}}].concat(rg.info.InfoCartesianChart.filters());
+	return [rg.info.filter.FilterDescription.toBool("contour"),rg.info.filter.FilterDescription.simplified("color",["colorScaleMode"],rg.svg.chart.ColorScaleModes.createFromDynamic,function(v) {
+		return rg.svg.chart.ColorScaleModes.canParse(v)?null:"value must be a a string or a function returning a string expressing a valid color scale mode";
+	})].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoHeatGrid.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
@@ -8852,20 +8216,9 @@ rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 });
 rg.info.InfoLabel = function() {
 };
-$hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
-	return [{ field : "title", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "title", value : Std["is"](v,String)?function() {
-			return v;
-		}:v}];
-	}},{ field : "datapoint", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "datapointover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toFunctionOrString("title"),rg.info.filter.FilterDescription.toFunction("datapoint"),rg.info.filter.FilterDescription.toFunction("datapointover")];
 }
 rg.info.InfoLabel.prototype = {
 	title: null
@@ -8876,14 +8229,9 @@ rg.info.InfoLabel.prototype = {
 rg.info.InfoLabelAxis = function() {
 	rg.info.InfoLabel.call(this);
 };
-$hxClasses["rg.info.InfoLabelAxis"] = rg.info.InfoLabelAxis;
 rg.info.InfoLabelAxis.__name__ = ["rg","info","InfoLabelAxis"];
 rg.info.InfoLabelAxis.filters = function() {
-	return [{ field : "axis", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "tickmark", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toFunction("axis"),rg.info.filter.FilterDescription.toFunction("tickmark")].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelAxis.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -8894,12 +8242,9 @@ rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelFunnel = function() {
 	rg.info.InfoLabel.call(this);
 };
-$hxClasses["rg.info.InfoLabelFunnel"] = rg.info.InfoLabelFunnel;
 rg.info.InfoLabelFunnel.__name__ = ["rg","info","InfoLabelFunnel"];
 rg.info.InfoLabelFunnel.filters = function() {
-	return [{ field : "arrow", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toFunction("arrow")].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelFunnel.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -8909,14 +8254,9 @@ rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelLeaderboard = function() {
 	rg.info.InfoLabel.call(this);
 };
-$hxClasses["rg.info.InfoLabelLeaderboard"] = rg.info.InfoLabelLeaderboard;
 rg.info.InfoLabelLeaderboard.__name__ = ["rg","info","InfoLabelLeaderboard"];
 rg.info.InfoLabelLeaderboard.filters = function() {
-	return [{ field : "rank", validator : function(v) {
-		return v == null || Reflect.isFunction(v);
-	}, filter : null},{ field : "value", validator : function(v) {
-		return v == null || Reflect.isFunction(v);
-	}, filter : null}].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toFunctionOrNull("rank"),rg.info.filter.FilterDescription.toFunctionOrNull("value")].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelLeaderboard.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -8927,16 +8267,9 @@ rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelPivotTable = function() {
 	rg.info.InfoLabelAxis.call(this);
 };
-$hxClasses["rg.info.InfoLabelPivotTable"] = rg.info.InfoLabelPivotTable;
 rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
 rg.info.InfoLabelPivotTable.filters = function() {
-	return [{ field : "total", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "totalover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "axisvalue", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.info.InfoLabelAxis.filters());
+	return [rg.info.filter.FilterDescription.toFunction("total"),rg.info.filter.FilterDescription.toFunction("totalover"),rg.info.filter.FilterDescription.toFunction("axisvalue")].concat(rg.info.InfoLabelAxis.filters());
 }
 rg.info.InfoLabelPivotTable.__super__ = rg.info.InfoLabelAxis;
 rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,{
@@ -8948,16 +8281,9 @@ rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,
 rg.info.InfoLabelSankey = function() {
 	rg.info.InfoLabel.call(this);
 };
-$hxClasses["rg.info.InfoLabelSankey"] = rg.info.InfoLabelSankey;
 rg.info.InfoLabelSankey.__name__ = ["rg","info","InfoLabelSankey"];
 rg.info.InfoLabelSankey.filters = function() {
-	return [{ field : "edge", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "edgeover", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "node", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toFunction("edge"),rg.info.filter.FilterDescription.toFunction("edgeover"),rg.info.filter.FilterDescription.toFunction("node")].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelSankey.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelSankey.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -8972,37 +8298,19 @@ rg.info.InfoLayout = function() {
 	this.scalePattern = rg.layout.ScalePattern.ScalesAlternating;
 	this.padding = new rg.info.InfoPadding();
 };
-$hxClasses["rg.info.InfoLayout"] = rg.info.InfoLayout;
 rg.info.InfoLayout.__name__ = ["rg","info","InfoLayout"];
 rg.info.InfoLayout.filters = function() {
-	return [{ field : "layout", validator : function(v) {
-		return Std["is"](v,String) && Arrays.exists(rg.visualization.Visualizations.layouts,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ field : "layout", value : v.toLowerCase()}];
-	}},{ field : "width", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ value : Math.round(v), field : "width"}];
-	}},{ field : "height", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ value : Math.round(v), field : "height"}];
-	}},{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.visualization.Visualizations.svg,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : v.toLowerCase(), field : "type"}];
-	}},{ field : "main", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "titleontop", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ value : v, field : "titleOnTop"}];
-	}},{ field : "yscaleposition", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ value : v, field : (function($this) {
+	return [rg.info.filter.FilterDescription.custom("layout",null,function(value) {
+		var v = null == value?null:("" + Std.string(value)).toLowerCase();
+		if(!Arrays.exists(rg.visualization.Visualizations.layouts,v)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' is not a valid visualization layout",[value])); else return rg.info.filter.TransformResult.Success(v);
+	}),rg.info.filter.FilterDescription.toFloat("width"),rg.info.filter.FilterDescription.toFloat("height"),rg.info.filter.FilterDescription.custom("visualization",["type"],function(value) {
+		var v = null == value?null:("" + Std.string(value)).toLowerCase();
+		if(!Arrays.exists(rg.visualization.Visualizations.svg,v)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' is not a valid visualization type",[value])); else return rg.info.filter.TransformResult.Success(v);
+	}),rg.info.filter.FilterDescription.toStr("main"),rg.info.filter.FilterDescription.toBool("titleontop",["titleOnTop"]),rg.info.filter.FilterDescription.custom("yscaleposition",["type"],function(value) {
+		if(!js.Boot.__instanceof(value,Dynamic)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' must be a string",[value]));
+		return rg.info.filter.TransformResult.Success((function($this) {
 			var $r;
-			switch(v) {
+			switch(value) {
 			case "alt":case "alternate":case "alternating":
 				$r = rg.layout.ScalePattern.ScalesAlternating;
 				break;
@@ -9013,12 +8321,8 @@ rg.info.InfoLayout.filters = function() {
 				$r = rg.layout.ScalePattern.ScalesBefore;
 			}
 			return $r;
-		}(this))}];
-	}},{ field : "padding", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "padding", value : rg.info.Info.feed(new rg.info.InfoPadding(),v)}];
-	}}];
+		}(this)));
+	}),rg.info.filter.FilterDescription.toInfo("padding",null,rg.info.InfoPadding)];
 }
 rg.info.InfoLayout.prototype = {
 	layout: null
@@ -9038,32 +8342,11 @@ rg.info.InfoLeaderboard = function() {
 	this.displaybar = true;
 	this.colorscale = false;
 };
-$hxClasses["rg.info.InfoLeaderboard"] = rg.info.InfoLeaderboard;
 rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
 rg.info.InfoLeaderboard.filters = function() {
-	return [{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		var animation = new rg.info.InfoAnimation();
-		animation.ease = thx.math.Equations.linear;
-		return [{ field : "animation", value : rg.info.Info.feed(animation,v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelLeaderboard(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "displaybar", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "usemax", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "colorscale", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation,function(info) {
+		info.ease = thx.math.Equations.linear;
+	}),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelLeaderboard),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toBool("displaybar"),rg.info.filter.FilterDescription.toBool("usemax"),rg.info.filter.FilterDescription.toBool("colorscale")];
 }
 rg.info.InfoLeaderboard.prototype = {
 	animation: null
@@ -9083,42 +8366,13 @@ rg.info.InfoLineChart = function() {
 	this.displayarea = false;
 	this.sensibleradius = 100;
 };
-$hxClasses["rg.info.InfoLineChart"] = rg.info.InfoLineChart;
 rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
 rg.info.InfoLineChart.filters = function() {
-	return [{ field : "symbol", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "symbolstyle", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbolStyle", value : v}];
-	}},{ field : "y0property", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "displayarea", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "sensibleradius", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.svg.chart.LineEffects.parse(v)}];
-	}},{ field : "interpolation", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
-	}}].concat(rg.info.InfoCartesianChart.filters());
+	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
+	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment),rg.info.filter.FilterDescription.toStr("y0property"),rg.info.filter.FilterDescription.toBool("displayarea"),rg.info.filter.FilterDescription.toInt("sensibleradius"),rg.info.filter.FilterDescription.toTry("effect",null,rg.svg.chart.LineEffects.parse,"invalid effect string value '{0}'"),rg.info.filter.FilterDescription.toTry("interpolation",null,function(v) {
+		return thx.svg.LineInterpolators.parse(v);
+	},"invalid line interpolation string value '{0}'")].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoLineChart.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoLineChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
@@ -9141,77 +8395,13 @@ rg.info.InfoMap = function() {
 		return 10;
 	};
 };
-$hxClasses["rg.info.InfoMap"] = rg.info.InfoMap;
 rg.info.InfoMap.__name__ = ["rg","info","InfoMap"];
 rg.info.InfoMap.filters = function() {
-	return [{ field : "url", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "type", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "scale", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "projection", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "classname", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "translate", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "origin", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "parallels", validator : function(v) {
-		return Std["is"](v,Array);
-	}, filter : null},{ field : "mode", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "mode", value : Type.createEnum(thx.geo.ProjectionMode,Strings.ucfirst(v.toLowerCase()),[])}];
-	}},{ field : "property", validator : function(v) {
-		return v == null || Std["is"](v,String);
-	}, filter : null},{ field : "usejsonp", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "template", validator : function(v) {
-		return Std["is"](v,String) && rg.info.InfoMap.isValidTemplate(v);
-	}, filter : rg.info.InfoMap.fromTemplate},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabel(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "color", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "colorScaleMode", value : rg.svg.chart.ColorScaleModes.createFromDynamic(v)}];
-	}},{ field : "radius", validator : function(v) {
-		return Std["is"](v,Float) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "radius", value : Std["is"](v,Float)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "mapping", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		if(Std["is"](v,String)) return [{ field : "mappingurl", value : v}]; else return [{ field : "mapping", value : v}];
-	}}];
-}
-rg.info.InfoMap.isValidTemplate = function(t) {
-	return Arrays.exists(["world","world-countries","usa-states","usa-state-centroids","usa-counties"],t.toLowerCase());
-}
-rg.info.InfoMap.fromTemplate = function(t) {
-	switch(t.toLowerCase()) {
-	case "world":case "world-countries":
-		return [{ field : "projection", value : "mercator"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"}];
-	case "usa-states":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"}];
-	case "usa-state-centroids":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"}];
-	case "usa-counties":
-		return [{ field : "projection", value : "albersusa"},{ field : "url", value : rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"}];
-	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("invalid template",null,null,{ fileName : "InfoMap.hx", lineNumber : 194, className : "rg.info.InfoMap", methodName : "fromTemplate"});
-			return $r;
-		}(this));
-	}
+	return [rg.info.filter.FilterDescription.toStr("url"),rg.info.filter.FilterDescription.toStr("type"),rg.info.filter.FilterDescription.toFloat("scale"),rg.info.filter.FilterDescription.toStr("projection"),rg.info.filter.FilterDescription.toStr("classname"),rg.info.filter.FilterDescription.toArray("translate"),rg.info.filter.FilterDescription.toArray("origin"),rg.info.filter.FilterDescription.toArray("parallels"),rg.info.filter.FilterDescription.toTry("mode",null,function(v) {
+		return Type.createEnum(thx.geo.ProjectionMode,Strings.ucfirst(v.toLowerCase()),[]);
+	},"value is not a valid projection mode '{0}'"),rg.info.filter.FilterDescription.toStrOrNull("property"),rg.info.filter.FilterDescription.toBool("usejsonp"),new rg.info.filter.FilterDescription("template",new rg.info.TemplateTransformer()),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("color",["colorScaleMode"],rg.svg.chart.ColorScaleModes.createFromDynamic,rg.info.filter.ReturnMessageChainer.make(function(v) {
+		return js.Boot.__instanceof(v,String) || Reflect.isFunction(v);
+	},"invalid color mode value '{0}'")),rg.info.filter.FilterDescription.toFunctionOrFloat("radius"),new rg.info.filter.FilterDescription("mapping",new rg.info.MapTransformer())];
 }
 rg.info.InfoMap.prototype = {
 	url: null
@@ -9233,20 +8423,58 @@ rg.info.InfoMap.prototype = {
 	,mappingurl: null
 	,__class__: rg.info.InfoMap
 }
+rg.info.filter = {}
+rg.info.filter.ITransformer = function() { }
+rg.info.filter.ITransformer.__name__ = ["rg","info","filter","ITransformer"];
+rg.info.filter.ITransformer.prototype = {
+	transform: null
+	,__class__: rg.info.filter.ITransformer
+}
+rg.info.MapTransformer = function() {
+};
+rg.info.MapTransformer.__name__ = ["rg","info","MapTransformer"];
+rg.info.MapTransformer.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.MapTransformer.prototype = {
+	transform: function(value) {
+		return js.Boot.__instanceof(value,String)?rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["mappingurl"],[value])):Reflect.isObject(value) && null == Type.getClass(value)?rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["mapping"],[value])):rg.info.filter.TransformResult.Failure(new thx.util.Message("value should be url string or an object",[value]));
+	}
+	,__class__: rg.info.MapTransformer
+}
+rg.info.TemplateTransformer = function() {
+};
+rg.info.TemplateTransformer.__name__ = ["rg","info","TemplateTransformer"];
+rg.info.TemplateTransformer.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.TemplateTransformer.prototype = {
+	transform: function(value) {
+		value = null == value?"":"" + Std.string(value);
+		return (function($this) {
+			var $r;
+			switch(value.toLowerCase()) {
+			case "world":case "world-countries":
+				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["mercator",rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"]));
+				break;
+			case "usa-states":
+				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"]));
+				break;
+			case "usa-state-centroids":
+				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"]));
+				break;
+			case "usa-counties":
+				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"]));
+				break;
+			default:
+				$r = rg.info.filter.TransformResult.Failure(new thx.util.Message("{0} is not a valid map template",[value]));
+			}
+			return $r;
+		}(this));
+	}
+	,__class__: rg.info.TemplateTransformer
+}
 rg.info.InfoPadding = function() {
 };
-$hxClasses["rg.info.InfoPadding"] = rg.info.InfoPadding;
 rg.info.InfoPadding.__name__ = ["rg","info","InfoPadding"];
 rg.info.InfoPadding.filters = function() {
-	return [{ field : "top", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "bottom", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "left", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null},{ field : "right", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toInt("top"),rg.info.filter.FilterDescription.toInt("bottom"),rg.info.filter.FilterDescription.toInt("left"),rg.info.filter.FilterDescription.toInt("right")];
 }
 rg.info.InfoPadding.prototype = {
 	top: null
@@ -9267,7 +8495,6 @@ rg.info.InfoPieChart = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.2);
 	this.dontfliplabel = true;
 };
-$hxClasses["rg.info.InfoPieChart"] = rg.info.InfoPieChart;
 rg.info.InfoPieChart.__name__ = ["rg","info","InfoPieChart"];
 rg.info.InfoPieChart.validateOrientation = function(s) {
 	var name = s.split(":")[0].toLowerCase();
@@ -9278,7 +8505,7 @@ rg.info.InfoPieChart.filterOrientation = function(s) {
 	switch(name) {
 	case "fixed":
 		var v = Std.parseFloat(s.split(":")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 61, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
 		return rg.svg.widget.LabelOrientation.FixedAngle(v);
 	case "ortho":case "orthogonal":
 		return rg.svg.widget.LabelOrientation.Orthogonal;
@@ -9287,43 +8514,11 @@ rg.info.InfoPieChart.filterOrientation = function(s) {
 	case "horizontal":
 		return rg.svg.widget.LabelOrientation.FixedAngle(0);
 	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 70, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
 	}
 }
 rg.info.InfoPieChart.filters = function() {
-	return [{ field : "labelradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "dontfliplabel", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "labelorientation", validator : function(v) {
-		return Std["is"](v,String) && rg.info.InfoPieChart.validateOrientation(v);
-	}, filter : function(v) {
-		return [{ field : "labelorientation", value : rg.info.InfoPieChart.filterOrientation(v)}];
-	}},{ field : "innerradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "outerradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "overradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "tooltipradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : null},{ field : "animation", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "animation", value : rg.info.Info.feed(new rg.info.InfoAnimation(),v)}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabel(),v)}];
-	}},{ field : "sort", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "sortDataPoint", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "effect", validator : rg.svg.chart.GradientEffects.canParse, filter : function(v) {
-		return [{ field : "effect", value : rg.svg.chart.GradientEffects.parse(v)}];
-	}}];
+	return [rg.info.filter.FilterDescription.toFloat("labelradius"),rg.info.filter.FilterDescription.toBool("dontfliplabel"),rg.info.filter.FilterDescription.toTry("labelorientation",null,rg.info.InfoPieChart.filterOrientation,"invalid orientation value '{0}'"),rg.info.filter.FilterDescription.toFloat("innerradius"),rg.info.filter.FilterDescription.toFloat("outerradius"),rg.info.filter.FilterDescription.toFloat("overradius"),rg.info.filter.FilterDescription.toFloat("tooltipradius"),rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}")))];
 }
 rg.info.InfoPieChart.prototype = {
 	labelradius: null
@@ -9349,48 +8544,13 @@ rg.info.InfoPivotTable = function() {
 	this.displayRowTotal = true;
 	this.columnAxes = 1;
 };
-$hxClasses["rg.info.InfoPivotTable"] = rg.info.InfoPivotTable;
 rg.info.InfoPivotTable.__name__ = ["rg","info","InfoPivotTable"];
 rg.info.InfoPivotTable.filters = function() {
-	return [{ field : "columnaxes", validator : function(v) {
-		return Std["is"](v,Int);
-	}, filter : function(v) {
-		return [{ field : "columnAxes", value : v}];
-	}},{ field : "displayheatmap", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayHeatmap", value : v}];
-	}},{ field : "displaycolumntotal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayColumnTotal", value : v}];
-	}},{ field : "displayrowtotal", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : function(v) {
-		return [{ field : "displayRowTotal", value : v}];
-	}},{ field : "startcolor", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "heatmapColorStart", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.info.InfoPivotTable.defaultStartColor.hex("#")))}];
-	}},{ field : "endcolor", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "heatmapColorEnd", value : thx.color.Hsl.toHsl(rg.util.RGColors.parse(v,rg.info.InfoPivotTable.defaultEndColor.hex("#")))}];
-	}},{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelPivotTable(),v)}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "cellclass", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "valueclass", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "headerclass", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "totalclass", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toInt("columnaxes",["columnAxes"]),rg.info.filter.FilterDescription.toBool("displayheatmap",["displayHeatmap"]),rg.info.filter.FilterDescription.toBool("displaycolumntotal",["displayColumnTotal"]),rg.info.filter.FilterDescription.toBool("displayrowtotal",["displayRowTotal"]),rg.info.filter.FilterDescription.toTry("startcolor",["heatmapColorStart"],function(value) {
+		return thx.color.Hsl.toHsl(rg.util.RGColors.parse(value,rg.info.InfoPivotTable.defaultStartColor.hex("#")));
+	},"value is not a parsable color '{0}'"),rg.info.filter.FilterDescription.toTry("endcolor",["heatmapColorEnd"],function(value) {
+		return thx.color.Hsl.toHsl(rg.util.RGColors.parse(value,rg.info.InfoPivotTable.defaultEndColor.hex("#")));
+	},"value is not a parsable color '{0}'"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelPivotTable),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFunction("cellclass"),rg.info.filter.FilterDescription.toFunction("valueclass"),rg.info.filter.FilterDescription.toFunction("headerclass"),rg.info.filter.FilterDescription.toFunction("totalclass")];
 }
 rg.info.InfoPivotTable.prototype = {
 	label: null
@@ -9415,104 +8575,9 @@ rg.info.InfoSankey = function() {
 	this.stackbackedges = true;
 	this.thinbackedges = false;
 };
-$hxClasses["rg.info.InfoSankey"] = rg.info.InfoSankey;
 rg.info.InfoSankey.__name__ = ["rg","info","InfoSankey"];
 rg.info.InfoSankey.filters = function() {
-	return [{ field : "label", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "label", value : rg.info.Info.feed(new rg.info.InfoLabelSankey(),v)}];
-	}},{ field : "layerwidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "layerWidth", value : v}];
-	}},{ field : "nodespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "nodeSpacing", value : v}];
-	}},{ field : "dummyspacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "dummySpacing", value : v}];
-	}},{ field : "extrawidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraWidth", value : v}];
-	}},{ field : "backedgespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "backEdgeSpacing", value : v}];
-	}},{ field : "extraheight", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraHeight", value : v}];
-	}},{ field : "extraradius", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "extraRadius", value : v}];
-	}},{ field : "imagewidth", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageWidth", value : v}];
-	}},{ field : "imageheight", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageHeight", value : v}];
-	}},{ field : "imagespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "imageSpacing", value : v}];
-	}},{ field : "labelnodespacing", validator : function(v) {
-		return Std["is"](v,Float);
-	}, filter : function(v) {
-		return [{ field : "labelNodeSpacing", value : v}];
-	}},{ field : "imagepath", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "imagePath", value : v}];
-	}},{ field : "click", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "click", value : v}];
-	}},{ field : "clickedge", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "clickEdge", value : v}];
-	}},{ field : "layoutmap", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "layoutmap", value : v}];
-	}},{ field : "layoutmethod", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "nodeclass", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "nodeclass", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "edgeclass", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "edgeclass", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "displayentry", validator : function(v) {
-		return Std["is"](v,Bool) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "displayentry", value : Std["is"](v,Bool)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "displayexit", validator : function(v) {
-		return Std["is"](v,Bool) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "displayexit", value : Std["is"](v,Bool)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "stackbackedges", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null},{ field : "thinbackedges", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelSankey),rg.info.filter.FilterDescription.toFloat("layerwidth",["layerWidth"]),rg.info.filter.FilterDescription.toFloat("nodespacing",["nodeSpacing"]),rg.info.filter.FilterDescription.toFloat("dummyspacing",["dummySpacing"]),rg.info.filter.FilterDescription.toFloat("extrawidth",["extraWidth"]),rg.info.filter.FilterDescription.toFloat("backedgespacing",["backEdgeSpacing"]),rg.info.filter.FilterDescription.toFloat("extraheight",["extraHeight"]),rg.info.filter.FilterDescription.toFloat("extraradius",["extraRadius"]),rg.info.filter.FilterDescription.toFloat("imagewidth",["imageWidth"]),rg.info.filter.FilterDescription.toFloat("imageheight",["imageHeight"]),rg.info.filter.FilterDescription.toFloat("imagespacing",["imageSpacing"]),rg.info.filter.FilterDescription.toFloat("labelnodespacing",["labelNodeSpacing"]),rg.info.filter.FilterDescription.toFunction("imagepath",["imagePath"]),rg.info.filter.FilterDescription.toFunction("click",["click"]),rg.info.filter.FilterDescription.toFunction("clickedge",["clickEdge"]),rg.info.filter.FilterDescription.toObject("layoutmap"),rg.info.filter.FilterDescription.toStr("layoutmethod"),rg.info.filter.FilterDescription.toFunctionOrString("nodeclass"),rg.info.filter.FilterDescription.toFunctionOrString("edgeclass"),rg.info.filter.FilterDescription.toFunctionOrBool("displayentry"),rg.info.filter.FilterDescription.toFunctionOrBool("displayexit"),rg.info.filter.FilterDescription.toBool("stackbackedges"),rg.info.filter.FilterDescription.toBool("thinbackedges")];
 }
 rg.info.InfoSankey.prototype = {
 	label: null
@@ -9550,28 +8615,11 @@ rg.info.InfoScatterGraph = function() {
 		return rg.svg.util.SymbolCache.cache.get("circle",16);
 	};
 };
-$hxClasses["rg.info.InfoScatterGraph"] = rg.info.InfoScatterGraph;
 rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
 rg.info.InfoScatterGraph.filters = function() {
-	return [{ field : "symbol", validator : function(v) {
-		return Std["is"](v,String) || Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbol", value : Std["is"](v,String)?function(_,_1) {
-			return v;
-		}:v}];
-	}},{ field : "symbolstyle", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : function(v) {
-		return [{ field : "symbolStyle", value : v}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
-	}}].concat(rg.info.InfoCartesianChart.filters());
+	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
+	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoScatterGraph.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
@@ -9582,16 +8630,9 @@ rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototyp
 });
 rg.info.InfoSegment = function() {
 };
-$hxClasses["rg.info.InfoSegment"] = rg.info.InfoSegment;
 rg.info.InfoSegment.__name__ = ["rg","info","InfoSegment"];
 rg.info.InfoSegment.filters = function() {
-	return [{ field : "on", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "transform", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null},{ field : "scale", validator : function(v) {
-		return Reflect.isFunction(v);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toStr("on"),rg.info.filter.FilterDescription.toFunction("transform"),rg.info.filter.FilterDescription.toFunction("scale")];
 }
 rg.info.InfoSegment.prototype = {
 	on: null
@@ -9605,26 +8646,15 @@ rg.info.InfoStreamGraph = function() {
 	this.interpolation = thx.svg.LineInterpolator.Cardinal();
 	this.effect = rg.svg.chart.StreamEffect.GradientVertical(1.25);
 };
-$hxClasses["rg.info.InfoStreamGraph"] = rg.info.InfoStreamGraph;
 rg.info.InfoStreamGraph.__name__ = ["rg","info","InfoStreamGraph"];
 rg.info.InfoStreamGraph.filters = function() {
-	return [{ field : "interpolation", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "interpolation", value : thx.svg.LineInterpolators.parse(v)}];
-	}},{ field : "effect", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "effect", value : rg.svg.chart.StreamEffects.parse(v)}];
-	}},{ field : "segmenton", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),{ on : v})}];
-	}},{ field : "segment", validator : function(v) {
-		return Reflect.isObject(v) && null == Type.getClass(v);
-	}, filter : function(v) {
-		return [{ field : "segment", value : rg.info.Info.feed(new rg.info.InfoSegment(),v)}];
-	}}].concat(rg.info.InfoCartesianChart.filters());
+	return [rg.info.filter.FilterDescription.toTry("interpolation",null,function(value) {
+		return thx.svg.LineInterpolators.parse(value);
+	},"value is expected to be a valid interpolation string, it is '{0}'"),rg.info.filter.FilterDescription.toTry("effect",null,function(value) {
+		return rg.svg.chart.StreamEffects.parse(value);
+	},"value is expected to be a valid effect string, it is '{0}'"),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
+	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoStreamGraph.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoStreamGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
@@ -9636,38 +8666,23 @@ rg.info.InfoStreamGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype
 rg.info.InfoVariable = function() {
 	this.variableType = rg.info.VariableType.Unknown;
 };
-$hxClasses["rg.info.InfoVariable"] = rg.info.InfoVariable;
 rg.info.InfoVariable.__name__ = ["rg","info","InfoVariable"];
 rg.info.InfoVariable.filters = function() {
-	return [{ field : "type", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : null},{ field : "view", validator : function(v) {
-		return Std["is"](v,Array) && rg.info.InfoVariable.testViewValue(v[0]) && rg.info.InfoVariable.testViewValue(v[1]);
-	}, filter : function(v) {
-		var result = [];
-		if(null != v[0]) result.push({ field : "min", value : v[0]});
-		if(null != v[1]) result.push({ field : "max", value : v[1]});
-		return result;
-	}},{ field : "values", validator : function(v) {
-		return Std["is"](v,Array) && Iterators.all(v.iterator(),function(v1) {
-			return Types.isPrimitive(v1);
-		});
-	}, filter : null},{ field : "groupby", validator : function(v) {
-		return Std["is"](v,String) && rg.util.Periodicity.isValidGroupBy(v);
-	}, filter : function(v) {
-		return [{ field : "groupBy", value : v}];
-	}},{ field : "variable", validator : function(v) {
-		return Std["is"](v,String) && Arrays.exists(["independent","dependent"],v.toLowerCase());
-	}, filter : function(v) {
-		return [{ field : "variableType", value : Type.createEnum(rg.info.VariableType,Strings.ucfirst(("" + v).toLowerCase()),[])}];
-	}},{ field : "scalemode", validator : function(v) {
-		return Std["is"](v,String);
-	}, filter : function(v) {
-		return [{ field : "scaleDistribution", value : Type.createEnum(rg.axis.ScaleDistribution,"Scale" + Strings.ucfirst(("" + v).toLowerCase()),[])}];
-	}}];
+	return [rg.info.filter.FilterDescription.toStr("type"),rg.info.filter.FilterDescription.custom("view",["min"],function(value) {
+		if(!js.Boot.__instanceof(value,Array) || !rg.info.InfoVariable.testViewValue(value[0])) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be an array of two items but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value[0]);
+	}),rg.info.filter.FilterDescription.custom("view",["max"],function(value) {
+		if(!js.Boot.__instanceof(value,Array) || !rg.info.InfoVariable.testViewValue(value[1])) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be an array of two items but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value[1]);
+	}),rg.info.filter.FilterDescription.toArray("values"),rg.info.filter.FilterDescription.custom("groupby",["groupBy"],function(value) {
+		if(!js.Boot.__instanceof(value,String) || !rg.util.Periodicity.isValidGroupBy(value)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be a valid string periodicity but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value);
+	}),rg.info.filter.FilterDescription.custom("variable",["variableType"],function(value) {
+		var v = null == value?null:("" + Std.string(value)).toLowerCase();
+		if(!Arrays.exists(["independent","dependent"],v)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be an 'independent' or 'dependent' but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(Type.createEnum(rg.info.VariableType,Strings.ucfirst(v.toLowerCase()),[]));
+	}),rg.info.filter.FilterDescription.toTry("scalemode",["scaleDistribution"],function(value) {
+		return Type.createEnum(rg.axis.ScaleDistribution,"Scale" + Strings.ucfirst(("" + Std.string(value)).toLowerCase()),[]);
+	},"value is expected to be a valid scale distribution value but is '{0}'")];
 }
 rg.info.InfoVariable.testViewValue = function(v) {
-	return v == null || Types.isPrimitive(v) || Std["is"](v,Date) || Reflect.isFunction(v);
+	return v == null || Types.isPrimitive(v) || js.Boot.__instanceof(v,Date) || Reflect.isFunction(v);
 }
 rg.info.InfoVariable.__super__ = rg.info.Info;
 rg.info.InfoVariable.prototype = $extend(rg.info.Info.prototype,{
@@ -9680,7 +8695,7 @@ rg.info.InfoVariable.prototype = $extend(rg.info.Info.prototype,{
 	,scaleDistribution: null
 	,__class__: rg.info.InfoVariable
 });
-rg.info.VariableType = $hxClasses["rg.info.VariableType"] = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
+rg.info.VariableType = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
 rg.info.VariableType.Unknown = ["Unknown",0];
 rg.info.VariableType.Unknown.toString = $estr;
 rg.info.VariableType.Unknown.__enum__ = rg.info.VariableType;
@@ -9692,18 +8707,9 @@ rg.info.VariableType.Dependent.toString = $estr;
 rg.info.VariableType.Dependent.__enum__ = rg.info.VariableType;
 rg.info.InfoVisualizationOption = function() {
 };
-$hxClasses["rg.info.InfoVisualizationOption"] = rg.info.InfoVisualizationOption;
 rg.info.InfoVisualizationOption.__name__ = ["rg","info","InfoVisualizationOption"];
 rg.info.InfoVisualizationOption.filters = function() {
-	return [{ field : "axes", validator : function(v) {
-		return Std["is"](v,Array) || Reflect.isObject(v);
-	}, filter : function(v) {
-		return [{ field : "variables", value : Std["is"](v,Array)?v.map(function(v1,i) {
-			return rg.info.Info.feed(new rg.info.InfoVariable(),v1);
-		}):[rg.info.Info.feed(new rg.info.InfoVariable(),v)]}];
-	}},{ field : "options", validator : function(v) {
-		return Reflect.isObject(v);
-	}, filter : null}];
+	return [rg.info.filter.FilterDescription.toInfoArray("axes",["variables"],rg.info.InfoVariable),rg.info.filter.FilterDescription.toObject("options")];
 }
 rg.info.InfoVisualizationOption.prototype = {
 	variables: null
@@ -9713,29 +8719,390 @@ rg.info.InfoVisualizationOption.prototype = {
 rg.info.InfoVisualizationType = function() {
 	this.replace = true;
 };
-$hxClasses["rg.info.InfoVisualizationType"] = rg.info.InfoVisualizationType;
 rg.info.InfoVisualizationType.__name__ = ["rg","info","InfoVisualizationType"];
 rg.info.InfoVisualizationType.filters = function() {
-	return [{ field : "visualization", validator : function(v) {
-		return Arrays.exists(rg.visualization.Visualizations.visualizations,v.toLowerCase());
-	}, filter : function(v) {
-		return [{ value : v.toLowerCase(), field : "type"}];
-	}},{ field : "replace", validator : function(v) {
-		return Std["is"](v,Bool);
-	}, filtern : null}];
+	return [rg.info.filter.FilterDescription.custom("visualization",["type"],function(value) {
+		var v = null == value?null:("" + Std.string(value)).toLowerCase();
+		if(Arrays.exists(rg.visualization.Visualizations.visualizations,v)) return rg.info.filter.TransformResult.Success(v); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("invalid visualization type '{0}'",value));
+	}),rg.info.filter.FilterDescription.toBool("replace")];
 }
 rg.info.InfoVisualizationType.prototype = {
 	replace: null
 	,type: null
 	,__class__: rg.info.InfoVisualizationType
 }
+rg.info.filter.EmptyTransformer = function(mapto) {
+	this.mapto = mapto;
+};
+rg.info.filter.EmptyTransformer.__name__ = ["rg","info","filter","EmptyTransformer"];
+rg.info.filter.EmptyTransformer.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.EmptyTransformer.prototype = {
+	mapto: null
+	,transform: function(value) {
+		return rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs([this.mapto],[value]));
+	}
+	,__class__: rg.info.filter.EmptyTransformer
+}
+rg.info.filter.FilterDescription = function(name,transformer) {
+	this.name = name;
+	this.transformer = null == transformer?new rg.info.filter.EmptyTransformer(name):transformer;
+};
+rg.info.filter.FilterDescription.__name__ = ["rg","info","filter","FilterDescription"];
+rg.info.filter.FilterDescription.toBool = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerBool.instance);
+}
+rg.info.filter.FilterDescription.toInt = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerInt.instance);
+}
+rg.info.filter.FilterDescription.toFloat = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerFloat.instance);
+}
+rg.info.filter.FilterDescription.toStr = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerString.instance);
+}
+rg.info.filter.FilterDescription.toStrOrNull = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,function(value) {
+		if(null == value) return rg.info.filter.TransformResult.Success(null); else return rg.info.filter.TransformerString.instance.transform(value);
+	});
+}
+rg.info.filter.FilterDescription.toArray = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,function(v) {
+		return Reflect.isObject(v) && null == Type.getClass(v)?rg.info.filter.TransformResult.Success(v):rg.info.filter.TransformResult.Failure(new thx.util.Message("expected object but was '{0}'",v));
+	});
+}
+rg.info.filter.FilterDescription.toObject = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerObject.instance);
+}
+rg.info.filter.FilterDescription.toFunction = function(name,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerFunction.instance);
+}
+rg.info.filter.FilterDescription.toInfo = function(name,maps,cls,fun) {
+	return rg.info.filter.FilterDescription.simplified(name,maps,function(value) {
+		var inst = Type.createInstance(cls,[]);
+		if(null != fun) fun(inst);
+		return rg.info.Info.feed(inst,value);
+	},rg.info.filter.ReturnMessageIfNot.isObject);
+}
+rg.info.filter.FilterDescription.toInfoArray = function(name,maps,cls) {
+	return rg.info.filter.FilterDescription.custom(name,maps,function(value) {
+		var arr;
+		if(js.Boot.__instanceof(value,Array)) arr = value; else if(Reflect.isObject(value) && null == Type.getClass(value)) arr = [value]; else return rg.info.filter.TransformResult.Failure(new thx.util.Message("value must be either an array of objects or an object but is {0}",[value]));
+		return rg.info.filter.TransformResult.Success(arr.map(function(v,_) {
+			var inst = Type.createInstance(cls,[]);
+			return rg.info.Info.feed(inst,v);
+		}));
+	});
+}
+rg.info.filter.FilterDescription.toTry = function(name,maps,conversion,errorMessage) {
+	return rg.info.filter.FilterDescription.custom(name,maps,function(value) {
+		try {
+			return rg.info.filter.TransformResult.Success(conversion(value));
+		} catch( e ) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message(errorMessage,[value]));
+		}
+	});
+}
+rg.info.filter.FilterDescription.toDataFunctionFromArray = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerArray.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(function(handler) {
+			return handler(value);
+		});
+	},function(vin,msg) {
+		return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter must be an array of values"));
+	}));
+}
+rg.info.filter.FilterDescription.toLoaderFunction = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		var field = Reflect.field(vin,"execute");
+		if(null != field && Reflect.isFunction(field)) return rg.info.filter.TransformResult.Success(function(handler) {
+			field.apply(vin,[handler]);
+		}); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter must be an array of values"));
+	}));
+}
+rg.info.filter.FilterDescription.toFunctionOrBool = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerBool.instance,$bind($_,$_.transform)),function(b,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return b;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a boolean value or a function returning a boolean value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.toFunctionOrFloat = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFloat.instance,$bind($_,$_.transform)),function(b,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return b;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a float value or a function returning a float value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.toFunctionOrNull = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		if(null == vin) return rg.info.filter.TransformResult.Success(null); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a function or null"));
+	}));
+}
+rg.info.filter.FilterDescription.toFunctionOrString = function(name,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerString.instance,$bind($_,$_.transform)),function(s,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return s;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a string value or a function returning a string value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.custom = function(name,maps,transformer) {
+	return rg.info.filter.FilterDescription.pair(name,maps,new rg.info.filter.CustomTransformer(transformer));
+}
+rg.info.filter.FilterDescription.simplified = function(name,maps,filter,validator) {
+	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.CustomTransformer.simplified(filter,validator));
+}
+rg.info.filter.FilterDescription.pair = function(name,maps,transformer) {
+	if(null == maps) maps = [name];
+	return new rg.info.filter.FilterDescription(name,new rg.info.filter.PairTransformer(maps,transformer));
+}
+rg.info.filter.FilterDescription.prototype = {
+	name: null
+	,transformer: null
+	,__class__: rg.info.filter.FilterDescription
+}
+rg.info.filter.CustomTransformer = function(transformer) {
+	this.transformer = transformer;
+};
+rg.info.filter.CustomTransformer.__name__ = ["rg","info","filter","CustomTransformer"];
+rg.info.filter.CustomTransformer.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.CustomTransformer.simplified = function(filter,validate) {
+	return new rg.info.filter.CustomTransformer(function(value) {
+		var err = validate(value);
+		if(null == err) return rg.info.filter.TransformResult.Success(filter(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message(err,[value]));
+	});
+}
+rg.info.filter.CustomTransformer.prototype = {
+	transformer: null
+	,transform: function(value) {
+		return this.transformer(value);
+	}
+	,__class__: rg.info.filter.CustomTransformer
+}
+rg.info.filter.TransformerChainer = function() { }
+rg.info.filter.TransformerChainer.__name__ = ["rg","info","filter","TransformerChainer"];
+rg.info.filter.TransformerChainer.onResult = function(src,success,failure) {
+	return function(value) {
+		var $e = (src(value));
+		switch( $e[1] ) {
+		case 0:
+			var out = $e[2];
+			return success(out,value);
+		case 1:
+			var msg = $e[2];
+			return failure(value,msg);
+		}
+	};
+}
+rg.info.filter.TransformerArray = function() {
+};
+rg.info.filter.TransformerArray.__name__ = ["rg","info","filter","TransformerArray"];
+rg.info.filter.TransformerArray.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerArray.prototype = {
+	transform: function(value) {
+		if(js.Boot.__instanceof(value,Array)) return rg.info.filter.TransformResult.Success(value); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("value {0} is not an array",[value]));
+	}
+	,__class__: rg.info.filter.TransformerArray
+}
+rg.info.filter.TransformerObject = function() {
+};
+rg.info.filter.TransformerObject.__name__ = ["rg","info","filter","TransformerObject"];
+rg.info.filter.TransformerObject.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerObject.prototype = {
+	transform: function(value) {
+		if(Reflect.isObject(value) && null == Type.getClass(value)) return rg.info.filter.TransformResult.Success(value); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("value {0} is not an object",[value]));
+	}
+	,__class__: rg.info.filter.TransformerObject
+}
+rg.info.filter.TransformerString = function() {
+};
+rg.info.filter.TransformerString.__name__ = ["rg","info","filter","TransformerString"];
+rg.info.filter.TransformerString.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerString.prototype = {
+	transform: function(value) {
+		var $e = (Type["typeof"](value));
+		switch( $e[1] ) {
+		case 3:
+			return rg.info.filter.TransformResult.Success(value?"true":"false");
+		case 1:
+		case 2:
+			return rg.info.filter.TransformResult.Success("" + Std.string(value));
+		case 6:
+			var cls = $e[2];
+			return rg.info.filter.TransformResult.Success(Std.string(value));
+		default:
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into a string value",[value]));
+		}
+	}
+	,__class__: rg.info.filter.TransformerString
+}
+rg.info.filter.TransformerBool = function() {
+};
+rg.info.filter.TransformerBool.__name__ = ["rg","info","filter","TransformerBool"];
+rg.info.filter.TransformerBool.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerBool.prototype = {
+	transform: function(value) {
+		var $e = (Type["typeof"](value));
+		switch( $e[1] ) {
+		case 3:
+			return rg.info.filter.TransformResult.Success(value);
+		case 1:
+		case 2:
+			return rg.info.filter.TransformResult.Success(value != 0);
+		case 6:
+			var cls = $e[2];
+			if("String" == Type.getClassName(cls)) {
+				if(Bools.canParse(value)) return rg.info.filter.TransformResult.Success(Bools.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform the string '{0}'' into a boolean value",[value]));
+			} else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform the instance of {0} into a boolean value",[value]));
+			break;
+		default:
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into a boolean value",[value]));
+		}
+	}
+	,__class__: rg.info.filter.TransformerBool
+}
+rg.info.filter.TransformerInt = function() {
+};
+rg.info.filter.TransformerInt.__name__ = ["rg","info","filter","TransformerInt"];
+rg.info.filter.TransformerInt.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerInt.prototype = {
+	transform: function(value) {
+		switch( (Type["typeof"](value))[1] ) {
+		case 3:
+			return rg.info.filter.TransformResult.Success(value?1:0);
+		case 1:
+			return rg.info.filter.TransformResult.Success(value);
+		case 2:
+			return rg.info.filter.TransformResult.Success(value | 0);
+		default:
+			if(js.Boot.__instanceof(value,String) && Ints.canParse(value)) return rg.info.filter.TransformResult.Success(Ints.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into an integer value",[value]));
+		}
+	}
+	,__class__: rg.info.filter.TransformerInt
+}
+rg.info.filter.TransformerFloat = function() {
+};
+rg.info.filter.TransformerFloat.__name__ = ["rg","info","filter","TransformerFloat"];
+rg.info.filter.TransformerFloat.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerFloat.prototype = {
+	transform: function(value) {
+		switch( (Type["typeof"](value))[1] ) {
+		case 3:
+			return rg.info.filter.TransformResult.Success(value?1.0:0.0);
+		case 1:
+		case 2:
+			return rg.info.filter.TransformResult.Success(value);
+		default:
+			if(js.Boot.__instanceof(value,String) && Floats.canParse(value)) return rg.info.filter.TransformResult.Success(Floats.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into a float value",[value]));
+		}
+	}
+	,__class__: rg.info.filter.TransformerFloat
+}
+rg.info.filter.TransformerFunction = function() {
+};
+rg.info.filter.TransformerFunction.__name__ = ["rg","info","filter","TransformerFunction"];
+rg.info.filter.TransformerFunction.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerFunction.prototype = {
+	transform: function(value) {
+		if(Reflect.isFunction(value)) return rg.info.filter.TransformResult.Success(value); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("not a function"));
+	}
+	,__class__: rg.info.filter.TransformerFunction
+}
+rg.info.filter.ReturnMessageIfNot = function() { }
+rg.info.filter.ReturnMessageIfNot.__name__ = ["rg","info","filter","ReturnMessageIfNot"];
+rg.info.filter.ReturnMessageIfNot.isString = function(v) {
+	return js.Boot.__instanceof(v,String)?null:"not a string";
+}
+rg.info.filter.ReturnMessageIfNot.isObject = function(v) {
+	return Reflect.isObject(v) && null == Type.getClass(v)?null:"not an object";
+}
+rg.info.filter.ReturnMessageChainer = function() { }
+rg.info.filter.ReturnMessageChainer.__name__ = ["rg","info","filter","ReturnMessageChainer"];
+rg.info.filter.ReturnMessageChainer.make = function(f,msg) {
+	return function(v) {
+		if(f(v)) return null; else return msg;
+	};
+}
+rg.info.filter.ReturnMessageChainer.or = function(f1,f2) {
+	return function(v) {
+		var o = f1(v);
+		if(null == o) return f2(v); else return o;
+	};
+}
+rg.info.filter.PairTransformer = function(names,valueTransformer) {
+	this.names = names;
+	this.valueTransformer = valueTransformer;
+};
+rg.info.filter.PairTransformer.__name__ = ["rg","info","filter","PairTransformer"];
+rg.info.filter.PairTransformer.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.PairTransformer.prototype = {
+	names: null
+	,valueTransformer: null
+	,transform: function(value) {
+		var $e = (this.valueTransformer.transform(value));
+		switch( $e[1] ) {
+		case 0:
+			var v = $e[2];
+			return rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(this.names,this.names.map(function(_,_1) {
+				return v;
+			})));
+		case 1:
+			var reason = $e[2];
+			return rg.info.filter.TransformResult.Failure(reason);
+		}
+	}
+	,__class__: rg.info.filter.PairTransformer
+}
+rg.info.filter.Pairs = function(names,values) {
+	if(names.length != values.length) throw new thx.error.Error("names and values must have the same length",null,null,{ fileName : "Pairs.hx", lineNumber : 15, className : "rg.info.filter.Pairs", methodName : "new"});
+	this.names = names;
+	this.values = values;
+};
+rg.info.filter.Pairs.__name__ = ["rg","info","filter","Pairs"];
+rg.info.filter.Pairs.prototype = {
+	names: null
+	,values: null
+	,iterator: function() {
+		var result = [];
+		var _g1 = 0, _g = this.names.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			result.push({ name : this.names[i], value : this.values[i]});
+		}
+		return HxOverrides.iter(result);
+	}
+	,__class__: rg.info.filter.Pairs
+}
+rg.info.filter.TransformResult = { __ename__ : ["rg","info","filter","TransformResult"], __constructs__ : ["Success","Failure"] }
+rg.info.filter.TransformResult.Success = function(value) { var $x = ["Success",0,value]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
+rg.info.filter.TransformResult.Failure = function(reason) { var $x = ["Failure",1,reason]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
 rg.interactive = {}
 rg.interactive.RGDownloader = function(container,serviceurl) {
 	this.container = container;
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
-$hxClasses["rg.interactive.RGDownloader"] = rg.interactive.RGDownloader;
 rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
 rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
 	var sep = url.indexOf("?") >= 0?"&":"?";
@@ -9761,7 +9128,7 @@ rg.interactive.RGDownloader.prototype = {
 			return function(a3) {
 				return f(a1,a2,a3);
 			};
-		})(this.complete.$bind(this),success,error);
+		})($bind(this,this.complete),success,error);
 		http.setParameter("html",this.html());
 		http.setParameter("config",this.config());
 		http.request(true);
@@ -9812,7 +9179,6 @@ rg.interactive.RGLegacyRenderer = function(container,serviceurl) {
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
-$hxClasses["rg.interactive.RGLegacyRenderer"] = rg.interactive.RGLegacyRenderer;
 rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
 rg.interactive.RGLegacyRenderer.getIframeDoc = function(iframe) {
 	var iframeDoc = null;
@@ -9919,7 +9285,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	,__class__: rg.interactive.RGLegacyRenderer
 }
 rg.layout = {}
-rg.layout.Anchor = $hxClasses["rg.layout.Anchor"] = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
+rg.layout.Anchor = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.layout.Anchor.Top = ["Top",0];
 rg.layout.Anchor.Top.toString = $estr;
 rg.layout.Anchor.Top.__enum__ = rg.layout.Anchor;
@@ -9937,7 +9303,6 @@ rg.layout.Layout = function(width,height,container) {
 	container.classed().add("rg");
 	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container.append("div"));
 };
-$hxClasses["rg.layout.Layout"] = rg.layout.Layout;
 rg.layout.Layout.__name__ = ["rg","layout","Layout"];
 rg.layout.Layout.prototype = {
 	mainPanelName: null
@@ -10012,7 +9377,6 @@ rg.layout.LayoutCartesian = function(width,height,container) {
 	this.alternating = true;
 	this.yitems = [];
 };
-$hxClasses["rg.layout.LayoutCartesian"] = rg.layout.LayoutCartesian;
 rg.layout.LayoutCartesian.__name__ = ["rg","layout","LayoutCartesian"];
 rg.layout.LayoutCartesian.__super__ = rg.layout.Layout;
 rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
@@ -10257,7 +9621,6 @@ rg.layout.LayoutSimple = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
-$hxClasses["rg.layout.LayoutSimple"] = rg.layout.LayoutSimple;
 rg.layout.LayoutSimple.__name__ = ["rg","layout","LayoutSimple"];
 rg.layout.LayoutSimple.__super__ = rg.layout.Layout;
 rg.layout.LayoutSimple.prototype = $extend(rg.layout.Layout.prototype,{
@@ -10298,7 +9661,6 @@ rg.layout.LayoutX = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
-$hxClasses["rg.layout.LayoutX"] = rg.layout.LayoutX;
 rg.layout.LayoutX.__name__ = ["rg","layout","LayoutX"];
 rg.layout.LayoutX.__super__ = rg.layout.Layout;
 rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
@@ -10401,14 +9763,13 @@ rg.layout.PanelContext = function(panel,anchor) {
 	this.panel = panel;
 	this.anchor = anchor;
 };
-$hxClasses["rg.layout.PanelContext"] = rg.layout.PanelContext;
 rg.layout.PanelContext.__name__ = ["rg","layout","PanelContext"];
 rg.layout.PanelContext.prototype = {
 	panel: null
 	,anchor: null
 	,__class__: rg.layout.PanelContext
 }
-rg.layout.ScalePattern = $hxClasses["rg.layout.ScalePattern"] = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
+rg.layout.ScalePattern = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
 rg.layout.ScalePattern.ScalesBefore.toString = $estr;
 rg.layout.ScalePattern.ScalesBefore.__enum__ = rg.layout.ScalePattern;
@@ -10424,7 +9785,6 @@ rg.query.BaseQuery = function(async,first) {
 	this._first = first;
 	this._store = new Hash();
 };
-$hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
@@ -10455,7 +9815,7 @@ rg.query.BaseQuery.prototype = {
 		});
 	}
 	,data: function(values) {
-		if(!Std["is"](values,Array)) values = [values];
+		if(!js.Boot.__instanceof(values,Array)) values = [values];
 		return this.stackAsync(function(stack,h) {
 			stack.push(values);
 			h(stack);
@@ -10519,9 +9879,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f1,a1) {
-					return function(a2) {
-						return f1(a1,a2);
+				f(data[i],(function(f1,i1) {
+					return function(r) {
+						return f1(i1,r);
 					};
 				})(complete,i));
 			}
@@ -10537,9 +9897,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f1,a1) {
-					return function(a2) {
-						return f1(a1,a2);
+				f(data[i],(function(f1,i1) {
+					return function(r) {
+						return f1(i1,r);
 					};
 				})(complete,i));
 			}
@@ -10652,7 +10012,7 @@ rg.query.BaseQuery.prototype = {
 		}));
 	}
 	,split: function(f) {
-		if(Std["is"](f,String)) {
+		if(js.Boot.__instanceof(f,String)) {
 			var name = f;
 			f = function(o) {
 				return Reflect.field(o,name);
@@ -10682,10 +10042,10 @@ rg.query.BaseQuery.prototype = {
 		}));
 	}
 	,stackStore: function(name) {
-		var me = this;
+		var _g = this;
 		if(null == name) name = "";
 		return this.stackTransform(function(arr) {
-			me._first._store.set(name,arr.copy());
+			_g._first._store.set(name,arr.slice());
 			return arr;
 		});
 	}
@@ -10707,10 +10067,10 @@ rg.query.BaseQuery.prototype = {
 		});
 	}
 	,stackRetrieve: function(name) {
-		var me = this;
+		var _g = this;
 		if(null == name) name = "";
 		return this.stackTransform(function(arr) {
-			return arr.concat(me._first._store.get(name));
+			return arr.concat(_g._first._store.get(name));
 		});
 	}
 	,stackClear: function() {
@@ -10728,7 +10088,7 @@ rg.query.BaseQuery.prototype = {
 		return new rg.query.BaseQuery(async,first);
 	}
 	,toString: function() {
-		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + (null != this._next) + ", async: " + (null != this._async) + "]");
+		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + Std.string(null != this._next) + ", async: " + Std.string(null != this._async) + "]");
 	}
 	,_this: function(q) {
 		return q;
@@ -10738,7 +10098,6 @@ rg.query.BaseQuery.prototype = {
 rg.query.Query = function() {
 	rg.query.BaseQuery.call(this,null,this);
 };
-$hxClasses["rg.query.Query"] = rg.query.Query;
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.create = function() {
 	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
@@ -10773,7 +10132,6 @@ rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,__class__: rg.query.Query
 });
 rg.query.Transformers = function() { }
-$hxClasses["rg.query.Transformers"] = rg.query.Transformers;
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.crossStack = function(data) {
 	if(data.length <= 1) return data;
@@ -10906,9 +10264,9 @@ rg.query.Transformers.setFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
-			return function(a2) {
-				return f1(a1,a2);
+		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
+			return function(a1) {
+				return f1(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -10935,9 +10293,9 @@ rg.query.Transformers.mapFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f1,a1) {
-			return function(a2) {
-				return f1(a1,a2);
+		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
+			return function(a1) {
+				return f1(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -10994,7 +10352,7 @@ rg.query.Transformers.uniquef = function(fun) {
 	};
 }
 rg.query.Transformers.rotate = function(matchingf) {
-	if(Std["is"](matchingf,String)) {
+	if(js.Boot.__instanceof(matchingf,String)) {
 		var field = matchingf;
 		matchingf = function(a,b) {
 			return Reflect.field(a,field) == Reflect.field(b,field);
@@ -11030,9 +10388,6 @@ rg.query.Transformers.rotate = function(matchingf) {
 		return traversed;
 	};
 }
-rg.query.Transformers.prototype = {
-	__class__: rg.query.Transformers
-}
 rg.svg = {}
 rg.svg.panel = {}
 rg.svg.panel.Layer = function(panel) {
@@ -11043,7 +10398,6 @@ rg.svg.panel.Layer = function(panel) {
 	this.g.attr("class").string("layer");
 	this._resize();
 };
-$hxClasses["rg.svg.panel.Layer"] = rg.svg.panel.Layer;
 rg.svg.panel.Layer.__name__ = ["rg","svg","panel","Layer"];
 rg.svg.panel.Layer.prototype = {
 	panel: null
@@ -11053,9 +10407,9 @@ rg.svg.panel.Layer.prototype = {
 	,height: null
 	,customClass: null
 	,addClass: function(name) {
-		var me = this;
+		var _g = this;
 		name.split(" ").forEach(function(d,i) {
-			me.g.classed().add(d);
+			_g.g.classed().add(d);
 		});
 	}
 	,_resize: function() {
@@ -11076,7 +10430,6 @@ rg.svg.panel.Layer.prototype = {
 		return this.customClass = v;
 	}
 	,__class__: rg.svg.panel.Layer
-	,__properties__: {set_customClass:"setCustomClass"}
 }
 rg.svg.chart = {}
 rg.svg.chart.Chart = function(panel) {
@@ -11086,7 +10439,6 @@ rg.svg.chart.Chart = function(panel) {
 	this.animationEase = thx.math.Equations.linear;
 	this.ready = new hxevents.Notifier();
 };
-$hxClasses["rg.svg.chart.Chart"] = rg.svg.chart.Chart;
 rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
 rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
 rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -11121,7 +10473,6 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 rg.svg.chart.CartesianChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 };
-$hxClasses["rg.svg.chart.CartesianChart"] = rg.svg.chart.CartesianChart;
 rg.svg.chart.CartesianChart.__name__ = ["rg","svg","chart","CartesianChart"];
 rg.svg.chart.CartesianChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11148,7 +10499,6 @@ rg.svg.chart.BarChart = function(panel) {
 	this.paddingDataPoint = 2;
 	this.horizontal = false;
 };
-$hxClasses["rg.svg.chart.BarChart"] = rg.svg.chart.BarChart;
 rg.svg.chart.BarChart.__name__ = ["rg","svg","chart","BarChart"];
 rg.svg.chart.BarChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11214,27 +10564,27 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			while(_g3 < _g2) {
 				var j = _g3++;
 				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+					return function(n,i1) {
+						return f(a1,n,i1);
 					};
-				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
-					return function(a2,a3,a4) {
-						return f(a1,a2,a3,a4);
+				})($bind(this,this.onmouseover),stats), click = (function(f,a1) {
+					return function(dp,_,i1) {
+						return f(a1,dp,_,i1);
 					};
-				})(this.onclick.$bind(this),stats);
+				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,a1) {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,dp1) {
+						return function(_,i1) {
+							return f(dp1,_,i1);
 						};
 					})(click,dp));
-					bar.node()["__dhx_data__"] = dp;
+					bar.node().__dhx_data__ = dp;
 					rg.util.RGColors.storeColorForSelection(bar);
-					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
+					if(this.displayGradient) bar.eachNode($bind(this,this.applyGradient));
 					if(this.stacked) prev = x + w;
 				}
 			}
@@ -11259,28 +10609,28 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			while(_g3 < _g2) {
 				var j = _g3++;
 				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+					return function(n,i1) {
+						return f(a1,n,i1);
 					};
-				})(this.onmouseover.$bind(this),stats), click = (function(f,a1) {
-					return function(a2,a3,a4) {
-						return f(a1,a2,a3,a4);
+				})($bind(this,this.onmouseover),stats), click = (function(f,a1) {
+					return function(dp,_,i1) {
+						return f(a1,dp,_,i1);
 					};
-				})(this.onclick.$bind(this),stats);
+				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 					if(Math.isNaN(h)) h = 0;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,a1) {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,dp1) {
+						return function(_,i1) {
+							return f(dp1,_,i1);
 						};
 					})(click,dp));
-					bar.node()["__dhx_data__"] = dp;
+					bar.node().__dhx_data__ = dp;
 					rg.util.RGColors.storeColorForSelection(bar);
-					if(this.displayGradient) bar.eachNode(this.applyGradient.$bind(this));
+					if(this.displayGradient) bar.eachNode($bind(this,this.applyGradient));
 					if(this.stacked) prev = y + h;
 				}
 			}
@@ -11310,7 +10660,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	}
 	,__class__: rg.svg.chart.BarChart
 });
-rg.svg.chart.ColorScaleMode = $hxClasses["rg.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
+rg.svg.chart.ColorScaleMode = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
 rg.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
@@ -11318,22 +10668,23 @@ rg.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3
 rg.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleModes = function() { }
-$hxClasses["rg.svg.chart.ColorScaleModes"] = rg.svg.chart.ColorScaleModes;
 rg.svg.chart.ColorScaleModes.__name__ = ["rg","svg","chart","ColorScaleModes"];
+rg.svg.chart.ColorScaleModes.canParse = function(v) {
+	try {
+		rg.svg.chart.ColorScaleModes.createFromDynamic(v);
+		return true;
+	} catch( e ) {
+		return false;
+	}
+}
 rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 	if(Reflect.isFunction(v)) return rg.svg.chart.ColorScaleMode.Fun(v);
-	if(!Std["is"](v,String)) return (function($this) {
+	if(!js.Boot.__instanceof(v,String)) return (function($this) {
 		var $r;
-		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 19, className : "rg.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
+		throw new thx.error.Error("invalid color mode '{0}'",[v],null,{ fileName : "ColorScaleModes.hx", lineNumber : 28, className : "rg.svg.chart.ColorScaleModes", methodName : "createFromDynamic"});
 		return $r;
 	}(this));
-	var s = ((function($this) {
-		var $r;
-		var $t = v;
-		if(Std["is"]($t,String)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).split(":");
+	var s = (js.Boot.__cast(v , String)).split(":");
 	switch(s[0].toLowerCase()) {
 	case "css":
 		return rg.svg.chart.ColorScaleMode.FromCss(null == s[1]?null:Std.parseInt(s[1]));
@@ -11353,20 +10704,13 @@ rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 		})); else return rg.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[0]));
 	}
 }
-rg.svg.chart.ColorScaleModes.prototype = {
-	__class__: rg.svg.chart.ColorScaleModes
-}
 rg.svg.chart.Coords = function() { }
-$hxClasses["rg.svg.chart.Coords"] = rg.svg.chart.Coords;
 rg.svg.chart.Coords.__name__ = ["rg","svg","chart","Coords"];
 rg.svg.chart.Coords.fromTransform = function(s) {
 	if(!rg.svg.chart.Coords.retransform.match(s)) return [0.0,0]; else {
 		var y = rg.svg.chart.Coords.retransform.matched(2);
 		return [Std.parseFloat(rg.svg.chart.Coords.retransform.matched(1)),null == y?0:Std.parseFloat(y)];
 	}
-}
-rg.svg.chart.Coords.prototype = {
-	__class__: rg.svg.chart.Coords
 }
 rg.svg.chart.FunnelChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
@@ -11375,11 +10719,10 @@ rg.svg.chart.FunnelChart = function(panel) {
 	this.arrowSize = 30;
 	this.gradientLightness = 1;
 	this.displayGradient = true;
-	this.labelArrow = this.defaultLabelArrow.$bind(this);
-	this.labelDataPoint = this.defaultLabelDataPoint.$bind(this);
-	this.labelDataPointOver = this.defaultLabelDataPointOver.$bind(this);
+	this.labelArrow = $bind(this,this.defaultLabelArrow);
+	this.labelDataPoint = $bind(this,this.defaultLabelDataPoint);
+	this.labelDataPointOver = $bind(this,this.defaultLabelDataPointOver);
 };
-$hxClasses["rg.svg.chart.FunnelChart"] = rg.svg.chart.FunnelChart;
 rg.svg.chart.FunnelChart.__name__ = ["rg","svg","chart","FunnelChart"];
 rg.svg.chart.FunnelChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11429,45 +10772,45 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		return this.dpvalue(this.dps[i + 1 < this.dps.length?i + 1:i]);
 	}
 	,redraw: function() {
-		var me = this;
+		var _g = this;
 		if(null == this.dps || 0 == this.dps.length) return;
 		this.g.selectAll("g").remove();
 		this.g.selectAll("radialGradient").remove();
 		this.stats = this.variableDependent.stats;
 		var max = this.scale(this.stats.max), wscale = function(v) {
-			return me.scale(v) / max * (me.width - 2) / 2;
+			return _g.scale(v) / max * (_g.width - 2) / 2;
 		}, fx1 = function(v) {
-			return me.width / 2 - wscale(v);
+			return _g.width / 2 - wscale(v);
 		}, fx2 = function(v) {
-			return me.width - fx1(v);
+			return _g.width - fx1(v);
 		}, diagonal1 = new thx.svg.Diagonal().sourcef(function(o,i) {
-			return [fx1(me.dpvalue(o)),0.0];
+			return [fx1(_g.dpvalue(o)),0.0];
 		}).targetf(function(o,i) {
-			return [fx1(me.next(i)),me.h];
+			return [fx1(_g.next(i)),_g.h];
 		}), diagonal2 = new thx.svg.Diagonal().sourcef(function(o,i) {
-			return [fx2(me.next(i)),me.h];
+			return [fx2(_g.next(i)),_g.h];
 		}).targetf(function(o,i) {
-			return [fx2(me.dpvalue(o)),0.0];
+			return [fx2(_g.dpvalue(o)),0.0];
 		}), conj = function(v,r,dir) {
 			var x2 = r?fx1(v) - fx2(v):fx2(v) - fx1(v), a = 5, d = r?dir == 0?1:0:dir;
-			return " a " + a + " " + me.flatness + " 0 0 " + d + " " + x2 + " 0";
+			return " a " + a + " " + _g.flatness + " 0 0 " + d + " " + x2 + " 0";
 		}, conj1 = function(d,i) {
-			return conj(me.dpvalue(d),true,0);
+			return conj(_g.dpvalue(d),true,0);
 		}, conj2 = function(d,i) {
-			return conj(me.next(i),false,0);
+			return conj(_g.next(i),false,0);
 		}, conjr = function(d,i) {
-			var v = me.dpvalue(d);
+			var v = _g.dpvalue(d);
 			return " M " + fx1(v) + " 0 " + conj(v,false,0) + conj(v,true,1);
 		};
 		var top = this.g.append("svg:g");
 		var path = top.append("svg:path").attr("class").string("funnel-inside fill-0").attr("d").string(conjr(this.dps[0]));
 		if(null != this.click) top.onNode("click",function(_,_1) {
-			me.click(me.dps[0],me.stats);
+			_g.click(_g.dps[0],_g.stats);
 		});
 		if(this.displayGradient) this.internalGradient(path);
 		path.onNode("mouseover",function(d,_) {
-			me.currentNode = d;
-			me.mouseOver(me.dps[0],0,me.stats);
+			_g.currentNode = d;
+			_g.mouseOver(_g.dps[0],0,_g.stats);
 		});
 		rg.util.RGColors.storeColorForSelection(path);
 		this.topheight = Math.ceil(path.node().getBBox().height / 2) + 1;
@@ -11477,7 +10820,7 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		top.attr("transform").string("translate(0," + (1 + this.topheight) + ")");
 		var section = this.g.selectAll("g.section").data(this.dps);
 		var enter = section.enter().append("svg:g").attr("class").string("section").attr("transform").stringf(function(d,i) {
-			return "translate(0," + (me.topheight + i * (me.padding + me.h)) + ")";
+			return "translate(0," + (_g.topheight + i * (_g.padding + _g.h)) + ")";
 		});
 		var funnel = enter.append("svg:path").attr("class").stringf(function(d,i) {
 			return "funnel-outside fill-" + i;
@@ -11488,37 +10831,37 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			return diagonal1.diagonal(d,i) + conj2(d,i) + d2 + conj1(d,i);
 		});
 		if(null != this.click) funnel.on("click",function(d,_) {
-			me.click(d,me.stats);
+			_g.click(d,_g.stats);
 		});
 		rg.util.RGColors.storeColorForSelection(funnel);
 		funnel.onNode("mouseover",function(d,i) {
-			me.currentNode = d;
-			me.mouseOver(Reflect.field(d,"__dhx_data__"),i,me.stats);
+			_g.currentNode = d;
+			_g.mouseOver(Reflect.field(d,"__dhx_data__"),i,_g.stats);
 		});
-		if(this.displayGradient) enter.eachNode(this.externalGradient.$bind(this));
+		if(this.displayGradient) enter.eachNode($bind(this,this.externalGradient));
 		var ga = this.g.selectAll("g.arrow").data(this.dps).enter().append("svg:g").attr("class").string("arrow").attr("transform").stringf(function(d,i) {
-			return "translate(" + me.width / 2 + "," + (me.topheight + me.h * i + me.arrowSize / 2) + ")";
+			return "translate(" + _g.width / 2 + "," + (_g.topheight + _g.h * i + _g.arrowSize / 2) + ")";
 		});
 		ga.each(function(d,i) {
-			if(null == me.labelArrow) return;
-			var text = me.labelArrow(d,me.stats);
+			if(null == _g.labelArrow) return;
+			var text = _g.labelArrow(d,_g.stats);
 			if(null == text) return;
 			var node = dhx.Dom.selectNode(dhx.Group.current);
-			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
-			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(me.arrowSize * me.arrowSize));
+			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(_g.arrowSize * _g.arrowSize));
+			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(_g.arrowSize * _g.arrowSize));
 			var label = new rg.svg.widget.Label(node,true,false,true);
 			label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
 			label.setText(text);
 		});
 		ga.each(function(d,i) {
-			if(null == me.labelDataPoint) return;
-			var text = me.labelDataPoint(d,me.stats);
+			if(null == _g.labelDataPoint) return;
+			var text = _g.labelDataPoint(d,_g.stats);
 			if(null == text) return;
-			var balloon = new rg.svg.widget.Balloon(me.g);
-			balloon.setBoundingBox({ x : me.width / 2 + me.arrowSize / 3 * 2, y : 0, width : me.width, height : me.height});
+			var balloon = new rg.svg.widget.Balloon(_g.g);
+			balloon.setBoundingBox({ x : _g.width / 2 + _g.arrowSize / 3 * 2, y : 0, width : _g.width, height : _g.height});
 			balloon.setPreferredSide(3);
 			balloon.setText(text.split("\n"));
-			balloon.moveTo(me.width / 2,me.topheight + me.h * .6 + (me.h + me.padding) * i,false);
+			balloon.moveTo(_g.width / 2,_g.topheight + _g.h * .6 + (_g.h + _g.padding) * i,false);
 		});
 		this.ready.dispatch();
 	}
@@ -11560,7 +10903,6 @@ rg.svg.chart.Geo = function(panel) {
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 	this.resize();
 };
-$hxClasses["rg.svg.chart.Geo"] = rg.svg.chart.Geo;
 rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11586,7 +10928,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				return function() {
 					return f(a1,a2);
 				};
-			})(this.drawmap.$bind(this),map,field));
+			})($bind(this,this.drawmap),map,field));
 			return;
 		}
 		this.setColorMode(map.colorMode);
@@ -11600,7 +10942,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			this.stylefeature(feature.svg,Objects.copyTo(dp,feature.dp));
 			if(null != map.radius && feature.svg.node().nodeName == "circle") feature.svg.attr("r")["float"](map.radius(feature.dp,this.variableDependent.stats));
 			if(null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp,this.variableDependent.stats))) {
-				var c = Reflect.field(feature.dp,"#centroid");
+				var c = Reflect.field(feature.dp,"$centroid");
 				var label = new rg.svg.widget.Label(this.mapcontainer,true,false,false);
 				label.setText(text);
 				label.place(c[0],c[1],0);
@@ -11612,7 +10954,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var text = f(dp,this.variableDependent.stats);
 		if(null == text) this.tooltip.hide(); else {
 			this.tooltip.html(text.split("\n").join("<br>"));
-			var centroid = Reflect.field(dp,"#centroid");
+			var centroid = Reflect.field(dp,"$centroid");
 			this.moveTooltip(centroid[0] + this.width / 2,centroid[1] + this.height / 2,rg.util.RGColors.extractColor(n));
 		}
 	}
@@ -11628,7 +10970,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		return this.colorMode;
 	}
 	,setColorMode: function(v) {
-		var me = this;
+		var _g = this;
 		var $e = (this.colorMode = v);
 		switch( $e[1] ) {
 		case 0:
@@ -11646,7 +10988,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var g = $e[2];
 			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
@@ -11657,7 +10999,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors.length * t);
 				svg.style("fill").string(colors[index]);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
@@ -11666,7 +11008,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var colors = $e[2];
 			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
@@ -11682,7 +11024,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,me.variableDependent.stats));
+				svg.style("fill").string(f(dp,_g.variableDependent.stats));
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
@@ -11700,22 +11042,19 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			return function() {
 				return f(a1,a2);
 			};
-		})(this.drawmap.$bind(this),map,field));
+		})($bind(this,this.drawmap),map,field));
 	}
 	,__class__: rg.svg.chart.Geo
-	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.svg.chart.GradientEffect = $hxClasses["rg.svg.chart.GradientEffect"] = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.svg.chart.GradientEffect = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
 rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.GradientEffect.NoEffect.toString = $estr;
 rg.svg.chart.GradientEffect.NoEffect.__enum__ = rg.svg.chart.GradientEffect;
 rg.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.GradientEffects = function() { }
-$hxClasses["rg.svg.chart.GradientEffects"] = rg.svg.chart.GradientEffects;
 rg.svg.chart.GradientEffects.__name__ = ["rg","svg","chart","GradientEffects"];
-rg.svg.chart.GradientEffects.canParse = function(d) {
-	if(!Std["is"](d,String)) return false;
-	var s = d, parts = s.toLowerCase().split(":");
+rg.svg.chart.GradientEffects.canParse = function(s) {
+	var parts = s.toLowerCase().split(":");
 	return (function($this) {
 		var $r;
 		switch(parts[0]) {
@@ -11739,15 +11078,11 @@ rg.svg.chart.GradientEffects.parse = function(s) {
 		return rg.svg.chart.GradientEffect.NoEffect;
 	}
 }
-rg.svg.chart.GradientEffects.prototype = {
-	__class__: rg.svg.chart.GradientEffects
-}
 rg.svg.chart.HeatGrid = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.useContour = false;
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 };
-$hxClasses["rg.svg.chart.HeatGrid"] = rg.svg.chart.HeatGrid;
 rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11801,13 +11136,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	}
 	,currentNode: null
 	,drawSquares: function() {
-		var me = this;
+		var _g = this;
 		var choice = this.g.selectAll("rect").data(this.dps);
-		var rect = choice.enter().append("svg:rect").attr("x").floatf(this.x.$bind(this)).attr("y").floatf(this.y.$bind(this)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
-			me.stylefeature(dhx.Dom.selectNode(dhx.Group.current),dp);
-		}).on("click",this.onclick.$bind(this)).onNode("mouseover",function(n,i) {
-			me.currentNode = n;
-			me.onmouseover(Reflect.field(n,"__dhx_data__"),i);
+		var rect = choice.enter().append("svg:rect").attr("x").floatf($bind(this,this.x)).attr("y").floatf($bind(this,this.y)).attr("width")["float"](this.w).attr("height")["float"](this.h).each(function(dp,_) {
+			_g.stylefeature(dhx.Dom.selectNode(dhx.Group.current),dp);
+		}).on("click",$bind(this,this.onclick)).onNode("mouseover",function(n,i) {
+			_g.currentNode = n;
+			_g.onmouseover(Reflect.field(n,"__dhx_data__"),i);
 		});
 		rg.util.RGColors.storeColorForSelection(rect);
 	}
@@ -11824,7 +11159,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		this.click(dp,this.stats);
 	}
 	,range: function(variable) {
-		var v = Std["is"](variable,rg.data.VariableIndependent)?variable:null;
+		var v = js.Boot.__instanceof(variable,rg.data.VariableIndependent)?variable:null;
 		if(null != v) return v.axis.range(v.min(),v.max());
 		var tickmarks = variable.axis.ticks(variable.min(),variable.max());
 		return tickmarks.map(function(d,i) {
@@ -11837,7 +11172,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		return this.colorMode;
 	}
 	,setColorMode: function(v) {
-		var me = this;
+		var _g = this;
 		var $e = (this.colorMode = v);
 		switch( $e[1] ) {
 		case 0:
@@ -11855,7 +11190,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var g = $e[2];
 			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(g * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g * t);
 				svg.attr("class").string("fill-" + index);
 			};
 			break;
@@ -11865,7 +11200,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type)), index = Math.floor(colors.length * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors.length * t);
 				svg.style("fill").string(colors[index]);
 			};
 			break;
@@ -11873,7 +11208,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var colors = $e[2];
 			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
 			this.stylefeature = function(svg,dp) {
-				var t = me.variableDependent.axis.scale(me.variableDependent.min(),me.variableDependent.max(),Reflect.field(dp,me.variableDependent.type));
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
 			};
 			break;
@@ -11887,14 +11222,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		case 5:
 			var f = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,me.variableDependent.stats));
+				svg.style("fill").string(f(dp,_g.variableDependent.stats));
 			};
 			break;
 		}
 		return v;
 	}
 	,__class__: rg.svg.chart.HeatGrid
-	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.svg.chart.LineChart = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
@@ -11902,7 +11236,6 @@ rg.svg.chart.LineChart = function(panel) {
 	this.chart = this.g.append("svg:g");
 	this.sensibleRadius = 100;
 };
-$hxClasses["rg.svg.chart.LineChart"] = rg.svg.chart.LineChart;
 rg.svg.chart.LineChart.__name__ = ["rg","svg","chart","LineChart"];
 rg.svg.chart.LineChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11949,31 +11282,31 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 		return scaledw;
 	}
 	,getY1: function(pos) {
-		var me = this;
+		var _g = this;
 		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
+			return function(v1) {
+				return f(a1,a2,v1);
 			};
-		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		if(null != this.y0property) {
 			var min = scale(v.min()) * this.height;
 			return function(d,i) {
-				return (me.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * me.height + min;
+				return (_g.getY0(pos))(d,i) - scale(Reflect.field(d,v.type)) * _g.height + min;
 			};
 		} else return function(d,i) {
-			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * me.height;
-			return me.height - scaledh;
+			var value = Reflect.field(d,v.type), scaled = scale(value), scaledh = scaled * _g.height;
+			return _g.height - scaledh;
 		};
 	}
 	,getY0: function(pos) {
-		var me = this;
+		var _g = this;
 		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
+			return function(v1) {
+				return f(a1,a2,v1);
 			};
-		})(($_=v.axis,$_.scale.$bind($_)),v.min(),v.max());
+		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		return function(d,i) {
-			return me.height - scale(rg.util.DataPoints.valueAlt(d,me.y0property,v.min())) * me.height;
+			return _g.height - scale(rg.util.DataPoints.valueAlt(d,_g.y0property,v.min())) * _g.height;
 		};
 	}
 	,segments: null
@@ -11988,16 +11321,16 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 		};
 	}
 	,data: function(dps) {
-		var me = this;
+		var _g2 = this;
 		this.linePathShape = [];
 		var _g1 = 0, _g = this.yVariables.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var line = [new thx.svg.Line(this.x.$bind(this),this.getY1(i))];
+			var line = [new thx.svg.Line($bind(this,this.x),this.getY1(i))];
 			if(null != this.lineInterpolator) line[0].interpolator(this.lineInterpolator);
 			this.linePathShape[i] = (function(line) {
 				return function(dp,i1) {
-					me.segment = i1;
+					_g2.segment = i1;
 					return line[0].shape(dp,i1);
 				};
 			})(line);
@@ -12016,9 +11349,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			this.stats[i[0]] = new rg.axis.Stats(this.yVariables[i[0]].type);
 			this.stats[i[0]].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i[0]].type));
 			if(null != this.y0property) {
-				var area = new thx.svg.Area(this.x.$bind(this),this.getY0(i[0]),this.getY1(i[0]));
+				var area = new thx.svg.Area($bind(this,this.x),this.getY0(i[0]),this.getY1(i[0]));
 				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i[0],"area area-" + i[0])).attr("d").stringf(area.shape.$bind(area));
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i[0],"area area-" + i[0])).attr("d").stringf($bind(area,area.shape));
 			}
 			var segmentgroup = gi.selectAll("path.main").data(this.segments);
 			var $e = (this.lineEffect);
@@ -12034,9 +11367,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
 					};
 				})(fs,lightness1)).remove();
-				var _g2 = 0;
-				while(_g2 < levels1[0]) {
-					var j = [_g2++];
+				var _g21 = 0;
+				while(_g21 < levels1[0]) {
+					var j = [_g21++];
 					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
 						return function(_,i1) {
 							return fs[0][i1](j[0] / levels1[0]).hex("#");
@@ -12046,9 +11379,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				break;
 			case 2:
 				var levels = $e[4], oy = $e[3], ox = $e[2];
-				var _g2 = 0;
-				while(_g2 < levels) {
-					var j = _g2++;
+				var _g21 = 0;
+				while(_g21 < levels) {
+					var j = _g21++;
 					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i[0]]);
 				}
 				break;
@@ -12082,7 +11415,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				var sp = [this.symbol];
 				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,i) {
 					return function(dp,_) {
-						return sp[0](dp,me.stats[i[0]]);
+						return sp[0](dp,_g2.stats[i[0]]);
 					};
 				})(sp,i));
 				rg.util.RGColors.storeColorForSelection(spath,"stroke");
@@ -12090,7 +11423,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 					var ss = [this.symbolStyle];
 					spath.attr("style").stringf((function(ss,i) {
 						return function(dp,_) {
-							return ss[0](dp,me.stats[i[0]]);
+							return ss[0](dp,_g2.stats[i[0]]);
 						};
 					})(ss,i));
 				}
@@ -12100,7 +11433,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				gsymbol.eachNode((function(f,i) {
 					return function(n,_) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,false,false);
-						label.setText(f[0](dp,me.stats[i[0]]));
+						label.setText(f[0](dp,_g2.stats[i[0]]));
 					};
 				})(f,i));
 			}
@@ -12111,11 +11444,11 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			})()).update().attr("transform").stringf(this.getTranslatePointf(i[0]));
 			gsymbols.exit().remove();
 		}
-		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:this.onclick.$bind(this),null == this.labelDataPointOver?null:this.onmouseover.$bind(this),this.sensibleRadius);
+		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:$bind(this,this.onclick),null == this.labelDataPointOver?null:$bind(this,this.onmouseover),this.sensibleRadius);
 		this.ready.dispatch();
 	}
 	,getTranslatePointf: function(pos) {
-		var x = this.x.$bind(this), y = this.getY1(pos);
+		var x = $bind(this,this.x), y = this.getY1(pos);
 		return function(dp,i) {
 			return "translate(" + x(dp) + "," + y(dp,i) + ")";
 		};
@@ -12143,14 +11476,13 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	}
 	,__class__: rg.svg.chart.LineChart
 });
-rg.svg.chart.LineEffect = $hxClasses["rg.svg.chart.LineEffect"] = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.svg.chart.LineEffect = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
 rg.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.LineEffect.NoEffect.toString = $estr;
 rg.svg.chart.LineEffect.NoEffect.__enum__ = rg.svg.chart.LineEffect;
 rg.svg.chart.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.LineEffects = function() { }
-$hxClasses["rg.svg.chart.LineEffects"] = rg.svg.chart.LineEffects;
 rg.svg.chart.LineEffects.__name__ = ["rg","svg","chart","LineEffects"];
 rg.svg.chart.LineEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
@@ -12176,9 +11508,6 @@ rg.svg.chart.LineEffects.parse = function(s) {
 		return rg.svg.chart.LineEffect.NoEffect;
 	}
 }
-rg.svg.chart.LineEffects.prototype = {
-	__class__: rg.svg.chart.LineEffects
-}
 rg.svg.chart.PieChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.addClass("pie-chart");
@@ -12196,7 +11525,6 @@ rg.svg.chart.PieChart = function(panel) {
 	this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
 	this.labelDontFlip = true;
 };
-$hxClasses["rg.svg.chart.PieChart"] = rg.svg.chart.PieChart;
 rg.svg.chart.PieChart.__name__ = ["rg","svg","chart","PieChart"];
 rg.svg.chart.PieChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -12233,24 +11561,24 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,data: function(dp) {
 		var pv = this.variableDependent.type;
 		this.stats = this.variableDependent.stats;
-		var choice = this.g.selectAll("g.group").data(this.pief(dp),this.id.$bind(this));
+		var choice = this.g.selectAll("g.group").data(this.pief(dp),$bind(this,this.id));
 		var enter = choice.enter();
 		var arc = enter.append("svg:g").attr("class").stringf(function(d,i) {
 			return "group fill-" + i;
 		}).attr("transform").string("translate(" + this.radius + "," + this.radius + ")");
 		var path = arc.append("svg:path").attr("class").string("slice");
 		rg.util.RGColors.storeColorForSelection(arc);
-		if(this.displayGradient) arc.eachNode(this.applyGradient.$bind(this));
+		if(this.displayGradient) arc.eachNode($bind(this,this.applyGradient));
 		if(this.animated) {
 			path.attr("d").stringf(this.arcShape(this.arcStart));
-			arc.eachNode(this.fadein.$bind(this)).onNode("mouseover.animation",this.highlight.$bind(this)).onNode("mouseout.animation",this.backtonormal.$bind(this));
+			arc.eachNode($bind(this,this.fadein)).onNode("mouseover.animation",$bind(this,this.highlight)).onNode("mouseout.animation",$bind(this,this.backtonormal));
 		} else path.attr("d").stringf(this.arcShape(this.arcNormal));
-		arc.onNode("mouseover.label",this.onMouseOver.$bind(this));
-		if(null != this.mouseClick) arc.onNode("click.user",this.onMouseClick.$bind(this));
-		if(null != this.labelDataPoint) choice.enter().append("svg:g").attr("transform").string("translate(" + this.radius + "," + this.radius + ")").eachNode(this.appendLabel.$bind(this));
+		arc.onNode("mouseover.label",$bind(this,this.onMouseOver));
+		if(null != this.mouseClick) arc.onNode("click.user",$bind(this,this.onMouseClick));
+		if(null != this.labelDataPoint) choice.enter().append("svg:g").attr("transform").string("translate(" + this.radius + "," + this.radius + ")").eachNode($bind(this,this.appendLabel));
 		choice.update().select("path").transition().ease(this.animationEase).duration(null,this.animationDuration).attr("d").stringf(this.arcShape(this.arcNormal));
-		if(null != this.labelDataPoint) choice.update().eachNode(this.updateLabel.$bind(this));
-		choice.exit().eachNode(this.removeLabel.$bind(this)).remove();
+		if(null != this.labelDataPoint) choice.update().eachNode($bind(this,this.updateLabel));
+		choice.exit().eachNode($bind(this,this.removeLabel)).remove();
 		this.ready.dispatch();
 	}
 	,onMouseOver: function(dom,i) {
@@ -12352,8 +11680,8 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		while(_g1 < _g) {
 			var i = _g1++;
 			var id = this.makeid(dp[i]);
-			arr[i]["id"] = id;
-			arr[i]["dp"] = dp[i];
+			arr[i].id = id;
+			arr[i].dp = dp[i];
 		}
 		return arr;
 	}
@@ -12389,7 +11717,6 @@ rg.svg.chart.Sankey = function(panel) {
 	this.stackbackedges = true;
 	this.thinbackedges = true;
 };
-$hxClasses["rg.svg.chart.Sankey"] = rg.svg.chart.Sankey;
 rg.svg.chart.Sankey.__name__ = ["rg","svg","chart","Sankey"];
 rg.svg.chart.Sankey.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -12433,21 +11760,21 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.dependentVariable = variableDependents[0];
 	}
 	,data: function(graphlayout) {
-		var me = this;
+		var _g = this;
 		this.layout = graphlayout.clone();
 		var nodes = Arrays.filter(Iterators.filter(this.layout.graph.nodes.iterator(),function(node) {
-			return me.isdummy(node);
+			return _g.isdummy(node);
 		}),function(node) {
 			var edge = node.graph.edges.positives(node).next();
 			if(null == edge) return false;
-			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			var cellhead = _g.layout.cell(edge.head), celltail = _g.layout.cell(edge.tail);
 			return celltail.layer > cellhead.layer;
 		});
 		var layers = this.layout.layers();
-		var _g = 0;
-		while(_g < nodes.length) {
-			var node = nodes[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < nodes.length) {
+			var node = nodes[_g1];
+			++_g1;
 			var cell = this.layout.cell(node), ehead = node.graph.edges.positives(node).next(), etail = node.graph.edges.negatives(node).next();
 			layers[cell.layer].splice(cell.position,1);
 			this.layout.graph.edges.create(etail.tail,ehead.head,ehead.weight,ehead.data);
@@ -12456,7 +11783,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.redraw();
 	}
 	,redraw: function() {
-		var me = this;
+		var _g2 = this;
 		this.mapelements = new Hash();
 		this.maphi = new Hash();
 		this.maxweight = 0;
@@ -12474,14 +11801,14 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		while(_g1 < _g) {
 			var i = _g1++;
 			var v = this.layout.layer(i).reduce(function(cum,cur,_) {
-				return cum + me.nodepadding(cur);
+				return cum + _g2.nodepadding(cur);
 			},0.0);
 			if(v > occupiedspace) occupiedspace = v;
 		}
 		this.availableheight = this.height - occupiedspace;
 		if(this.thinbackedges) {
 			var count = this.stackbackedges?Iterators.filter(this.layout.graph.edges.collection.iterator(),function(edge) {
-				return me.layout.cell(edge.tail).layer >= me.layout.cell(edge.head).layer;
+				return _g2.layout.cell(edge.tail).layer >= _g2.layout.cell(edge.head).layer;
 			}).length:1;
 			this.availableheight -= (1 + this.backEdgeSpacing) * count;
 		} else if(this.stackbackedges) {
@@ -12509,10 +11836,10 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		while(_g1 < _g) {
 			var i = _g1++;
 			var layer = this.layout.layer(i), t = 0.0;
-			var _g2 = 0;
-			while(_g2 < layer.length) {
-				var node = layer[_g2];
-				++_g2;
+			var _g21 = 0;
+			while(_g21 < layer.length) {
+				var node = layer[_g21];
+				++_g21;
 				t += this.nodepadding(node) + this.nheight(node.data.weight);
 			}
 			this.layerstarty[i] = t;
@@ -12557,121 +11884,121 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var edgescontainer = this.g.select("g.edges");
 		if(edgescontainer.empty()) edgescontainer = this.g.append("svg:g").attr("class").string("edges"); else edgescontainer.selectAll("*").remove();
 		var edges = Arrays.order(Iterators.array(this.layout.graph.edges.iterator()),function(ea,eb) {
-			var lena = me.layout.cell(ea.tail).layer - me.layout.cell(ea.head).layer, lenb = me.layout.cell(eb.tail).layer - me.layout.cell(eb.head).layer, comp = lenb - lena;
+			var lena = _g2.layout.cell(ea.tail).layer - _g2.layout.cell(ea.head).layer, lenb = _g2.layout.cell(eb.tail).layer - _g2.layout.cell(eb.head).layer, comp = lenb - lena;
 			if(comp != 0) return comp; else return Floats.compare(eb.weight,ea.weight);
 		});
 		Iterators.each(this.layout.graph.nodes.iterator(),function(node,_) {
 			node.graph.edges.sortPositives(node,function(a,b) {
-				var ca = me.layout.cell(a.head), cb = me.layout.cell(b.head);
+				var ca = _g2.layout.cell(a.head), cb = _g2.layout.cell(b.head);
 				var t = cb.layer - ca.layer;
 				if(t != 0) return t;
 				return ca.position - cb.position;
 			});
 			node.graph.edges.sortNegatives(node,function(a,b) {
-				var ca = me.layout.cell(a.tail), cb = me.layout.cell(b.tail);
+				var ca = _g2.layout.cell(a.tail), cb = _g2.layout.cell(b.tail);
 				if(ca.layer > cb.layer) return 1;
 				return ca.position - cb.position;
 			});
 		});
-		var cedges = edges.copy();
+		var cedges = edges.slice();
 		cedges.sort(function(a,b) {
-			var ca = me.layout.cell(a.tail), cb = me.layout.cell(b.tail);
+			var ca = _g2.layout.cell(a.tail), cb = _g2.layout.cell(b.tail);
 			return cb.position - ca.position;
 		});
 		if(this.thinbackedges) {
 			var blockwidth = 10;
 			cedges.forEach(function(edge,_) {
 				if(edge.weight <= 0) return;
-				var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+				var cellhead = _g2.layout.cell(edge.head), celltail = _g2.layout.cell(edge.tail);
 				if(cellhead.layer > celltail.layer) return;
-				var weight = me.nheight(edge.weight), before = 5 + me.cafter(edge.id,edge.tail.positives()) * (me.backEdgeSpacing + 1), after = 5 + me.cafter(edge.id,edge.head.negatives()) * (me.backEdgeSpacing + 1), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.entry) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
+				var weight = _g2.nheight(edge.weight), before = 5 + _g2.cafter(edge.id,edge.tail.positives()) * (_g2.backEdgeSpacing + 1), after = 5 + _g2.cafter(edge.id,edge.head.negatives()) * (_g2.backEdgeSpacing + 1), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
 				var g = edgescontainer.append("svg:g");
-				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + me.styleEdgeBackward + " stroke stroke-" + me.styleEdgeBackward).onNode("mouseover",(function(f,a1,a2,a3) {
-					return function(a4,a5) {
-						return f(a1,a2,a3,a4,a5);
+				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f,x,y,a1) {
+					return function(el,i) {
+						return f(x,y,a1,el,i);
 					};
-				})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy,edge));
-				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + me.styleEdgeBackward + " stroke stroke-" + me.styleEdgeBackward).onNode("mouseover",(function(f,a1,a2,a3) {
-					return function(a4,a5) {
-						return f(a1,a2,a3,a4,a5);
+				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
+				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f,x,y,a1) {
+					return function(el,i) {
+						return f(x,y,a1,el,i);
 					};
-				})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy,edge));
-				var hook = new rg.svg.widget.HookConnector(g,"stroke stroke-" + me.styleEdgeBackward);
-				me.addToMap(edge.id,"edge",g);
+				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
+				var hook = new rg.svg.widget.HookConnector(g,"stroke stroke-" + _g2.styleEdgeBackward);
+				_g2.addToMap(edge.id,"edge",g);
 				hook.update(x1 + blockwidth,y1 + weight / 2,x2 - blockwidth,y2 + weight / 2,backedgesy,before,after);
-				hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
-					return function(a4,a5) {
-						return f(a1,a2,a3,a4,a5);
+				hook.g.onNode("mouseover",(function(f,x,y,a1) {
+					return function(el,i) {
+						return f(x,y,a1,el,i);
 					};
-				})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy,edge));
-				if(null != me.edgeClass) {
-					var cls = me.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},me.dependentVariable.stats);
+				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
+				if(null != _g2.edgeClass) {
+					var cls = _g2.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},_g2.dependentVariable.stats);
 					if(null != cls) hook.addClass(cls);
 				}
 				rg.util.RGColors.storeColorForSelection(hook.g,"stroke",hook.line.style("stroke").get());
-				if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+				if(null != _g2.clickEdge) hook.g.onNode("click",(function(f,a1) {
+					return function(el,i) {
+						return f(a1,el,i);
 					};
-				})(me.edgeClickWithEdge.$bind(me),edge));
-				if(me.stackbackedges) backedgesy += 1 + me.backEdgeSpacing;
+				})($bind(_g2,_g2.edgeClickWithEdge),edge));
+				if(_g2.stackbackedges) backedgesy += 1 + _g2.backEdgeSpacing;
 			});
 		} else cedges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
-			var cellhead = me.layout.cell(edge.head), celltail = me.layout.cell(edge.tail);
+			var cellhead = _g2.layout.cell(edge.head), celltail = _g2.layout.cell(edge.tail);
 			if(cellhead.layer > celltail.layer) return;
-			var weight = me.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + me.styleEdgeBackward,"stroke stroke-" + me.styleEdgeBackward), before = me.hafter(edge.id,edge.tail.positives()) + Math.min(me.extraWidth,me.nheight(edge.tail.data.exit)), after = me.hafter(edge.id,edge.head.negatives()), x1 = me.layerWidth / 2 + me.xlayer(celltail.layer), x2 = -me.layerWidth / 2 + me.xlayer(cellhead.layer), y1 = me.ynode(edge.tail) + me.ydiagonal(edge.id,edge.tail.positives()), y2 = me.nheight(edge.head.data.entry) + me.ynode(edge.head) + me.ydiagonal(edge.id,edge.head.negatives());
-			me.addToMap(edge.id,"edge",hook.g);
+			var weight = _g2.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + _g2.styleEdgeBackward,"stroke stroke-" + _g2.styleEdgeBackward), before = _g2.hafter(edge.id,edge.tail.positives()) + Math.min(_g2.extraWidth,_g2.nheight(edge.tail.data.exit)), after = _g2.hafter(edge.id,edge.head.negatives()), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
+			_g2.addToMap(edge.id,"edge",hook.g);
 			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
-			hook.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
+			hook.g.onNode("mouseover",(function(f,x,y,a1) {
+				return function(el,i) {
+					return f(x,y,a1,el,i);
 				};
-			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,backedgesy + weight / 2,edge));
-			if(null != me.edgeClass) {
-				var cls = me.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},me.dependentVariable.stats);
+			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy + weight / 2,edge));
+			if(null != _g2.edgeClass) {
+				var cls = _g2.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},_g2.dependentVariable.stats);
 				if(null != cls) hook.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(hook.g,"fill",hook.area.style("fill").get());
-			if(null != me.clickEdge) hook.g.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
+			if(null != _g2.clickEdge) hook.g.onNode("click",(function(f,a1) {
+				return function(el,i) {
+					return f(a1,el,i);
 				};
-			})(me.edgeClickWithEdge.$bind(me),edge));
-			if(me.stackbackedges) backedgesy += weight + me.backEdgeSpacing;
+			})($bind(_g2,_g2.edgeClickWithEdge),edge));
+			if(_g2.stackbackedges) backedgesy += weight + _g2.backEdgeSpacing;
 		});
 		edges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
-			var head = edge.head, tail = edge.tail, cellhead = me.layout.cell(head), celltail = me.layout.cell(tail);
+			var head = edge.head, tail = edge.tail, cellhead = _g2.layout.cell(head), celltail = _g2.layout.cell(tail);
 			if(cellhead.layer <= celltail.layer) return;
-			var x1 = Math.round(me.layerWidth / 2 + me.xlayer(celltail.layer)) - .5, x2 = Math.round(-me.layerWidth / 2 + me.xlayer(cellhead.layer)) - .5, y1 = me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = me.ynode(head) + me.nheight(head.data.entry) + me.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = me.nheight(edge.weight), diagonal = new rg.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + me.styleEdgeForward,"stroke stroke-" + me.styleEdgeForward);
+			var x1 = Math.round(_g2.layerWidth / 2 + _g2.xlayer(celltail.layer)) - .5, x2 = Math.round(-_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer)) - .5, y1 = _g2.ynode(tail) + _g2.ydiagonal(edge.id,tail.graph.edges.positives(tail)), y2 = _g2.ynode(head) + _g2.nheight(head.data.entry) + _g2.ydiagonal(edge.id,head.graph.edges.negatives(head)), weight = _g2.nheight(edge.weight), diagonal = new rg.svg.widget.DiagonalArea(edgescontainer,"fill fill-" + _g2.styleEdgeForward,"stroke stroke-" + _g2.styleEdgeForward);
 			diagonal.update(x1,y1,x2,y2,weight,weight);
-			if(null != me.edgeClass) {
-				var cls = me.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},me.dependentVariable.stats);
+			if(null != _g2.edgeClass) {
+				var cls = _g2.edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight},_g2.dependentVariable.stats);
 				if(null != cls) diagonal.addClass(cls);
 			}
-			me.addToMap(edge.id,"edge",diagonal.g);
-			diagonal.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
+			_g2.addToMap(edge.id,"edge",diagonal.g);
+			diagonal.g.onNode("mouseover",(function(f,x,y,a1) {
+				return function(el,i) {
+					return f(x,y,a1,el,i);
 				};
-			})(me.onmouseoveredge.$bind(me),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
+			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
 			rg.util.RGColors.storeColorForSelection(diagonal.g,"fill",diagonal.area.style("fill").get());
-			if(null != me.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
+			if(null != _g2.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
+				return function(el,i) {
+					return f(a1,el,i);
 				};
-			})(me.edgeClickWithEdge.$bind(me),edge));
+			})($bind(_g2,_g2.edgeClickWithEdge),edge));
 		});
 		var normMin = function(v) {
-			return Math.max(0,Math.min(v - 3,me.extraRadius));
+			return Math.max(0,Math.min(v - 3,_g2.extraRadius));
 		};
 		this.layout.each(function(cell,node) {
-			if(node.data.exit <= 0 || me.extraWidth <= 0 || null != me.displayExit && !me.displayExit(node.data,me.dependentVariable.stats)) return;
-			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleexit,"stroke stroke-" + me.styleexit), extra = me.nheight(node.data.exit), x = me.layerWidth / 2 + me.xlayer(cell.layer), y = me.ynode(node) + me.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
-			elbow.update(rg.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,me.extraWidth,0,me.extraHeight);
-			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.exit},me.dependentVariable.stats), nodeSpacing = 0;
+			if(node.data.exit <= 0 || _g2.extraWidth <= 0 || null != _g2.displayExit && !_g2.displayExit(node.data,_g2.dependentVariable.stats)) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + _g2.styleexit,"stroke stroke-" + _g2.styleexit), extra = _g2.nheight(node.data.exit), x = _g2.layerWidth / 2 + _g2.xlayer(cell.layer), y = _g2.ynode(node) + _g2.ydiagonal(null,node.graph.edges.positives(node)), minr = normMin(extra);
+			elbow.update(rg.svg.widget.Orientation.RightBottom,extra,x,y + extra,minr,_g2.extraWidth,0,_g2.extraHeight);
+			if(null != _g2.labelEdge) {
+				var label, text = _g2.labelEdge({ tail : node, head : null, nodeweight : node.data.weight, edgeweight : node.data.exit},_g2.dependentVariable.stats), nodeSpacing = 0;
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
 				label.place(x,y + extra / 2,0);
@@ -12679,61 +12006,61 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
+			elbow.g.onNode("mouseover",(function(f,x1,y1,a1) {
+				return function(el,i) {
+					return f(x1,y1,a1,el,i);
 				};
-			})(me.onmouseoverexit.$bind(me),x + minr + (-minr + Math.min(me.extraWidth,extra)) / 2,me.ynode(node) + me.hnode(node) + minr + me.extraHeight,node));
-			if(null != me.edgeClass) {
-				var cls = me.edgeClass({ head : null, tail : node.data, edgeweight : node.data.exit},me.dependentVariable.stats);
+			})($bind(_g2,_g2.onmouseoverexit),x + minr + (-minr + Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) + _g2.hnode(node) + minr + _g2.extraHeight,node));
+			if(null != _g2.edgeClass) {
+				var cls = _g2.edgeClass({ head : null, tail : node.data, edgeweight : node.data.exit},_g2.dependentVariable.stats);
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
-				return function(a3,a4) {
-					return f(a1,a2,a3,a4);
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(el,i) {
+					return f(a1,a2,el,i);
 				};
-			})(me.edgeClickWithNode.$bind(me),node,true));
-			me.addToMap(node.id,"exit",elbow.g);
+			})($bind(_g2,_g2.edgeClickWithNode),node,true));
+			_g2.addToMap(node.id,"exit",elbow.g);
 		});
 		this.layout.each(function(cell,node) {
-			if(node.data.entry <= 0 || me.extraWidth <= 0 || null != me.displayEntry && !me.displayEntry(node.data,me.dependentVariable.stats)) return;
-			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + me.styleentry,"stroke stroke-" + me.styleentry), extra = me.nheight(node.data.entry), minr = normMin(extra), x = -me.layerWidth / 2 + me.xlayer(cell.layer);
-			elbow.update(rg.svg.widget.Orientation.LeftTop,extra,x,me.ynode(node),minr,me.extraWidth,0,me.extraHeight);
-			if(null != me.labelEdge) {
-				var label, text = me.labelEdge({ tail : null, head : node, nodeweight : node.data.weight, edgeweight : node.data.entry},me.dependentVariable.stats), nodeSpacing = 0;
+			if(node.data.entry <= 0 || _g2.extraWidth <= 0 || null != _g2.displayEntry && !_g2.displayEntry(node.data,_g2.dependentVariable.stats)) return;
+			var elbow = new rg.svg.widget.ElbowArea(edgescontainer,"fill fill-" + _g2.styleentry,"stroke stroke-" + _g2.styleentry), extra = _g2.nheight(node.data.entry), minr = normMin(extra), x = -_g2.layerWidth / 2 + _g2.xlayer(cell.layer);
+			elbow.update(rg.svg.widget.Orientation.LeftTop,extra,x,_g2.ynode(node),minr,_g2.extraWidth,0,_g2.extraHeight);
+			if(null != _g2.labelEdge) {
+				var label, text = _g2.labelEdge({ tail : null, head : node, nodeweight : node.data.weight, edgeweight : node.data.entry},_g2.dependentVariable.stats), nodeSpacing = 0;
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
-				label.place(x,me.ynode(node) + extra / 2,0);
+				label.place(x,_g2.ynode(node) + extra / 2,0);
 				label.setAnchor(rg.svg.widget.GridAnchor.Right);
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f,a1,a2,a3) {
-				return function(a4,a5) {
-					return f(a1,a2,a3,a4,a5);
+			elbow.g.onNode("mouseover",(function(f,x1,y,a1) {
+				return function(el,i) {
+					return f(x1,y,a1,el,i);
 				};
-			})(me.onmouseoverentry.$bind(me),x - minr + (minr - Math.min(me.extraWidth,extra)) / 2,me.ynode(node) - minr - me.extraHeight,node));
-			if(null != me.edgeClass) {
-				var cls = me.edgeClass({ head : node.data, tail : null, edgeweight : node.data.entry},me.dependentVariable.stats);
+			})($bind(_g2,_g2.onmouseoverentry),x - minr + (minr - Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) - minr - _g2.extraHeight,node));
+			if(null != _g2.edgeClass) {
+				var cls = _g2.edgeClass({ head : node.data, tail : null, edgeweight : node.data.entry},_g2.dependentVariable.stats);
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != me.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
-				return function(a3,a4) {
-					return f(a1,a2,a3,a4);
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+				return function(el,i) {
+					return f(a1,a2,el,i);
 				};
-			})(me.edgeClickWithNode.$bind(me),node,false));
-			me.addToMap(node.id,"entry",elbow.g);
+			})($bind(_g2,_g2.edgeClickWithNode),node,false));
+			_g2.addToMap(node.id,"entry",elbow.g);
 		});
 		if(null != this.labelEdge) edges.forEach(function(edge,_) {
 			if(edge.weight <= 0) return;
 			var tail = edge.tail;
-			if(me.isdummy(tail)) return;
-			var celltail = me.layout.cell(tail), weight = me.nheight(edge.weight), label, text = me.labelEdge(me.edgeData(edge),me.dependentVariable.stats), nodeSpacing = 2;
+			if(_g2.isdummy(tail)) return;
+			var celltail = _g2.layout.cell(tail), weight = _g2.nheight(edge.weight), label, text = _g2.labelEdge(_g2.edgeData(edge),_g2.dependentVariable.stats), nodeSpacing = 2;
 			label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 			label.addClass("edge");
-			label.place(me.layerWidth / 2 + me.xlayer(celltail.layer) + nodeSpacing,me.ynode(tail) + me.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
+			label.place(_g2.layerWidth / 2 + _g2.xlayer(celltail.layer) + nodeSpacing,_g2.ynode(tail) + _g2.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
 			label.setAnchor(rg.svg.widget.GridAnchor.Left);
 			label.setText(text);
 			if(label.getSize().height > weight * .75) label.destroy();
@@ -12741,40 +12068,40 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
 			return "rule rule-" + i;
 		}).attr("x1")["float"](0).attr("x2")["float"](0).attr("y1")["float"](0).attr("y2")["float"](this.height).update().attr("transform").stringf(function(_,i) {
-			return "translate(" + me.xlayer(i) + ",0)";
+			return "translate(" + _g2.xlayer(i) + ",0)";
 		}).exit().remove();
 		var choice = rules.update().selectAll("g.node").dataf(function(d,i) {
-			return me.layout.layer(i);
+			return _g2.layout.layer(i);
 		});
 		var cont = choice.enter().append("svg:g").attr("class").string("node");
 		if(this.layerWidth > 0) {
 			var rect = cont.append("svg:rect").attr("class").stringf(function(n,_) {
-				return "fill fill-" + (me.isdummy(n)?me.styleEdgeForward + " nonode":me.styleNode + " node");
-			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf(this.hnode.$bind(this));
+				return "fill fill-" + (_g2.isdummy(n)?_g2.styleEdgeForward + " nonode":_g2.styleNode + " node");
+			}).attr("x")["float"](-this.layerWidth / 2).attr("y")["float"](0).attr("width")["float"](Math.round(this.layerWidth)).attr("height").floatf($bind(this,this.hnode));
 			cont.each(function(node,_) {
-				me.addToMap(node.id,"node",dhx.Dom.selectNode(dhx.Group.current));
-				if(null != me.nodeClass) {
-					var cls = me.nodeClass(node.data,me.dependentVariable.stats);
+				_g2.addToMap(node.id,"node",dhx.Dom.selectNode(dhx.Group.current));
+				if(null != _g2.nodeClass) {
+					var cls = _g2.nodeClass(node.data,_g2.dependentVariable.stats);
 					if(null != cls) dhx.Dom.selectNode(dhx.Group.current).classed().add(cls);
 				}
 			});
 			rg.util.RGColors.storeColorForSelection(cont,"fill",rect.style("fill").get());
 			cont.append("svg:line").attr("class").stringf(function(n,_) {
-				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
+				return "node stroke stroke-" + (_g2.isdummy(n)?_g2.styleEdgeForward:_g2.styleNode);
 			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1")["float"](0).attr("x2")["float"](this.layerWidth / 2).attr("y2")["float"](0);
 			cont.append("svg:line").attr("class").stringf(function(n,_) {
-				return "node stroke stroke-" + (me.isdummy(n)?me.styleEdgeForward:me.styleNode);
-			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf(this.hnode.$bind(this)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf(this.hnode.$bind(this));
+				return "node stroke stroke-" + (_g2.isdummy(n)?_g2.styleEdgeForward:_g2.styleNode);
+			}).attr("x1")["float"](-this.layerWidth / 2).attr("y1").floatf($bind(this,this.hnode)).attr("x2")["float"](this.layerWidth / 2).attr("y2").floatf($bind(this,this.hnode));
 		}
 		choice.update().attr("transform").stringf(function(n,i) {
-			return "translate(0," + me.ynode(n) + ")";
+			return "translate(0," + _g2.ynode(n) + ")";
 		});
 		cont.each(function(n,i) {
 			var node = dhx.Dom.selectNode(dhx.Group.current);
-			if(me.isdummy(n)) return;
-			var nodeheight = me.hnode(n), label;
-			if(null != me.labelDataPoint) {
-				var lines = me.labelDataPoint(n.data.dp,me.dependentVariable.stats).split("\n"), nodeSpacing = 3, prev = null, text, pos = 0.0;
+			if(_g2.isdummy(n)) return;
+			var nodeheight = _g2.hnode(n), label;
+			if(null != _g2.labelDataPoint) {
+				var lines = _g2.labelDataPoint(n.data.dp,_g2.dependentVariable.stats).split("\n"), nodeSpacing = 3, prev = null, text, pos = 0.0;
 				var _g1 = 0, _g = lines.length;
 				while(_g1 < _g) {
 					var i1 = _g1++;
@@ -12784,7 +12111,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					if(i1 == 0) label.addClass("first");
 					pos = nodeSpacing;
 					if(null != prev) pos += prev.y + prev.getSize().height;
-					label.place(-me.layerWidth / 2 + nodeSpacing * 2,pos,0);
+					label.place(-_g2.layerWidth / 2 + nodeSpacing * 2,pos,0);
 					label.setAnchor(rg.svg.widget.GridAnchor.TopLeft);
 					label.setText(text);
 					if(label.y + label.getSize().height > nodeheight) {
@@ -12795,33 +12122,33 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				}
 			}
 			var hasimage = false;
-			if(null != me.imagePath && !me.isdummy(n)) {
-				var path = me.imagePath(n.data.dp);
+			if(null != _g2.imagePath && !_g2.isdummy(n)) {
+				var path = _g2.imagePath(n.data.dp);
 				if(path != null) {
 					hasimage = true;
-					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-me.imageWidth / 2) + "," + Math.round(-me.imageHeight - me.imageSpacing) + ")");
-					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](me.imageWidth).attr("height")["float"](me.imageHeight).attr("xlink:href").string(path);
+					var container = node.append("svg:g").attr("transform").string("translate(" + Math.round(-_g2.imageWidth / 2) + "," + Math.round(-_g2.imageHeight - _g2.imageSpacing) + ")");
+					container.append("svg:image").attr("preserveAspectRatio").string("xMidYMid slice").attr("width")["float"](_g2.imageWidth).attr("height")["float"](_g2.imageHeight).attr("xlink:href").string(path);
 				}
 			}
-			if(null != me.labelNode) {
+			if(null != _g2.labelNode) {
 				if(hasimage) label = new rg.svg.widget.Label(node,true,true,true); else label = new rg.svg.widget.Label(node,true,false,false);
 				label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
-				label.place(0,-me.labelNodeSpacing,0);
-				label.setText(me.labelNode(n.data.dp,me.dependentVariable.stats));
+				label.place(0,-_g2.labelNodeSpacing,0);
+				label.setText(_g2.labelNode(n.data.dp,_g2.dependentVariable.stats));
 			}
 		});
 		cont.each(function(n,i) {
 			var node = dhx.Dom.selectNode(dhx.Group.current);
 			node.onNode("mouseover",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
+				return function(el,i1) {
+					return f(a1,el,i1);
 				};
-			})(me.onmouseovernode.$bind(me),n));
-			if(null != me.click) node.onNode("click",(function(f,a1) {
-				return function(a2,a3) {
-					return f(a1,a2,a3);
+			})($bind(_g2,_g2.onmouseovernode),n));
+			if(null != _g2.click) node.onNode("click",(function(f,a1) {
+				return function(el,i1) {
+					return f(a1,el,i1);
 				};
-			})(me.nodeclick.$bind(me),n));
+			})($bind(_g2,_g2.nodeclick),n));
 		});
 		this.ready.dispatch();
 	}
@@ -12832,7 +12159,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		return this.layout.cell(edge.head).layer <= this.layout.cell(edge.tail).layer;
 	}
 	,highlight: function(id,type) {
-		var me = this;
+		var _g = this;
 		var $it0 = this.maphi.iterator();
 		while( $it0.hasNext() ) {
 			var el = $it0.next();
@@ -12842,25 +12169,25 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
 		var hielement = function(id1,type1) {
 			var key = type1 + ":" + id1;
-			me.maphi.set(key,me.mapelements.get(key).classed().add("over"));
+			_g.maphi.set(key,_g.mapelements.get(key).classed().add("over"));
 		};
 		var hientry = function(id1) {
-			var key = "entry:" + id1, extra = me.mapelements.get(key);
+			var key = "entry:" + id1, extra = _g.mapelements.get(key);
 			if(null == extra) return;
-			me.maphi.set(key,extra.classed().add("over"));
+			_g.maphi.set(key,extra.classed().add("over"));
 		};
 		var hiexit = function(id1) {
-			var key = "exit:" + id1, extra = me.mapelements.get(key);
+			var key = "exit:" + id1, extra = _g.mapelements.get(key);
 			if(null == extra) return;
-			me.maphi.set(key,extra.classed().add("over"));
+			_g.maphi.set(key,extra.classed().add("over"));
 		};
 		var ishi = function(id1,type1) {
-			return me.maphi.exists(type1 + ":" + id1);
+			return _g.maphi.exists(type1 + ":" + id1);
 		};
 		hiedgep = function(edge) {
 			if(ishi(edge.id,"edge")) return;
 			hielement(edge.id,"edge");
-			if(!me.isbackward(edge)) hinodep(edge.head);
+			if(!_g.isbackward(edge)) hinodep(edge.head);
 		};
 		hinodep = function(node) {
 			if(ishi(node.id,"node")) return;
@@ -12873,9 +12200,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			}
 		};
 		hiedgen = function(edge) {
-			if(!me.isbackward(edge)) hinoden(edge.tail);
+			if(!_g.isbackward(edge)) hinoden(edge.tail);
 			if(ishi(edge.id,"edge")) return;
-			if(!me.isbackward(edge)) hielement(edge.id,"edge");
+			if(!_g.isbackward(edge)) hielement(edge.id,"edge");
 		};
 		hinoden = function(node) {
 			var $it2 = node.graph.edges.negatives(node);
@@ -13027,7 +12354,7 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		return this.isdummy(node)?this.dummySpacing:this.nodeSpacing;
 	}
 	,isdummy: function(node) {
-		return node.data.id.substr(0,1) == "#";
+		return HxOverrides.substr(node.data.id,0,1) == "#";
 	}
 	,hnode: function(node,_) {
 		return this.nheight(node.data.weight);
@@ -13039,7 +12366,6 @@ rg.svg.chart.ScatterGraph = function(panel) {
 	this.addClass("scatter-graph");
 	this.chart = this.g.append("svg:g");
 };
-$hxClasses["rg.svg.chart.ScatterGraph"] = rg.svg.chart.ScatterGraph;
 rg.svg.chart.ScatterGraph.__name__ = ["rg","svg","chart","ScatterGraph"];
 rg.svg.chart.ScatterGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -13072,7 +12398,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		this.redraw();
 	}
 	,redraw: function() {
-		var me = this;
+		var _g2 = this;
 		if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
 		var axisgroup = this.chart.selectAll("g.group").data(this.dps);
 		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
@@ -13086,31 +12412,31 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
 				return function(f,a1) {
 					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
+						return function(dp,i1) {
+							return f(a1,dp,i1);
 						};
 					})();
 				};
-			})())(this.onclick.$bind(this),stats[0]), onmouseover = ((function() {
+			})())($bind(this,this.onclick),stats[0]), onmouseover = ((function() {
 				return function(f,a1) {
 					return (function() {
-						return function(a2,a3) {
-							return f(a1,a2,a3);
+						return function(n,i1) {
+							return f(a1,n,i1);
 						};
 					})();
 				};
-			})())(this.onmouseover.$bind(this),stats[0]);
+			})())($bind(this,this.onmouseover),stats[0]);
 			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
 			if(null != this.click) enter.on("click",onclick);
 			if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
 			var spath = enter.append("svg:path").attr("d").stringf((function(stats) {
 				return function(dp,_) {
-					return me.symbol(dp,stats[0]);
+					return _g2.symbol(dp,stats[0]);
 				};
 			})(stats));
 			if(null != this.symbolStyle) spath.attr("style").stringf((function(stats) {
 				return function(dp,_) {
-					return me.symbolStyle(dp,stats[0]);
+					return _g2.symbolStyle(dp,stats[0]);
 				};
 			})(stats));
 			if(null != this.labelDataPoint) {
@@ -13132,7 +12458,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		this.ready.dispatch();
 	}
 	,getTranslatePointf: function(pos) {
-		var x = this.x.$bind(this), y = this.getY1(pos);
+		var x = $bind(this,this.x), y = this.getY1(pos);
 		return function(dp,i) {
 			return "translate(" + x(dp) + "," + y(dp,i) + ")";
 		};
@@ -13150,14 +12476,13 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 	}
 	,__class__: rg.svg.chart.ScatterGraph
 });
-rg.svg.chart.StreamEffect = $hxClasses["rg.svg.chart.StreamEffect"] = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
+rg.svg.chart.StreamEffect = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
 rg.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
 rg.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffects = function() { }
-$hxClasses["rg.svg.chart.StreamEffects"] = rg.svg.chart.StreamEffects;
 rg.svg.chart.StreamEffects.__name__ = ["rg","svg","chart","StreamEffects"];
 rg.svg.chart.StreamEffects.getLightness = function(p,alt) {
 	if(null == p) return alt; else return Std.parseFloat(p);
@@ -13173,16 +12498,12 @@ rg.svg.chart.StreamEffects.parse = function(s) {
 		return rg.svg.chart.StreamEffect.NoEffect;
 	}
 }
-rg.svg.chart.StreamEffects.prototype = {
-	__class__: rg.svg.chart.StreamEffects
-}
 rg.svg.chart.StreamGraph = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.interpolator = thx.svg.LineInterpolator.Cardinal(0.6);
 	this.gradientLightness = 0.75;
 	this.gradientStyle = 1;
 };
-$hxClasses["rg.svg.chart.StreamGraph"] = rg.svg.chart.StreamGraph;
 rg.svg.chart.StreamGraph.__name__ = ["rg","svg","chart","StreamGraph"];
 rg.svg.chart.StreamGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -13211,13 +12532,13 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	,redraw: function() {
 		if(null == this.transformedData) return;
 		var layer = this.g.selectAll("g.group").data(this.transformedData);
-		layer.update().select("path.line").attr("d").stringf(($_=this.area,$_.shape.$bind($_)));
+		layer.update().select("path.line").attr("d").stringf(($_=this.area,$bind($_,$_.shape)));
 		var g = layer.enter().append("svg:g").attr("class").string("group");
 		var path = g.append("svg:path").attr("class").stringf(function(d,i) {
 			return "line fill-" + i + " stroke-" + i;
-		}).attr("d").stringf(($_=this.area,$_.shape.$bind($_))).onNode("mousemove",this.onover.$bind(this)).onNode("click",this.onclick.$bind(this));
+		}).attr("d").stringf(($_=this.area,$bind($_,$_.shape))).onNode("mousemove",$bind(this,this.onover)).onNode("click",$bind(this,this.onclick));
 		rg.util.RGColors.storeColorForSelection(path);
-		if(this.gradientStyle != 0) path.each(this.gradientStyle == 1?this.applyGradientV.$bind(this):this.applyGradientH.$bind(this));
+		if(this.gradientStyle != 0) path.each(this.gradientStyle == 1?$bind(this,this.applyGradientV):$bind(this,this.applyGradientH));
 		layer.exit().remove();
 		this.ready.dispatch();
 	}
@@ -13240,28 +12561,28 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 		this.click(dp.dp,this.stats);
 	}
 	,prepareData: function() {
-		var me = this;
+		var _g = this;
 		this.defs.selectAll("linearGradient.h").remove();
 		var xscale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
+			return function(v) {
+				return f(a1,a2,v);
 			};
-		})(($_=this.xVariable.axis,$_.scale.$bind($_)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
+		})(($_=this.xVariable.axis,$bind($_,$_.scale)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
 			return xscale(Reflect.field(d,xtype));
 		}, yscale = (function(f,a1,a2) {
-			return function(a3) {
-				return f(a1,a2,a3);
+			return function(v) {
+				return f(a1,a2,v);
 			};
-		})(($_=this.yVariables[0].axis,$_.scale.$bind($_)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
+		})(($_=this.yVariables[0].axis,$bind($_,$_.scale)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
 			return yscale(Reflect.field(d,ytype));
 		}, m = Arrays.floatMax(this.dps,function(d) {
 			return d.length;
 		}) | 0;
 		var altDp = function(pos) {
-			var _g1 = 0, _g = me.dps.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				if(null != me.dps[i][pos]) return me.dps[i][pos];
+			var _g2 = 0, _g1 = _g.dps.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
+				if(null != _g.dps[i][pos]) return _g.dps[i][pos];
 			}
 			return null;
 		};
@@ -13275,7 +12596,7 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 		var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).order(thx.geom.layout.StackOrder.DefaultOrder).stack(coords);
 		this.transformedData = data.map(function(d,i) {
 			return d.map(function(d1,j) {
-				return { coord : d1, dp : me.dps[i][j]};
+				return { coord : d1, dp : _g.dps[i][j]};
 			});
 		});
 		this.stats = this.yVariables[0].stats;
@@ -13285,11 +12606,11 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 			});
 		});
 		this.area = new thx.svg.Area().interpolator(this.interpolator).x(function(d,i) {
-			return d.coord.x * me.width;
+			return d.coord.x * _g.width;
 		}).y0(function(d,i) {
-			return me.height - d.coord.y0 * me.height / me.maxy;
+			return _g.height - d.coord.y0 * _g.height / _g.maxy;
 		}).y1(function(d,i) {
-			return me.height - (d.coord.y + d.coord.y0) * me.height / me.maxy;
+			return _g.height - (d.coord.y + d.coord.y0) * _g.height / _g.maxy;
 		});
 	}
 	,applyGradientV: function(d,i) {
@@ -13330,7 +12651,6 @@ rg.svg.layer.RulesOrtho = function(panel,orientation) {
 	this.displayAnchorLine = true;
 	this.g.classed().add("tickmarks");
 };
-$hxClasses["rg.svg.layer.RulesOrtho"] = rg.svg.layer.RulesOrtho;
 rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
 rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13384,36 +12704,36 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return Math.round(size / 2.5);
 	}
 	,id: function(d,i) {
-		return "" + d.getValue();
+		return "" + Std.string(d.getValue());
 	}
 	,redraw: function() {
 		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
-		var rule = this.g.selectAll("g.rule").data(data,this.id.$bind(this));
+		var rule = this.g.selectAll("g.rule").data(data,$bind(this,this.id));
 		var enter = rule.enter().append("svg:g").attr("class").string("rule").attr("transform").stringf(this.translate);
 		if(this.displayMinor) enter.filter(function(d,i) {
 			return !d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($bind(this,this.tickClass));
 		if(this.displayMajor) enter.filter(function(d,i) {
 			return d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($bind(this,this.tickClass));
 		rule.update().attr("transform").stringf(this.translate);
 		rule.exit().remove();
 	}
 	,initf: function() {
 		switch( (this.orientation)[1] ) {
 		case 1:
-			this.translate = this.translateHorizontal.$bind(this);
-			this.x1 = this.x1Horizontal.$bind(this);
-			this.y1 = this.y1Horizontal.$bind(this);
-			this.x2 = this.x2Horizontal.$bind(this);
-			this.y2 = this.y2Horizontal.$bind(this);
+			this.translate = $bind(this,this.translateHorizontal);
+			this.x1 = $bind(this,this.x1Horizontal);
+			this.y1 = $bind(this,this.y1Horizontal);
+			this.x2 = $bind(this,this.x2Horizontal);
+			this.y2 = $bind(this,this.y2Horizontal);
 			break;
 		case 0:
-			this.translate = this.translateVertical.$bind(this);
-			this.x1 = this.x1Vertical.$bind(this);
-			this.y1 = this.y1Vertical.$bind(this);
-			this.x2 = this.x2Vertical.$bind(this);
-			this.y2 = this.y2Vertical.$bind(this);
+			this.translate = $bind(this,this.translateVertical);
+			this.x1 = $bind(this,this.x1Vertical);
+			this.y1 = $bind(this,this.y1Vertical);
+			this.x2 = $bind(this,this.x2Vertical);
+			this.y2 = $bind(this,this.y2Vertical);
 			break;
 		}
 	}
@@ -13423,9 +12743,6 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 			this.g.append("svg:line").attr("class").string("anchor-line");
 			this.updateAnchorLine();
 		}
-	}
-	,t: function(x,y) {
-		return "translate(" + x + "," + y + ")";
 	}
 	,translateHorizontal: function(d,i) {
 		return "translate(" + 0 + "," + (this.height - d.getDelta() * this.height) + ")";
@@ -13476,7 +12793,6 @@ rg.svg.layer.TickmarksOrtho = function(panel,anchor) {
 	this.paddingLabel = 10;
 	this.g.classed().add("tickmarks");
 };
-$hxClasses["rg.svg.layer.TickmarksOrtho"] = rg.svg.layer.TickmarksOrtho;
 rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
 rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13549,20 +12865,20 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return Math.round(size / 2.5);
 	}
 	,id: function(d,i) {
-		return "" + d.getValue();
+		return "" + Std.string(d.getValue());
 	}
 	,redraw: function() {
 		this.desiredSize = Math.max(this.paddingMinor + this.lengthMinor,this.paddingMajor + this.lengthMajor);
 		var ticks = this.maxTicks(), data = this.axis.ticks(this.min,this.max,ticks);
-		var tick = this.g.selectAll("g.tick").data(data,this.id.$bind(this));
+		var tick = this.g.selectAll("g.tick").data(data,$bind(this,this.id));
 		var enter = tick.enter().append("svg:g").attr("class").string("tick").attr("transform").stringf(this.translate);
 		if(this.displayMinor) enter.filter(function(d,i) {
 			return !d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($bind(this,this.tickClass));
 		if(this.displayMajor) enter.filter(function(d,i) {
 			return d.major;
-		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf(this.tickClass.$bind(this));
-		if(this.displayLabel) enter.eachNode(this.createLabel.$bind(this));
+		}).append("svg:line").attr("x1").floatf(this.x1).attr("y1").floatf(this.y1).attr("x2").floatf(this.x2).attr("y2").floatf(this.y2).attr("class").stringf($bind(this,this.tickClass));
+		if(this.displayLabel) enter.eachNode($bind(this,this.createLabel));
 		tick.update().attr("transform").stringf(this.translate);
 		tick.exit().remove();
 	}
@@ -13607,32 +12923,32 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,initf: function() {
 		switch( (this.anchor)[1] ) {
 		case 0:
-			this.translate = this.translateTop.$bind(this);
-			this.x1 = this.x1Top.$bind(this);
-			this.y1 = this.y1Top.$bind(this);
-			this.x2 = this.x2Top.$bind(this);
-			this.y2 = this.y2Top.$bind(this);
+			this.translate = $bind(this,this.translateTop);
+			this.x1 = $bind(this,this.x1Top);
+			this.y1 = $bind(this,this.y1Top);
+			this.x2 = $bind(this,this.x2Top);
+			this.y2 = $bind(this,this.y2Top);
 			break;
 		case 1:
-			this.translate = this.translateBottom.$bind(this);
-			this.x1 = this.x1Bottom.$bind(this);
-			this.y1 = this.y1Bottom.$bind(this);
-			this.x2 = this.x2Bottom.$bind(this);
-			this.y2 = this.y2Bottom.$bind(this);
+			this.translate = $bind(this,this.translateBottom);
+			this.x1 = $bind(this,this.x1Bottom);
+			this.y1 = $bind(this,this.y1Bottom);
+			this.x2 = $bind(this,this.x2Bottom);
+			this.y2 = $bind(this,this.y2Bottom);
 			break;
 		case 2:
-			this.translate = this.translateLeft.$bind(this);
-			this.x1 = this.x1Left.$bind(this);
-			this.y1 = this.y1Left.$bind(this);
-			this.x2 = this.x2Left.$bind(this);
-			this.y2 = this.y2Left.$bind(this);
+			this.translate = $bind(this,this.translateLeft);
+			this.x1 = $bind(this,this.x1Left);
+			this.y1 = $bind(this,this.y1Left);
+			this.x2 = $bind(this,this.x2Left);
+			this.y2 = $bind(this,this.y2Left);
 			break;
 		case 3:
-			this.translate = this.translateRight.$bind(this);
-			this.x1 = this.x1Right.$bind(this);
-			this.y1 = this.y1Right.$bind(this);
-			this.x2 = this.x2Right.$bind(this);
-			this.y2 = this.y2Right.$bind(this);
+			this.translate = $bind(this,this.translateRight);
+			this.x1 = $bind(this,this.x1Right);
+			this.y1 = $bind(this,this.y1Right);
+			this.x2 = $bind(this,this.x2Right);
+			this.y2 = $bind(this,this.y2Right);
 			break;
 		}
 		if(null == this.labelOrientation) {
@@ -13718,9 +13034,6 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 			this.updateAnchorLine();
 		}
 	}
-	,t: function(x,y) {
-		return "translate(" + x + "," + y + ")";
-	}
 	,translateTop: function(d,i) {
 		return "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
 	}
@@ -13801,7 +13114,6 @@ rg.svg.layer.Title = function(panel,text,anchor,padding,className,shadow,outline
 	this.setText(text);
 	this.resize();
 };
-$hxClasses["rg.svg.layer.Title"] = rg.svg.layer.Title;
 rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
 rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13886,14 +13198,12 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return v;
 	}
 	,__class__: rg.svg.layer.Title
-	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_padding:"setPadding",set_anchor:"setAnchor",set_text:"setText",get_text:"getText"})
 });
 rg.svg.panel.Panel = function(frame) {
 	this.frame = frame;
-	frame.change = this.reframe.$bind(this);
+	frame.change = $bind(this,this.reframe);
 	this._layers = [];
 };
-$hxClasses["rg.svg.panel.Panel"] = rg.svg.panel.Panel;
 rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
 rg.svg.panel.Panel.prototype = {
 	frame: null
@@ -13901,11 +13211,11 @@ rg.svg.panel.Panel.prototype = {
 	,parent: null
 	,_layers: null
 	,addLayer: function(layer) {
-		this._layers.remove(layer);
+		HxOverrides.remove(this._layers,layer);
 		this._layers.push(layer);
 	}
 	,removeLayer: function(layer) {
-		this._layers.remove(layer);
+		HxOverrides.remove(this._layers,layer);
 	}
 	,setParent: function(container) {
 		if(null != this.g) this.g.remove();
@@ -13933,7 +13243,6 @@ rg.svg.panel.Container = function(frame,orientation) {
 	this.stack = new rg.frame.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
 };
-$hxClasses["rg.svg.panel.Container"] = rg.svg.panel.Container;
 rg.svg.panel.Container.__name__ = ["rg","svg","panel","Container"];
 rg.svg.panel.Container.__super__ = rg.svg.panel.Panel;
 rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
@@ -13943,16 +13252,10 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 		if(null == panel) return this;
 		if(pos >= this.stack.getLength()) return this.addPanel(panel); else if(pos < 0) pos = 0;
 		if(null != panel.parent) panel.parent.removePanel(panel);
-		this.panels.insert(pos,panel);
+		this.panels.splice(pos,0,panel);
 		var f = panel;
 		f.setParent(this);
-		this.stack.insertItem(pos,(function($this) {
-			var $r;
-			var $t = panel.frame;
-			if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this)));
+		this.stack.insertItem(pos,js.Boot.__cast(panel.frame , rg.frame.StackItem));
 		return this;
 	}
 	,addPanel: function(panel) {
@@ -13960,7 +13263,7 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 	}
 	,addPanels: function(it) {
 		var frames = [];
-		var $it0 = it.iterator();
+		var $it0 = $iterator(it)();
 		while( $it0.hasNext() ) {
 			var panel = $it0.next();
 			if(null == panel) continue;
@@ -13968,26 +13271,14 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 			this.panels.push(panel);
 			var f = panel;
 			f.setParent(this);
-			frames.push((function($this) {
-				var $r;
-				var $t = panel.frame;
-				if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
-				$r = $t;
-				return $r;
-			}(this)));
+			frames.push(js.Boot.__cast(panel.frame , rg.frame.StackItem));
 		}
 		this.stack.addItems(frames);
 		return this;
 	}
 	,removePanel: function(panel) {
-		if(!this.panels.remove(panel)) return this;
-		this.stack.removeChild((function($this) {
-			var $r;
-			var $t = panel.frame;
-			if(Std["is"]($t,rg.frame.StackItem)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this)));
+		if(!HxOverrides.remove(this.panels,panel)) return this;
+		this.stack.removeChild(js.Boot.__cast(panel.frame , rg.frame.StackItem));
 		var f = panel;
 		f.setParent(null);
 		return this;
@@ -14020,7 +13311,6 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 	,__class__: rg.svg.panel.Container
 });
 rg.svg.panel.Panels = function() { }
-$hxClasses["rg.svg.panel.Panels"] = rg.svg.panel.Panels;
 rg.svg.panel.Panels.__name__ = ["rg","svg","panel","Panels"];
 rg.svg.panel.Panels.absolutePos = function(panel) {
 	var p = panel, x = 0, y = 0;
@@ -14044,16 +13334,12 @@ rg.svg.panel.Panels.htmlContainer = function(panel) {
 	var svg = rg.svg.panel.Panels.svgContainer(panel);
 	if(null == svg) return null; else return svg.parentNode;
 }
-rg.svg.panel.Panels.prototype = {
-	__class__: rg.svg.panel.Panels
-}
 rg.svg.panel.Space = function(width,height,domcontainer) {
 	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
 	rg.svg.panel.Container.call(this,this.panel,rg.frame.Orientation.Vertical);
 	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
 	this.resize(width,height);
 };
-$hxClasses["rg.svg.panel.Space"] = rg.svg.panel.Space;
 rg.svg.panel.Space.__name__ = ["rg","svg","panel","Space"];
 rg.svg.panel.Space.__super__ = rg.svg.panel.Container;
 rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
@@ -14069,9 +13355,7 @@ rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
 });
 rg.svg.util = {}
 rg.svg.util.RGCss = function() { }
-$hxClasses["rg.svg.util.RGCss"] = rg.svg.util.RGCss;
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
-rg.svg.util.RGCss.cache = null;
 rg.svg.util.RGCss.colorsInCss = function() {
 	if(null != rg.svg.util.RGCss.cache) return rg.svg.util.RGCss.cache;
 	var container = dhx.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.svg.util.RGCss.createBlock(container,0).style("fill").get();
@@ -14091,16 +13375,11 @@ rg.svg.util.RGCss.numberOfColorsInCss = function() {
 rg.svg.util.RGCss.createBlock = function(container,pos) {
 	return container.append("svg:rect").attr("class").string("fill-" + pos);
 }
-rg.svg.util.RGCss.prototype = {
-	__class__: rg.svg.util.RGCss
-}
 rg.svg.util.SymbolCache = function() {
 	this.c = new Hash();
 	this.r = 0;
 };
-$hxClasses["rg.svg.util.SymbolCache"] = rg.svg.util.SymbolCache;
 rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
-rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
 	c: null
 	,r: null
@@ -14148,7 +13427,6 @@ rg.svg.widget.Balloon = function(container,bindOnTop) {
 	this.setLineHeight(temp.getSize().height);
 	temp.destroy();
 };
-$hxClasses["rg.svg.widget.Balloon"] = rg.svg.widget.Balloon;
 rg.svg.widget.Balloon.__name__ = ["rg","svg","widget","Balloon"];
 rg.svg.widget.Balloon.prototype = {
 	text: null
@@ -14232,23 +13510,23 @@ rg.svg.widget.Balloon.prototype = {
 	,transition_id: null
 	,moveTo: function(x,y,animate) {
 		if(animate == null) animate = true;
-		var me = this;
+		var _g = this;
 		if(animate) {
 			var $int = thx.math.Equations.elasticf(), tid = ++this.transition_id, ix = Floats.interpolatef(this.x,x,this.ease), iy = Floats.interpolatef(this.y,y,this.ease);
 			dhx.Timer.timer(function(t) {
-				if(tid != me.transition_id) return true;
-				if(t > me.duration) {
-					me._moveTo(x,y);
+				if(tid != _g.transition_id) return true;
+				if(t > _g.duration) {
+					_g._moveTo(x,y);
 					return true;
 				}
-				me._moveTo(ix(t / me.duration),iy(t / me.duration));
+				_g._moveTo(ix(t / _g.duration),iy(t / _g.duration));
 				return false;
 			},0);
-		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,a1,a2) {
+		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,x1,y1) {
 			return function() {
-				return f(a1,a2);
+				return f(x1,y1);
 			};
-		})(this._moveTo.$bind(this),x,y),15); else this._moveTo(x,y);
+		})($bind(this,this._moveTo),x,y),15); else this._moveTo(x,y);
 	}
 	,_moveTo: function(x,y) {
 		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
@@ -14475,20 +13753,20 @@ rg.svg.widget.Balloon.prototype = {
 		if(0 != diagonal) this.connector.attr("d").string(side % 2 == 0?this.connectorShapeV.diagonal(coords):this.connectorShapeH.diagonal(coords));
 	}
 	,redraw: function() {
-		var me = this;
+		var _g = this;
 		if(null == this.text || this.text.length == 0) return;
 		this.boxWidth = 0.0;
 		var w = 0;
-		var _g = 0, _g1 = this.labels;
-		while(_g < _g1.length) {
-			var label = _g1[_g];
-			++_g;
+		var _g1 = 0, _g11 = this.labels;
+		while(_g1 < _g11.length) {
+			var label = _g11[_g1];
+			++_g1;
 			if((w = Math.ceil(label.getSize().width)) > this.boxWidth) this.boxWidth = w;
 		}
 		if(w == 0) {
 			var t = this.text;
 			haxe.Timer.delay(function() {
-				me.setText(t);
+				_g.setText(t);
 			},15);
 			return;
 		}
@@ -14500,10 +13778,8 @@ rg.svg.widget.Balloon.prototype = {
 		bg.transition().ease(this.ease).delay(null,this.duration);
 	}
 	,__class__: rg.svg.widget.Balloon
-	,__properties__: {set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox",set_preferredSide:"setPreferredSide",set_roundedCorner:"setRoundedCorner",set_lineHeight:"setLineHeight",set_text:"setText"}
 }
 rg.svg.widget.BalloonShape = function() { }
-$hxClasses["rg.svg.widget.BalloonShape"] = rg.svg.widget.BalloonShape;
 rg.svg.widget.BalloonShape.__name__ = ["rg","svg","widget","BalloonShape"];
 rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 	var w = width - rc * 2, h = height - rc * 2;
@@ -14538,9 +13814,6 @@ rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 	buf += "a" + rc + "," + rc + ",0,0,1," + rc + "," + -rc;
 	return buf + "Z";
 }
-rg.svg.widget.BalloonShape.prototype = {
-	__class__: rg.svg.widget.BalloonShape
-}
 rg.svg.widget.DiagonalArea = function(container,classarea,classborder) {
 	this.g = container.append("svg:g").attr("class").string("diagonal");
 	this.diagonal = thx.svg.Diagonal.forArray().projection(function(a,_) {
@@ -14550,7 +13823,6 @@ rg.svg.widget.DiagonalArea = function(container,classarea,classborder) {
 	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
 	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
 };
-$hxClasses["rg.svg.widget.DiagonalArea"] = rg.svg.widget.DiagonalArea;
 rg.svg.widget.DiagonalArea.__name__ = ["rg","svg","widget","DiagonalArea"];
 rg.svg.widget.DiagonalArea.prototype = {
 	g: null
@@ -14563,7 +13835,7 @@ rg.svg.widget.DiagonalArea.prototype = {
 	}
 	,update: function(x1,y1,x2,y2,sw,ew) {
 		var top = this.diagonal.diagonal([y1,x1,y2,x2]), bottom = this.diagonal.diagonal([y2 + ew,x2,y1 + sw,x1]);
-		var path = top + "L" + bottom.substr(1) + "z";
+		var path = top + "L" + HxOverrides.substr(bottom,1,null) + "z";
 		this.before.attr("d").string(top);
 		this.after.attr("d").string(bottom);
 		this.area.attr("d").string(path);
@@ -14576,7 +13848,6 @@ rg.svg.widget.ElbowArea = function(container,classarea,classborder) {
 	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
 	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
 };
-$hxClasses["rg.svg.widget.ElbowArea"] = rg.svg.widget.ElbowArea;
 rg.svg.widget.ElbowArea.__name__ = ["rg","svg","widget","ElbowArea"];
 rg.svg.widget.ElbowArea.prototype = {
 	g: null
@@ -14614,14 +13885,14 @@ rg.svg.widget.ElbowArea.prototype = {
 		case 7:
 			break;
 		}
-		var darea = douter + "L" + dinner.substr(1) + "z";
+		var darea = douter + "L" + HxOverrides.substr(dinner,1,null) + "z";
 		this.inner.attr("d").string(dinner);
 		this.outer.attr("d").string(douter);
 		this.area.attr("d").string(darea);
 	}
 	,__class__: rg.svg.widget.ElbowArea
 }
-rg.svg.widget.Orientation = $hxClasses["rg.svg.widget.Orientation"] = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.svg.widget.Orientation = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
 rg.svg.widget.Orientation.RightBottom = ["RightBottom",0];
 rg.svg.widget.Orientation.RightBottom.toString = $estr;
 rg.svg.widget.Orientation.RightBottom.__enum__ = rg.svg.widget.Orientation;
@@ -14646,7 +13917,7 @@ rg.svg.widget.Orientation.TopRight.__enum__ = rg.svg.widget.Orientation;
 rg.svg.widget.Orientation.TopLeft = ["TopLeft",7];
 rg.svg.widget.Orientation.TopLeft.toString = $estr;
 rg.svg.widget.Orientation.TopLeft.__enum__ = rg.svg.widget.Orientation;
-rg.svg.widget.GridAnchor = $hxClasses["rg.svg.widget.GridAnchor"] = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.svg.widget.GridAnchor = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
 rg.svg.widget.GridAnchor.TopLeft.__enum__ = rg.svg.widget.GridAnchor;
@@ -14675,7 +13946,6 @@ rg.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
 rg.svg.widget.GridAnchor.BottomRight.toString = $estr;
 rg.svg.widget.GridAnchor.BottomRight.__enum__ = rg.svg.widget.GridAnchor;
 rg.svg.widget.GridAnchors = function() { }
-$hxClasses["rg.svg.widget.GridAnchors"] = rg.svg.widget.GridAnchors;
 rg.svg.widget.GridAnchors.__name__ = ["rg","svg","widget","GridAnchors"];
 rg.svg.widget.GridAnchors.parse = function(s) {
 	return (function($this) {
@@ -14714,14 +13984,10 @@ rg.svg.widget.GridAnchors.parse = function(s) {
 		return $r;
 	}(this));
 }
-rg.svg.widget.GridAnchors.prototype = {
-	__class__: rg.svg.widget.GridAnchors
-}
 rg.svg.widget.HookConnector = function(container,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook");
 	this.line = this.g.append("svg:path").attr("class").string("hook-stroke line" + (null == classborder?"":" " + classborder));
 };
-$hxClasses["rg.svg.widget.HookConnector"] = rg.svg.widget.HookConnector;
 rg.svg.widget.HookConnector.__name__ = ["rg","svg","widget","HookConnector"];
 rg.svg.widget.HookConnector.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -14760,7 +14026,6 @@ rg.svg.widget.HookConnectorArea = function(container,classarea,classborder) {
 	this.upper = this.g.append("svg:path").attr("class").string("hook-area-stroke upper" + (null == classborder?"":" " + classborder));
 	this.lower = this.g.append("svg:path").attr("class").string("hook-area-stroke lower" + (null == classborder?"":" " + classborder));
 };
-$hxClasses["rg.svg.widget.HookConnectorArea"] = rg.svg.widget.HookConnectorArea;
 rg.svg.widget.HookConnectorArea.__name__ = ["rg","svg","widget","HookConnectorArea"];
 rg.svg.widget.HookConnectorArea.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -14780,7 +14045,7 @@ rg.svg.widget.HookConnectorArea.prototype = {
 		var min = Math.min(5,weight), upperp = this.createPath(x1,y1,x2,y2,y1 > yreference?yreference:yreference + weight,before + weight,after + weight,weight,weight), lowerp = this.createPath(x2,y2 + weight,x1,y1 + weight,y1 > yreference?yreference - weight:yreference,-after,-before,-min,min);
 		this.upper.attr("d").string(upperp);
 		this.lower.attr("d").string(lowerp);
-		this.area.attr("d").string(upperp + "L" + lowerp.substr(1) + "z");
+		this.area.attr("d").string(upperp + "L" + HxOverrides.substr(lowerp,1,null) + "z");
 	}
 	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
 		var path = "M" + x1 + "," + y1;
@@ -14820,7 +14085,6 @@ rg.svg.widget.Label = function(container,dontflip,shadow,outline) {
 	this.setAnchor(rg.svg.widget.GridAnchor.Center);
 	this.visible = true;
 };
-$hxClasses["rg.svg.widget.Label"] = rg.svg.widget.Label;
 rg.svg.widget.Label.__name__ = ["rg","svg","widget","Label"];
 rg.svg.widget.Label.prototype = {
 	text: null
@@ -15052,9 +14316,8 @@ rg.svg.widget.Label.prototype = {
 		this.g.remove();
 	}
 	,__class__: rg.svg.widget.Label
-	,__properties__: {set_anchor:"setAnchor",set_orientation:"setOrientation",set_text:"setText"}
 }
-rg.svg.widget.LabelOrientation = $hxClasses["rg.svg.widget.LabelOrientation"] = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
+rg.svg.widget.LabelOrientation = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
 rg.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
 rg.svg.widget.LabelOrientation.Aligned.toString = $estr;
@@ -15063,7 +14326,6 @@ rg.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
 rg.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
 rg.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.svg.widget.LabelOrientation;
 rg.svg.widget.LabelOrientations = function() { }
-$hxClasses["rg.svg.widget.LabelOrientations"] = rg.svg.widget.LabelOrientations;
 rg.svg.widget.LabelOrientations.__name__ = ["rg","svg","widget","LabelOrientations"];
 rg.svg.widget.LabelOrientations.parse = function(s) {
 	return (function($this) {
@@ -15078,21 +14340,17 @@ rg.svg.widget.LabelOrientations.parse = function(s) {
 		return $r;
 	}(this));
 }
-rg.svg.widget.LabelOrientations.prototype = {
-	__class__: rg.svg.widget.LabelOrientations
-}
 rg.svg.widget.Map = function(container,projection) {
-	var me = this;
+	var _g = this;
 	this.g = container.append("svg:g").attr("class").string("map");
 	this.projection = projection;
 	this.map = new Hash();
 	this.ready = false;
 	this.onReady = new hxevents.Notifier();
 	this.onReady.addOnce(function() {
-		me.ready = true;
+		_g.ready = true;
 	});
 };
-$hxClasses["rg.svg.widget.Map"] = rg.svg.widget.Map;
 rg.svg.widget.Map.__name__ = ["rg","svg","widget","Map"];
 rg.svg.widget.Map.loadJsonp = function(url,handler) {
 	rg.util.Jsonp.get(url,handler,null,null,null);
@@ -15131,17 +14389,17 @@ rg.svg.widget.Map.prototype = {
 		}
 	}
 	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
-		var me = this;
+		var _g = this;
 		var load = usejsonp?rg.svg.widget.Map.loadJsonp:rg.svg.widget.Map.loadJsonAjax;
-		if(null == mappingurl) load(geourl,this.draw.$bind(this)); else load(mappingurl,function(m) {
-			me.mapping = m;
-			load(geourl,me.draw.$bind(me));
+		if(null == mappingurl) load(geourl,$bind(this,this.draw)); else load(mappingurl,function(m) {
+			_g.mapping = m;
+			load(geourl,$bind(_g,_g.draw));
 		});
 	}
 	,draw: function(json) {
-		var me = this;
+		var _g = this;
 		var id = null != this.mapping?function(s) {
-			return Reflect.hasField(me.mapping,s)?Reflect.field(me.mapping,s):s;
+			return Reflect.hasField(_g.mapping,s)?Reflect.field(_g.mapping,s):s;
 		}:function(s) {
 			return s;
 		};
@@ -15149,24 +14407,24 @@ rg.svg.widget.Map.prototype = {
 		path.setProjection(this.projection);
 		switch(json.type) {
 		case "FeatureCollection":
-			var _g1 = 0, _g = json.features.length;
-			while(_g1 < _g) {
+			var _g1 = 0, _g2 = json.features.length;
+			while(_g1 < _g2) {
 				var i = _g1++;
 				var feature = json.features[i], centroid = path.centroid(feature.geometry), p = feature.geometry.type == "Point"?this.g.append("svg:circle").attr("cx")["float"](centroid[0]).attr("cy")["float"](centroid[1]).attr("r")["float"](5):this.g.append("svg:path").attr("d").string(path.path(feature.geometry));
 				var dp = { };
-				dp["#centroid"] = centroid;
-				dp["#data"] = feature.properties;
+				dp.$centroid = centroid;
+				dp.$data = feature.properties;
 				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
-				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,dp1) {
+					return function(n,i1) {
+						return f(dp1,n,i1);
 					};
-				})(this.onMouseOver.$bind(this),dp));
-				if(null != this.click) p.onNode("click",(function(f,a1) {
-					return function(a2,a3) {
-						return f(a1,a2,a3);
+				})($bind(this,this.onMouseOver),dp));
+				if(null != this.click) p.onNode("click",(function(f,dp1) {
+					return function(_,i1) {
+						return f(dp1,_,i1);
 					};
-				})(this.onClick.$bind(this),dp));
+				})($bind(this,this.onClick),dp));
 			}
 			break;
 		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
@@ -15177,10 +14435,10 @@ rg.svg.widget.Map.prototype = {
 		}
 		this.onReady.dispatch();
 	}
-	,onMouseOver: function(dp,n,_) {
+	,onMouseOver: function(dp,n,i) {
 		this.handlerDataPointOver(n,dp,this.labelDataPointOver);
 	}
-	,onClick: function(dp,_,_1) {
+	,onClick: function(dp,_,i) {
 		this.handlerClick(dp,this.click);
 	}
 	,handlerDataPointOver: null
@@ -15190,10 +14448,8 @@ rg.svg.widget.Map.prototype = {
 		return cls;
 	}
 	,__class__: rg.svg.widget.Map
-	,__properties__: {set_className:"setClassName"}
 }
 rg.svg.widget.Sensible = function() { }
-$hxClasses["rg.svg.widget.Sensible"] = rg.svg.widget.Sensible;
 rg.svg.widget.Sensible.__name__ = ["rg","svg","widget","Sensible"];
 rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,radius) {
 	if(null == click && null == datapointover) return;
@@ -15236,14 +14492,10 @@ rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
 		return item.node;
 	});
 }
-rg.svg.widget.Sensible.prototype = {
-	__class__: rg.svg.widget.Sensible
-}
 rg.util = {}
 rg.util.Auth = function(authCode) {
 	this.test = rg.util.Decrypt.decrypt(authCode);
 };
-$hxClasses["rg.util.Auth"] = rg.util.Auth;
 rg.util.Auth.__name__ = ["rg","util","Auth"];
 rg.util.Auth.prototype = {
 	test: null
@@ -15269,9 +14521,8 @@ rg.util.ChainedExecutor = function(handler) {
 	this.handler = handler;
 	this.actions = [];
 	this.pos = 0;
-	this.executor = this.execute.$bind(this);
+	this.executor = $bind(this,this.execute);
 };
-$hxClasses["rg.util.ChainedExecutor"] = rg.util.ChainedExecutor;
 rg.util.ChainedExecutor.__name__ = ["rg","util","ChainedExecutor"];
 rg.util.ChainedExecutor.prototype = {
 	handler: null
@@ -15284,13 +14535,12 @@ rg.util.ChainedExecutor.prototype = {
 		if(this.pos == this.actions.length) {
 			this.pos = 0;
 			this.handler(ob);
-		} else this.actions[this.pos++](ob,this.execute.$bind(this));
+		} else this.actions[this.pos++](ob,$bind(this,this.execute));
 	}
 	,executor: null
 	,__class__: rg.util.ChainedExecutor
 }
 rg.util.DataPoints = function() { }
-$hxClasses["rg.util.DataPoints"] = rg.util.DataPoints;
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
 	if(def == null) def = "default";
@@ -15343,9 +14593,6 @@ rg.util.DataPoints.filterByDependents = function(dps,variables) {
 	}
 	return dps;
 }
-rg.util.DataPoints.value = function(dp,property) {
-	return Reflect.field(dp,property);
-}
 rg.util.DataPoints.valueAlt = function(dp,property,alt) {
 	var v;
 	return null == (v = Reflect.field(dp,property))?alt:v;
@@ -15367,11 +14614,7 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 	}
 	return haxe.Md5.encode(Dynamics.string(cdp));
 }
-rg.util.DataPoints.prototype = {
-	__class__: rg.util.DataPoints
-}
 rg.util.Decrypt = function() { }
-$hxClasses["rg.util.Decrypt"] = rg.util.Decrypt;
 rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
 rg.util.Decrypt.decrypt = function(s) {
 	var r = new chx.crypt.RSAEncrypt(rg.util.Decrypt.modulus,rg.util.Decrypt.publicExponent), d = chx.formats.Base64.decode(s);
@@ -15381,11 +14624,7 @@ rg.util.Decrypt.decrypt = function(s) {
 		return null;
 	}
 }
-rg.util.Decrypt.prototype = {
-	__class__: rg.util.Decrypt
-}
 rg.util.Js = function() { }
-$hxClasses["rg.util.Js"] = rg.util.Js;
 rg.util.Js.__name__ = ["rg","util","Js"];
 rg.util.Js.findScript = function(fragment) {
 	var scripts = js.Lib.document.getElementsByTagName("SCRIPT");
@@ -15406,11 +14645,7 @@ rg.util.Js.findScript = function(fragment) {
 	}
 	return null;
 }
-rg.util.Js.prototype = {
-	__class__: rg.util.Js
-}
 rg.util.Jsonp = function() { }
-$hxClasses["rg.util.Jsonp"] = rg.util.Jsonp;
 rg.util.Jsonp.__name__ = ["rg","util","Jsonp"];
 rg.util.Jsonp.get = function(path,success,failure,query,headers) {
 	var api = rg.util.Jsonp.get_api;
@@ -15433,7 +14668,7 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 	var extraQuery = { };
 	extraQuery.method = method;
 	if(Reflect.fields(headers).length > 0) extraQuery.headers = thx.json.Json.encode(headers);
-	extraQuery["callback"] = funcName;
+	extraQuery.callback = funcName;
 	if(content != null) extraQuery.content = thx.json.Json.encode(content);
 	var fullUrl = rg.util.Urls.addQueryParameters(path,extraQuery);
 	var script = js.Lib.document.createElement("SCRIPT");
@@ -15445,11 +14680,7 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 rg.util.Jsonp.get_api = function(path,actions,query,headers) {
 	rg.util.Jsonp.request_api("GET",path,null,actions,query,headers);
 }
-rg.util.Jsonp.prototype = {
-	__class__: rg.util.Jsonp
-}
 rg.util.Periodicity = function() { }
-$hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
@@ -15499,7 +14730,19 @@ rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 		case "month":
 			$r = (function($this) {
 				var $r;
-				var s = Date.fromTime(start), e = Date.fromTime(end), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
+				var s = (function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(start);
+					$r = d;
+					return $r;
+				}($this)), e = (function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(end);
+					$r = d;
+					return $r;
+				}($this)), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
 				$r = (ey - sy) * 12 + (em - sm);
 				return $r;
 			}($this));
@@ -15568,15 +14811,45 @@ rg.util.Periodicity.format = function(periodicity,v) {
 	case "single":
 		return "period";
 	case "minute":
-		return thx.culture.FormatDate.timeShort(Date.fromTime(v));
+		return thx.culture.FormatDate.timeShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	case "hour":
-		return thx.culture.FormatDate.hourShort(Date.fromTime(v));
+		return thx.culture.FormatDate.hourShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	case "day":case "week":
-		return thx.culture.FormatDate.dateShort(Date.fromTime(v));
+		return thx.culture.FormatDate.dateShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	case "month":
-		return thx.culture.FormatDate.yearMonth(Date.fromTime(v));
+		return thx.culture.FormatDate.yearMonth((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	case "year":
-		return thx.culture.FormatDate.year(Date.fromTime(v));
+		return thx.culture.FormatDate.year((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	default:
 		return periodicity + ": " + v;
 	}
@@ -15586,10 +14859,28 @@ rg.util.Periodicity.smartFormat = function(periodicity,v) {
 	case "eternity":case "single":
 		return "all time";
 	case "minute":
-		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort(Date.fromTime(v)); else return thx.culture.FormatDate.format("%i",Date.fromTime(v));
+		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this))); else return thx.culture.FormatDate.format("%i",(function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 		break;
 	case "hour":
-		if(rg.util.Periodicity.firstInSeries("day",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.hourShort(Date.fromTime(v));
+		if(rg.util.Periodicity.firstInSeries("day",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.hourShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 		break;
 	case "day":
 		if(rg.util.Periodicity.firstInSeries("month",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.format("%e",rg.util.Periodicity.dateUtc(v));
@@ -15604,7 +14895,13 @@ rg.util.Periodicity.smartFormat = function(periodicity,v) {
 	case "year":
 		return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(v));
 	default:
-		return periodicity + ": " + Date.fromTime(v);
+		return periodicity + ": " + Std.string((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
 	}
 }
 rg.util.Periodicity.firstInSeries = function(periodicity,v) {
@@ -15623,7 +14920,13 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		case "day":
 			$r = (function($this) {
 				var $r;
-				var d = Date.fromTime(v);
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
 				$r = 0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
 				return $r;
 			}($this));
@@ -15631,7 +14934,13 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		case "week":
 			$r = (function($this) {
 				var $r;
-				var d = Date.fromTime(v);
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
 				$r = 0 == d.getDay();
 				return $r;
 			}($this));
@@ -15639,7 +14948,13 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		case "month":
 			$r = (function($this) {
 				var $r;
-				var d = Date.fromTime(v);
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
 				$r = 1 == d.getDate();
 				return $r;
 			}($this));
@@ -15647,7 +14962,13 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		case "year":
 			$r = (function($this) {
 				var $r;
-				var d = Date.fromTime(v);
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
 				$r = 1 == d.getDate() && 0 == d.getMonth();
 				return $r;
 			}($this));
@@ -15661,55 +14982,50 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 rg.util.Periodicity.parsePair = function(start,end) {
 	return [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
 }
-rg.util.Periodicity.timezoneOffset = function(d) {
-	return d.getTimezoneOffset();
-}
 rg.util.Periodicity.dateUtc = function(v) {
-	var d = Date.fromTime(v), offset = d.getTimezoneOffset();
+	var d = (function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(v);
+		$r = d1;
+		return $r;
+	}(this)), offset = d.getTimezoneOffset();
 	if(offset < 0) offset = 0;
-	return Date.fromTime(v + 60000 * offset);
+	return (function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(v + 60000 * offset);
+		$r = d1;
+		return $r;
+	}(this));
 }
 rg.util.Periodicity.isValidGroupBy = function(value) {
 	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
 }
-rg.util.Periodicity.prototype = {
-	__class__: rg.util.Periodicity
-}
 rg.util.Properties = function() { }
-$hxClasses["rg.util.Properties"] = rg.util.Properties;
 rg.util.Properties.__name__ = ["rg","util","Properties"];
-rg.util.Properties.isTime = function(s) {
-	return s.indexOf("time:") >= 0;
-}
 rg.util.Properties.periodicity = function(s) {
-	return s.substr(s.indexOf("time:") + "time:".length);
-}
-rg.util.Properties.humanize = function(s) {
-	return rg.util.RGStrings.humanize(s);
+	return HxOverrides.substr(s,s.indexOf("time:") + "time:".length,null);
 }
 rg.util.Properties.formatValue = function(type,dp) {
 	var value = Reflect.field(dp,type);
 	if(null == value) return value;
 	if(type.indexOf("time:") >= 0) {
-		var periodicity = type.substr(type.indexOf("time:") + "time:".length);
+		var periodicity = HxOverrides.substr(type,type.indexOf("time:") + "time:".length,null);
 		return rg.util.Periodicity.format(periodicity,Dates.snap(value,periodicity));
 	}
 	return rg.util.RGStrings.humanize(value);
 }
-rg.util.Properties.prototype = {
-	__class__: rg.util.Properties
-}
 rg.util.RG = function() { }
-$hxClasses["rg.util.RG"] = rg.util.RG;
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
-	if(ReportGrid.$) return Strings.rtrim(Strings.ltrim(ReportGrid.$.Config.tokenId,"\""),"\""); else return null;
-}
-rg.util.RG.prototype = {
-	__class__: rg.util.RG
+	try {
+		return Strings.rtrim(Strings.ltrim(ReportGrid.$.Config.tokenId,"\""),"\"");
+	} catch( e ) {
+		return null;
+	}
 }
 rg.util.RGColors = function() { }
-$hxClasses["rg.util.RGColors"] = rg.util.RGColors;
 rg.util.RGColors.__name__ = ["rg","util","RGColors"];
 rg.util.RGColors.parse = function(s,alt) {
 	try {
@@ -15736,15 +15052,11 @@ rg.util.RGColors.storeColorForSelection = function(n,style,color) {
 		rg.util.RGColors.storeColor(n1,c);
 	});
 }
-rg.util.RGColors.prototype = {
-	__class__: rg.util.RGColors
-}
 rg.util.RGStrings = function() { }
-$hxClasses["rg.util.RGStrings"] = rg.util.RGStrings;
 rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
 rg.util.RGStrings.humanize = function(d) {
-	if(Std["is"](d,Int)) return Ints.format(d);
-	if(Std["is"](d,Float)) return Floats.format(d);
+	if(js.Boot.__instanceof(d,Int)) return Ints.format(d);
+	if(js.Boot.__instanceof(d,Float)) return Floats.format(d);
 	var s = Std.string(d);
 	if(rg.util.RGStrings.range.match(s)) {
 		var v1 = rg.util.RGStrings.range.matched(1), v2 = rg.util.RGStrings.range.matched(2);
@@ -15756,11 +15068,7 @@ rg.util.RGStrings.humanize = function(d) {
 rg.util.RGStrings.hstring = function(s) {
 	return Strings.ucwords(Strings.humanize(s));
 }
-rg.util.RGStrings.prototype = {
-	__class__: rg.util.RGStrings
-}
 rg.util.Urls = function() { }
-$hxClasses["rg.util.Urls"] = rg.util.Urls;
 rg.util.Urls.__name__ = ["rg","util","Urls"];
 rg.util.Urls.addQueryParameters = function(url,query) {
 	var suffix = url.indexOf("?") < 0?"?":"&", queries = [];
@@ -15776,7 +15084,7 @@ rg.util.Urls.addQueryParameters = function(url,query) {
 rg.util.Urls.parseQueryParameters = function(url) {
 	var index = url.indexOf("?");
 	if(index < 0) return { };
-	var query = url.substr(index + 1), keyValuePairs = query.split("&"), parameters = { };
+	var query = HxOverrides.substr(url,index + 1,null), keyValuePairs = query.split("&"), parameters = { };
 	var _g = 0;
 	while(_g < keyValuePairs.length) {
 		var pair = keyValuePairs[_g];
@@ -15786,14 +15094,10 @@ rg.util.Urls.parseQueryParameters = function(url) {
 	}
 	return parameters;
 }
-rg.util.Urls.prototype = {
-	__class__: rg.util.Urls
-}
 rg.visualization = {}
 rg.visualization.Visualization = function(container) {
 	this.container = container;
 };
-$hxClasses["rg.visualization.Visualization"] = rg.visualization.Visualization;
 rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
 rg.visualization.Visualization.prototype = {
 	independentVariables: null
@@ -15803,14 +15107,14 @@ rg.visualization.Visualization.prototype = {
 	,ready: null
 	,hasRendered: null
 	,setVariables: function(variables,independentVariables,dependentVariables) {
-		var me = this;
+		var _g = this;
 		this.variables = variables;
 		this.independentVariables = independentVariables;
 		this.dependentVariables = dependentVariables;
 		this.hasRendered = false;
 		this.ready = new hxevents.Notifier();
 		this.ready.addOnce(function() {
-			me.hasRendered = true;
+			_g.hasRendered = true;
 		});
 	}
 	,init: function() {
@@ -15835,7 +15139,6 @@ rg.visualization.VisualizationSvg = function(layout) {
 	rg.visualization.Visualization.call(this,layout.container);
 	this.layout = layout;
 };
-$hxClasses["rg.visualization.VisualizationSvg"] = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
 rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
@@ -15846,7 +15149,6 @@ rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualiza
 rg.visualization.VisualizationCartesian = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationCartesian"] = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationCartesian.__name__ = ["rg","visualization","VisualizationCartesian"];
 rg.visualization.VisualizationCartesian.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15954,7 +15256,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	,setTickmarksDefaults: function(tickmarks,i,type,pname) {
 	}
 	,createTickmarks: function(i,type,pname) {
-		var me = this;
+		var _g = this;
 		var displayMinor = this.info.displayMinorTick(type), displayMajor = this.info.displayMajorTick(type), displayLabel = this.info.displayLabelTick(type), displayAnchorLine = this.info.displayAnchorLineTick(type), title = null != this.info.label.axis?this.info.label.axis(type):null, tickmarks = null, context;
 		if(displayMinor || displayMajor || displayLabel || displayAnchorLine) {
 			context = this.layout.getContext(pname);
@@ -15962,7 +15264,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 			tickmarks = new rg.svg.layer.TickmarksOrtho(context.panel,context.anchor);
 			this.setTickmarksDefaults(tickmarks,i,type,pname);
 			if(!displayLabel) tickmarks.displayLabel = false; else if(null != this.info.label.tickmark) tickmarks.tickLabel = function(d) {
-				return me.info.label.tickmark(d,type);
+				return _g.info.label.tickmark(d,type);
 			};
 			tickmarks.displayMinor = displayMinor;
 			tickmarks.displayMajor = displayMajor;
@@ -16006,7 +15308,6 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 rg.visualization.VisualizationBarChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationBarChart"] = rg.visualization.VisualizationBarChart;
 rg.visualization.VisualizationBarChart.__name__ = ["rg","visualization","VisualizationBarChart"];
 rg.visualization.VisualizationBarChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16025,11 +15326,11 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 		}
 	}
 	,initChart: function() {
-		var me = this;
+		var _g = this;
 		var chart = new rg.svg.chart.BarChart(this.layout.getPanel(this.layout.mainPanelName));
 		this.baseChart = chart;
 		chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		chart.stacked = this.infoBar.stacked;
 		var $e = (this.infoBar.effect);
@@ -16123,7 +15424,6 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 rg.visualization.VisualizationFunnelChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationFunnelChart"] = rg.visualization.VisualizationFunnelChart;
 rg.visualization.VisualizationFunnelChart.__name__ = ["rg","visualization","VisualizationFunnelChart"];
 rg.visualization.VisualizationFunnelChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -16131,12 +15431,12 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 	,title: null
 	,chart: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.FunnelChart(panelChart);
 		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 		if(null != this.info.label.datapoint) this.chart.labelDataPointOver = this.info.label.datapointover;
@@ -16186,7 +15486,6 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 rg.visualization.VisualizationGeo = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationGeo"] = rg.visualization.VisualizationGeo;
 rg.visualization.VisualizationGeo.__name__ = ["rg","visualization","VisualizationGeo"];
 rg.visualization.VisualizationGeo.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -16194,7 +15493,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 	,title: null
 	,chart: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		if(null != this.info.label.title) {
 			var panelContextTitle = this.layout.getContext("title");
 			if(null == panelContextTitle) return;
@@ -16204,13 +15503,13 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		this.chart = new rg.svg.chart.Geo(panelChart);
 		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		var pfactory = new rg.factory.FactoryGeoProjection();
-		var _g = 0, _g1 = this.info.map;
-		while(_g < _g1.length) {
-			var imap = _g1[_g];
-			++_g;
+		var _g1 = 0, _g11 = this.info.map;
+		while(_g1 < _g11.length) {
+			var imap = _g11[_g1];
+			++_g1;
 			var projection = pfactory.create(imap), map = new rg.svg.widget.Map(this.chart.mapcontainer,projection);
 			map.setClassName(imap.classname);
 			if(null == imap.label) map.labelDataPoint = this.info.label.datapoint; else map.labelDataPoint = imap.label.datapoint;
@@ -16218,8 +15517,8 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 			map.click = imap.click;
 			map.radius = imap.radius;
 			map.colorMode = imap.colorScaleMode;
-			map.handlerClick = ($_=this.chart,$_.handlerClick.$bind($_));
-			map.handlerDataPointOver = ($_=this.chart,$_.handlerDataPointOver.$bind($_));
+			map.handlerClick = ($_=this.chart,$bind($_,$_.handlerClick));
+			map.handlerDataPointOver = ($_=this.chart,$bind($_,$_.handlerDataPointOver));
 			map.mapping = imap.mapping;
 			var mappingurl = imap.mappingurl;
 			if(null != mappingurl && (!StringTools.startsWith(mappingurl,"http://") || !StringTools.startsWith(mappingurl,"https://"))) mappingurl = rg.RGConst.BASE_URL_GEOJSON + mappingurl + ".json" + (imap.usejsonp?".js":"");
@@ -16248,7 +15547,6 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 rg.visualization.VisualizationHeatGrid = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationHeatGrid"] = rg.visualization.VisualizationHeatGrid;
 rg.visualization.VisualizationHeatGrid.__name__ = ["rg","visualization","VisualizationHeatGrid"];
 rg.visualization.VisualizationHeatGrid.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16258,11 +15556,11 @@ rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.Visu
 		this.yvariables = [this.independentVariables[1]];
 	}
 	,initChart: function() {
-		var me = this;
+		var _g = this;
 		var chart = new rg.svg.chart.HeatGrid(this.layout.getPanel(this.layout.mainPanelName));
 		this.baseChart = chart;
 		chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		chart.useContour = this.infoHeatGrid.contour;
 		chart.setColorMode(this.infoHeatGrid.colorScaleMode);
@@ -16282,7 +15580,6 @@ rg.visualization.VisualizationHtml = function(container) {
 	rg.visualization.Visualization.call(this,container);
 	container.classed().add("rg");
 };
-$hxClasses["rg.visualization.VisualizationHtml"] = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationHtml.__name__ = ["rg","visualization","VisualizationHtml"];
 rg.visualization.VisualizationHtml.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualization.prototype,{
@@ -16291,17 +15588,16 @@ rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualiz
 rg.visualization.VisualizationLeaderboard = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
-$hxClasses["rg.visualization.VisualizationLeaderboard"] = rg.visualization.VisualizationLeaderboard;
 rg.visualization.VisualizationLeaderboard.__name__ = ["rg","visualization","VisualizationLeaderboard"];
 rg.visualization.VisualizationLeaderboard.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
 	info: null
 	,chart: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		this.chart = new rg.html.chart.Leadeboard(this.container);
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		if(null != this.info.label.datapoint) this.chart.labelDataPoint = this.info.label.datapoint;
 		if(null != this.info.label.datapointover) this.chart.labelDataPointOver = this.info.label.datapointover;
@@ -16327,7 +15623,6 @@ rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.V
 rg.visualization.VisualizationLineChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationLineChart"] = rg.visualization.VisualizationLineChart;
 rg.visualization.VisualizationLineChart.__name__ = ["rg","visualization","VisualizationLineChart"];
 rg.visualization.VisualizationLineChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16337,11 +15632,11 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 		this.yvariables = this.variables.slice(1);
 	}
 	,initChart: function() {
-		var me = this;
+		var _g = this;
 		var chart = new rg.svg.chart.LineChart(this.layout.getPanel(this.layout.mainPanelName));
 		this.baseChart = chart;
 		chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		chart.symbol = this.infoLine.symbol;
 		chart.symbolStyle = this.infoLine.symbolStyle;
@@ -16368,7 +15663,6 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 rg.visualization.VisualizationPieChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationPieChart"] = rg.visualization.VisualizationPieChart;
 rg.visualization.VisualizationPieChart.__name__ = ["rg","visualization","VisualizationPieChart"];
 rg.visualization.VisualizationPieChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -16376,12 +15670,12 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 	,title: null
 	,info: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.PieChart(panelChart);
 		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		this.chart.innerRadius = this.info.innerradius;
 		this.chart.outerRadius = this.info.outerradius;
@@ -16436,17 +15730,16 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 rg.visualization.VisualizationPivotTable = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
-$hxClasses["rg.visualization.VisualizationPivotTable"] = rg.visualization.VisualizationPivotTable;
 rg.visualization.VisualizationPivotTable.__name__ = ["rg","visualization","VisualizationPivotTable"];
 rg.visualization.VisualizationPivotTable.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
 	info: null
 	,chart: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		this.chart = new rg.html.chart.PivotTable(this.container);
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		this.chart.displayColumnTotal = this.info.displayColumnTotal;
 		this.chart.displayHeatMap = this.info.displayHeatmap;
@@ -16479,7 +15772,6 @@ rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.Vi
 rg.visualization.VisualizationSankey = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationSankey"] = rg.visualization.VisualizationSankey;
 rg.visualization.VisualizationSankey.__name__ = ["rg","visualization","VisualizationSankey"];
 rg.visualization.VisualizationSankey.defaultIdf = function(idf) {
 	if(idf == null) return function(data) {
@@ -16512,7 +15804,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 	,title: null
 	,chart: null
 	,init: function() {
-		var me = this;
+		var _g = this;
 		if(null != this.info.label.title) {
 			var panelContextTitle = this.layout.getContext("title");
 			if(null == panelContextTitle) return;
@@ -16522,7 +15814,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		this.chart = new rg.svg.chart.Sankey(panelChart);
 		this.baseChart = this.chart;
 		this.chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 	}
 	,feedData: function(data) {
@@ -16711,7 +16003,6 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 rg.visualization.VisualizationScatterGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationScatterGraph"] = rg.visualization.VisualizationScatterGraph;
 rg.visualization.VisualizationScatterGraph.__name__ = ["rg","visualization","VisualizationScatterGraph"];
 rg.visualization.VisualizationScatterGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16723,11 +16014,11 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 		});
 	}
 	,initChart: function() {
-		var me = this;
+		var _g = this;
 		var chart = new rg.svg.chart.ScatterGraph(this.layout.getPanel(this.layout.mainPanelName));
 		this.baseChart = chart;
 		chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		chart.symbol = this.infoScatter.symbol;
 		chart.symbolStyle = this.infoScatter.symbolStyle;
@@ -16749,7 +16040,6 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 rg.visualization.VisualizationStreamGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
-$hxClasses["rg.visualization.VisualizationStreamGraph"] = rg.visualization.VisualizationStreamGraph;
 rg.visualization.VisualizationStreamGraph.__name__ = ["rg","visualization","VisualizationStreamGraph"];
 rg.visualization.VisualizationStreamGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16761,11 +16051,11 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 		});
 	}
 	,initChart: function() {
-		var me = this;
+		var _g = this;
 		var chart = new rg.svg.chart.StreamGraph(this.layout.getPanel(this.layout.mainPanelName));
 		this.baseChart = chart;
 		chart.ready.add(function() {
-			me.ready.dispatch();
+			_g.ready.dispatch();
 		});
 		chart.interpolator = this.infoStream.interpolation;
 		var $e = (this.infoStream.effect);
@@ -16793,16 +16083,9 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 	,__class__: rg.visualization.VisualizationStreamGraph
 });
 rg.visualization.Visualizations = function() { }
-$hxClasses["rg.visualization.Visualizations"] = rg.visualization.Visualizations;
 rg.visualization.Visualizations.__name__ = ["rg","visualization","Visualizations"];
-rg.visualization.Visualizations.layoutDefault = null;
-rg.visualization.Visualizations.layoutType = null;
-rg.visualization.Visualizations.layoutArgs = null;
 rg.visualization.Visualizations.instantiateLayout = function(name,width,height,container) {
 	return Type.createInstance(rg.visualization.Visualizations.layoutType.get(name),[width,height,container]);
-}
-rg.visualization.Visualizations.prototype = {
-	__class__: rg.visualization.Visualizations
 }
 thx.collection = {}
 thx.collection.HashList = function() {
@@ -16810,7 +16093,6 @@ thx.collection.HashList = function() {
 	this.__keys = [];
 	this.__hash = new Hash();
 };
-$hxClasses["thx.collection.HashList"] = thx.collection.HashList;
 thx.collection.HashList.__name__ = ["thx","collection","HashList"];
 thx.collection.HashList.prototype = {
 	length: null
@@ -16842,18 +16124,17 @@ thx.collection.Set = function() {
 	this._v = [];
 	this.length = 0;
 };
-$hxClasses["thx.collection.Set"] = thx.collection.Set;
 thx.collection.Set.__name__ = ["thx","collection","Set"];
 thx.collection.Set.prototype = {
 	length: null
 	,_v: null
 	,add: function(v) {
-		this._v.remove(v);
+		HxOverrides.remove(this._v,v);
 		this._v.push(v);
 		this.length = this._v.length;
 	}
 	,iterator: function() {
-		return this._v.iterator();
+		return HxOverrides.iter(this._v);
 	}
 	,__class__: thx.collection.Set
 }
@@ -16864,7 +16145,6 @@ thx.color.Cmyk = function(cyan,magenta,yellow,black) {
 	this.yellow = Floats.normalize(yellow);
 	this.black = Floats.normalize(black);
 };
-$hxClasses["thx.color.Cmyk"] = thx.color.Cmyk;
 thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
 thx.color.Cmyk.__super__ = thx.color.Rgb;
 thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
@@ -16875,7 +16155,6 @@ thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
 	,__class__: thx.color.Cmyk
 });
 thx.color.Colors = function() { }
-$hxClasses["thx.color.Colors"] = thx.color.Colors;
 thx.color.Colors.__name__ = ["thx","color","Colors"];
 thx.color.Colors.parse = function(s) {
 	if(!thx.color.Colors._reParse.match(s = StringTools.trim(s.toLowerCase()))) {
@@ -16907,22 +16186,18 @@ thx.color.Colors._c = function(s) {
 }
 thx.color.Colors._d = function(s) {
 	var s1 = StringTools.trim(s);
-	if(s1.substr(-3) == "deg") s1 = s1.substr(0,-3); else if(s1.substr(-1) == "º") s1 = s1.substr(0,-1);
+	if(HxOverrides.substr(s1,-3,null) == "deg") s1 = HxOverrides.substr(s1,0,-3); else if(HxOverrides.substr(s1,-1,null) == "º") s1 = HxOverrides.substr(s1,0,-1);
 	return Std.parseFloat(s1);
 }
 thx.color.Colors._p = function(s) {
 	var s1 = StringTools.trim(s);
-	if(s1.substr(-1) == "%") return Std.parseFloat(s1.substr(0,-1)) / 100; else return Std.parseFloat(s1);
-}
-thx.color.Colors.prototype = {
-	__class__: thx.color.Colors
+	if(HxOverrides.substr(s1,-1,null) == "%") return Std.parseFloat(HxOverrides.substr(s1,0,-1)) / 100; else return Std.parseFloat(s1);
 }
 thx.color.Grey = function(value) {
 	this.grey = Floats.normalize(value);
 	var c = Ints.interpolate(this.grey,0,255,null);
 	thx.color.Rgb.call(this,c,c,c);
 };
-$hxClasses["thx.color.Grey"] = thx.color.Grey;
 thx.color.Grey.__name__ = ["thx","color","Grey"];
 thx.color.Grey.toGrey = function(rgb,luminance) {
 	if(null == luminance) luminance = thx.color.PerceivedLuminance.Perceived;
@@ -16940,7 +16215,7 @@ thx.color.Grey.prototype = $extend(thx.color.Rgb.prototype,{
 	grey: null
 	,__class__: thx.color.Grey
 });
-thx.color.PerceivedLuminance = $hxClasses["thx.color.PerceivedLuminance"] = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
+thx.color.PerceivedLuminance = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
 thx.color.PerceivedLuminance.Standard = ["Standard",0];
 thx.color.PerceivedLuminance.Standard.toString = $estr;
 thx.color.PerceivedLuminance.Standard.__enum__ = thx.color.PerceivedLuminance;
@@ -16951,162 +16226,9 @@ thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
 thx.color.NamedColors = function() { }
-$hxClasses["thx.color.NamedColors"] = thx.color.NamedColors;
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
-thx.color.NamedColors.aliceblue = null;
-thx.color.NamedColors.antiquewhite = null;
-thx.color.NamedColors.aqua = null;
-thx.color.NamedColors.aquamarine = null;
-thx.color.NamedColors.azure = null;
-thx.color.NamedColors.beige = null;
-thx.color.NamedColors.bisque = null;
-thx.color.NamedColors.black = null;
-thx.color.NamedColors.blanchedalmond = null;
-thx.color.NamedColors.blue = null;
-thx.color.NamedColors.blueviolet = null;
-thx.color.NamedColors.brown = null;
-thx.color.NamedColors.burlywood = null;
-thx.color.NamedColors.cadetblue = null;
-thx.color.NamedColors.chartreuse = null;
-thx.color.NamedColors.chocolate = null;
-thx.color.NamedColors.coral = null;
-thx.color.NamedColors.cornflowerblue = null;
-thx.color.NamedColors.cornsilk = null;
-thx.color.NamedColors.crimson = null;
-thx.color.NamedColors.cyan = null;
-thx.color.NamedColors.darkblue = null;
-thx.color.NamedColors.darkcyan = null;
-thx.color.NamedColors.darkgoldenrod = null;
-thx.color.NamedColors.darkgray = null;
-thx.color.NamedColors.darkgreen = null;
-thx.color.NamedColors.darkgrey = null;
-thx.color.NamedColors.darkkhaki = null;
-thx.color.NamedColors.darkmagenta = null;
-thx.color.NamedColors.darkolivegreen = null;
-thx.color.NamedColors.darkorange = null;
-thx.color.NamedColors.darkorchid = null;
-thx.color.NamedColors.darkred = null;
-thx.color.NamedColors.darksalmon = null;
-thx.color.NamedColors.darkseagreen = null;
-thx.color.NamedColors.darkslateblue = null;
-thx.color.NamedColors.darkslategray = null;
-thx.color.NamedColors.darkslategrey = null;
-thx.color.NamedColors.darkturquoise = null;
-thx.color.NamedColors.darkviolet = null;
-thx.color.NamedColors.deeppink = null;
-thx.color.NamedColors.deepskyblue = null;
-thx.color.NamedColors.dimgray = null;
-thx.color.NamedColors.dimgrey = null;
-thx.color.NamedColors.dodgerblue = null;
-thx.color.NamedColors.firebrick = null;
-thx.color.NamedColors.floralwhite = null;
-thx.color.NamedColors.forestgreen = null;
-thx.color.NamedColors.fuchsia = null;
-thx.color.NamedColors.gainsboro = null;
-thx.color.NamedColors.ghostwhite = null;
-thx.color.NamedColors.gold = null;
-thx.color.NamedColors.goldenrod = null;
-thx.color.NamedColors.gray = null;
-thx.color.NamedColors.green = null;
-thx.color.NamedColors.greenyellow = null;
-thx.color.NamedColors.grey = null;
-thx.color.NamedColors.honeydew = null;
-thx.color.NamedColors.hotpink = null;
-thx.color.NamedColors.indianred = null;
-thx.color.NamedColors.indigo = null;
-thx.color.NamedColors.ivory = null;
-thx.color.NamedColors.khaki = null;
-thx.color.NamedColors.lavender = null;
-thx.color.NamedColors.lavenderblush = null;
-thx.color.NamedColors.lawngreen = null;
-thx.color.NamedColors.lemonchiffon = null;
-thx.color.NamedColors.lightblue = null;
-thx.color.NamedColors.lightcoral = null;
-thx.color.NamedColors.lightcyan = null;
-thx.color.NamedColors.lightgoldenrodyellow = null;
-thx.color.NamedColors.lightgray = null;
-thx.color.NamedColors.lightgreen = null;
-thx.color.NamedColors.lightgrey = null;
-thx.color.NamedColors.lightpink = null;
-thx.color.NamedColors.lightsalmon = null;
-thx.color.NamedColors.lightseagreen = null;
-thx.color.NamedColors.lightskyblue = null;
-thx.color.NamedColors.lightslategray = null;
-thx.color.NamedColors.lightslategrey = null;
-thx.color.NamedColors.lightsteelblue = null;
-thx.color.NamedColors.lightyellow = null;
-thx.color.NamedColors.lime = null;
-thx.color.NamedColors.limegreen = null;
-thx.color.NamedColors.linen = null;
-thx.color.NamedColors.magenta = null;
-thx.color.NamedColors.maroon = null;
-thx.color.NamedColors.mediumaquamarine = null;
-thx.color.NamedColors.mediumblue = null;
-thx.color.NamedColors.mediumorchid = null;
-thx.color.NamedColors.mediumpurple = null;
-thx.color.NamedColors.mediumseagreen = null;
-thx.color.NamedColors.mediumslateblue = null;
-thx.color.NamedColors.mediumspringgreen = null;
-thx.color.NamedColors.mediumturquoise = null;
-thx.color.NamedColors.mediumvioletred = null;
-thx.color.NamedColors.midnightblue = null;
-thx.color.NamedColors.mintcream = null;
-thx.color.NamedColors.mistyrose = null;
-thx.color.NamedColors.moccasin = null;
-thx.color.NamedColors.navajowhite = null;
-thx.color.NamedColors.navy = null;
-thx.color.NamedColors.oldlace = null;
-thx.color.NamedColors.olive = null;
-thx.color.NamedColors.olivedrab = null;
-thx.color.NamedColors.orange = null;
-thx.color.NamedColors.orangered = null;
-thx.color.NamedColors.orchid = null;
-thx.color.NamedColors.palegoldenrod = null;
-thx.color.NamedColors.palegreen = null;
-thx.color.NamedColors.paleturquoise = null;
-thx.color.NamedColors.palevioletred = null;
-thx.color.NamedColors.papayawhip = null;
-thx.color.NamedColors.peachpuff = null;
-thx.color.NamedColors.peru = null;
-thx.color.NamedColors.pink = null;
-thx.color.NamedColors.plum = null;
-thx.color.NamedColors.powderblue = null;
-thx.color.NamedColors.purple = null;
-thx.color.NamedColors.red = null;
-thx.color.NamedColors.rosybrown = null;
-thx.color.NamedColors.royalblue = null;
-thx.color.NamedColors.saddlebrown = null;
-thx.color.NamedColors.salmon = null;
-thx.color.NamedColors.sandybrown = null;
-thx.color.NamedColors.seagreen = null;
-thx.color.NamedColors.seashell = null;
-thx.color.NamedColors.sienna = null;
-thx.color.NamedColors.silver = null;
-thx.color.NamedColors.skyblue = null;
-thx.color.NamedColors.slateblue = null;
-thx.color.NamedColors.slategray = null;
-thx.color.NamedColors.slategrey = null;
-thx.color.NamedColors.snow = null;
-thx.color.NamedColors.springgreen = null;
-thx.color.NamedColors.steelblue = null;
-thx.color.NamedColors.tan = null;
-thx.color.NamedColors.teal = null;
-thx.color.NamedColors.thistle = null;
-thx.color.NamedColors.tomato = null;
-thx.color.NamedColors.turquoise = null;
-thx.color.NamedColors.violet = null;
-thx.color.NamedColors.wheat = null;
-thx.color.NamedColors.white = null;
-thx.color.NamedColors.whitesmoke = null;
-thx.color.NamedColors.yellow = null;
-thx.color.NamedColors.yellowgreen = null;
-thx.color.NamedColors.byName = null;
-thx.color.NamedColors.prototype = {
-	__class__: thx.color.NamedColors
-}
 thx.culture = {}
 thx.culture.Info = function() { }
-$hxClasses["thx.culture.Info"] = thx.culture.Info;
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
 	name: null
@@ -17118,16 +16240,11 @@ thx.culture.Info.prototype = {
 	,__class__: thx.culture.Info
 }
 thx.culture.Culture = function() { }
-$hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
-thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
-thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
-thx.culture.Culture._defaultCulture = null;
-thx.culture.Culture.defaultCulture = null;
 thx.culture.Culture.getDefaultCulture = function() {
 	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
 }
@@ -17164,7 +16281,6 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,__class__: thx.culture.Culture
 });
 thx.culture.FormatDate = function() { }
-$hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
@@ -17296,7 +16412,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.add(thx.culture.FormatDate.time(date,culture));
 			break;
 		case "y":
-			buf.add(thx.culture.FormatNumber.digits(("" + date.getFullYear()).substr(-2),culture));
+			buf.add(thx.culture.FormatNumber.digits(HxOverrides.substr("" + date.getFullYear(),-2,null),culture));
 			break;
 		case "Y":
 			buf.add(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
@@ -17393,11 +16509,7 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
 	return culture.date.days[date.getDay()];
 }
-thx.culture.FormatDate.prototype = {
-	__class__: thx.culture.FormatDate
-}
 thx.culture.FormatNumber = function() { }
-$hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
@@ -17434,7 +16546,7 @@ thx.culture.FormatNumber.processDigits = function(s,digits) {
 	var _g1 = 0, _g = s.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		o.push(digits[Std.parseInt(s.substr(i,1))]);
+		o.push(digits[Std.parseInt(HxOverrides.substr(s,i,1))]);
 	}
 	return o.join("");
 }
@@ -17442,13 +16554,13 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	var fv = "" + Math.abs(v);
 	var pos = fv.indexOf("E");
 	if(pos > 0) {
-		var e = Std.parseInt(fv.substr(pos + 1));
+		var e = Std.parseInt(HxOverrides.substr(fv,pos + 1,null));
 		var ispos = true;
 		if(e < 0) {
 			ispos = false;
 			e = -e;
 		}
-		var s = StringTools.replace(fv.substr(0,pos),".","");
+		var s = StringTools.replace(HxOverrides.substr(fv,0,pos),".","");
 		if(ispos) fv = StringTools.rpad(s,"0",e + 1); else fv = "0" + StringTools.rpad(".","0",e) + s;
 	}
 	var parts = fv.split(".");
@@ -17462,26 +16574,22 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 			intparts.unshift(thx.culture.FormatNumber.processDigits(temp,digits));
 			break;
 		}
-		intparts.unshift(thx.culture.FormatNumber.processDigits(temp.substr(-len),digits));
-		temp = temp.substr(0,-len);
+		intparts.unshift(thx.culture.FormatNumber.processDigits(HxOverrides.substr(temp,-len,null),digits));
+		temp = HxOverrides.substr(temp,0,-len);
 		if(group < info.groups.length - 1) group++;
 	}
 	var intpart = intparts.join(info.groupsSeparator);
 	if(decimals > 0) {
-		var decpart = parts.length == 1?StringTools.lpad("","0",decimals):parts[1].length > decimals?parts[1].substr(0,decimals):StringTools.rpad(parts[1],"0",decimals);
+		var decpart = parts.length == 1?StringTools.lpad("","0",decimals):parts[1].length > decimals?HxOverrides.substr(parts[1],0,decimals):StringTools.rpad(parts[1],"0",decimals);
 		return intpart + info.decimalsSeparator + thx.culture.FormatNumber.processDigits(decpart,digits);
 	} else return intpart;
 }
-thx.culture.FormatNumber.prototype = {
-	__class__: thx.culture.FormatNumber
-}
 thx.culture.FormatParams = function() { }
-$hxClasses["thx.culture.FormatParams"] = thx.culture.FormatParams;
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
 	if(p.length <= 1) return p;
-	var f = p.substr(0,1);
-	if(("\"" == f || "'" == f) && p.substr(-1) == f) return p.substr(1,p.length - 2); else return p;
+	var f = HxOverrides.substr(p,0,1);
+	if(("\"" == f || "'" == f) && HxOverrides.substr(p,-1,null) == f) return HxOverrides.substr(p,1,p.length - 2); else return p;
 }
 thx.culture.FormatParams.params = function(p,ps,alt) {
 	if(null != ps && null != p) return [p].concat(ps);
@@ -17494,14 +16602,8 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 	}
 	return ps;
 }
-thx.culture.FormatParams.prototype = {
-	__class__: thx.culture.FormatParams
-}
 thx.culture.Language = function() { }
-$hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
-thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
-thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
@@ -17536,7 +16638,6 @@ thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDa
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
 };
-$hxClasses["thx.culture.core.DateTimeInfo"] = thx.culture.core.DateTimeInfo;
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
 	months: null
@@ -17569,7 +16670,6 @@ thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsS
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
 };
-$hxClasses["thx.culture.core.NumberInfo"] = thx.culture.core.NumberInfo;
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
 	decimals: null
@@ -17590,10 +16690,7 @@ thx.languages.En = function() {
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
 };
-$hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
-thx.languages.En.__properties__ = {get_language:"getLanguage"}
-thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
@@ -17631,10 +16728,7 @@ thx.cultures.EnUS = function() {
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
 };
-$hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
-thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
-thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
@@ -17645,7 +16739,6 @@ thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 });
 thx.data = {}
 thx.data.IDataHandler = function() { }
-$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
 	start: null
@@ -17670,7 +16763,6 @@ thx.data.IDataHandler.prototype = {
 thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
-$hxClasses["thx.data.ValueEncoder"] = thx.data.ValueEncoder;
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
 	handler: null
@@ -17702,7 +16794,7 @@ thx.data.ValueEncoder.prototype = {
 			break;
 		case 6:
 			var c = $e[2];
-			if(Std["is"](o,String)) this.handler.valueString(o); else if(Std["is"](o,Array)) this.encodeArray(o); else if(Std["is"](o,Date)) this.handler.valueDate(o); else if(Std["is"](o,Hash)) this.encodeHash(o); else if(Std["is"](o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
 			var e = $e[2];
@@ -17763,7 +16855,6 @@ thx.data.ValueEncoder.prototype = {
 }
 thx.data.ValueHandler = function() {
 };
-$hxClasses["thx.data.ValueHandler"] = thx.data.ValueHandler;
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
@@ -17826,11 +16917,10 @@ thx.data.ValueHandler.prototype = {
 }
 thx.date = {}
 thx.date.DateParser = function() { }
-$hxClasses["thx.date.DateParser"] = thx.date.DateParser;
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
-	if(null == d) d = Date.now();
+	if(null == d) d = new Date();
 	if(null != time.matched) s = StringTools.replace(s,time.matched,"");
 	var year = 0, month = 0, day = 0, found = null != time.matched;
 	if(thx.date.DateParser.dateexp.match(s)) {
@@ -17978,7 +17068,13 @@ thx.date.DateParser.parse = function(s,d) {
 		}
 	}
 	if(!found) throw new thx.error.Error("no date information found in the string '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 339, className : "thx.date.DateParser", methodName : "parse"});
-	return Date.fromTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+	return (function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(new Date(year,month,day,time.hour,time.minute,time.second).getTime() + time.millis);
+		$r = d1;
+		return $r;
+	}(this));
 }
 thx.date.DateParser.parseTime = function(s) {
 	var result = { hour : 0, minute : 0, second : 0, millis : 0.0, matched : null};
@@ -18046,16 +17142,12 @@ thx.date.DateParser.plusPm = function(s) {
 		return $r;
 	}(this));
 }
-thx.date.DateParser.prototype = {
-	__class__: thx.date.DateParser
-}
 thx.util = {}
 thx.util.Message = function(message,params,param) {
 	this.message = message;
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
 };
-$hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
 	message: null
@@ -18070,7 +17162,6 @@ thx.error.Error = function(message,params,param,pos) {
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
 };
-$hxClasses["thx.error.Error"] = thx.error.Error;
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
@@ -18088,7 +17179,6 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 thx.error.AbstractMethod = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
 };
-$hxClasses["thx.error.AbstractMethod"] = thx.error.AbstractMethod;
 thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
 thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
@@ -18097,7 +17187,6 @@ thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
 thx.error.NotImplemented = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
 };
-$hxClasses["thx.error.NotImplemented"] = thx.error.NotImplemented;
 thx.error.NotImplemented.__name__ = ["thx","error","NotImplemented"];
 thx.error.NotImplemented.__super__ = thx.error.Error;
 thx.error.NotImplemented.prototype = $extend(thx.error.Error.prototype,{
@@ -18107,7 +17196,6 @@ thx.error.NullArgument = function(argumentName,message,posInfo) {
 	if(null == message) message = "invalid null or empty argument '{0}' for method {1}.{2}()";
 	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 16, className : "thx.error.NullArgument", methodName : "new"});
 };
-$hxClasses["thx.error.NullArgument"] = thx.error.NullArgument;
 thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
 thx.error.NullArgument.__super__ = thx.error.Error;
 thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
@@ -18115,7 +17203,6 @@ thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
 });
 thx.geo = {}
 thx.geo.IProjection = function() { }
-$hxClasses["thx.geo.IProjection"] = thx.geo.IProjection;
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
 thx.geo.IProjection.prototype = {
 	project: null
@@ -18129,7 +17216,6 @@ thx.geo.Albers = function() {
 	this._translate = [480.0,250];
 	this.reload();
 };
-$hxClasses["thx.geo.Albers"] = thx.geo.Albers;
 thx.geo.Albers.__name__ = ["thx","geo","Albers"];
 thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Albers.prototype = {
@@ -18154,7 +17240,7 @@ thx.geo.Albers.prototype = {
 		return [(this.lng0 + t / this.n) / 0.01745329251994329577,Math.asin((this.C - p * p * this.n * this.n) / (2 * this.n)) / 0.01745329251994329577];
 	}
 	,getOrigin: function() {
-		return this._origin.copy();
+		return this._origin.slice();
 	}
 	,setOrigin: function(origin) {
 		this._origin = [origin[0],origin[1]];
@@ -18162,7 +17248,7 @@ thx.geo.Albers.prototype = {
 		return origin;
 	}
 	,getParallels: function() {
-		return this._parallels.copy();
+		return this._parallels.slice();
 	}
 	,setParallels: function(parallels) {
 		this._parallels = [parallels[0],parallels[1]];
@@ -18170,7 +17256,7 @@ thx.geo.Albers.prototype = {
 		return parallels;
 	}
 	,getTranslate: function() {
-		return this._translate.copy();
+		return this._translate.slice();
 	}
 	,setTranslate: function(translate) {
 		this._translate = [translate[0],translate[1]];
@@ -18191,7 +17277,6 @@ thx.geo.Albers.prototype = {
 		return this._scale;
 	}
 	,__class__: thx.geo.Albers
-	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate",set_parallels:"setParallels",get_parallels:"getParallels",set_origin:"setOrigin",get_origin:"getOrigin"}
 }
 thx.geo.AlbersUsa = function() {
 	this.lower48 = new thx.geo.Albers();
@@ -18206,7 +17291,6 @@ thx.geo.AlbersUsa = function() {
 	this.puertoRico.setParallels([8.0,18]);
 	this.setScale(this.lower48.getScale());
 };
-$hxClasses["thx.geo.AlbersUsa"] = thx.geo.AlbersUsa;
 thx.geo.AlbersUsa.__name__ = ["thx","geo","AlbersUsa"];
 thx.geo.AlbersUsa.__interfaces__ = [thx.geo.IProjection];
 thx.geo.AlbersUsa.prototype = {
@@ -18250,7 +17334,6 @@ thx.geo.AlbersUsa.prototype = {
 		return this.lower48.getTranslate();
 	}
 	,__class__: thx.geo.AlbersUsa
-	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
 thx.geo.Azimuthal = function() {
 	this.setMode(thx.geo.ProjectionMode.Orthographic);
@@ -18258,7 +17341,6 @@ thx.geo.Azimuthal = function() {
 	this.setTranslate([480.0,250]);
 	this.setOrigin([0.0,0]);
 };
-$hxClasses["thx.geo.Azimuthal"] = thx.geo.Azimuthal;
 thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
 thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Azimuthal.prototype = {
@@ -18301,7 +17383,7 @@ thx.geo.Azimuthal.prototype = {
 		return [(this.x0 + Math.atan2(x * sc,p * this.cy0 * cc + y * this.sy0 * sc)) / 0.01745329251994329577,Math.asin(cc * this.sy0 - y * sc * this.cy0 / p) / 0.01745329251994329577];
 	}
 	,getOrigin: function() {
-		return this.origin.copy();
+		return this.origin.slice();
 	}
 	,setOrigin: function(origin) {
 		this.origin = [origin[0],origin[1]];
@@ -18312,7 +17394,7 @@ thx.geo.Azimuthal.prototype = {
 		return origin;
 	}
 	,getTranslate: function() {
-		return this.translate.copy();
+		return this.translate.slice();
 	}
 	,setTranslate: function(translate) {
 		this.translate = [translate[0],translate[1]];
@@ -18331,9 +17413,8 @@ thx.geo.Azimuthal.prototype = {
 		return this.mode;
 	}
 	,__class__: thx.geo.Azimuthal
-	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale",set_origin:"setOrigin",get_origin:"getOrigin",set_mode:"setMode",get_mode:"getMode"}
 }
-thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
+thx.geo.ProjectionMode = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
 thx.geo.ProjectionMode.Orthographic.toString = $estr;
 thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
@@ -18344,7 +17425,6 @@ thx.geo.Mercator = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
 };
-$hxClasses["thx.geo.Mercator"] = thx.geo.Mercator;
 thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
 thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Mercator.prototype = {
@@ -18365,20 +17445,18 @@ thx.geo.Mercator.prototype = {
 		return this.scale;
 	}
 	,getTranslate: function() {
-		return this.translate.copy();
+		return this.translate.slice();
 	}
 	,setTranslate: function(translate) {
 		this.translate = [translate[0],translate[1]];
 		return translate;
 	}
 	,__class__: thx.geo.Mercator
-	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
 thx.geom = {}
 thx.geom.Polygon = function(coordinates) {
 	this.coordinates = coordinates;
 };
-$hxClasses["thx.geom.Polygon"] = thx.geom.Polygon;
 thx.geom.Polygon.__name__ = ["thx","geom","Polygon"];
 thx.geom.Polygon.prototype = {
 	coordinates: null
@@ -18421,7 +17499,6 @@ thx.geom.layout.Pie = function() {
 		return Number(d);
 	};
 };
-$hxClasses["thx.geom.layout.Pie"] = thx.geom.layout.Pie;
 thx.geom.layout.Pie.__name__ = ["thx","geom","layout","Pie"];
 thx.geom.layout.Pie.prototype = {
 	_startAngle: null
@@ -18457,7 +17534,6 @@ thx.geom.layout.Stack = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
 };
-$hxClasses["thx.geom.layout.Stack"] = thx.geom.layout.Stack;
 thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
 thx.geom.layout.Stack.getStackOrder = function(order,data) {
 	switch( (order)[1] ) {
@@ -18615,7 +17691,7 @@ thx.geom.layout.Stack.prototype = {
 	}
 	,__class__: thx.geom.layout.Stack
 }
-thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
+thx.geom.layout.StackOrder = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
 thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
 thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
 thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
@@ -18625,7 +17701,7 @@ thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
 thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
 thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
 thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
+thx.geom.layout.StackOffset = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
 thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
 thx.geom.layout.StackOffset.Silhouette.toString = $estr;
 thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
@@ -18638,7 +17714,6 @@ thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 thx.graph = {}
 thx.graph.EdgeSplitter = function() {
 };
-$hxClasses["thx.graph.EdgeSplitter"] = thx.graph.EdgeSplitter;
 thx.graph.EdgeSplitter.__name__ = ["thx","graph","EdgeSplitter"];
 thx.graph.EdgeSplitter.prototype = {
 	split: function(layout,splitted,dataf,edgef) {
@@ -18674,11 +17749,7 @@ thx.graph.GraphElement = function(graph,id,data) {
 	this.data = data;
 	this.graph = graph;
 };
-$hxClasses["thx.graph.GraphElement"] = thx.graph.GraphElement;
 thx.graph.GraphElement.__name__ = ["thx","graph","GraphElement"];
-thx.graph.GraphElement.friendDestroy = function(item) {
-	return item;
-}
 thx.graph.GraphElement.prototype = {
 	graph: null
 	,id: null
@@ -18695,7 +17766,6 @@ thx.graph.GEdge = function(graph,id,tail,head,weight,data) {
 	this.head = head;
 	this.weight = weight;
 };
-$hxClasses["thx.graph.GEdge"] = thx.graph.GEdge;
 thx.graph.GEdge.__name__ = ["thx","graph","GEdge"];
 thx.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
 	return new thx.graph.GEdge(graph,id,tail,head,weight,data);
@@ -18739,18 +17809,11 @@ thx.graph.GEdge.prototype = $extend(thx.graph.GraphElement.prototype,{
 		this.graph.edges._remove(this);
 		return inverted;
 	}
-	,remove: function() {
-		this.graph.edges._remove(this);
-	}
-	,friendRemove: function() {
-		return this.graph.edges;
-	}
 	,__class__: thx.graph.GEdge
 });
 thx.graph.GNode = function(graph,id,data) {
 	thx.graph.GraphElement.call(this,graph,id,data);
 };
-$hxClasses["thx.graph.GNode"] = thx.graph.GNode;
 thx.graph.GNode.__name__ = ["thx","graph","GNode"];
 thx.graph.GNode.create = function(graph,id,data) {
 	return new thx.graph.GNode(graph,id,data);
@@ -18798,35 +17861,11 @@ thx.graph.GNode.prototype = $extend(thx.graph.GraphElement.prototype,{
 			return edge.head.id == successor.id;
 		});
 	}
-	,edges: function() {
-		return this.graph.edges.edges(this);
-	}
 	,positives: function() {
 		return this.graph.edges.positives(this);
 	}
 	,negatives: function() {
 		return this.graph.edges.negatives(this);
-	}
-	,sortPositives: function(sortf) {
-		this.graph.edges.sortPositives(this,sortf);
-	}
-	,sortNegatives: function(sortf) {
-		this.graph.edges.sortNegatives(this,sortf);
-	}
-	,positiveCount: function() {
-		return this.graph.edges.positiveCount(this);
-	}
-	,negativeCount: function() {
-		return this.graph.edges.negativeCount(this);
-	}
-	,remove: function() {
-		this.graph.nodes._remove(this);
-	}
-	,friendRemove: function() {
-		return this.graph.nodes;
-	}
-	,friendEdges: function() {
-		return this.graph.edges;
 	}
 	,__class__: thx.graph.GNode
 });
@@ -18834,20 +17873,10 @@ thx.graph.Graph = function(nodeidf,edgeidf) {
 	this.nodes = thx.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = thx.graph.GraphEdges.newInstance(this,edgeidf);
 };
-$hxClasses["thx.graph.Graph"] = thx.graph.Graph;
 thx.graph.Graph.__name__ = ["thx","graph","Graph"];
-thx.graph.Graph.friendNodes = function(friend) {
-	return friend;
-}
-thx.graph.Graph.friendEdges = function(friend) {
-	return friend;
-}
 thx.graph.Graph.prototype = {
 	nodes: null
 	,edges: null
-	,empty: function() {
-		return Iterators.count(this.nodes.iterator()) == 0;
-	}
 	,clone: function() {
 		var g = new thx.graph.Graph();
 		g.nodes = this.nodes.copyTo(g);
@@ -18877,28 +17906,27 @@ thx.graph.Graph.prototype = {
 	,__class__: thx.graph.Graph
 }
 thx.graph.GraphCollection = function(graph,idf) {
-	var me = this;
+	var _g = this;
 	this.nextid = 0;
 	this.graph = graph;
 	this.idf = idf;
 	this.collection = new IntHash();
 	this._map = new Hash();
 	if(null != idf) {
-		var add = this.collectionCreate.$bind(this);
+		var add = $bind(this,this.collectionCreate);
 		this.collectionCreate = function(item) {
-			me._map.set(idf(item.data),item);
+			_g._map.set(idf(item.data),item);
 			add(item);
 		};
-		var rem = this.collectionRemove.$bind(this);
+		var rem = $bind(this,this.collectionRemove);
 		this.collectionRemove = function(item) {
-			me._map.remove(idf(item.data));
+			_g._map.remove(idf(item.data));
 			rem(item);
 		};
 	}
 	this.onRemove = new hxevents.Dispatcher();
 	this.onCreate = new hxevents.Dispatcher();
 };
-$hxClasses["thx.graph.GraphCollection"] = thx.graph.GraphCollection;
 thx.graph.GraphCollection.__name__ = ["thx","graph","GraphCollection"];
 thx.graph.GraphCollection.prototype = {
 	onRemove: null
@@ -18914,9 +17942,6 @@ thx.graph.GraphCollection.prototype = {
 	}
 	,get: function(id) {
 		return this.collection.get(id);
-	}
-	,get_length: function() {
-		return IntHashes.count(this.collection);
 	}
 	,collectionCreate: function(item) {
 		this.onCreate.dispatch(item);
@@ -18935,14 +17960,12 @@ thx.graph.GraphCollection.prototype = {
 		}).join(", ");
 	}
 	,__class__: thx.graph.GraphCollection
-	,__properties__: {get_length:"get_length"}
 }
 thx.graph.GraphEdges = function(graph,edgeidf) {
 	thx.graph.GraphCollection.call(this,graph,edgeidf);
 	this.edgesp = new IntHash();
 	this.edgesn = new IntHash();
 };
-$hxClasses["thx.graph.GraphEdges"] = thx.graph.GraphEdges;
 thx.graph.GraphEdges.__name__ = ["thx","graph","GraphEdges"];
 thx.graph.GraphEdges.newInstance = function(graph,edgeidf) {
 	return new thx.graph.GraphEdges(graph,edgeidf);
@@ -18991,10 +18014,10 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 		this._unlink(node,this.edgesn);
 	}
 	,positives: function(node) {
-		return this._edges(node.id,this.edgesp).iterator();
+		return HxOverrides.iter(this._edges(node.id,this.edgesp));
 	}
 	,negatives: function(node) {
-		return this._edges(node.id,this.edgesn).iterator();
+		return HxOverrides.iter(this._edges(node.id,this.edgesn));
 	}
 	,sortPositives: function(node,sortf) {
 		this._sort(node,sortf,this.edgesp);
@@ -19003,16 +18026,16 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 		this._sort(node,sortf,this.edgesn);
 	}
 	,_sort: function(node,sortf,collection) {
-		var me = this;
+		var _g = this;
 		var arr = collection.get(node.id);
 		if(null == arr) return;
 		arr.sort(function(ida,idb) {
-			var ea = me.graph.edges.get(ida), eb = me.graph.edges.get(idb);
+			var ea = _g.graph.edges.get(ida), eb = _g.graph.edges.get(idb);
 			return sortf(ea,eb);
 		});
 	}
 	,edges: function(node) {
-		return this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)).iterator();
+		return HxOverrides.iter(this._edges(node.id,this.edgesp).concat(this._edges(node.id,this.edgesn)));
 	}
 	,positiveCount: function(node) {
 		return this._edgeids(node.id,this.edgesp).length;
@@ -19029,15 +18052,15 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 		return r;
 	}
 	,_edges: function(id,collection) {
-		var me = this;
+		var _g = this;
 		return this._edgeids(id,collection).map(function(eid,_) {
-			return me.get(eid);
+			return _g.get(eid);
 		});
 	}
 	,_unlink: function(node,connections) {
 		var ids = connections.get(node.id);
 		if(null == ids) return;
-		ids = ids.copy();
+		ids = ids.slice();
 		var _g = 0;
 		while(_g < ids.length) {
 			var id = ids[_g];
@@ -19056,7 +18079,7 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	,removeConnection: function(edgeid,nodeid,connections) {
 		var c = connections.get(nodeid);
 		if(null == c) return;
-		c.remove(edgeid);
+		HxOverrides.remove(c,edgeid);
 		if(c.length == 0) connections.remove(nodeid);
 	}
 	,toString: function() {
@@ -19067,14 +18090,13 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 thx.graph.GraphLayout = function(graph,layers) {
 	this.graph = graph;
 	this._layers = layers.map(function(arr,_) {
-		return arr.copy();
+		return arr.slice();
 	});
 	this.friendCell = this._cell = new thx.graph.LayoutCell();
 	this._updateMap();
 	this.length = this._layers.length;
-	graph.nodes.onRemove.add(this._nodeRemove.$bind(this));
+	graph.nodes.onRemove.add($bind(this,this._nodeRemove));
 };
-$hxClasses["thx.graph.GraphLayout"] = thx.graph.GraphLayout;
 thx.graph.GraphLayout.__name__ = ["thx","graph","GraphLayout"];
 thx.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 	var map = new IntHash(), c = 0;
@@ -19116,10 +18138,10 @@ thx.graph.GraphLayout.prototype = {
 	,_map: null
 	,friendCell: null
 	,_updateMap: function() {
-		var me = this;
+		var _g = this;
 		this._map = new IntHash();
 		this.each(function(cell,node) {
-			me._map.set(node.id,[cell.layer,cell.position]);
+			_g._map.set(node.id,[cell.layer,cell.position]);
 		});
 	}
 	,clone: function() {
@@ -19153,9 +18175,9 @@ thx.graph.GraphLayout.prototype = {
 		return this.graph.nodes.get(id);
 	}
 	,layer: function(i) {
-		var me = this;
+		var _g = this;
 		return this._layers[i].map(function(id,_) {
-			return me.graph.nodes.get(id);
+			return _g.graph.nodes.get(id);
 		});
 	}
 	,layers: function() {
@@ -19164,7 +18186,7 @@ thx.graph.GraphLayout.prototype = {
 		while(_g < _g1.length) {
 			var arr = _g1[_g];
 			++_g;
-			result.push(arr.copy());
+			result.push(arr.slice());
 		}
 		return result;
 	}
@@ -19195,7 +18217,6 @@ thx.graph.LayoutCell = function(layer,position,layers,positions) {
 	this.position = position;
 	this.positions = positions;
 };
-$hxClasses["thx.graph.LayoutCell"] = thx.graph.LayoutCell;
 thx.graph.LayoutCell.__name__ = ["thx","graph","LayoutCell"];
 thx.graph.LayoutCell.prototype = {
 	layer: null
@@ -19213,7 +18234,6 @@ thx.graph.LayoutCell.prototype = {
 thx.graph.GraphNodes = function(graph,nodeidf) {
 	thx.graph.GraphCollection.call(this,graph,nodeidf);
 };
-$hxClasses["thx.graph.GraphNodes"] = thx.graph.GraphNodes;
 thx.graph.GraphNodes.__name__ = ["thx","graph","GraphNodes"];
 thx.graph.GraphNodes.newInstance = function(graph,nodeidf) {
 	return new thx.graph.GraphNodes(graph,nodeidf);
@@ -19249,7 +18269,6 @@ thx.graph.GraphNodes.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	,__class__: thx.graph.GraphNodes
 });
 thx.graph.Graphs = function() { }
-$hxClasses["thx.graph.Graphs"] = thx.graph.Graphs;
 thx.graph.Graphs.__name__ = ["thx","graph","Graphs"];
 thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
@@ -19264,12 +18283,8 @@ thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	}
 	return n;
 }
-thx.graph.Graphs.prototype = {
-	__class__: thx.graph.Graphs
-}
 thx.graph.GreedyCyclePartitioner = function() {
 };
-$hxClasses["thx.graph.GreedyCyclePartitioner"] = thx.graph.GreedyCyclePartitioner;
 thx.graph.GreedyCyclePartitioner.__name__ = ["thx","graph","GreedyCyclePartitioner"];
 thx.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
@@ -19335,21 +18350,22 @@ thx.graph.GreedyCyclePartitioner.prototype = {
 }
 thx.graph.GreedySwitchDecrosser = function() {
 };
-$hxClasses["thx.graph.GreedySwitchDecrosser"] = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitchDecrosser.__name__ = ["thx","graph","GreedySwitchDecrosser"];
 thx.graph.GreedySwitchDecrosser.combined = function() {
-	return { decross : function(layout) {
+	var decross = function(layout) {
 		layout = new thx.graph.GreedySwitchDecrosser().decross(layout);
 		return new thx.graph.GreedySwitch2Decrosser().decross(layout);
-	}};
+	};
+	return { decross : decross};
 }
 thx.graph.GreedySwitchDecrosser.best = function() {
-	return { decross : function(layout) {
+	var decross = function(layout) {
 		var attempts = [new thx.graph.GreedySwitchDecrosser().decross(layout),new thx.graph.GreedySwitch2Decrosser().decross(layout),thx.graph.GreedySwitchDecrosser.combined().decross(layout)];
 		return Arrays.min(attempts,function(layout1) {
 			return layout1.crossings();
 		});
-	}};
+	};
+	return { decross : decross};
 }
 thx.graph.GreedySwitchDecrosser.prototype = {
 	decross: function(layout) {
@@ -19358,7 +18374,7 @@ thx.graph.GreedySwitchDecrosser.prototype = {
 		var totbefore, crossings, len = layers.length - 1, a, b;
 		do {
 			newlayers = layers.map(function(arr,_) {
-				return arr.copy();
+				return arr.slice();
 			});
 			newlayout = new thx.graph.GraphLayout(graph,layers);
 			totbefore = newlayout.crossings();
@@ -19396,7 +18412,6 @@ thx.graph.GreedySwitchDecrosser.prototype = {
 thx.graph.GreedySwitch2Decrosser = function() {
 	thx.graph.GreedySwitchDecrosser.call(this);
 };
-$hxClasses["thx.graph.GreedySwitch2Decrosser"] = thx.graph.GreedySwitch2Decrosser;
 thx.graph.GreedySwitch2Decrosser.__name__ = ["thx","graph","GreedySwitch2Decrosser"];
 thx.graph.GreedySwitch2Decrosser.__super__ = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecrosser.prototype,{
@@ -19406,7 +18421,7 @@ thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecro
 		var totbefore, crossings, len = layers.length - 1, a, b, c;
 		do {
 			newlayers = layers.map(function(arr,_) {
-				return arr.copy();
+				return arr.slice();
 			});
 			newlayout = new thx.graph.GraphLayout(graph,layers);
 			totbefore = newlayout.crossings();
@@ -19441,11 +18456,10 @@ thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecro
 });
 thx.graph.HeaviestNodeLayer = function() {
 };
-$hxClasses["thx.graph.HeaviestNodeLayer"] = thx.graph.HeaviestNodeLayer;
 thx.graph.HeaviestNodeLayer.__name__ = ["thx","graph","HeaviestNodeLayer"];
 thx.graph.HeaviestNodeLayer.prototype = {
 	lay: function(graph) {
-		var layers = [], nodes = Arrays.order(Iterators.array(Iterators.array(graph.nodes.iterator()).iterator()),function(a,b) {
+		var layers = [], nodes = Arrays.order(Iterators.array($iterator(Iterators.array(graph.nodes.iterator()))()),function(a,b) {
 			return Floats.compare(b.positiveWeight(),a.positiveWeight());
 		});
 		var getLayer = function(index) {
@@ -19457,7 +18471,7 @@ thx.graph.HeaviestNodeLayer.prototype = {
 			var $r;
 			var addAt1 = null;
 			addAt1 = function(node,lvl) {
-				if(!nodes.remove(node)) return;
+				if(!HxOverrides.remove(nodes,node)) return;
 				var layer = getLayer(lvl);
 				layer.push(node.id);
 				var $it0 = node.graph.edges.positives(node);
@@ -19474,7 +18488,7 @@ thx.graph.HeaviestNodeLayer.prototype = {
 		while(_g < layers.length) {
 			var layer = layers[_g];
 			++_g;
-			Arrays.order(Iterators.array(layer.iterator()),function(ida,idb) {
+			Arrays.order(Iterators.array($iterator(layer)()),function(ida,idb) {
 				return Floats.compare(graph.nodes.get(idb).positiveWeight(),graph.nodes.get(ida).positiveWeight());
 			});
 		}
@@ -19484,7 +18498,6 @@ thx.graph.HeaviestNodeLayer.prototype = {
 }
 thx.graph.LongestPathLayer = function() {
 };
-$hxClasses["thx.graph.LongestPathLayer"] = thx.graph.LongestPathLayer;
 thx.graph.LongestPathLayer.__name__ = ["thx","graph","LongestPathLayer"];
 thx.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 	var traverse = (function($this) {
@@ -19529,7 +18542,6 @@ thx.graph.LongestPathLayer.prototype = {
 }
 thx.graph.OneCycleRemover = function() {
 };
-$hxClasses["thx.graph.OneCycleRemover"] = thx.graph.OneCycleRemover;
 thx.graph.OneCycleRemover.__name__ = ["thx","graph","OneCycleRemover"];
 thx.graph.OneCycleRemover.prototype = {
 	remove: function(graph) {
@@ -19553,7 +18565,6 @@ thx.graph.SugiyamaMethod = function(partitioner,layer,splitter,decrosser) {
 	this.splitter = null == splitter?new thx.graph.EdgeSplitter():splitter;
 	this.decrosser = null == decrosser?thx.graph.GreedySwitchDecrosser.best():decrosser;
 };
-$hxClasses["thx.graph.SugiyamaMethod"] = thx.graph.SugiyamaMethod;
 thx.graph.SugiyamaMethod.__name__ = ["thx","graph","SugiyamaMethod"];
 thx.graph.SugiyamaMethod.prototype = {
 	partitioner: null
@@ -19600,7 +18611,6 @@ thx.graph.SugiyamaMethod.prototype = {
 }
 thx.graph.TwoCycleRemover = function() {
 };
-$hxClasses["thx.graph.TwoCycleRemover"] = thx.graph.TwoCycleRemover;
 thx.graph.TwoCycleRemover.__name__ = ["thx","graph","TwoCycleRemover"];
 thx.graph.TwoCycleRemover.prototype = {
 	remove: function(graph) {
@@ -19623,10 +18633,7 @@ thx.graph.TwoCycleRemover.prototype = {
 }
 thx.json = {}
 thx.json.Json = function() { }
-$hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
-thx.json.Json.nativeEncoder = null;
-thx.json.Json.nativeDecoder = null;
 thx.json.Json.encode = function(value) {
 	if(null != thx.json.Json.nativeEncoder) return thx.json.Json.nativeEncoder(value);
 	var handler = new thx.json.JsonEncoder();
@@ -19639,15 +18646,11 @@ thx.json.Json.decode = function(value) {
 	var r = new thx.json.JsonDecoder(handler).decode(value);
 	return handler.value;
 }
-thx.json.Json.prototype = {
-	__class__: thx.json.Json
-}
 thx.json.JsonDecoder = function(handler,tabsize) {
 	if(tabsize == null) tabsize = 4;
 	this.handler = handler;
 	this.tabsize = tabsize;
 };
-$hxClasses["thx.json.JsonDecoder"] = thx.json.JsonDecoder;
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	col: null
@@ -19729,7 +18732,7 @@ thx.json.JsonDecoder.prototype = {
 		}
 	}
 	,expect: function(word) {
-		var test = null == this["char"]?this.src.substr(this.pos,word.length):this["char"] + this.src.substr(this.pos,word.length - 1);
+		var test = null == this["char"]?HxOverrides.substr(this.src,this.pos,word.length):this["char"] + HxOverrides.substr(this.src,this.pos,word.length - 1);
 		if(test == word) {
 			if(null == this["char"]) this.pos += word.length; else {
 				this.pos += word.length - 1;
@@ -19834,7 +18837,7 @@ thx.json.JsonDecoder.prototype = {
 		while(_g < 4) {
 			var i = _g++;
 			var c = this.readChar();
-			var i1 = c.toLowerCase().charCodeAt(0);
+			var i1 = HxOverrides.cca(c.toLowerCase(),0);
 			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
 			v.push(c);
 		}
@@ -19846,7 +18849,7 @@ thx.json.JsonDecoder.prototype = {
 		if(this.expect("-")) v = "-";
 		if(this.expect("0")) v += "0"; else {
 			var c = this.readChar();
-			var i = c.charCodeAt(0);
+			var i = HxOverrides.cca(c,0);
 			if(i < 49 || i > 57) this.error("expected digit between 1 and 9");
 			v += c;
 			this.col++;
@@ -19891,7 +18894,7 @@ thx.json.JsonDecoder.prototype = {
 					return buf;
 				} else throw(e);
 			}
-			var i = c.charCodeAt(0);
+			var i = HxOverrides.cca(c,0);
 			if(i < 48 || i > 57) {
 				if(buf.length < atleast) this.error("expected digit");
 				this.col += buf.length;
@@ -19902,19 +18905,18 @@ thx.json.JsonDecoder.prototype = {
 		return null;
 	}
 	,error: function(msg) {
-		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + this.src.substr(this.pos) + "...";
+		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + HxOverrides.substr(this.src,this.pos,null) + "...";
 		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
 	}
 	,__class__: thx.json.JsonDecoder
 }
 thx.json._JsonDecoder = {}
-thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
+thx.json._JsonDecoder.StreamError = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
 thx.json.JsonEncoder = function() {
 };
-$hxClasses["thx.json.JsonEncoder"] = thx.json.JsonEncoder;
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
@@ -19981,20 +18983,15 @@ thx.json.JsonEncoder.prototype = {
 	}
 	,quote: function(s) {
 		return "\"" + new EReg(".","").customReplace(new EReg("(\n)","g").replace(new EReg("(\"|\\\\)","g").replace(s,"\\$1"),"\\n"),function(r) {
-			var c = r.matched(0).charCodeAt(0);
+			var c = HxOverrides.cca(r.matched(0),0);
 			return c >= 32 && c <= 127?String.fromCharCode(c):"\\u" + StringTools.hex(c,4);
 		}) + "\"";
 	}
 	,__class__: thx.json.JsonEncoder
 }
 thx.math.Const = function() { }
-$hxClasses["thx.math.Const"] = thx.math.Const;
 thx.math.Const.__name__ = ["thx","math","Const"];
-thx.math.Const.prototype = {
-	__class__: thx.math.Const
-}
 thx.math.Ease = function() { }
-$hxClasses["thx.math.Ease"] = thx.math.Ease;
 thx.math.Ease.__name__ = ["thx","math","Ease"];
 thx.math.Ease.mode = function(easemode,f) {
 	if(null == f) f = thx.math.Equations.cubic;
@@ -20014,10 +19011,7 @@ thx.math.Ease.mode = function(easemode,f) {
 		return thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
 	}
 }
-thx.math.Ease.prototype = {
-	__class__: thx.math.Ease
-}
-thx.math.EaseMode = $hxClasses["thx.math.EaseMode"] = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
+thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
 thx.math.EaseMode.EaseIn.__enum__ = thx.math.EaseMode;
@@ -20034,21 +19028,13 @@ thx.math.Random = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
 };
-$hxClasses["thx.math.Random"] = thx.math.Random;
 thx.math.Random.__name__ = ["thx","math","Random"];
 thx.math.Random.prototype = {
 	seed: null
-	,'int': function() {
-		return (this.seed = this.seed * 16807 % 2147483647) & 1073741823;
-	}
-	,'float': function() {
-		return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
-	}
 	,__class__: thx.math.Random
 }
 thx.math.scale = {}
 thx.math.scale.IScale = function() { }
-$hxClasses["thx.math.scale.IScale"] = thx.math.scale.IScale;
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
 thx.math.scale.IScale.prototype = {
 	scale: null
@@ -20057,7 +19043,6 @@ thx.math.scale.IScale.prototype = {
 	,__class__: thx.math.scale.IScale
 }
 thx.math.scale.NumericScale = function() { }
-$hxClasses["thx.math.scale.NumericScale"] = thx.math.scale.NumericScale;
 thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
 thx.math.scale.NumericScale.__interfaces__ = [thx.math.scale.IScale];
 thx.math.scale.NumericScale.prototype = {
@@ -20090,7 +19075,6 @@ thx.math.scale.NumericScale.prototype = {
 	,__class__: thx.math.scale.NumericScale
 }
 thx.math.scale.Linear = function() { }
-$hxClasses["thx.math.scale.Linear"] = thx.math.scale.Linear;
 thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
 thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
 thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,{
@@ -20111,7 +19095,6 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 	,__class__: thx.math.scale.Linear
 });
 thx.math.scale.LinearT = function() { }
-$hxClasses["thx.math.scale.LinearT"] = thx.math.scale.LinearT;
 thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
 thx.math.scale.LinearT.__interfaces__ = [thx.math.scale.IScale];
 thx.math.scale.LinearT.prototype = {
@@ -20144,7 +19127,6 @@ thx.svg.Arc = function() {
 		return Math.PI;
 	};
 };
-$hxClasses["thx.svg.Arc"] = thx.svg.Arc;
 thx.svg.Arc.__name__ = ["thx","svg","Arc"];
 thx.svg.Arc.fromAngleObject = function() {
 	return new thx.svg.Arc().startAnglef(function(d,_) {
@@ -20196,7 +19178,6 @@ thx.svg.Area = function(x,y0,y1,interpolator) {
 	this._y1 = y1;
 	this._interpolator = interpolator;
 };
-$hxClasses["thx.svg.Area"] = thx.svg.Area;
 thx.svg.Area.__name__ = ["thx","svg","Area"];
 thx.svg.Area.prototype = {
 	_x: null
@@ -20229,7 +19210,6 @@ thx.svg.Area.prototype = {
 thx.svg.Diagonal = function() {
 	this._projection = thx.svg.Diagonal.diagonalProjection;
 };
-$hxClasses["thx.svg.Diagonal"] = thx.svg.Diagonal;
 thx.svg.Diagonal.__name__ = ["thx","svg","Diagonal"];
 thx.svg.Diagonal.diagonalProjection = function(d,_) {
 	return d;
@@ -20276,7 +19256,6 @@ thx.svg.Line = function(x,y,interpolator) {
 	this._y = y;
 	this._interpolator = interpolator;
 };
-$hxClasses["thx.svg.Line"] = thx.svg.Line;
 thx.svg.Line.__name__ = ["thx","svg","Line"];
 thx.svg.Line.prototype = {
 	_x: null
@@ -20292,7 +19271,6 @@ thx.svg.Line.prototype = {
 	,__class__: thx.svg.Line
 }
 thx.svg.LineInternals = function() { }
-$hxClasses["thx.svg.LineInternals"] = thx.svg.LineInternals;
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
 thx.svg.LineInternals.linePoints = function(data,x,y) {
 	var points = [], value;
@@ -20410,13 +19388,13 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		break;
 	case 8:
 		var tension = $e[2];
-		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + thx.svg.LineInternals._lineCardinalTangents(points,tension);
+		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + Std.string(thx.svg.LineInternals._lineCardinalTangents(points,tension));
 	case 9:
 		var tension = $e[2];
 		if(null == tension) tension = .7;
 		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
 	case 10:
-		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
+		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):Std.string(points[0]) + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
 	}
 	return path.join("");
 }
@@ -20496,10 +19474,7 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 	tangents.push([a * (p2[0] - p0[0]),a * (p2[1] - p0[1])]);
 	return tangents;
 }
-thx.svg.LineInternals.prototype = {
-	__class__: thx.svg.LineInternals
-}
-thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
+thx.svg.LineInterpolator = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
 thx.svg.LineInterpolator.Linear.__enum__ = thx.svg.LineInterpolator;
@@ -20528,7 +19503,6 @@ thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 thx.svg.LineInterpolators = function() { }
-$hxClasses["thx.svg.LineInterpolators"] = thx.svg.LineInterpolators;
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
 	if(sep == null) sep = "-";
@@ -20576,9 +19550,6 @@ thx.svg.LineInterpolators.argument = function(s) {
 	var v = s.split("-")[1];
 	if(null == v) return null; else return Std.parseFloat(v);
 }
-thx.svg.LineInterpolators.prototype = {
-	__class__: thx.svg.LineInterpolators
-}
 thx.svg.PathGeoJson = function() {
 	this.setPointRadius(4.5);
 	this.setProjection(new thx.geo.AlbersUsa());
@@ -20586,7 +19557,6 @@ thx.svg.PathGeoJson = function() {
 	this.centroidTypes = new thx.svg.CentroidTypes(this);
 	this.areaTypes = new thx.svg.AreaTypes(this);
 };
-$hxClasses["thx.svg.PathGeoJson"] = thx.svg.PathGeoJson;
 thx.svg.PathGeoJson.__name__ = ["thx","svg","PathGeoJson"];
 thx.svg.PathGeoJson.circle = function(r) {
 	return "m0," + r + "a" + r + "," + r + " 0 1,1 0," + -2 * r + "a" + r + "," + r + " 0 1,1 0," + 2 * r + "z";
@@ -20613,12 +19583,10 @@ thx.svg.PathGeoJson.prototype = {
 		return this.projection = projection;
 	}
 	,__class__: thx.svg.PathGeoJson
-	,__properties__: {set_projection:"setProjection",set_pointRadius:"setPointRadius"}
 }
 thx.svg.PathTypes = function(geo) {
 	this.geo = geo;
 };
-$hxClasses["thx.svg.PathTypes"] = thx.svg.PathTypes;
 thx.svg.PathTypes.__name__ = ["thx","svg","PathTypes"];
 thx.svg.PathTypes.prototype = {
 	geo: null
@@ -20735,7 +19703,6 @@ thx.svg.PathTypes.prototype = {
 thx.svg.AreaTypes = function(geo) {
 	this.geo = geo;
 };
-$hxClasses["thx.svg.AreaTypes"] = thx.svg.AreaTypes;
 thx.svg.AreaTypes.__name__ = ["thx","svg","AreaTypes"];
 thx.svg.AreaTypes.prototype = {
 	geo: null
@@ -20802,7 +19769,7 @@ thx.svg.AreaTypes.prototype = {
 		return sum;
 	}
 	,parea: function(coords) {
-		return Math.abs(new thx.geom.Polygon(coords.map(this.project.$bind(this))).area());
+		return Math.abs(new thx.geom.Polygon(coords.map($bind(this,this.project))).area());
 	}
 	,project: function(d,_) {
 		return this.geo.projection.project(d);
@@ -20812,7 +19779,6 @@ thx.svg.AreaTypes.prototype = {
 thx.svg.CentroidTypes = function(geo) {
 	this.geo = geo;
 };
-$hxClasses["thx.svg.CentroidTypes"] = thx.svg.CentroidTypes;
 thx.svg.CentroidTypes.__name__ = ["thx","svg","CentroidTypes"];
 thx.svg.CentroidTypes.prototype = {
 	geo: null
@@ -20845,11 +19811,11 @@ thx.svg.CentroidTypes.prototype = {
 		return [x / z,y / z];
 	}
 	,polygonCentroid: function(coordinates) {
-		var polygon = new thx.geom.Polygon(coordinates[0].map(this.project.$bind(this))), centroid = polygon.centroid(1), x = centroid[0], y = centroid[1], z = Math.abs(polygon.area());
+		var polygon = new thx.geom.Polygon(coordinates[0].map($bind(this,this.project))), centroid = polygon.centroid(1), x = centroid[0], y = centroid[1], z = Math.abs(polygon.area());
 		var _g1 = 1, _g = coordinates.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			polygon = new thx.geom.Polygon(coordinates[i].map(this.project.$bind(this)));
+			polygon = new thx.geom.Polygon(coordinates[i].map($bind(this,this.project)));
 			centroid = polygon.centroid(1);
 			x -= centroid[0];
 			y -= centroid[1];
@@ -20863,7 +19829,6 @@ thx.svg.CentroidTypes.prototype = {
 	,__class__: thx.svg.CentroidTypes
 }
 thx.svg.Symbol = function() { }
-$hxClasses["thx.svg.Symbol"] = thx.svg.Symbol;
 thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
 thx.svg.Symbol.triangleDown = function(size) {
 	var rx = Math.sqrt(size / thx.svg.Symbol.sqrt3), ry = rx * thx.svg.Symbol.sqrt3 / 2;
@@ -20913,22 +19878,28 @@ thx.svg.Symbol.star = function(size) {
 	var r = Math.sqrt(size / 0.31027) / 2;
 	return "M0," + -r + "L" + r * 0.236 + "," + r * -0.325 + " " + r * 0.951 + "," + r * -0.309 + " " + r * 0.382 + "," + r * 0.124 + " " + r * 0.588 + "," + r * 0.809 + " " + r * 0 + "," + r * 0.401 + " " + r * -0.588 + "," + r * 0.809 + " " + r * -0.382 + "," + r * 0.124 + " " + r * -0.951 + "," + r * -0.309 + " " + r * -0.236 + "," + r * -0.325 + " " + "Z";
 }
-thx.svg.Symbol.prototype = {
-	__class__: thx.svg.Symbol
-}
 thx.translation = {}
 thx.translation.ITranslation = function() { }
-$hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	domain: null
 	,singular: null
 	,plural: null
 	,__class__: thx.translation.ITranslation
-	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
-js.Boot.__res = {}
-js.Boot.__init();
+thx.util.MacroVersion = function() { }
+thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
+thx.validation = {}
+thx.validation.IValidator = function() { }
+thx.validation.IValidator.__name__ = ["thx","validation","IValidator"];
+thx.validation.IValidator.prototype = {
+	validate: null
+	,isValid: null
+	,__class__: thx.validation.IValidator
+}
+function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
+var $_;
+function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
 if (!('indexOf' in Array.prototype)) {
     Array.prototype.indexOf= function(find, i /*opt*/) {
         if (i===undefined) i= 0;
@@ -20984,193 +19955,143 @@ if (!('every' in Array.prototype)) {
         return true;
     };
 }
-{
-	var bb = new BytesBuffer();
-	BytesUtil.EMPTY = bb.getBytes();
-}
-{
-	var d = Date;
-	d.now = function() {
-		return new Date();
-	};
-	d.fromTime = function(t) {
-		var d1 = new Date();
-		d1["setTime"](t);
-		return d1;
-	};
-	d.fromString = function(s) {
-		switch(s.length) {
-		case 8:
-			var k = s.split(":");
-			var d1 = new Date();
-			d1["setTime"](0);
-			d1["setUTCHours"](k[0]);
-			d1["setUTCMinutes"](k[1]);
-			d1["setUTCSeconds"](k[2]);
-			return d1;
-		case 10:
-			var k = s.split("-");
-			return new Date(k[0],k[1] - 1,k[2],0,0,0);
-		case 19:
-			var k = s.split(" ");
-			var y = k[0].split("-");
-			var t = k[1].split(":");
-			return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
-		default:
-			throw "Invalid date format : " + s;
-		}
-	};
-	d.prototype["toString"] = function() {
-		var date = this;
-		var m = date.getMonth() + 1;
-		var d1 = date.getDate();
-		var h = date.getHours();
-		var mi = date.getMinutes();
-		var s = date.getSeconds();
-		return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
-	};
-	d.prototype.__class__ = $hxClasses["Date"] = d;
-	d.__name__ = ["Date"];
-}
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	$hxClasses["Math"] = Math;
-	Math.isFinite = function(i) {
-		return isFinite(i);
-	};
-	Math.isNaN = function(i) {
-		return isNaN(i);
-	};
-}
-{
-	String.prototype.__class__ = $hxClasses["String"] = String;
-	String.__name__ = ["String"];
-	Array.prototype.__class__ = $hxClasses["Array"] = Array;
-	Array.__name__ = ["Array"];
-	var Int = $hxClasses["Int"] = { __name__ : ["Int"]};
-	var Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
-	var Float = $hxClasses["Float"] = Number;
-	Float.__name__ = ["Float"];
-	var Bool = $hxClasses["Bool"] = Boolean;
-	Bool.__ename__ = ["Bool"];
-	var Class = $hxClasses["Class"] = { __name__ : ["Class"]};
-	var Enum = { };
-	var Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
-}
-{
-	var useragent = dhx.ClientHost.userAgent(), hasnavigator = dhx.ClientHost.hasNavigator(), pattern;
-	dhx.ClientHost.host = !hasnavigator?dhx.HostType.UnknownServer:typeof module !== 'undefined' && module.exports?dhx.HostType.NodeJs:(pattern = new EReg("MSIE(?:/| )(\\S*);","")).match(useragent)?dhx.HostType.IE(pattern.matched(1)):(pattern = new EReg("Firefox(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Firefox(pattern.matched(1)):(pattern = new EReg("Chrome(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Chrome(pattern.matched(1)):(pattern = new EReg("Version(?:/| )(\\S*) Safari(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Safari(pattern.matched(1)):(pattern = new EReg("Opera(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Opera(pattern.matched(1)):dhx.HostType.Unknown(useragent);
-	dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Windows NT\\s+(\\d+\\.\\d+)","")).match(useragent)?(function($this) {
+var bb = new BytesBuffer();
+BytesUtil.EMPTY = bb.getBytes();
+if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
+	var i = a.indexOf(o);
+	if(i == -1) return false;
+	a.splice(i,1);
+	return true;
+}; else null;
+Math.__name__ = ["Math"];
+Math.NaN = Number.NaN;
+Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
+Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+Math.isFinite = function(i) {
+	return isFinite(i);
+};
+Math.isNaN = function(i) {
+	return isNaN(i);
+};
+String.prototype.__class__ = String;
+String.__name__ = ["String"];
+Array.prototype.__class__ = Array;
+Array.__name__ = ["Array"];
+Date.prototype.__class__ = Date;
+Date.__name__ = ["Date"];
+var Int = { __name__ : ["Int"]};
+var Dynamic = { __name__ : ["Dynamic"]};
+var Float = Number;
+Float.__name__ = ["Float"];
+var Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = { __name__ : ["Class"]};
+var Enum = { };
+var useragent = dhx.ClientHost.userAgent(), hasnavigator = dhx.ClientHost.hasNavigator(), pattern;
+dhx.ClientHost.host = !hasnavigator?dhx.HostType.UnknownServer:typeof module !== 'undefined' && module.exports?dhx.HostType.NodeJs:(pattern = new EReg("MSIE(?:/| )(\\S*);","")).match(useragent)?dhx.HostType.IE(pattern.matched(1)):(pattern = new EReg("Firefox(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Firefox(pattern.matched(1)):(pattern = new EReg("Chrome(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Chrome(pattern.matched(1)):(pattern = new EReg("Version(?:/| )(\\S*) Safari(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Safari(pattern.matched(1)):(pattern = new EReg("Opera(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Opera(pattern.matched(1)):dhx.HostType.Unknown(useragent);
+dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Windows NT\\s+(\\d+\\.\\d+)","")).match(useragent)?(function($this) {
+	var $r;
+	var version = (function($this) {
 		var $r;
-		var version = (function($this) {
+		switch(pattern.matched(1)) {
+		case "5.1":
+			$r = "XP";
+			break;
+		case "5.2":
+			$r = "2003/XP x64";
+			break;
+		case "6.0":
+			$r = "Vista";
+			break;
+		case "6.1":
+			$r = "7";
+			break;
+		case "6.2":
+			$r = "8";
+			break;
+		default:
+			$r = "unknown";
+		}
+		return $r;
+	}($this));
+	$r = dhx.OSType.Windows(version);
+	return $r;
+}(this)):new EReg("Mac OS X","").match(useragent)?dhx.OSType.Mac:new EReg("(iPhone|iPad|iPod)","").match(useragent)?dhx.OSType.IOs:new EReg("Linux","").match(useragent)?dhx.OSType.Linux:new EReg("Android","").match(useragent)?dhx.OSType.Android:dhx.OSType.UnknownOs;
+dhx.ClientHost.environment = (function($this) {
+	var $r;
+	switch( (dhx.ClientHost.host)[1] ) {
+	case 0:
+		$r = dhx.EnvironmentType.Server;
+		break;
+	case 1:
+		$r = dhx.EnvironmentType.Server;
+		break;
+	case 2:
+	case 6:
+	case 3:
+		$r = dhx.EnvironmentType.Desktop;
+		break;
+	case 4:
+		$r = (function($this) {
 			var $r;
-			switch(pattern.matched(1)) {
-			case "5.1":
-				$r = "XP";
-				break;
-			case "5.2":
-				$r = "2003/XP x64";
-				break;
-			case "6.0":
-				$r = "Vista";
-				break;
-			case "6.1":
-				$r = "7";
-				break;
-			case "6.2":
-				$r = "8";
+			switch( (dhx.ClientHost.os)[1] ) {
+			case 1:
+				$r = dhx.EnvironmentType.Mobile;
 				break;
 			default:
-				$r = "unknown";
+				$r = dhx.EnvironmentType.Desktop;
 			}
 			return $r;
 		}($this));
-		$r = dhx.OSType.Windows(version);
-		return $r;
-	}(this)):new EReg("Mac OS X","").match(useragent)?dhx.OSType.Mac:new EReg("(iPhone|iPad|iPod)","").match(useragent)?dhx.OSType.IOs:new EReg("Linux","").match(useragent)?dhx.OSType.Linux:new EReg("Android","").match(useragent)?dhx.OSType.Android:dhx.OSType.UnknownOs;
-	dhx.ClientHost.environment = (function($this) {
-		var $r;
-		switch( (dhx.ClientHost.host)[1] ) {
-		case 0:
-			$r = dhx.EnvironmentType.Server;
-			break;
-		case 1:
-			$r = dhx.EnvironmentType.Server;
-			break;
-		case 2:
-		case 6:
-		case 3:
-			$r = dhx.EnvironmentType.Desktop;
-			break;
-		case 4:
-			$r = (function($this) {
-				var $r;
-				switch( (dhx.ClientHost.os)[1] ) {
-				case 1:
-					$r = dhx.EnvironmentType.Mobile;
-					break;
-				default:
-					$r = dhx.EnvironmentType.Desktop;
-				}
-				return $r;
-			}($this));
-			break;
-		case 5:
-			$r = (function($this) {
-				var $r;
-				switch( (dhx.ClientHost.os)[1] ) {
-				case 2:
-					$r = dhx.EnvironmentType.Mobile;
-					break;
-				default:
-					$r = dhx.EnvironmentType.Desktop;
-				}
-				return $r;
-			}($this));
-			break;
-		case 7:
-			$r = (function($this) {
-				var $r;
-				switch( (dhx.ClientHost.os)[1] ) {
-				case 5:
-					$r = dhx.EnvironmentType.UnknownEnvironment;
-					break;
-				default:
-					$r = dhx.EnvironmentType.Desktop;
-				}
-				return $r;
-			}($this));
-			break;
-		}
-		return $r;
-	}(this));
-}
-{
-	if(typeof document != "undefined") js.Lib.document = document;
-	if(typeof window != "undefined") {
-		js.Lib.window = window;
-		js.Lib.window.onerror = function(msg,url,line) {
-			var f = js.Lib.onerror;
-			if(f == null) return false;
-			return f(msg,[url + ":" + line]);
-		};
+		break;
+	case 5:
+		$r = (function($this) {
+			var $r;
+			switch( (dhx.ClientHost.os)[1] ) {
+			case 2:
+				$r = dhx.EnvironmentType.Mobile;
+				break;
+			default:
+				$r = dhx.EnvironmentType.Desktop;
+			}
+			return $r;
+		}($this));
+		break;
+	case 7:
+		$r = (function($this) {
+			var $r;
+			switch( (dhx.ClientHost.os)[1] ) {
+			case 5:
+				$r = dhx.EnvironmentType.UnknownEnvironment;
+				break;
+			default:
+				$r = dhx.EnvironmentType.Desktop;
+			}
+			return $r;
+		}($this));
+		break;
 	}
+	return $r;
+}(this));
+if(typeof document != "undefined") js.Lib.document = document;
+if(typeof window != "undefined") {
+	js.Lib.window = window;
+	js.Lib.window.onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if(f == null) return false;
+		return f(msg,[url + ":" + line]);
+	};
 }
-{
-	var s = dhx.SizzleEngine.getSizzle();
-	dhx.Sizzle = s;
-	dhx.Sizzle.select = s;
-}
+var s = dhx.SizzleEngine.getSizzle();
+dhx.Sizzle = s;
+dhx.Sizzle.select = s;
 window.requestAnimationFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.mozRequestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
-js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
+js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {
 		return new ActiveXObject("Msxml2.XMLHTTP");
 	} catch( e ) {
@@ -21185,337 +20106,321 @@ js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject
 	throw "Unable to create XMLHttpRequest object.";
 	return $r;
 }(this));
-{
-	var dbits;
-	var j_lm;
-	var canary = 0xdeadbeefcafe;
-	j_lm = (canary & 16777215) == 15715070;
-	var browser = window.navigator.appName;
-	if(j_lm && browser == "Microsoft Internet Explorer") dbits = 30; else if(j_lm && browser != "Netscape") dbits = 26; else dbits = 28;
-	switch(dbits) {
-	case 30:
-		math.BigInteger.defaultAm = 2;
-		break;
-	case 28:
-		math.BigInteger.defaultAm = 3;
-		break;
-	case 26:
-		math.BigInteger.defaultAm = 1;
-		break;
-	default:
-		throw "bad dbits value";
-	}
-	math.BigInteger.DB = dbits;
-	math.BigInteger.DM = (1 << math.BigInteger.DB) - 1;
-	math.BigInteger.DV = 1 << math.BigInteger.DB;
-	math.BigInteger.BI_FP = 52;
-	math.BigInteger.FV = Math.pow(2,math.BigInteger.BI_FP);
-	math.BigInteger.F1 = math.BigInteger.BI_FP - math.BigInteger.DB;
-	math.BigInteger.F2 = 2 * math.BigInteger.DB - math.BigInteger.BI_FP;
-	math.BigInteger.initBiRc();
-	math.BigInteger.BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-	math.BigInteger.lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
-	math.BigInteger.lplim = 67108864 / math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1] | 0;
+var dbits;
+var j_lm;
+var canary = 0xdeadbeefcafe;
+j_lm = (canary & 16777215) == 15715070;
+var browser = window.navigator.appName;
+if(j_lm && browser == "Microsoft Internet Explorer") dbits = 30; else if(j_lm && browser != "Netscape") dbits = 26; else dbits = 28;
+switch(dbits) {
+case 30:
+	math.BigInteger.defaultAm = 2;
+	break;
+case 28:
+	math.BigInteger.defaultAm = 3;
+	break;
+case 26:
+	math.BigInteger.defaultAm = 1;
+	break;
+default:
+	throw "bad dbits value";
 }
-{
-	var r = window.ReportGrid?window.ReportGrid:window["ReportGrid"] = { };
-	r["$"] = r["$"] || { };
-	r["$"]["pk"] = r["$"]["pk"] || { };
-	r["$"]["pk"]["rg_query_BaseQuery"] = r["$"]["pk"]["rg_query_BaseQuery"] || rg.query.BaseQuery;
-	r["$"]["pk"]["rg_query_Query"] = r["$"]["pk"]["rg_query_Query"] || rg.query.Query;
-}
+math.BigInteger.DB = dbits;
+math.BigInteger.DM = (1 << math.BigInteger.DB) - 1;
+math.BigInteger.DV = 1 << math.BigInteger.DB;
+math.BigInteger.BI_FP = 52;
+math.BigInteger.FV = Math.pow(2,math.BigInteger.BI_FP);
+math.BigInteger.F1 = math.BigInteger.BI_FP - math.BigInteger.DB;
+math.BigInteger.F2 = 2 * math.BigInteger.DB - math.BigInteger.BI_FP;
+math.BigInteger.initBiRc();
+math.BigInteger.BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+math.BigInteger.lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
+math.BigInteger.lplim = 67108864 / math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1] | 0;
+var r = window.ReportGrid?window.ReportGrid:window.ReportGrid = { };
+r.$ = r.$ || { };
+r.$.pk = r.$.pk || { };
+r.$.pk.rg_query_BaseQuery = r.$.pk.rg_query_BaseQuery || rg.query.BaseQuery;
+r.$.pk.rg_query_Query = r.$.pk.rg_query_Query || rg.query.Query;
 rg.svg.util.SymbolCache.cache = new rg.svg.util.SymbolCache();
-{
-	rg.visualization.Visualizations.layoutDefault = new Hash();
-	rg.visualization.Visualizations.layoutType = new Hash();
-	rg.visualization.Visualizations.layoutArgs = new Hash();
-	rg.visualization.Visualizations.layoutDefault.set("barchart","cartesian");
-	rg.visualization.Visualizations.layoutDefault.set("funnelchart","simple");
-	rg.visualization.Visualizations.layoutDefault.set("geo","simple");
-	rg.visualization.Visualizations.layoutDefault.set("heatgrid","cartesian");
-	rg.visualization.Visualizations.layoutDefault.set("linechart","cartesian");
-	rg.visualization.Visualizations.layoutDefault.set("piechart","simple");
-	rg.visualization.Visualizations.layoutDefault.set("sankey","simple");
-	rg.visualization.Visualizations.layoutDefault.set("scattergraph","cartesian");
-	rg.visualization.Visualizations.layoutDefault.set("streamgraph","x");
-	rg.visualization.Visualizations.layoutType.set("cartesian",rg.layout.LayoutCartesian);
-	rg.visualization.Visualizations.layoutType.set("simple",rg.layout.LayoutSimple);
-	rg.visualization.Visualizations.layoutType.set("x",rg.layout.LayoutX);
-}
-{
-	thx.color.NamedColors.byName = new Hash();
-	thx.color.NamedColors.byName.set("aliceblue",thx.color.NamedColors.aliceblue = thx.color.Rgb.fromInt(15792383));
-	thx.color.NamedColors.byName.set("alice blue",thx.color.NamedColors.aliceblue);
-	thx.color.NamedColors.byName.set("antiquewhite",thx.color.NamedColors.antiquewhite = thx.color.Rgb.fromInt(16444375));
-	thx.color.NamedColors.byName.set("antique white",thx.color.NamedColors.antiquewhite);
-	thx.color.NamedColors.byName.set("aqua",thx.color.NamedColors.aqua = thx.color.Rgb.fromInt(65535));
-	thx.color.NamedColors.byName.set("aquamarine",thx.color.NamedColors.aquamarine = thx.color.Rgb.fromInt(8388564));
-	thx.color.NamedColors.byName.set("azure",thx.color.NamedColors.azure = thx.color.Rgb.fromInt(15794175));
-	thx.color.NamedColors.byName.set("beige",thx.color.NamedColors.beige = thx.color.Rgb.fromInt(16119260));
-	thx.color.NamedColors.byName.set("bisque",thx.color.NamedColors.bisque = thx.color.Rgb.fromInt(16770244));
-	thx.color.NamedColors.byName.set("black",thx.color.NamedColors.black = thx.color.Rgb.fromInt(0));
-	thx.color.NamedColors.byName.set("blanchedalmond",thx.color.NamedColors.blanchedalmond = thx.color.Rgb.fromInt(16772045));
-	thx.color.NamedColors.byName.set("blanched almond",thx.color.NamedColors.blanchedalmond);
-	thx.color.NamedColors.byName.set("blue",thx.color.NamedColors.blue = thx.color.Rgb.fromInt(255));
-	thx.color.NamedColors.byName.set("blueviolet",thx.color.NamedColors.blueviolet = thx.color.Rgb.fromInt(9055202));
-	thx.color.NamedColors.byName.set("blue violet",thx.color.NamedColors.blueviolet);
-	thx.color.NamedColors.byName.set("brown",thx.color.NamedColors.brown = thx.color.Rgb.fromInt(10824234));
-	thx.color.NamedColors.byName.set("burlywood",thx.color.NamedColors.burlywood = thx.color.Rgb.fromInt(14596231));
-	thx.color.NamedColors.byName.set("burly wood",thx.color.NamedColors.burlywood);
-	thx.color.NamedColors.byName.set("cadetblue",thx.color.NamedColors.cadetblue = thx.color.Rgb.fromInt(6266528));
-	thx.color.NamedColors.byName.set("cadet blue",thx.color.NamedColors.cadetblue);
-	thx.color.NamedColors.byName.set("chartreuse",thx.color.NamedColors.chartreuse = thx.color.Rgb.fromInt(8388352));
-	thx.color.NamedColors.byName.set("chart reuse",thx.color.NamedColors.chartreuse);
-	thx.color.NamedColors.byName.set("chocolate",thx.color.NamedColors.chocolate = thx.color.Rgb.fromInt(13789470));
-	thx.color.NamedColors.byName.set("coral",thx.color.NamedColors.coral = thx.color.Rgb.fromInt(16744272));
-	thx.color.NamedColors.byName.set("cornflowerblue",thx.color.NamedColors.cornflowerblue = thx.color.Rgb.fromInt(6591981));
-	thx.color.NamedColors.byName.set("corn flower blue",thx.color.NamedColors.cornflowerblue);
-	thx.color.NamedColors.byName.set("cornsilk",thx.color.NamedColors.cornsilk = thx.color.Rgb.fromInt(16775388));
-	thx.color.NamedColors.byName.set("corn silk",thx.color.NamedColors.cornsilk);
-	thx.color.NamedColors.byName.set("crimson",thx.color.NamedColors.crimson = thx.color.Rgb.fromInt(14423100));
-	thx.color.NamedColors.byName.set("cyan",thx.color.NamedColors.cyan = thx.color.Rgb.fromInt(65535));
-	thx.color.NamedColors.byName.set("darkblue",thx.color.NamedColors.darkblue = thx.color.Rgb.fromInt(139));
-	thx.color.NamedColors.byName.set("dark blue",thx.color.NamedColors.darkblue);
-	thx.color.NamedColors.byName.set("darkcyan",thx.color.NamedColors.darkcyan = thx.color.Rgb.fromInt(35723));
-	thx.color.NamedColors.byName.set("dark cyan",thx.color.NamedColors.darkcyan);
-	thx.color.NamedColors.byName.set("darkgoldenrod",thx.color.NamedColors.darkgoldenrod = thx.color.Rgb.fromInt(12092939));
-	thx.color.NamedColors.byName.set("dark golden rod",thx.color.NamedColors.darkgoldenrod);
-	thx.color.NamedColors.byName.set("darkgray",thx.color.NamedColors.darkgray = thx.color.NamedColors.darkgrey = thx.color.Rgb.fromInt(11119017));
-	thx.color.NamedColors.byName.set("dark gray",thx.color.NamedColors.darkgray);
-	thx.color.NamedColors.byName.set("darkgrey",thx.color.NamedColors.darkgrey);
-	thx.color.NamedColors.byName.set("dark grey",thx.color.NamedColors.darkgrey);
-	thx.color.NamedColors.byName.set("darkgreen",thx.color.NamedColors.darkgreen = thx.color.Rgb.fromInt(25600));
-	thx.color.NamedColors.byName.set("dark green",thx.color.NamedColors.darkgreen);
-	thx.color.NamedColors.byName.set("darkkhaki",thx.color.NamedColors.darkkhaki = thx.color.Rgb.fromInt(12433259));
-	thx.color.NamedColors.byName.set("dark khaki",thx.color.NamedColors.darkkhaki);
-	thx.color.NamedColors.byName.set("darkmagenta",thx.color.NamedColors.darkmagenta = thx.color.Rgb.fromInt(9109643));
-	thx.color.NamedColors.byName.set("dark magenta",thx.color.NamedColors.darkmagenta);
-	thx.color.NamedColors.byName.set("darkolivegreen",thx.color.NamedColors.darkolivegreen = thx.color.Rgb.fromInt(5597999));
-	thx.color.NamedColors.byName.set("dark olive green",thx.color.NamedColors.darkolivegreen);
-	thx.color.NamedColors.byName.set("darkorange",thx.color.NamedColors.darkorange = thx.color.Rgb.fromInt(16747520));
-	thx.color.NamedColors.byName.set("dark orange",thx.color.NamedColors.darkorange);
-	thx.color.NamedColors.byName.set("darkorchid",thx.color.NamedColors.darkorchid = thx.color.Rgb.fromInt(10040012));
-	thx.color.NamedColors.byName.set("dark orchid",thx.color.NamedColors.darkorchid);
-	thx.color.NamedColors.byName.set("darkred",thx.color.NamedColors.darkred = thx.color.Rgb.fromInt(9109504));
-	thx.color.NamedColors.byName.set("dark red",thx.color.NamedColors.darkred);
-	thx.color.NamedColors.byName.set("darksalmon",thx.color.NamedColors.darksalmon = thx.color.Rgb.fromInt(15308410));
-	thx.color.NamedColors.byName.set("dark salmon",thx.color.NamedColors.darksalmon);
-	thx.color.NamedColors.byName.set("darkseagreen",thx.color.NamedColors.darkseagreen = thx.color.Rgb.fromInt(9419919));
-	thx.color.NamedColors.byName.set("dark sea green",thx.color.NamedColors.darkseagreen);
-	thx.color.NamedColors.byName.set("darkslateblue",thx.color.NamedColors.darkslateblue = thx.color.Rgb.fromInt(4734347));
-	thx.color.NamedColors.byName.set("dark slate blue",thx.color.NamedColors.darkslateblue);
-	thx.color.NamedColors.byName.set("darkslategray",thx.color.NamedColors.darkslategray = thx.color.NamedColors.darkslategrey = thx.color.Rgb.fromInt(3100495));
-	thx.color.NamedColors.byName.set("dark slate gray",thx.color.NamedColors.darkslategray);
-	thx.color.NamedColors.byName.set("darkslategrey",thx.color.NamedColors.darkslategrey);
-	thx.color.NamedColors.byName.set("dark slate grey",thx.color.NamedColors.darkslategrey);
-	thx.color.NamedColors.byName.set("darkturquoise",thx.color.NamedColors.darkturquoise = thx.color.Rgb.fromInt(52945));
-	thx.color.NamedColors.byName.set("dark turquoise",thx.color.NamedColors.darkturquoise);
-	thx.color.NamedColors.byName.set("darkviolet",thx.color.NamedColors.darkviolet = thx.color.Rgb.fromInt(9699539));
-	thx.color.NamedColors.byName.set("dark violet",thx.color.NamedColors.darkviolet);
-	thx.color.NamedColors.byName.set("deeppink",thx.color.NamedColors.deeppink = thx.color.Rgb.fromInt(16716947));
-	thx.color.NamedColors.byName.set("deep pink",thx.color.NamedColors.deeppink);
-	thx.color.NamedColors.byName.set("deepskyblue",thx.color.NamedColors.deepskyblue = thx.color.Rgb.fromInt(49151));
-	thx.color.NamedColors.byName.set("deep sky blue",thx.color.NamedColors.deepskyblue);
-	thx.color.NamedColors.byName.set("dimgray",thx.color.NamedColors.dimgray = thx.color.NamedColors.dimgrey = thx.color.Rgb.fromInt(6908265));
-	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dimgrey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
-	thx.color.NamedColors.byName.set("dodgerblue",thx.color.NamedColors.dodgerblue = thx.color.Rgb.fromInt(2003199));
-	thx.color.NamedColors.byName.set("dodger blue",thx.color.NamedColors.dodgerblue);
-	thx.color.NamedColors.byName.set("firebrick",thx.color.NamedColors.firebrick = thx.color.Rgb.fromInt(11674146));
-	thx.color.NamedColors.byName.set("fire brick",thx.color.NamedColors.firebrick);
-	thx.color.NamedColors.byName.set("floralwhite",thx.color.NamedColors.floralwhite = thx.color.Rgb.fromInt(16775920));
-	thx.color.NamedColors.byName.set("floral white",thx.color.NamedColors.floralwhite);
-	thx.color.NamedColors.byName.set("forestgreen",thx.color.NamedColors.forestgreen = thx.color.Rgb.fromInt(2263842));
-	thx.color.NamedColors.byName.set("forest green",thx.color.NamedColors.forestgreen);
-	thx.color.NamedColors.byName.set("fuchsia",thx.color.NamedColors.fuchsia = thx.color.Rgb.fromInt(16711935));
-	thx.color.NamedColors.byName.set("gainsboro",thx.color.NamedColors.gainsboro = thx.color.Rgb.fromInt(14474460));
-	thx.color.NamedColors.byName.set("ghostwhite",thx.color.NamedColors.ghostwhite = thx.color.Rgb.fromInt(16316671));
-	thx.color.NamedColors.byName.set("ghost white",thx.color.NamedColors.ghostwhite);
-	thx.color.NamedColors.byName.set("gold",thx.color.NamedColors.gold = thx.color.Rgb.fromInt(16766720));
-	thx.color.NamedColors.byName.set("goldenrod",thx.color.NamedColors.goldenrod = thx.color.Rgb.fromInt(14329120));
-	thx.color.NamedColors.byName.set("golden rod",thx.color.NamedColors.goldenrod);
-	thx.color.NamedColors.byName.set("gray",thx.color.NamedColors.gray = thx.color.NamedColors.grey = thx.color.Rgb.fromInt(8421504));
-	thx.color.NamedColors.byName.set("grey",thx.color.NamedColors.grey);
-	thx.color.NamedColors.byName.set("green",thx.color.NamedColors.green = thx.color.Rgb.fromInt(32768));
-	thx.color.NamedColors.byName.set("greenyellow",thx.color.NamedColors.greenyellow = thx.color.Rgb.fromInt(11403055));
-	thx.color.NamedColors.byName.set("green yellow",thx.color.NamedColors.greenyellow);
-	thx.color.NamedColors.byName.set("honeydew",thx.color.NamedColors.honeydew = thx.color.Rgb.fromInt(15794160));
-	thx.color.NamedColors.byName.set("honey dew",thx.color.NamedColors.honeydew);
-	thx.color.NamedColors.byName.set("hotpink",thx.color.NamedColors.hotpink = thx.color.Rgb.fromInt(16738740));
-	thx.color.NamedColors.byName.set("hot pink",thx.color.NamedColors.hotpink);
-	thx.color.NamedColors.byName.set("indianred",thx.color.NamedColors.indianred = thx.color.Rgb.fromInt(13458524));
-	thx.color.NamedColors.byName.set("indian red",thx.color.NamedColors.indianred);
-	thx.color.NamedColors.byName.set("indigo",thx.color.NamedColors.indigo = thx.color.Rgb.fromInt(4915330));
-	thx.color.NamedColors.byName.set("ivory",thx.color.NamedColors.ivory = thx.color.Rgb.fromInt(16777200));
-	thx.color.NamedColors.byName.set("khaki",thx.color.NamedColors.khaki = thx.color.Rgb.fromInt(15787660));
-	thx.color.NamedColors.byName.set("lavender",thx.color.NamedColors.lavender = thx.color.Rgb.fromInt(15132410));
-	thx.color.NamedColors.byName.set("lavenderblush",thx.color.NamedColors.lavenderblush = thx.color.Rgb.fromInt(16773365));
-	thx.color.NamedColors.byName.set("lavender blush",thx.color.NamedColors.lavenderblush);
-	thx.color.NamedColors.byName.set("lawngreen",thx.color.NamedColors.lawngreen = thx.color.Rgb.fromInt(8190976));
-	thx.color.NamedColors.byName.set("lawn green",thx.color.NamedColors.lawngreen);
-	thx.color.NamedColors.byName.set("lemonchiffon",thx.color.NamedColors.lemonchiffon = thx.color.Rgb.fromInt(16775885));
-	thx.color.NamedColors.byName.set("lemon chiffon",thx.color.NamedColors.lemonchiffon);
-	thx.color.NamedColors.byName.set("lightblue",thx.color.NamedColors.lightblue = thx.color.Rgb.fromInt(11393254));
-	thx.color.NamedColors.byName.set("light blue",thx.color.NamedColors.lightblue);
-	thx.color.NamedColors.byName.set("lightcoral",thx.color.NamedColors.lightcoral = thx.color.Rgb.fromInt(15761536));
-	thx.color.NamedColors.byName.set("light coral",thx.color.NamedColors.lightcoral);
-	thx.color.NamedColors.byName.set("lightcyan",thx.color.NamedColors.lightcyan = thx.color.Rgb.fromInt(14745599));
-	thx.color.NamedColors.byName.set("light cyan",thx.color.NamedColors.lightcyan);
-	thx.color.NamedColors.byName.set("lightgoldenrodyellow",thx.color.NamedColors.lightgoldenrodyellow = thx.color.Rgb.fromInt(16448210));
-	thx.color.NamedColors.byName.set("light golden rod yellow",thx.color.NamedColors.lightgoldenrodyellow);
-	thx.color.NamedColors.byName.set("lightgray",thx.color.NamedColors.lightgray = thx.color.NamedColors.lightgrey = thx.color.Rgb.fromInt(13882323));
-	thx.color.NamedColors.byName.set("light gray",thx.color.NamedColors.lightgray);
-	thx.color.NamedColors.byName.set("lightgrey",thx.color.NamedColors.lightgrey);
-	thx.color.NamedColors.byName.set("light grey",thx.color.NamedColors.lightgrey);
-	thx.color.NamedColors.byName.set("lightgreen",thx.color.NamedColors.lightgreen = thx.color.Rgb.fromInt(9498256));
-	thx.color.NamedColors.byName.set("light green",thx.color.NamedColors.lightgreen);
-	thx.color.NamedColors.byName.set("lightpink",thx.color.NamedColors.lightpink = thx.color.Rgb.fromInt(16758465));
-	thx.color.NamedColors.byName.set("light pink",thx.color.NamedColors.lightpink);
-	thx.color.NamedColors.byName.set("lightsalmon",thx.color.NamedColors.lightsalmon = thx.color.Rgb.fromInt(16752762));
-	thx.color.NamedColors.byName.set("light salmon",thx.color.NamedColors.lightsalmon);
-	thx.color.NamedColors.byName.set("lightseagreen",thx.color.NamedColors.lightseagreen = thx.color.Rgb.fromInt(2142890));
-	thx.color.NamedColors.byName.set("light sea green",thx.color.NamedColors.lightseagreen);
-	thx.color.NamedColors.byName.set("lightskyblue",thx.color.NamedColors.lightskyblue = thx.color.Rgb.fromInt(8900346));
-	thx.color.NamedColors.byName.set("light sky blue",thx.color.NamedColors.lightskyblue);
-	thx.color.NamedColors.byName.set("lightslategray",thx.color.NamedColors.lightslategray = thx.color.NamedColors.lightslategrey = thx.color.Rgb.fromInt(7833753));
-	thx.color.NamedColors.byName.set("light slate gray",thx.color.NamedColors.lightslategray);
-	thx.color.NamedColors.byName.set("lightslategrey",thx.color.NamedColors.lightslategrey);
-	thx.color.NamedColors.byName.set("light slate grey",thx.color.NamedColors.lightslategrey);
-	thx.color.NamedColors.byName.set("lightsteelblue",thx.color.NamedColors.lightsteelblue = thx.color.Rgb.fromInt(11584734));
-	thx.color.NamedColors.byName.set("light steel blue",thx.color.NamedColors.lightsteelblue);
-	thx.color.NamedColors.byName.set("lightyellow",thx.color.NamedColors.lightyellow = thx.color.Rgb.fromInt(16777184));
-	thx.color.NamedColors.byName.set("light yellow",thx.color.NamedColors.lightyellow);
-	thx.color.NamedColors.byName.set("lime",thx.color.NamedColors.lime = thx.color.Rgb.fromInt(65280));
-	thx.color.NamedColors.byName.set("limegreen",thx.color.NamedColors.limegreen = thx.color.Rgb.fromInt(3329330));
-	thx.color.NamedColors.byName.set("lime green",thx.color.NamedColors.limegreen);
-	thx.color.NamedColors.byName.set("linen",thx.color.NamedColors.linen = thx.color.Rgb.fromInt(16445670));
-	thx.color.NamedColors.byName.set("magenta",thx.color.NamedColors.magenta = thx.color.Rgb.fromInt(16711935));
-	thx.color.NamedColors.byName.set("maroon",thx.color.NamedColors.maroon = thx.color.Rgb.fromInt(8388608));
-	thx.color.NamedColors.byName.set("mediumaquamarine",thx.color.NamedColors.mediumaquamarine = thx.color.Rgb.fromInt(6737322));
-	thx.color.NamedColors.byName.set("mediuma quamarine",thx.color.NamedColors.mediumaquamarine);
-	thx.color.NamedColors.byName.set("mediumblue",thx.color.NamedColors.mediumblue = thx.color.Rgb.fromInt(205));
-	thx.color.NamedColors.byName.set("medium blue",thx.color.NamedColors.mediumblue);
-	thx.color.NamedColors.byName.set("mediumorchid",thx.color.NamedColors.mediumorchid = thx.color.Rgb.fromInt(12211667));
-	thx.color.NamedColors.byName.set("medium orchid",thx.color.NamedColors.mediumorchid);
-	thx.color.NamedColors.byName.set("mediumpurple",thx.color.NamedColors.mediumpurple = thx.color.Rgb.fromInt(9662683));
-	thx.color.NamedColors.byName.set("medium purple",thx.color.NamedColors.mediumpurple);
-	thx.color.NamedColors.byName.set("mediumseagreen",thx.color.NamedColors.mediumseagreen = thx.color.Rgb.fromInt(3978097));
-	thx.color.NamedColors.byName.set("medium sea green",thx.color.NamedColors.mediumseagreen);
-	thx.color.NamedColors.byName.set("mediumslateblue",thx.color.NamedColors.mediumslateblue = thx.color.Rgb.fromInt(8087790));
-	thx.color.NamedColors.byName.set("medium slate blue",thx.color.NamedColors.mediumslateblue);
-	thx.color.NamedColors.byName.set("mediumspringgreen",thx.color.NamedColors.mediumspringgreen = thx.color.Rgb.fromInt(64154));
-	thx.color.NamedColors.byName.set("medium spring green",thx.color.NamedColors.mediumspringgreen);
-	thx.color.NamedColors.byName.set("mediumturquoise",thx.color.NamedColors.mediumturquoise = thx.color.Rgb.fromInt(4772300));
-	thx.color.NamedColors.byName.set("medium turquoise",thx.color.NamedColors.mediumturquoise);
-	thx.color.NamedColors.byName.set("mediumvioletred",thx.color.NamedColors.mediumvioletred = thx.color.Rgb.fromInt(13047173));
-	thx.color.NamedColors.byName.set("medium violet red",thx.color.NamedColors.mediumvioletred);
-	thx.color.NamedColors.byName.set("midnightblue",thx.color.NamedColors.midnightblue = thx.color.Rgb.fromInt(1644912));
-	thx.color.NamedColors.byName.set("midnight blue",thx.color.NamedColors.midnightblue);
-	thx.color.NamedColors.byName.set("mintcream",thx.color.NamedColors.mintcream = thx.color.Rgb.fromInt(16121850));
-	thx.color.NamedColors.byName.set("mint cream",thx.color.NamedColors.mintcream);
-	thx.color.NamedColors.byName.set("mistyrose",thx.color.NamedColors.mistyrose = thx.color.Rgb.fromInt(16770273));
-	thx.color.NamedColors.byName.set("misty rose",thx.color.NamedColors.mistyrose);
-	thx.color.NamedColors.byName.set("moccasin",thx.color.NamedColors.moccasin = thx.color.Rgb.fromInt(16770229));
-	thx.color.NamedColors.byName.set("navajowhite",thx.color.NamedColors.navajowhite = thx.color.Rgb.fromInt(16768685));
-	thx.color.NamedColors.byName.set("navajo white",thx.color.NamedColors.navajowhite);
-	thx.color.NamedColors.byName.set("navy",thx.color.NamedColors.navy = thx.color.Rgb.fromInt(128));
-	thx.color.NamedColors.byName.set("oldlace",thx.color.NamedColors.oldlace = thx.color.Rgb.fromInt(16643558));
-	thx.color.NamedColors.byName.set("old lace",thx.color.NamedColors.oldlace);
-	thx.color.NamedColors.byName.set("olive",thx.color.NamedColors.olive = thx.color.Rgb.fromInt(8421376));
-	thx.color.NamedColors.byName.set("olivedrab",thx.color.NamedColors.olivedrab = thx.color.Rgb.fromInt(7048739));
-	thx.color.NamedColors.byName.set("olive drab",thx.color.NamedColors.olivedrab);
-	thx.color.NamedColors.byName.set("orange",thx.color.NamedColors.orange = thx.color.Rgb.fromInt(16753920));
-	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered = thx.color.Rgb.fromInt(16729344));
-	thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered);
-	thx.color.NamedColors.byName.set("orchid",thx.color.NamedColors.orchid = thx.color.Rgb.fromInt(14315734));
-	thx.color.NamedColors.byName.set("palegoldenrod",thx.color.NamedColors.palegoldenrod = thx.color.Rgb.fromInt(15657130));
-	thx.color.NamedColors.byName.set("pale golden rod",thx.color.NamedColors.palegoldenrod);
-	thx.color.NamedColors.byName.set("palegreen",thx.color.NamedColors.palegreen = thx.color.Rgb.fromInt(10025880));
-	thx.color.NamedColors.byName.set("pale green",thx.color.NamedColors.palegreen);
-	thx.color.NamedColors.byName.set("paleturquoise",thx.color.NamedColors.paleturquoise = thx.color.Rgb.fromInt(11529966));
-	thx.color.NamedColors.byName.set("pale turquoise",thx.color.NamedColors.paleturquoise);
-	thx.color.NamedColors.byName.set("palevioletred",thx.color.NamedColors.palevioletred = thx.color.Rgb.fromInt(14381203));
-	thx.color.NamedColors.byName.set("pale violet red",thx.color.NamedColors.palevioletred);
-	thx.color.NamedColors.byName.set("papayawhip",thx.color.NamedColors.papayawhip = thx.color.Rgb.fromInt(16773077));
-	thx.color.NamedColors.byName.set("papaya whip",thx.color.NamedColors.papayawhip);
-	thx.color.NamedColors.byName.set("peachpuff",thx.color.NamedColors.peachpuff = thx.color.Rgb.fromInt(16767673));
-	thx.color.NamedColors.byName.set("peach puff",thx.color.NamedColors.peachpuff);
-	thx.color.NamedColors.byName.set("peru",thx.color.NamedColors.peru = thx.color.Rgb.fromInt(13468991));
-	thx.color.NamedColors.byName.set("pink",thx.color.NamedColors.pink = thx.color.Rgb.fromInt(16761035));
-	thx.color.NamedColors.byName.set("plum",thx.color.NamedColors.plum = thx.color.Rgb.fromInt(14524637));
-	thx.color.NamedColors.byName.set("powderblue",thx.color.NamedColors.powderblue = thx.color.Rgb.fromInt(11591910));
-	thx.color.NamedColors.byName.set("powder blue",thx.color.NamedColors.powderblue);
-	thx.color.NamedColors.byName.set("purple",thx.color.NamedColors.purple = thx.color.Rgb.fromInt(8388736));
-	thx.color.NamedColors.byName.set("red",thx.color.NamedColors.red = thx.color.Rgb.fromInt(16711680));
-	thx.color.NamedColors.byName.set("rosybrown",thx.color.NamedColors.rosybrown = thx.color.Rgb.fromInt(12357519));
-	thx.color.NamedColors.byName.set("rosy brown",thx.color.NamedColors.rosybrown);
-	thx.color.NamedColors.byName.set("royalblue",thx.color.NamedColors.royalblue = thx.color.Rgb.fromInt(4286945));
-	thx.color.NamedColors.byName.set("royal blue",thx.color.NamedColors.royalblue);
-	thx.color.NamedColors.byName.set("saddlebrown",thx.color.NamedColors.saddlebrown = thx.color.Rgb.fromInt(9127187));
-	thx.color.NamedColors.byName.set("saddle brown",thx.color.NamedColors.saddlebrown);
-	thx.color.NamedColors.byName.set("salmon",thx.color.NamedColors.salmon = thx.color.Rgb.fromInt(16416882));
-	thx.color.NamedColors.byName.set("sandybrown",thx.color.NamedColors.sandybrown = thx.color.Rgb.fromInt(16032864));
-	thx.color.NamedColors.byName.set("sandy brown",thx.color.NamedColors.sandybrown);
-	thx.color.NamedColors.byName.set("seagreen",thx.color.NamedColors.seagreen = thx.color.Rgb.fromInt(3050327));
-	thx.color.NamedColors.byName.set("sea green",thx.color.NamedColors.seagreen);
-	thx.color.NamedColors.byName.set("seashell",thx.color.NamedColors.seashell = thx.color.Rgb.fromInt(16774638));
-	thx.color.NamedColors.byName.set("sea shell",thx.color.NamedColors.seashell);
-	thx.color.NamedColors.byName.set("sienna",thx.color.NamedColors.sienna = thx.color.Rgb.fromInt(10506797));
-	thx.color.NamedColors.byName.set("silver",thx.color.NamedColors.silver = thx.color.Rgb.fromInt(12632256));
-	thx.color.NamedColors.byName.set("skyblue",thx.color.NamedColors.skyblue = thx.color.Rgb.fromInt(8900331));
-	thx.color.NamedColors.byName.set("sky blue",thx.color.NamedColors.skyblue);
-	thx.color.NamedColors.byName.set("slateblue",thx.color.NamedColors.slateblue = thx.color.Rgb.fromInt(6970061));
-	thx.color.NamedColors.byName.set("slate blue",thx.color.NamedColors.slateblue);
-	thx.color.NamedColors.byName.set("slategray",thx.color.NamedColors.slategray = thx.color.NamedColors.slategrey = thx.color.Rgb.fromInt(7372944));
-	thx.color.NamedColors.byName.set("slate gray",thx.color.NamedColors.slategray);
-	thx.color.NamedColors.byName.set("slategrey",thx.color.NamedColors.slategrey);
-	thx.color.NamedColors.byName.set("slate grey",thx.color.NamedColors.slategrey);
-	thx.color.NamedColors.byName.set("snow",thx.color.NamedColors.snow = thx.color.Rgb.fromInt(16775930));
-	thx.color.NamedColors.byName.set("springgreen",thx.color.NamedColors.springgreen = thx.color.Rgb.fromInt(65407));
-	thx.color.NamedColors.byName.set("spring green",thx.color.NamedColors.springgreen);
-	thx.color.NamedColors.byName.set("steelblue",thx.color.NamedColors.steelblue = thx.color.Rgb.fromInt(4620980));
-	thx.color.NamedColors.byName.set("steel blue",thx.color.NamedColors.steelblue);
-	thx.color.NamedColors.byName.set("tan",thx.color.NamedColors.tan = thx.color.Rgb.fromInt(13808780));
-	thx.color.NamedColors.byName.set("teal",thx.color.NamedColors.teal = thx.color.Rgb.fromInt(32896));
-	thx.color.NamedColors.byName.set("thistle",thx.color.NamedColors.thistle = thx.color.Rgb.fromInt(14204888));
-	thx.color.NamedColors.byName.set("tomato",thx.color.NamedColors.tomato = thx.color.Rgb.fromInt(16737095));
-	thx.color.NamedColors.byName.set("turquoise",thx.color.NamedColors.turquoise = thx.color.Rgb.fromInt(4251856));
-	thx.color.NamedColors.byName.set("violet",thx.color.NamedColors.violet = thx.color.Rgb.fromInt(15631086));
-	thx.color.NamedColors.byName.set("wheat",thx.color.NamedColors.wheat = thx.color.Rgb.fromInt(16113331));
-	thx.color.NamedColors.byName.set("white",thx.color.NamedColors.white = thx.color.Rgb.fromInt(16777215));
-	thx.color.NamedColors.byName.set("whitesmoke",thx.color.NamedColors.whitesmoke = thx.color.Rgb.fromInt(16119285));
-	thx.color.NamedColors.byName.set("white smoke",thx.color.NamedColors.whitesmoke);
-	thx.color.NamedColors.byName.set("yellow",thx.color.NamedColors.yellow = thx.color.Rgb.fromInt(16776960));
-	thx.color.NamedColors.byName.set("yellowgreen",thx.color.NamedColors.yellowgreen = thx.color.Rgb.fromInt(10145074));
-	thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
-}
+rg.visualization.Visualizations.layoutDefault = new Hash();
+rg.visualization.Visualizations.layoutType = new Hash();
+rg.visualization.Visualizations.layoutArgs = new Hash();
+rg.visualization.Visualizations.layoutDefault.set("barchart","cartesian");
+rg.visualization.Visualizations.layoutDefault.set("funnelchart","simple");
+rg.visualization.Visualizations.layoutDefault.set("geo","simple");
+rg.visualization.Visualizations.layoutDefault.set("heatgrid","cartesian");
+rg.visualization.Visualizations.layoutDefault.set("linechart","cartesian");
+rg.visualization.Visualizations.layoutDefault.set("piechart","simple");
+rg.visualization.Visualizations.layoutDefault.set("sankey","simple");
+rg.visualization.Visualizations.layoutDefault.set("scattergraph","cartesian");
+rg.visualization.Visualizations.layoutDefault.set("streamgraph","x");
+rg.visualization.Visualizations.layoutType.set("cartesian",rg.layout.LayoutCartesian);
+rg.visualization.Visualizations.layoutType.set("simple",rg.layout.LayoutSimple);
+rg.visualization.Visualizations.layoutType.set("x",rg.layout.LayoutX);
+thx.color.NamedColors.byName = new Hash();
+thx.color.NamedColors.byName.set("aliceblue",thx.color.NamedColors.aliceblue = thx.color.Rgb.fromInt(15792383));
+thx.color.NamedColors.byName.set("alice blue",thx.color.NamedColors.aliceblue);
+thx.color.NamedColors.byName.set("antiquewhite",thx.color.NamedColors.antiquewhite = thx.color.Rgb.fromInt(16444375));
+thx.color.NamedColors.byName.set("antique white",thx.color.NamedColors.antiquewhite);
+thx.color.NamedColors.byName.set("aqua",thx.color.NamedColors.aqua = thx.color.Rgb.fromInt(65535));
+thx.color.NamedColors.byName.set("aquamarine",thx.color.NamedColors.aquamarine = thx.color.Rgb.fromInt(8388564));
+thx.color.NamedColors.byName.set("azure",thx.color.NamedColors.azure = thx.color.Rgb.fromInt(15794175));
+thx.color.NamedColors.byName.set("beige",thx.color.NamedColors.beige = thx.color.Rgb.fromInt(16119260));
+thx.color.NamedColors.byName.set("bisque",thx.color.NamedColors.bisque = thx.color.Rgb.fromInt(16770244));
+thx.color.NamedColors.byName.set("black",thx.color.NamedColors.black = thx.color.Rgb.fromInt(0));
+thx.color.NamedColors.byName.set("blanchedalmond",thx.color.NamedColors.blanchedalmond = thx.color.Rgb.fromInt(16772045));
+thx.color.NamedColors.byName.set("blanched almond",thx.color.NamedColors.blanchedalmond);
+thx.color.NamedColors.byName.set("blue",thx.color.NamedColors.blue = thx.color.Rgb.fromInt(255));
+thx.color.NamedColors.byName.set("blueviolet",thx.color.NamedColors.blueviolet = thx.color.Rgb.fromInt(9055202));
+thx.color.NamedColors.byName.set("blue violet",thx.color.NamedColors.blueviolet);
+thx.color.NamedColors.byName.set("brown",thx.color.NamedColors.brown = thx.color.Rgb.fromInt(10824234));
+thx.color.NamedColors.byName.set("burlywood",thx.color.NamedColors.burlywood = thx.color.Rgb.fromInt(14596231));
+thx.color.NamedColors.byName.set("burly wood",thx.color.NamedColors.burlywood);
+thx.color.NamedColors.byName.set("cadetblue",thx.color.NamedColors.cadetblue = thx.color.Rgb.fromInt(6266528));
+thx.color.NamedColors.byName.set("cadet blue",thx.color.NamedColors.cadetblue);
+thx.color.NamedColors.byName.set("chartreuse",thx.color.NamedColors.chartreuse = thx.color.Rgb.fromInt(8388352));
+thx.color.NamedColors.byName.set("chart reuse",thx.color.NamedColors.chartreuse);
+thx.color.NamedColors.byName.set("chocolate",thx.color.NamedColors.chocolate = thx.color.Rgb.fromInt(13789470));
+thx.color.NamedColors.byName.set("coral",thx.color.NamedColors.coral = thx.color.Rgb.fromInt(16744272));
+thx.color.NamedColors.byName.set("cornflowerblue",thx.color.NamedColors.cornflowerblue = thx.color.Rgb.fromInt(6591981));
+thx.color.NamedColors.byName.set("corn flower blue",thx.color.NamedColors.cornflowerblue);
+thx.color.NamedColors.byName.set("cornsilk",thx.color.NamedColors.cornsilk = thx.color.Rgb.fromInt(16775388));
+thx.color.NamedColors.byName.set("corn silk",thx.color.NamedColors.cornsilk);
+thx.color.NamedColors.byName.set("crimson",thx.color.NamedColors.crimson = thx.color.Rgb.fromInt(14423100));
+thx.color.NamedColors.byName.set("cyan",thx.color.NamedColors.cyan = thx.color.Rgb.fromInt(65535));
+thx.color.NamedColors.byName.set("darkblue",thx.color.NamedColors.darkblue = thx.color.Rgb.fromInt(139));
+thx.color.NamedColors.byName.set("dark blue",thx.color.NamedColors.darkblue);
+thx.color.NamedColors.byName.set("darkcyan",thx.color.NamedColors.darkcyan = thx.color.Rgb.fromInt(35723));
+thx.color.NamedColors.byName.set("dark cyan",thx.color.NamedColors.darkcyan);
+thx.color.NamedColors.byName.set("darkgoldenrod",thx.color.NamedColors.darkgoldenrod = thx.color.Rgb.fromInt(12092939));
+thx.color.NamedColors.byName.set("dark golden rod",thx.color.NamedColors.darkgoldenrod);
+thx.color.NamedColors.byName.set("darkgray",thx.color.NamedColors.darkgray = thx.color.NamedColors.darkgrey = thx.color.Rgb.fromInt(11119017));
+thx.color.NamedColors.byName.set("dark gray",thx.color.NamedColors.darkgray);
+thx.color.NamedColors.byName.set("darkgrey",thx.color.NamedColors.darkgrey);
+thx.color.NamedColors.byName.set("dark grey",thx.color.NamedColors.darkgrey);
+thx.color.NamedColors.byName.set("darkgreen",thx.color.NamedColors.darkgreen = thx.color.Rgb.fromInt(25600));
+thx.color.NamedColors.byName.set("dark green",thx.color.NamedColors.darkgreen);
+thx.color.NamedColors.byName.set("darkkhaki",thx.color.NamedColors.darkkhaki = thx.color.Rgb.fromInt(12433259));
+thx.color.NamedColors.byName.set("dark khaki",thx.color.NamedColors.darkkhaki);
+thx.color.NamedColors.byName.set("darkmagenta",thx.color.NamedColors.darkmagenta = thx.color.Rgb.fromInt(9109643));
+thx.color.NamedColors.byName.set("dark magenta",thx.color.NamedColors.darkmagenta);
+thx.color.NamedColors.byName.set("darkolivegreen",thx.color.NamedColors.darkolivegreen = thx.color.Rgb.fromInt(5597999));
+thx.color.NamedColors.byName.set("dark olive green",thx.color.NamedColors.darkolivegreen);
+thx.color.NamedColors.byName.set("darkorange",thx.color.NamedColors.darkorange = thx.color.Rgb.fromInt(16747520));
+thx.color.NamedColors.byName.set("dark orange",thx.color.NamedColors.darkorange);
+thx.color.NamedColors.byName.set("darkorchid",thx.color.NamedColors.darkorchid = thx.color.Rgb.fromInt(10040012));
+thx.color.NamedColors.byName.set("dark orchid",thx.color.NamedColors.darkorchid);
+thx.color.NamedColors.byName.set("darkred",thx.color.NamedColors.darkred = thx.color.Rgb.fromInt(9109504));
+thx.color.NamedColors.byName.set("dark red",thx.color.NamedColors.darkred);
+thx.color.NamedColors.byName.set("darksalmon",thx.color.NamedColors.darksalmon = thx.color.Rgb.fromInt(15308410));
+thx.color.NamedColors.byName.set("dark salmon",thx.color.NamedColors.darksalmon);
+thx.color.NamedColors.byName.set("darkseagreen",thx.color.NamedColors.darkseagreen = thx.color.Rgb.fromInt(9419919));
+thx.color.NamedColors.byName.set("dark sea green",thx.color.NamedColors.darkseagreen);
+thx.color.NamedColors.byName.set("darkslateblue",thx.color.NamedColors.darkslateblue = thx.color.Rgb.fromInt(4734347));
+thx.color.NamedColors.byName.set("dark slate blue",thx.color.NamedColors.darkslateblue);
+thx.color.NamedColors.byName.set("darkslategray",thx.color.NamedColors.darkslategray = thx.color.NamedColors.darkslategrey = thx.color.Rgb.fromInt(3100495));
+thx.color.NamedColors.byName.set("dark slate gray",thx.color.NamedColors.darkslategray);
+thx.color.NamedColors.byName.set("darkslategrey",thx.color.NamedColors.darkslategrey);
+thx.color.NamedColors.byName.set("dark slate grey",thx.color.NamedColors.darkslategrey);
+thx.color.NamedColors.byName.set("darkturquoise",thx.color.NamedColors.darkturquoise = thx.color.Rgb.fromInt(52945));
+thx.color.NamedColors.byName.set("dark turquoise",thx.color.NamedColors.darkturquoise);
+thx.color.NamedColors.byName.set("darkviolet",thx.color.NamedColors.darkviolet = thx.color.Rgb.fromInt(9699539));
+thx.color.NamedColors.byName.set("dark violet",thx.color.NamedColors.darkviolet);
+thx.color.NamedColors.byName.set("deeppink",thx.color.NamedColors.deeppink = thx.color.Rgb.fromInt(16716947));
+thx.color.NamedColors.byName.set("deep pink",thx.color.NamedColors.deeppink);
+thx.color.NamedColors.byName.set("deepskyblue",thx.color.NamedColors.deepskyblue = thx.color.Rgb.fromInt(49151));
+thx.color.NamedColors.byName.set("deep sky blue",thx.color.NamedColors.deepskyblue);
+thx.color.NamedColors.byName.set("dimgray",thx.color.NamedColors.dimgray = thx.color.NamedColors.dimgrey = thx.color.Rgb.fromInt(6908265));
+thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
+thx.color.NamedColors.byName.set("dimgrey",thx.color.NamedColors.dimgrey);
+thx.color.NamedColors.byName.set("dim grey",thx.color.NamedColors.dimgrey);
+thx.color.NamedColors.byName.set("dodgerblue",thx.color.NamedColors.dodgerblue = thx.color.Rgb.fromInt(2003199));
+thx.color.NamedColors.byName.set("dodger blue",thx.color.NamedColors.dodgerblue);
+thx.color.NamedColors.byName.set("firebrick",thx.color.NamedColors.firebrick = thx.color.Rgb.fromInt(11674146));
+thx.color.NamedColors.byName.set("fire brick",thx.color.NamedColors.firebrick);
+thx.color.NamedColors.byName.set("floralwhite",thx.color.NamedColors.floralwhite = thx.color.Rgb.fromInt(16775920));
+thx.color.NamedColors.byName.set("floral white",thx.color.NamedColors.floralwhite);
+thx.color.NamedColors.byName.set("forestgreen",thx.color.NamedColors.forestgreen = thx.color.Rgb.fromInt(2263842));
+thx.color.NamedColors.byName.set("forest green",thx.color.NamedColors.forestgreen);
+thx.color.NamedColors.byName.set("fuchsia",thx.color.NamedColors.fuchsia = thx.color.Rgb.fromInt(16711935));
+thx.color.NamedColors.byName.set("gainsboro",thx.color.NamedColors.gainsboro = thx.color.Rgb.fromInt(14474460));
+thx.color.NamedColors.byName.set("ghostwhite",thx.color.NamedColors.ghostwhite = thx.color.Rgb.fromInt(16316671));
+thx.color.NamedColors.byName.set("ghost white",thx.color.NamedColors.ghostwhite);
+thx.color.NamedColors.byName.set("gold",thx.color.NamedColors.gold = thx.color.Rgb.fromInt(16766720));
+thx.color.NamedColors.byName.set("goldenrod",thx.color.NamedColors.goldenrod = thx.color.Rgb.fromInt(14329120));
+thx.color.NamedColors.byName.set("golden rod",thx.color.NamedColors.goldenrod);
+thx.color.NamedColors.byName.set("gray",thx.color.NamedColors.gray = thx.color.NamedColors.grey = thx.color.Rgb.fromInt(8421504));
+thx.color.NamedColors.byName.set("grey",thx.color.NamedColors.grey);
+thx.color.NamedColors.byName.set("green",thx.color.NamedColors.green = thx.color.Rgb.fromInt(32768));
+thx.color.NamedColors.byName.set("greenyellow",thx.color.NamedColors.greenyellow = thx.color.Rgb.fromInt(11403055));
+thx.color.NamedColors.byName.set("green yellow",thx.color.NamedColors.greenyellow);
+thx.color.NamedColors.byName.set("honeydew",thx.color.NamedColors.honeydew = thx.color.Rgb.fromInt(15794160));
+thx.color.NamedColors.byName.set("honey dew",thx.color.NamedColors.honeydew);
+thx.color.NamedColors.byName.set("hotpink",thx.color.NamedColors.hotpink = thx.color.Rgb.fromInt(16738740));
+thx.color.NamedColors.byName.set("hot pink",thx.color.NamedColors.hotpink);
+thx.color.NamedColors.byName.set("indianred",thx.color.NamedColors.indianred = thx.color.Rgb.fromInt(13458524));
+thx.color.NamedColors.byName.set("indian red",thx.color.NamedColors.indianred);
+thx.color.NamedColors.byName.set("indigo",thx.color.NamedColors.indigo = thx.color.Rgb.fromInt(4915330));
+thx.color.NamedColors.byName.set("ivory",thx.color.NamedColors.ivory = thx.color.Rgb.fromInt(16777200));
+thx.color.NamedColors.byName.set("khaki",thx.color.NamedColors.khaki = thx.color.Rgb.fromInt(15787660));
+thx.color.NamedColors.byName.set("lavender",thx.color.NamedColors.lavender = thx.color.Rgb.fromInt(15132410));
+thx.color.NamedColors.byName.set("lavenderblush",thx.color.NamedColors.lavenderblush = thx.color.Rgb.fromInt(16773365));
+thx.color.NamedColors.byName.set("lavender blush",thx.color.NamedColors.lavenderblush);
+thx.color.NamedColors.byName.set("lawngreen",thx.color.NamedColors.lawngreen = thx.color.Rgb.fromInt(8190976));
+thx.color.NamedColors.byName.set("lawn green",thx.color.NamedColors.lawngreen);
+thx.color.NamedColors.byName.set("lemonchiffon",thx.color.NamedColors.lemonchiffon = thx.color.Rgb.fromInt(16775885));
+thx.color.NamedColors.byName.set("lemon chiffon",thx.color.NamedColors.lemonchiffon);
+thx.color.NamedColors.byName.set("lightblue",thx.color.NamedColors.lightblue = thx.color.Rgb.fromInt(11393254));
+thx.color.NamedColors.byName.set("light blue",thx.color.NamedColors.lightblue);
+thx.color.NamedColors.byName.set("lightcoral",thx.color.NamedColors.lightcoral = thx.color.Rgb.fromInt(15761536));
+thx.color.NamedColors.byName.set("light coral",thx.color.NamedColors.lightcoral);
+thx.color.NamedColors.byName.set("lightcyan",thx.color.NamedColors.lightcyan = thx.color.Rgb.fromInt(14745599));
+thx.color.NamedColors.byName.set("light cyan",thx.color.NamedColors.lightcyan);
+thx.color.NamedColors.byName.set("lightgoldenrodyellow",thx.color.NamedColors.lightgoldenrodyellow = thx.color.Rgb.fromInt(16448210));
+thx.color.NamedColors.byName.set("light golden rod yellow",thx.color.NamedColors.lightgoldenrodyellow);
+thx.color.NamedColors.byName.set("lightgray",thx.color.NamedColors.lightgray = thx.color.NamedColors.lightgrey = thx.color.Rgb.fromInt(13882323));
+thx.color.NamedColors.byName.set("light gray",thx.color.NamedColors.lightgray);
+thx.color.NamedColors.byName.set("lightgrey",thx.color.NamedColors.lightgrey);
+thx.color.NamedColors.byName.set("light grey",thx.color.NamedColors.lightgrey);
+thx.color.NamedColors.byName.set("lightgreen",thx.color.NamedColors.lightgreen = thx.color.Rgb.fromInt(9498256));
+thx.color.NamedColors.byName.set("light green",thx.color.NamedColors.lightgreen);
+thx.color.NamedColors.byName.set("lightpink",thx.color.NamedColors.lightpink = thx.color.Rgb.fromInt(16758465));
+thx.color.NamedColors.byName.set("light pink",thx.color.NamedColors.lightpink);
+thx.color.NamedColors.byName.set("lightsalmon",thx.color.NamedColors.lightsalmon = thx.color.Rgb.fromInt(16752762));
+thx.color.NamedColors.byName.set("light salmon",thx.color.NamedColors.lightsalmon);
+thx.color.NamedColors.byName.set("lightseagreen",thx.color.NamedColors.lightseagreen = thx.color.Rgb.fromInt(2142890));
+thx.color.NamedColors.byName.set("light sea green",thx.color.NamedColors.lightseagreen);
+thx.color.NamedColors.byName.set("lightskyblue",thx.color.NamedColors.lightskyblue = thx.color.Rgb.fromInt(8900346));
+thx.color.NamedColors.byName.set("light sky blue",thx.color.NamedColors.lightskyblue);
+thx.color.NamedColors.byName.set("lightslategray",thx.color.NamedColors.lightslategray = thx.color.NamedColors.lightslategrey = thx.color.Rgb.fromInt(7833753));
+thx.color.NamedColors.byName.set("light slate gray",thx.color.NamedColors.lightslategray);
+thx.color.NamedColors.byName.set("lightslategrey",thx.color.NamedColors.lightslategrey);
+thx.color.NamedColors.byName.set("light slate grey",thx.color.NamedColors.lightslategrey);
+thx.color.NamedColors.byName.set("lightsteelblue",thx.color.NamedColors.lightsteelblue = thx.color.Rgb.fromInt(11584734));
+thx.color.NamedColors.byName.set("light steel blue",thx.color.NamedColors.lightsteelblue);
+thx.color.NamedColors.byName.set("lightyellow",thx.color.NamedColors.lightyellow = thx.color.Rgb.fromInt(16777184));
+thx.color.NamedColors.byName.set("light yellow",thx.color.NamedColors.lightyellow);
+thx.color.NamedColors.byName.set("lime",thx.color.NamedColors.lime = thx.color.Rgb.fromInt(65280));
+thx.color.NamedColors.byName.set("limegreen",thx.color.NamedColors.limegreen = thx.color.Rgb.fromInt(3329330));
+thx.color.NamedColors.byName.set("lime green",thx.color.NamedColors.limegreen);
+thx.color.NamedColors.byName.set("linen",thx.color.NamedColors.linen = thx.color.Rgb.fromInt(16445670));
+thx.color.NamedColors.byName.set("magenta",thx.color.NamedColors.magenta = thx.color.Rgb.fromInt(16711935));
+thx.color.NamedColors.byName.set("maroon",thx.color.NamedColors.maroon = thx.color.Rgb.fromInt(8388608));
+thx.color.NamedColors.byName.set("mediumaquamarine",thx.color.NamedColors.mediumaquamarine = thx.color.Rgb.fromInt(6737322));
+thx.color.NamedColors.byName.set("mediuma quamarine",thx.color.NamedColors.mediumaquamarine);
+thx.color.NamedColors.byName.set("mediumblue",thx.color.NamedColors.mediumblue = thx.color.Rgb.fromInt(205));
+thx.color.NamedColors.byName.set("medium blue",thx.color.NamedColors.mediumblue);
+thx.color.NamedColors.byName.set("mediumorchid",thx.color.NamedColors.mediumorchid = thx.color.Rgb.fromInt(12211667));
+thx.color.NamedColors.byName.set("medium orchid",thx.color.NamedColors.mediumorchid);
+thx.color.NamedColors.byName.set("mediumpurple",thx.color.NamedColors.mediumpurple = thx.color.Rgb.fromInt(9662683));
+thx.color.NamedColors.byName.set("medium purple",thx.color.NamedColors.mediumpurple);
+thx.color.NamedColors.byName.set("mediumseagreen",thx.color.NamedColors.mediumseagreen = thx.color.Rgb.fromInt(3978097));
+thx.color.NamedColors.byName.set("medium sea green",thx.color.NamedColors.mediumseagreen);
+thx.color.NamedColors.byName.set("mediumslateblue",thx.color.NamedColors.mediumslateblue = thx.color.Rgb.fromInt(8087790));
+thx.color.NamedColors.byName.set("medium slate blue",thx.color.NamedColors.mediumslateblue);
+thx.color.NamedColors.byName.set("mediumspringgreen",thx.color.NamedColors.mediumspringgreen = thx.color.Rgb.fromInt(64154));
+thx.color.NamedColors.byName.set("medium spring green",thx.color.NamedColors.mediumspringgreen);
+thx.color.NamedColors.byName.set("mediumturquoise",thx.color.NamedColors.mediumturquoise = thx.color.Rgb.fromInt(4772300));
+thx.color.NamedColors.byName.set("medium turquoise",thx.color.NamedColors.mediumturquoise);
+thx.color.NamedColors.byName.set("mediumvioletred",thx.color.NamedColors.mediumvioletred = thx.color.Rgb.fromInt(13047173));
+thx.color.NamedColors.byName.set("medium violet red",thx.color.NamedColors.mediumvioletred);
+thx.color.NamedColors.byName.set("midnightblue",thx.color.NamedColors.midnightblue = thx.color.Rgb.fromInt(1644912));
+thx.color.NamedColors.byName.set("midnight blue",thx.color.NamedColors.midnightblue);
+thx.color.NamedColors.byName.set("mintcream",thx.color.NamedColors.mintcream = thx.color.Rgb.fromInt(16121850));
+thx.color.NamedColors.byName.set("mint cream",thx.color.NamedColors.mintcream);
+thx.color.NamedColors.byName.set("mistyrose",thx.color.NamedColors.mistyrose = thx.color.Rgb.fromInt(16770273));
+thx.color.NamedColors.byName.set("misty rose",thx.color.NamedColors.mistyrose);
+thx.color.NamedColors.byName.set("moccasin",thx.color.NamedColors.moccasin = thx.color.Rgb.fromInt(16770229));
+thx.color.NamedColors.byName.set("navajowhite",thx.color.NamedColors.navajowhite = thx.color.Rgb.fromInt(16768685));
+thx.color.NamedColors.byName.set("navajo white",thx.color.NamedColors.navajowhite);
+thx.color.NamedColors.byName.set("navy",thx.color.NamedColors.navy = thx.color.Rgb.fromInt(128));
+thx.color.NamedColors.byName.set("oldlace",thx.color.NamedColors.oldlace = thx.color.Rgb.fromInt(16643558));
+thx.color.NamedColors.byName.set("old lace",thx.color.NamedColors.oldlace);
+thx.color.NamedColors.byName.set("olive",thx.color.NamedColors.olive = thx.color.Rgb.fromInt(8421376));
+thx.color.NamedColors.byName.set("olivedrab",thx.color.NamedColors.olivedrab = thx.color.Rgb.fromInt(7048739));
+thx.color.NamedColors.byName.set("olive drab",thx.color.NamedColors.olivedrab);
+thx.color.NamedColors.byName.set("orange",thx.color.NamedColors.orange = thx.color.Rgb.fromInt(16753920));
+thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered = thx.color.Rgb.fromInt(16729344));
+thx.color.NamedColors.byName.set("orangered",thx.color.NamedColors.orangered);
+thx.color.NamedColors.byName.set("orchid",thx.color.NamedColors.orchid = thx.color.Rgb.fromInt(14315734));
+thx.color.NamedColors.byName.set("palegoldenrod",thx.color.NamedColors.palegoldenrod = thx.color.Rgb.fromInt(15657130));
+thx.color.NamedColors.byName.set("pale golden rod",thx.color.NamedColors.palegoldenrod);
+thx.color.NamedColors.byName.set("palegreen",thx.color.NamedColors.palegreen = thx.color.Rgb.fromInt(10025880));
+thx.color.NamedColors.byName.set("pale green",thx.color.NamedColors.palegreen);
+thx.color.NamedColors.byName.set("paleturquoise",thx.color.NamedColors.paleturquoise = thx.color.Rgb.fromInt(11529966));
+thx.color.NamedColors.byName.set("pale turquoise",thx.color.NamedColors.paleturquoise);
+thx.color.NamedColors.byName.set("palevioletred",thx.color.NamedColors.palevioletred = thx.color.Rgb.fromInt(14381203));
+thx.color.NamedColors.byName.set("pale violet red",thx.color.NamedColors.palevioletred);
+thx.color.NamedColors.byName.set("papayawhip",thx.color.NamedColors.papayawhip = thx.color.Rgb.fromInt(16773077));
+thx.color.NamedColors.byName.set("papaya whip",thx.color.NamedColors.papayawhip);
+thx.color.NamedColors.byName.set("peachpuff",thx.color.NamedColors.peachpuff = thx.color.Rgb.fromInt(16767673));
+thx.color.NamedColors.byName.set("peach puff",thx.color.NamedColors.peachpuff);
+thx.color.NamedColors.byName.set("peru",thx.color.NamedColors.peru = thx.color.Rgb.fromInt(13468991));
+thx.color.NamedColors.byName.set("pink",thx.color.NamedColors.pink = thx.color.Rgb.fromInt(16761035));
+thx.color.NamedColors.byName.set("plum",thx.color.NamedColors.plum = thx.color.Rgb.fromInt(14524637));
+thx.color.NamedColors.byName.set("powderblue",thx.color.NamedColors.powderblue = thx.color.Rgb.fromInt(11591910));
+thx.color.NamedColors.byName.set("powder blue",thx.color.NamedColors.powderblue);
+thx.color.NamedColors.byName.set("purple",thx.color.NamedColors.purple = thx.color.Rgb.fromInt(8388736));
+thx.color.NamedColors.byName.set("red",thx.color.NamedColors.red = thx.color.Rgb.fromInt(16711680));
+thx.color.NamedColors.byName.set("rosybrown",thx.color.NamedColors.rosybrown = thx.color.Rgb.fromInt(12357519));
+thx.color.NamedColors.byName.set("rosy brown",thx.color.NamedColors.rosybrown);
+thx.color.NamedColors.byName.set("royalblue",thx.color.NamedColors.royalblue = thx.color.Rgb.fromInt(4286945));
+thx.color.NamedColors.byName.set("royal blue",thx.color.NamedColors.royalblue);
+thx.color.NamedColors.byName.set("saddlebrown",thx.color.NamedColors.saddlebrown = thx.color.Rgb.fromInt(9127187));
+thx.color.NamedColors.byName.set("saddle brown",thx.color.NamedColors.saddlebrown);
+thx.color.NamedColors.byName.set("salmon",thx.color.NamedColors.salmon = thx.color.Rgb.fromInt(16416882));
+thx.color.NamedColors.byName.set("sandybrown",thx.color.NamedColors.sandybrown = thx.color.Rgb.fromInt(16032864));
+thx.color.NamedColors.byName.set("sandy brown",thx.color.NamedColors.sandybrown);
+thx.color.NamedColors.byName.set("seagreen",thx.color.NamedColors.seagreen = thx.color.Rgb.fromInt(3050327));
+thx.color.NamedColors.byName.set("sea green",thx.color.NamedColors.seagreen);
+thx.color.NamedColors.byName.set("seashell",thx.color.NamedColors.seashell = thx.color.Rgb.fromInt(16774638));
+thx.color.NamedColors.byName.set("sea shell",thx.color.NamedColors.seashell);
+thx.color.NamedColors.byName.set("sienna",thx.color.NamedColors.sienna = thx.color.Rgb.fromInt(10506797));
+thx.color.NamedColors.byName.set("silver",thx.color.NamedColors.silver = thx.color.Rgb.fromInt(12632256));
+thx.color.NamedColors.byName.set("skyblue",thx.color.NamedColors.skyblue = thx.color.Rgb.fromInt(8900331));
+thx.color.NamedColors.byName.set("sky blue",thx.color.NamedColors.skyblue);
+thx.color.NamedColors.byName.set("slateblue",thx.color.NamedColors.slateblue = thx.color.Rgb.fromInt(6970061));
+thx.color.NamedColors.byName.set("slate blue",thx.color.NamedColors.slateblue);
+thx.color.NamedColors.byName.set("slategray",thx.color.NamedColors.slategray = thx.color.NamedColors.slategrey = thx.color.Rgb.fromInt(7372944));
+thx.color.NamedColors.byName.set("slate gray",thx.color.NamedColors.slategray);
+thx.color.NamedColors.byName.set("slategrey",thx.color.NamedColors.slategrey);
+thx.color.NamedColors.byName.set("slate grey",thx.color.NamedColors.slategrey);
+thx.color.NamedColors.byName.set("snow",thx.color.NamedColors.snow = thx.color.Rgb.fromInt(16775930));
+thx.color.NamedColors.byName.set("springgreen",thx.color.NamedColors.springgreen = thx.color.Rgb.fromInt(65407));
+thx.color.NamedColors.byName.set("spring green",thx.color.NamedColors.springgreen);
+thx.color.NamedColors.byName.set("steelblue",thx.color.NamedColors.steelblue = thx.color.Rgb.fromInt(4620980));
+thx.color.NamedColors.byName.set("steel blue",thx.color.NamedColors.steelblue);
+thx.color.NamedColors.byName.set("tan",thx.color.NamedColors.tan = thx.color.Rgb.fromInt(13808780));
+thx.color.NamedColors.byName.set("teal",thx.color.NamedColors.teal = thx.color.Rgb.fromInt(32896));
+thx.color.NamedColors.byName.set("thistle",thx.color.NamedColors.thistle = thx.color.Rgb.fromInt(14204888));
+thx.color.NamedColors.byName.set("tomato",thx.color.NamedColors.tomato = thx.color.Rgb.fromInt(16737095));
+thx.color.NamedColors.byName.set("turquoise",thx.color.NamedColors.turquoise = thx.color.Rgb.fromInt(4251856));
+thx.color.NamedColors.byName.set("violet",thx.color.NamedColors.violet = thx.color.Rgb.fromInt(15631086));
+thx.color.NamedColors.byName.set("wheat",thx.color.NamedColors.wheat = thx.color.Rgb.fromInt(16113331));
+thx.color.NamedColors.byName.set("white",thx.color.NamedColors.white = thx.color.Rgb.fromInt(16777215));
+thx.color.NamedColors.byName.set("whitesmoke",thx.color.NamedColors.whitesmoke = thx.color.Rgb.fromInt(16119285));
+thx.color.NamedColors.byName.set("white smoke",thx.color.NamedColors.whitesmoke);
+thx.color.NamedColors.byName.set("yellow",thx.color.NamedColors.yellow = thx.color.Rgb.fromInt(16776960));
+thx.color.NamedColors.byName.set("yellowgreen",thx.color.NamedColors.yellowgreen = thx.color.Rgb.fromInt(10145074));
+thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
 thx.languages.En.getLanguage();
 thx.cultures.EnUS.getCulture();
-{
-	var j;
-	if(null != (j = window.JSON)) {
-		thx.json.Json.nativeDecoder = j.parse;
-		thx.json.Json.nativeEncoder = j.stringify;
-	}
+var j;
+if(null != (j = window.JSON)) {
+	thx.json.Json.nativeDecoder = j.parse;
+	thx.json.Json.nativeEncoder = j.stringify;
 }
-Constants.DIGITS_BN = "0123456789abcdefghijklmnopqrstuvwxyz";
-Constants.DIGITS_BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
-I32.ZERO = 0;
+Floats._reparse = new EReg("^(\\+|-)?\\d+(\\.\\d+)?(e-?\\d+)?$","");
 Ints._reparse = new EReg("^([+-])?\\d+$","");
 Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
 Strings._reCollapse = new EReg("\\s+","g");
 Strings.__ucwordsPattern = new EReg("[^a-zA-Z]([a-z])","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
-dhx.Access.FIELD_DATA = "__dhx_data__";
-dhx.Access.FIELD_EVENT = "__dhx_on__";
-dhx.Access.FIELD_TRANSITION = "__dhx_transition__";
 dhx.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 dhx.AccessClassed._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 dhx.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-js.Lib.onerror = null;
 dhx.Dom.doc = (function() {
 	var g = new dhx.Group([js.Lib.document]), gs = dhx.Selection.create([g]);
 	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
@@ -21539,7 +20444,6 @@ dhx.Namespace.prefix = (function() {
 })();
 dhx.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 dhx.Timer.timeout = 0;
-dhx.Timer.queue = null;
 dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
 dhx.BaseTransition._id = 0;
@@ -21551,22 +20455,25 @@ rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;
 rg.app.charts.App.chartsLoaded = 0;
 rg.axis.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
-rg.factory.FactoryLayout.LIMIT_WIDTH = 10;
-rg.factory.FactoryLayout.LIMIT_HEIGHT = 10;
-rg.factory.FactoryLayout.DEFAULT_WIDTH = 400;
-rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
 rg.html.widget.Logo.registry = new Hash();
 rg.html.widget.Logo._id = 0;
-rg.html.widget.Logo.LOGO_WIDTH = 194;
-rg.html.widget.Logo.LOGO_HEIGHT = 29;
-rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
-rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
+rg.info.Info.warner = window.console && window.console.warn?function(m) {
+	console.warn("" + Std.string(m));
+}:function(m) {
+};
 rg.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
 rg.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
+rg.info.filter.TransformerArray.instance = new rg.info.filter.TransformerArray();
+rg.info.filter.TransformerObject.instance = new rg.info.filter.TransformerObject();
+rg.info.filter.TransformerString.instance = new rg.info.filter.TransformerString();
+rg.info.filter.TransformerBool.instance = new rg.info.filter.TransformerBool();
+rg.info.filter.TransformerInt.instance = new rg.info.filter.TransformerInt();
+rg.info.filter.TransformerFloat.instance = new rg.info.filter.TransformerFloat();
+rg.info.filter.TransformerFunction.instance = new rg.info.filter.TransformerFunction();
 rg.interactive.RGDownloader.ALLOWED_FORMATS = ["pdf","ps","png","jpg","svg"];
 rg.interactive.RGLegacyRenderer.FORMAT = "jpg";
 rg.interactive.RGLegacyRenderer.nextframeid = 0;
@@ -21586,7 +20493,6 @@ rg.svg.chart.StreamGraph.vid = 0;
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
-rg.util.Properties.TIME_TOKEN = "time:";
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
 rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
 rg.visualization.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
@@ -21623,10 +20529,6 @@ thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.s
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
-thx.math.Const.TWO_PI = 6.283185307179586477;
-thx.math.Const.TO_DEGREE = 57.29577951308232088;
-thx.math.Const.TO_RADIAN = 0.01745329251994329577;
-thx.math.Const.LN10 = 2.302585092994046;
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;
 thx.svg.LineInternals.arcMax = 2 * Math.PI - 1e-6;
 thx.svg.LineInternals._lineBasisBezier1 = [0,2 / 3,1 / 3,0];
@@ -21635,4 +20537,4 @@ thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
 rg.app.charts.JSBridge.main();
-})()
+})();
