@@ -105,12 +105,12 @@ function(require, ace, ui) {
             focus : function() {
                 editor.focus();
             },
-            highlightSyntax : function(line, column, text, type) {
+            highlightSyntax : function(row, column, text, type) {
                 // https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/javascript.js
                 // https://groups.google.com/forum/?fromgroups#!topic/ace-discuss/joAFrXwWLX8
                 sess.setAnnotations([{
-                    row : line - 1,
-                    column : column - 1,
+                    row : row,
+                    column : column,
                     text : text,
                     type : type
                 }]);
@@ -119,7 +119,10 @@ function(require, ace, ui) {
                     sess.removeListener("change", removeAnnotations);
                 }
                 sess.on("change", removeAnnotations);
-                console.log(line, column);
+            },
+            setCursorPosition : function(row, column) {
+                editor.navigateTo(row, column);
+                editor.focus();
             },
             triggerExecute : execute,
             orientButton : orientButton

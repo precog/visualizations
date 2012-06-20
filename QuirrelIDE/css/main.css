@@ -92,6 +92,11 @@
     height: 18px;
 }
 
+.pg-ide .pg-position {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 @keyframes progressbg
 {
     0%   {background-position: 0 0;}

@@ -102,7 +102,7 @@ function(ui, formats, exportLanguages, openDialog, tplToolbar) {
                 map[type].display[0].checked = true;
                 map[type].display.button("refresh");
             }
-            map[type].update(result, options);
+            map[type].update(result, options, wrapper);
         }
 
         return wrapper = {
