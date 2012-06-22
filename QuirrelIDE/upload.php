@@ -132,6 +132,7 @@ function parsecsv($content) {
 
 		foreach ($lines as $key => $line) {
 			if(!$line) continue;
+			set_time_limit(0);
 			$values = str_getcsv($line);
 			$ob = array();
 			for($i = 0; $i < $len; $i++) {

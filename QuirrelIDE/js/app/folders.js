@@ -259,12 +259,13 @@ define([
                 e.preventDefault(); return false;
             });
 
-            function pollStatus(noty, id) {
+            function pollStatus(noty, id, retry) {
+                retry = retry || 0;
                 $.ajax({
                     url: UPLOAD_SERVICE,
                     data: { uuid : id },
                     success: function(data) {
-                        if(data.done === data.total) {
+                        if(data && data.done === data.total) {
                             var message;
                             if(data.failures) {
                                 if(data.total - data.failures === 0) {
@@ -274,19 +275,27 @@ define([
                                 }
                                 noty.progressError(message);
                             } else {
-                                message = 'all of the ' + data.total + ' events have been stored correctly and can now be used in your queries';
+                                message = 'all of the ' + data.total + ' events have been queued correctly and are now in the process to be ingested';
                                 noty.progressComplete(message);
                             }
 
                         } else {
-                            if(data.total > 0) {
-                                noty.el.find(".pg-ingest-message").html(
-                                    "ingested " + data.done + " events" + (data.failures ? " (" + data.failures + " failures)" : "") + " of " + data.total
-                                );
+                            if(!data) {
+                                if(retry > 10) {
+                                    message = 'all the events have been queued correctly and are now in the process to be ingested';
+                                    noty.progressComplete(message);
+                                    return;
+                                }
+                            } else {
+                                if(data.total > 0) {
+                                    noty.el.find(".pg-ingest-message").html(
+                                        "queued " + data.done + " events" + (data.failures ? " (" + data.failures + " failures)" : "") + " of " + data.total
+                                    );
+                                }
+                                noty.progressStep(data.done / data.total);
                             }
-                            noty.progressStep(data.done / data.total);
                             setTimeout(function() {
-                                pollStatus(noty, id);
+                                pollStatus(noty, id, data ? 0 : retry + 1);
                             }, 500);
                         }
                     },
@@ -315,8 +324,8 @@ define([
                     noty.progressStart('<div class="pg-ingest-phase">Phase 1 of 2</div><div class="pg-ingest-message">' + "uploading '" + filename + "'</div>");
                 }
                 function completeHandler() {
-                    noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be ingested and you will receive a notification as soon as it is ready for consumption.");
-                    noty.progressStart('<div class="pg-ingest-phase">Phase 2 of 2</div><div class="pg-ingest-message">storing events</div>');
+                    noty.progressComplete("'"+filename+"' has been uploaded to the path '<var>"+path+"</var>'. Now your data will be queued.");
+                    noty.progressStart('<div class="pg-ingest-phase">Phase 2 of 2</div><div class="pg-ingest-message">queue events</div>');
                     pollStatus(noty, id);
                 }
                 function errorHandler(e) {

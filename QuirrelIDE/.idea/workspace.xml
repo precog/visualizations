@@ -2,11 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb6d860b-1046-4b12-b675-d2477b327930" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/app/support.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/output.js" afterPath="$PROJECT_DIR$/js/app/output.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/output-error.js" afterPath="$PROJECT_DIR$/js/app/util/output-error.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" afterPath="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/bar-editor.js" afterPath="$PROJECT_DIR$/js/app/bar-editor.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/folders.js" afterPath="$PROJECT_DIR$/js/app/folders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/layout.js" afterPath="$PROJECT_DIR$/js/app/layout.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app/util/output-table.js" afterPath="$PROJECT_DIR$/js/app/util/output-table.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/templates/toolbar.status.html" afterPath="$PROJECT_DIR$/js/templates/toolbar.status.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/upload.php" afterPath="$PROJECT_DIR$/upload.php" />
     </list>
     <ignored path="PrecogIDE2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,19 +33,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="folders.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="177" column="23" selection-start="7037" selection-end="7037" vertical-scroll-proportion="-38.884617">
+            <state line="38" column="7" selection-start="1485" selection-end="1485" vertical-scroll-proportion="-23.75">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="output-error.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app/util/output-error.js">
+      <file leaf-file-name="output-table.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="34" selection-start="1316" selection-end="1316" vertical-scroll-proportion="0.0">
+            <state line="194" column="45" selection-start="6549" selection-end="6549" vertical-scroll-proportion="-28.26923">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bar-editor.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="31" selection-start="116" selection-end="116" vertical-scroll-proportion="0.049955398">
               <folding />
             </state>
           </provider>
@@ -49,58 +63,16 @@
       <file leaf-file-name="editors.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/editors.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="145" column="45" selection-start="4668" selection-end="4668" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="editor.ace.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
+      <file leaf-file-name="bar-status.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="120" column="36" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="edit_session.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/edit_session.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="122" column="18" selection-start="4382" selection-end="4382" vertical-scroll-proportion="-4.8461537">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ace.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/ace.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="92" column="9" selection-start="3271" selection-end="3276" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="event_emitter.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/lib/event_emitter.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="101" column="27" selection-start="3537" selection-end="3551" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="85" column="7" selection-start="2465" selection-end="2465" vertical-scroll-proportion="-13.884615">
+            <state line="26" column="0" selection-start="778" selection-end="778" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -109,16 +81,43 @@
       <file leaf-file-name="output.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/app/output.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="84" column="9" selection-start="2906" selection-end="2906" vertical-scroll-proportion="-7.1538463">
+            <state line="84" column="9" selection-start="2906" selection-end="2906" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.css" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="main.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="96" column="19" selection-start="1817" selection-end="1817" vertical-scroll-proportion="0.4926534">
+            <state line="109" column="29" selection-start="2049" selection-end="2049" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="layout.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="110" column="0" selection-start="3117" selection-end="3117" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="folders.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="321" column="17" selection-start="13508" selection-end="13508" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="support.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app/support.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="40" column="0" selection-start="1634" selection-end="1634" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,30 +136,30 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/templates/dialog.lineinput.html" />
-        <option value="$PROJECT_DIR$/js/app/util/dialog-lineinput.js" />
-        <option value="$PROJECT_DIR$/upload.php" />
-        <option value="$PROJECT_DIR$/js/app/util/utils.js" />
-        <option value="$PROJECT_DIR$/js/app/util/dialog-export.js" />
-        <option value="$PROJECT_DIR$/js/app/util/notification.js" />
         <option value="$PROJECT_DIR$/js/app/bar-status.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/app/util/precog.js" />
-        <option value="$PROJECT_DIR$/js/app/folders.js" />
         <option value="$PROJECT_DIR$/js/app/editors.js" />
         <option value="$PROJECT_DIR$/js/app/output.js" />
         <option value="$PROJECT_DIR$/js/app/util/output-error.js" />
-        <option value="$PROJECT_DIR$/js/main.js" />
         <option value="$PROJECT_DIR$/js/libs/editor/editor.ace.js" />
+        <option value="$PROJECT_DIR$/js/support.js" />
         <option value="$PROJECT_DIR$/css/main.css" />
+        <option value="$PROJECT_DIR$/js/app/support.js" />
+        <option value="$PROJECT_DIR$/js/templates/toolbar.status.html" />
+        <option value="$PROJECT_DIR$/js/app/folders.js" />
+        <option value="$PROJECT_DIR$/js/app/layout.js" />
+        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/app/util/output-table.js" />
+        <option value="$PROJECT_DIR$/js/app/bar-editor.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1050" />
+    <option name="x" value="1283" />
     <option name="y" value="22" />
-    <option name="width" value="1470" />
-    <option name="height" value="1327" />
+    <option name="width" value="1267" />
+    <option name="height" value="1304" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -188,16 +187,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -263,204 +252,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="slickgrid" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jstree" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jstree" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="themes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jstree" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="themes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="default" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="editor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="editor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ace" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="QuirrelIDE" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="editor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ace" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -582,6 +373,16 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -590,8 +391,8 @@
     <property name="options.lastSelected" value="editor.preferences.import" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -602,11 +403,11 @@
       <recent name="$PROJECT_DIR$/css/jquery/noty" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/js/app" />
       <recent name="$PROJECT_DIR$/css/jquery/images" />
       <recent name="$PROJECT_DIR$/css/jquery/datatables/images" />
       <recent name="$PROJECT_DIR$/css/jquery/slickgrid/images" />
       <recent name="$PROJECT_DIR$/js/libs/jquery/slickgrid" />
-      <recent name="$PROJECT_DIR$/css/jquery/slickgrid" />
     </key>
   </component>
   <component name="RunManager">
@@ -650,13 +451,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1050" y="22" width="1470" height="1327" extended-state="0" />
+    <frame x="1283" y="22" width="1267" height="1304" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20110573" sideWeight="0.57048094" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23392282" sideWeight="0.57048094" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -727,108 +528,98 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/app/util/dialog-export.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.status.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="39" selection-start="1471" selection-end="1471" vertical-scroll-proportion="0.0" />
+        <state line="14" column="48" selection-start="738" selection-end="738" vertical-scroll-proportion="0.1875" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/notification.js">
+    <entry file="file://$PROJECT_DIR$/js/templates/menu.editor.status.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="16" selection-start="2863" selection-end="2898" vertical-scroll-proportion="0.0" />
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Downloads/pnotify-1.1.1/jquery.pnotify.default.css">
+    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="0" selection-start="1178" selection-end="1372" vertical-scroll-proportion="0.0" />
+        <state line="120" column="36" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/jquery/pnotify/jquery.pnotify.js">
+    <entry file="file://$PROJECT_DIR$/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="833" column="23" selection-start="30252" selection-end="30267" vertical-scroll-proportion="0.0" />
+        <state line="73" column="37" selection-start="2091" selection-end="2091" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/jquery/pnotify/jquery.pnotify.default.css">
+    <entry file="file://$PROJECT_DIR$/js/app/util/precog.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="4" selection-start="813" selection-end="813" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/folders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="177" column="23" selection-start="7037" selection-end="7037" vertical-scroll-proportion="-38.884617">
+        <state line="38" column="7" selection-start="1485" selection-end="1485" vertical-scroll-proportion="-23.75">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/lib/event_emitter.js">
+    <entry file="file://$PROJECT_DIR$/js/app/bar-status.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="101" column="27" selection-start="3537" selection-end="3551" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/ace.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="9" selection-start="3271" selection-end="3276" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/ace/edit_session.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="18" selection-start="4382" selection-end="4382" vertical-scroll-proportion="-4.8461537">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
+        <state line="26" column="0" selection-start="778" selection-end="778" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app/output.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="84" column="9" selection-start="2906" selection-end="2906" vertical-scroll-proportion="-7.1538463">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/util/output-error.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="34" selection-start="1316" selection-end="1316" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="45" selection-start="4668" selection-end="4668" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="7" selection-start="2465" selection-end="2465" vertical-scroll-proportion="-13.884615">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/libs/editor/editor.ace.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="120" column="36" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.0">
+        <state line="84" column="9" selection-start="2906" selection-end="2906" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="19" selection-start="1817" selection-end="1817" vertical-scroll-proportion="0.4926534">
+        <state line="109" column="29" selection-start="2049" selection-end="2049" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/layout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="0" selection-start="3117" selection-end="3117" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/folders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="321" column="17" selection-start="13508" selection-end="13508" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/support.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="0" selection-start="1634" selection-end="1634" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/templates/toolbar.editor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="6" selection-start="159" selection-end="159" vertical-scroll-proportion="0.08108108">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/util/output-table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="194" column="45" selection-start="6549" selection-end="6549" vertical-scroll-proportion="-28.26923">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/editors.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app/bar-editor.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="31" selection-start="116" selection-end="116" vertical-scroll-proportion="0.049955398">
           <folding />
         </state>
       </provider>

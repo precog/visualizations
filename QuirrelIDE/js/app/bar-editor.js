@@ -41,6 +41,18 @@ function(ui, editors, openDialog, exportLanguages, tplToolbar) {
         }, 'li a');
 
         ui.button(elContext, {
+            icon : "ui-icon-mail-closed",
+            handler : function() {
+                var email   = 'support@precog.com',
+                    subject = 'Quirrel Help',
+                    body    = 'I need help with the following query:\n\n' + editors.getCode();
+
+                document.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+                e.preventDefault(); return false;
+            }
+        });
+
+        ui.button(elContext, {
             icon : "ui-icon-arrowthickstop-1-s",
             handler : function() {
                 openDialog("Download Query", exportLanguages, editors.getCode());

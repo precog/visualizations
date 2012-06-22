@@ -88,12 +88,6 @@ function() {
                     });
                 }
             }
-        } else if(null == value) {
-            columns.push({
-                id : "empty",
-                name : "No Records Match Your Query",
-                field : "empty"
-            });
         } else {
             columns.push({
                   id : "value"
@@ -179,9 +173,11 @@ function() {
                 if(grid) grid.destroy();
             } catch(e) {}
 
-
-            var model = createModel(data && data.length > 0 && data[0] || []);
-
+            var model = (!data || data.length == 0) ? [{
+                id : "empty",
+                name : "No Records Match Your Query",
+                field : "empty"
+            }] : createModel(data[0]);
             data = transformData(model, data);
 
             try {

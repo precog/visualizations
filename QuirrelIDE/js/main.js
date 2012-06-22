@@ -21,10 +21,11 @@ require([
     , "app/editorsync"
     , "app/output"
     , "app/folders"
+    , "app/support"
     , "util/precog"
 ],
 
-function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, precog) {
+function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarStatus, theme, buildEditor, sync, buildOutput, buildFolders, buildSupport, precog) {
     precog.cache.disable();
 
     var layout = createLayout(config.get("ioPanesVertical"));
@@ -77,8 +78,19 @@ function(config, createLayout, editors, buildBarMain, buildBarEditor, buildBarSt
 
     var output = buildOutput(layout.getOutput(), editors); // TODO editors should not be passed here
 
+    var support = buildSupport(layout.getSupport());
+
+    support.addPanel("tutorial", "http://quirrel-lang.org/tutorial.html");
+    support.addPanel("reference", "http://quirrel-lang.org/reference.html");
+    support.addPanel("IRC channel", "https://webchat.freenode.net/?channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32");
+
+//    support.addPanel("live support", "http://widget.mibbit.com/?settings=3e7a9e32a26494b80748cfe11f66e956&server=irc.mibbit.net&channel=%23precog_test_channel");
+//    support.addPanel("wsirc", "http://wsirc.mobi/mobileChat.aspx?username=u_******&server=binary.ipocalypse.net%3A6667&channel=%23quirrel&autojoin=true&color=%23eeeeee&dark=false");
+//    support.addPanel("freenode", "http://webchat.freenode.net?randomnick=1&channels=quirrel&uio=Mz1mYWxzZSY5PXRydWU32");
+
     $(layout).on("resizeCodeEditor", function() {
         output.resize();
+        support.resize();
     });
 
     $(output).on("syntaxError", function(_, pos) {
