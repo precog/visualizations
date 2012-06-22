@@ -42,7 +42,7 @@ function(ui, editors, openDialog, exportLanguages, tplToolbar) {
 
         ui.button(elContext, {
             icon : "ui-icon-mail-closed",
-            handler : function() {
+            handler : function(e) {
                 var email   = 'support@precog.com',
                     subject = 'Quirrel Help',
                     body    = 'I need help with the following query:\n\n' + editors.getCode();
