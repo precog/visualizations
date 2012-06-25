@@ -72,11 +72,15 @@ function(precog, md5, createStore, utils) {
                 return editor;
             },
             remove : function(index) {
-                // can't remove the last available tab
                 if(list.length == 1) return;
+                if(index === 0 && index === currentIndex) {
+                    this.activate(1);
+                }
                 if(index === currentIndex)
                 {
-                    this.activate(index === 0 ? index+1 : index-1);
+                    this.activate(index - 1);
+                } else if(index < currentIndex) {
+                    currentIndex--;
                 }
                 var editor = list[index];
                 if(editor)
@@ -87,7 +91,7 @@ function(precog, md5, createStore, utils) {
                 return editor;
             },
             list : function() {
-                return list.copy();
+                return list.splice(0);
             },
             count : function() {
                 return list.length;
@@ -137,7 +141,6 @@ function(precog, md5, createStore, utils) {
                 this.setField("code", code, index);
             },
             getOutputResult : function(index) {
-//                console.log("GET DATA " + JSON.stringify(this.getField("output.result", null, index)));
                 return this.getField("output.result", null, index);
             },
             setOutputResult : function(result, index) {
