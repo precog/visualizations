@@ -15,6 +15,7 @@ define([
 ],
     function(precog, md5, createStore, ui,  utils, notification, openRequestInputDialog, tplToolbar, tplNodeContextMenut, tplRootContextMenut){
         var UPLOAD_SERVICE = "upload.php",
+            DOWNLOAD_SERVICE = "download.php",
 //var UPLOAD_SERVICE = "https://appserver07.reportgrid.com/services/viz/precog/ide/upload.php",
             STORE_KEY = "pg-quirrel-virtualpaths-"+md5(precog.config.tokenId),
             basePath = precog.config.basePath || "/",
@@ -130,6 +131,14 @@ define([
                 });
             }
 
+            function downloadUrl(path) {
+//                var p = basePath.substr(0, basePath.length - 1) + path;
+                return DOWNLOAD_SERVICE
+                    + "?tokenId=" + encodeURIComponent(precog.config.tokenId)
+                    + "&analyticsService=" + encodeURIComponent(precog.config.analyticsService)
+                    + "&path=" + encodeURIComponent(path);
+            }
+
             var menuselected,
                 menu = ui.contextmenu(tplNodeContextMenut),
                 menuRoot = ui.contextmenu(tplRootContextMenut);
@@ -145,6 +154,12 @@ define([
             menu.find(".pg-create").click(function(e) {
                 var path = pathFromSelectedNode();
                 requestNodeCreationAt(path);
+                e.preventDefault(); return false;
+            });
+            menu.find(".pg-download").click(function(e) {
+                var path = pathFromSelectedNode();
+                window.location.href = downloadUrl(path);
+//                console.log(downloadUrl(path));
                 e.preventDefault(); return false;
             });
 
@@ -168,7 +183,7 @@ define([
                 menuselected = e.currentTarget;
                 e.preventDefault(); return false;
             });
-            wireFileUpload(elRoot.get(0));
+            wireFileUpload(elRoot.get(0), "/");
 
             function addFolder(name, path, callback, parent) {
                 if(!parent) parent = -1;
@@ -415,9 +430,7 @@ define([
                     e.preventDefault(); return false;
                 });
 
-
             function wireFileUpload(el, path) {
-                path = path || "/";
                 $(el).on("dragleave", function (e) {
                     $(this).removeClass("ui-state-active");
                     e.preventDefault(); return false;
@@ -432,8 +445,23 @@ define([
                     removeDragNotification();
                     e.preventDefault(); return false;
                 });
+/*
+console.log(window.FileReader);
+                if (!!window.FileReader) {
+                    console.log(el);
+                    $(el).find("a").on('dragstart', function(e) {
+                        console.log("DRAG START");
+                        if (this.dataset) {
+                            e.dataTransfer.setData('DownloadURL', downloadUrl(
+                                precog.config.tokenId,
+                                precog.config.analyticsService,
+                                path
+                            ));
+                        }
+                    }, false);
+                }
+*/
             }
-
             wrapper.refresh();
 
             store.monitor.bind("virtuals", function(_, paths) {

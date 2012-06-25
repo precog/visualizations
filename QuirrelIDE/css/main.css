@@ -298,6 +298,13 @@
 .pg-ingest-phase {
     font-weight: bold;
 }
+
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
 /*
 .pg-ide .ui-dialog {
     font-size: 25%;

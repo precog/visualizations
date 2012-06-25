@@ -97,6 +97,7 @@ define([
                 , maxSize : 800
                 , minSize : 305 // "240px"
                 , initClosed : false
+                , maskIframesOnResize : true
             }
         }));
 

@@ -150,7 +150,7 @@ function parsecsv($content) {
 }
 
 function track($file, $format, $path, $token, $service) {
-	require("Precog.php");
+	require("php/Precog.php");
 	// open file
 	$content = file_get_contents($file);
 	$result;

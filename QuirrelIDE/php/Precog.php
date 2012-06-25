@@ -11,6 +11,8 @@ class PrecogAPI {
  
     private $_tokenID = null;
     private $_baseUrl = null;
+    public $isError = false;
+    public $errorMessage = null;
 
     /*
      * Initialize a new PrecogAPI object
@@ -53,6 +55,17 @@ class PrecogAPI {
         return $return;
     }
 
+    /*
+     * Returns an array of sub-paths
+     * @params String - path
+     *
+     * @return Array - an array of values
+     */
+    public function listChildren($path)
+    {
+        return $this->query(":ls $path");
+    }
+
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
@@ -72,7 +85,7 @@ class PrecogAPI {
                 $http_params['http']['content'] = json_encode($params);
                 $http_params['http']['header'] = $header;
                 // workaround for php bug where http headers don't get sent in php 5.2
-                if(version_compare(PHP_VERSION, '5.3.0') == -1){
+                if(version_compare(PHP_VERSION, '5.2.14') < 0){
                     ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header);
                 }
             }//end if
