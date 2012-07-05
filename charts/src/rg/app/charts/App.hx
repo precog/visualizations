@@ -53,6 +53,7 @@ class App
 	public function visualization(el : Selection, jsoptions : Dynamic)
 	{
 		chartsCounter++;
+
 		var node = el.node(),
 			id = node.id;
 		if (null == id)
@@ -66,7 +67,7 @@ class App
 			uselegacy = !supportsSvg() || general.forcelegacy;
 
 		var visualization : Visualization = null;
-		params.options.marginheight = 29;
+//		params.options.marginheight = 29;
 		var ivariables : Array<rg.data.VariableIndependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableIndependent));
 		var dvariables : Array<rg.data.VariableDependent<Dynamic>> = cast variables.filter(function(v) return Std.is(v, VariableDependent));
 
@@ -130,7 +131,6 @@ class App
 
 			}
 		}
-
 		if(!uselegacy)
 		{
 			if(!jsoptions.options.a)
@@ -167,7 +167,7 @@ class App
 				return old;
 		}
 		var info = new InfoLayout().feed(options),
-			layout = new FactoryLayout().create(info, options.marginheight, container);
+			layout = new FactoryLayout().create(info, (null == options.marginheight) ? 0 : options.marginheight, container);
 		layouts.set(id, layout);
 		return layout;
 	}

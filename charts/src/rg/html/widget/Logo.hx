@@ -179,7 +179,11 @@ class Logo
 			'http://api.reportgrid.com/css/images/reportgrid-clear.png',
 			'http://api.reportgrid.com/css/images/reportgrid-cleart.png',
 			'http://api.reportgrid.com/css/images/reportgrid-dark.png',
-			'http://api.reportgrid.com/css/images/reportgrid-darkt.png'
+			'http://api.reportgrid.com/css/images/reportgrid-darkt.png',
+			'https://api.reportgrid.com/css/images/reportgrid-clear.png',
+			'https://api.reportgrid.com/css/images/reportgrid-cleart.png',
+			'https://api.reportgrid.com/css/images/reportgrid-dark.png',
+			'https://api.reportgrid.com/css/images/reportgrid-darkt.png'
 		];
 	}
 
