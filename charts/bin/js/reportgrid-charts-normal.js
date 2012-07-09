@@ -5678,7 +5678,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.33.8656"};
+	r.info.charts = { version : "1.4.34.8664"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -6024,8 +6024,8 @@ rg.axis.AxisNumeric.prototype = {
 			minors = null;
 		} else {
 			var mM = 5, mm = 20, stepM = rg.axis.AxisNumeric._step(span,mM), stepm = rg.axis.AxisNumeric._step(span,mm);
-			minors = Floats.range(start,end,stepm,true);
-			majors = Floats.range(start,end,stepM,true);
+			if(stepm == 0) minors = [0.0]; else minors = Floats.range(start,end,stepm,true);
+			if(stepM == 0) majors = [0.0]; else majors = Floats.range(start,end,stepM,true);
 		}
 		return rg.axis.Tickmarks.bound(null == minors?majors.map(function(d,i) {
 			return new rg.axis.Tickmark(d,true,(d - start) / (end - start));

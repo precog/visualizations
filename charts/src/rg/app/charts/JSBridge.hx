@@ -48,7 +48,7 @@ class JSBridge
 //			return;
 
 #if !release
-		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
+		if(haxe.Firebug.detect()) haxe.Log.trace = haxe.Firebug.trace;
 #end
 		var r : Dynamic = untyped __js__("(typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid");
 
