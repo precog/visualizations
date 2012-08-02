@@ -52,8 +52,8 @@ class Tooltip
 		;
 
 		background = container.append("div")
-//			.style("position").string("relative")
 			.style("display").string("block")
+			.style("position").string("static")
 			.append("div")
 				.style("z-index").string("-1")
 				.attr("class").string("rg_background")

@@ -1,29 +1,47 @@
 package rg.util;
 
-class Auth 
+class Auth
 {
-	var test : String;
+	var tests : Array<String>;
 	public function new(authCode : String)
 	{
-		test = Decrypt.decrypt(authCode);
+		try {
+			tests = Decrypt.decrypt(authCode).split(",");
+		} catch(e : Dynamic) {
+		}
 	}
 
 	public function authorize(host : String)
 	{
-		return test == host;
+		for(test in tests)
+		{
+			if(authorizeOne(host, test))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function authorizeOne(host : String, test : String)
+	{
+		if(host.substring(0, 2) == "*.")
+		{
+			return StringTools.endsWith("."+test, host.substring(1));
+		} else {
+			return test == host;
+		}
 	}
 
 	public function authorizeMany(hosts : Array<String>)
 	{
-		var auth = false;
 		for(host in hosts)
 		{
 			if(authorize(host))
 			{
-				auth = true;
-				break;
+				return true;
 			}
 		}
-		return auth;
+		return false;
 	}
 }

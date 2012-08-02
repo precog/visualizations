@@ -11,7 +11,7 @@
 -D js_shims
 -D noEmbedJS
 --no-traces
---dead-code-elimination
+#--dead-code-elimination
 --js-modern
 --macro keep(["thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 -cmd ./deploy.sh

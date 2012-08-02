@@ -519,34 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"contents": "/var/tmp//82d34242-244e-b44d-6299-672430777b8b zip /precog/beta/test/upload/zip ED0493A5-6044-4047-A404-BC87B46D4EED http://beta2012v1.precog.io/v1",
-			"settings":
-			{
-				"buffer_size": 147,
-				"line_ending": "Unix",
-				"name": "/var/tmp//82d34242-244e-b44d-6299-672430777b8b zip"
-			}
-		},
-		{
-			"contents": "<?php\n\ndefine('ISCLI', PHP_SAPI === 'cli');\n$GLOBALS['allowedformats'] = array(\"json\", \"csv\", \"zip\");\n\n// UTILS\nfunction get_request_headers() {\n    $headers = array();\n    foreach($_SERVER as $key => $value) {\n        if(strpos($key, 'HTTP_') === 0) {\n            $headers[str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;\n        }\n    }\n    return $headers;\n}\n\nfunction message($msg) {\n    header('Content-Type: application/json');\n    jsonmessage(json_encode($msg));\n}\n\nfunction jsonmessage($msg) {\n	die($msg);\n}\n\nfunction error($msg) {\n	header('HTTP/1.1 500 Internal Server');\n	message(array('error' => $msg, 'code' => 500));\n}\n\nfunction jsonerror($msg) {\n	header('HTTP/1.1 500 Internal Server');\n	jsonmessage($msg);\n}\n\nfunction statusfile($contentfile) {\n	return $contentfile . \".status.json\";\n}\n\nfunction writestatus($file, $content) {\n	file_put_contents(statusfile($file), json_encode($content));\n}\n\nfunction changestatuspermissions($file) {\n	chmod(statusfile($file), 0666);\n}\n\nfunction removestatus($file) {\n	unlink(statusfile($file));\n}\n\nfunction tmpstatusfile($id) {\n	$dir = sys_get_temp_dir();\n	if(\"/\" != substr($dir, -1)) $dir .= \"/\";\n	return \"$dir/$id\";\n}\n\nfunction cliterminate($file) {\n	unlink($file);\n	sleep(5);\n	removestatus($file);\n	die;\n}\n\nfunction clierror($file, $error) {\n	writestatus($file, array(\"error\" => $error, \"code\" => 500 ));\n	cliterminate($file);\n}\n\nfunction clistatus($file, $done, $total, $failures) {\n	writestatus($file, array(\"done\" => $done, \"total\" => $total , \"failures\" => $failures ));\n	if($done == $total)\n		cliterminate($file);\n}\n\n// ACTIONS\nfunction status($id) {\n	$file = statusfile(tmpstatusfile($id));\n	if(is_file($file)) {\n		$content = file_get_contents($file);\n		$json = json_decode($content, true);\n		if(isset($json[\"error\"]))\n			jsonerror($content);\n		else\n			jsonmessage($content);\n	} else {\n		error(\"error creating status file\");\n	}\n}\n\nfunction extractFiles($file, $destination, $formats) {\n	$zip = new ZipArchive();\n	if($zip->open($file) === false)\n		return null;\n	$entries = array();\n	$results = array('records' => array(), 'failures' => 0);\n	for($i = 0; $i < $zip->numFiles; $i++) {\n		$entry = $zip->getNameIndex($i);\n		foreach ($formats as $key => $format) {\n			if(strtolower(substr($entry, -strlen($format))) === $format) {\n				if(strpos($entry, '/.') || substr($entry, 0, 1) == '.')\n					continue;\n				try {\n					copy('zip://'.$file.'#'.$entry, $destination.$entry);\n				} catch(Exception $e) {\n					continue;\n				}\n				$content = file_get_contents($destination.$entry);\n				switch($format) {\n					case \"csv\":\n						$result = parsecsv($content);\n						break;\n					case \"json\":\n						$result = parsejson($content);\n						break;\n				}\n				if($result) {\n					$results[\"records\"] = array_merge($results[\"records\"], $result[\"records\"]);\n					$results[\"failures\"] += $result[\"failures\"];\n				} else {\n					$results[\"failures\"]++;\n				}\n			}\n		}\n	}\n	return $results;\n}\n\nfunction parsezip($file) {\n    return extractFiles($file, sys_get_temp_dir(), array('json', 'csv'));\n}\n\nfunction parsejson($content) {\n	$records = array();\n	$errors  = 0;\n	$total   = 0;\n	try {\n		$json = json_decode($content, true);\n		if(null == $json) {\n			throw new Exception(\"Invalid JSON\", 1);\n		}\n		if(isset($json[0])) // is indexed\n			$records = $json;\n		else\n			$records[] = array($json);\n	} catch(Exception $e) {\n		// try one json per line\n		$lines = explode(\"\\n\", $content);\n		foreach ($lines as $key => $value) {\n			if(!$value) continue;\n			$value = trim($value);\n			$total++;\n			if(!(substr($value, 0, 1) == '{' && substr($value, -1) == '}') || null == ($record = json_decode($value, true)))\n				$errors++;\n			else\n				$records[] = $record;\n		}\n	}\n	if($errors == $total) // all errors, invalid file format\n		return null;\n	else\n		return array(\"records\" => $records, \"failures\" => $errors);\n}\n\nfunction parsecsv($content) {\n	$records = array();\n\n	try {\n		$lines = preg_split(\"/\\r\\n|\\n|\\r/\", $content);\n\n		while(!($line = array_shift($lines))) {}\n		$headers = str_getcsv($line);\n		$len = count($headers);\n\n		foreach ($lines as $key => $line) {\n			if(!$line) continue;\n			set_time_limit(0);\n			$values = str_getcsv($line);\n			$ob = array();\n			for($i = 0; $i < $len; $i++) {\n				$ob[$headers[$i]] = is_numeric($values[$i]) ? 0+$values[$i] : $values[$i];\n			}\n			$records[] = $ob;\n		}\n	} catch(Exception $e) {\n		return null;\n	}\n	if(0 == count($records)) // all errors, invalid file format\n		return null;\n	else\n		return array(\"records\" => $records, \"failures\" => 0);\n}\n\nfunction track($file, $format, $path, $token, $service) {\n	require(\"php/Precog.php\");\n	// open file\n	$result;\n	// parse contents\n	switch($format) {\n		case \"csv\":\n			$result = parsecsv(file_get_contents($file));\n			break;\n		case \"json\":\n			$result = parsejson(file_get_contents($file));\n			break;\n		case \"zip\":\n			$result = parsezip($file);\n			break;\n	}\n	if(null == $result) {\n		clierror($file, \"invalid content for \" . $format);\n	}\n	// calculate totals\n	$total = count($result['records']) + $result['failures'];\n	$current = $result['failures'];\n	clistatus($file, $current, $total, $result['failures']);\n\n	if(substr($service, -1) != '/')\n		$service .= \"/\";\n	if(substr($path, -1) != '/')\n		$path .= \"/\";\n\n	$precog = new PrecogAPI($token, $service);\n	// iterate on each line\n	foreach ($result['records'] as $key => $value) {\n		//	track single event\n		if(!$precog->store($path, $value)) {\n			$result['failures']++;\n			echo $precog->errorMessage .\"\\n\";\n		}\n		//	write status file\n		clistatus($file, ++$current, $total, $result['failures']);\n	}\n	// delete $filename\n	unlink($file);\n	// write final status file\n	clistatus($file, $total, $total, $result['failures']);\n	die(\"stored $total events ({$result['failures']} failures)\");\n}\n\nfunction execute($id, $upload, $path, $token, $service) {\n	// move the file to a temp location\n	$file = tmpstatusfile($id);\n	move_uploaded_file($upload['tmp_name'], $file);\n	chmod($file, 0666);\n	// writes the initial status file\n	clistatus($file, 0, -1, 0);\n	changestatuspermissions($file);\n	// prepare the threaded service\n	$format = strtolower(array_pop(explode('.', $upload['name'])));\n	if(!in_array($format, $GLOBALS['allowedformats'])) {\n		$format = 'json';\n	}\n	$script = __FILE__;\n	$run = \"php -q $script\";\n	$cargs = array();\n	foreach (array($file, $format, $path, $token, $service) as $key => $value) {\n		$cargs[] = escapeshellarg($value);\n	}\n	$run .= ' ' . implode(' ', $cargs);\n	// EXECUTE\n	`$run > /dev/null &`;\n}\n\n// APP\nif(ISCLI) {\n	try {\n		// check arguments length\n		if(!isset($argv) || count($argv) != 6) {\n			// no filename ... no way to send a proper message\n			die(\"no arguments or invalid number\");\n		}\n		array_shift($argv);\n		// get arguments\n		list($file, $format, $path, $token, $service) = $argv;\n\n		if(!is_file($file))\n			die(\"no data file\");\n		if(!$format)  clierror($file, \"invalid format argument\");\n		if(!$path)    clierror($file, \"invalid path argument\");\n		if(!$token)   clierror($file, \"invalid token argument\");\n		if(!$service) clierror($file, \"invalid service argument\");\n		track($file, $format, $path, $token, $service);\n	} catch(Exception $e) {\n		$dir = dirname(__FILE__);\n		file_put_contents($dir.\"/clierror\", $e);\n	}\n} elseif(isset($_GET['uuid'])) {\n	status($_GET['uuid']);\n} elseif (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {\n	if(@$_FILES[\"file\"][\"error\"])\n	{\n		error($_FILES[\"file\"][\"error\"]);\n	}\n	$headers = get_request_headers();\n\n	if(!isset($headers[\"X-Precog-Uuid\"])) error(\"UUID is not in the request\");\n	$id = $headers[\"X-Precog-Uuid\"];\n\n	if(!isset($headers[\"X-Precog-Path\"])) error(\"Path is not in the request\");\n	$path = $headers[\"X-Precog-Path\"];\n\n	if(!isset($headers[\"X-Precog-Token\"])) error(\"Token is not in the request\");\n	$token = $headers[\"X-Precog-Token\"];\n\n	if(!isset($headers[\"X-Precog-Service\"])) error(\"Service is not in the request\");\n	$service = $headers[\"X-Precog-Service\"];\n\n	if(!isset($headers[\"X-File-Name\"])) error(\"File Name is not in the request\");\n	$filename = $headers[\"X-File-Name\"];\n\n\n	$file = $_FILES[\"file\"];\n\n	execute($id, $file, $path, $token, $service);\n	message(array(\"message\" => \"tracking service started: \" . tmpstatusfile($id) . \" $path $token $service\"));\n	exit();\n} else {\n	error(\"Invalid Call\");\n}\n\n\n",
-			"file": "/Users/francoponticelli/Projects/reportgrid/quirrelide/upload.php",
-			"file_size": 8261,
-			"file_write_time": 1340728235000000,
-			"settings":
-			{
-				"buffer_size": 8261,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/Boot.hx",
-			"settings":
-			{
-				"buffer_size": 5873,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/HaXe/Hxml.sublime-build",
 	"command_palette":
@@ -660,6 +632,11 @@
 	},
 	"file_history":
 	[
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/lib/src/rg/util/Auth.hx",
+		"/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/Boot.hx",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
+		"/Users/francoponticelli/Projects/reportgrid/quirrelide/upload.php",
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/QuirrelIDE/php/zip_extension.lib.php",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/QuirrelIDE/upload.php",
 		"/Users/francoponticelli/Desktop/download/payload.json",
@@ -690,10 +667,8 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/version",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/app/query/JSBridge.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/data/random impression.json",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridQuery.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/query/ReportGridTransformers.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/ReportGridExecutorCache.hx",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/js/reportgrid-query.js",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/release.hxml",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/DataSourceReportGridGraph.hx",
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/src/rg/data/ITrackReportGrid.hx",
@@ -784,10 +759,7 @@
 		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/template.php",
 		"/Users/francoponticelli/Desktop/precog.html",
 		"/Users/francoponticelli/Projects/reportgrid/tools/insightexplorer/circlefive.html",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX301-Circle Five - series.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX302-Circle Five - pie.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/query/bin/service/samples/queries/XX301-Circle Five - series.js",
-		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX303-Circle Five - funnel.js"
+		"/Users/francoponticelli/Projects/reportgrid/visualizations/services/queries/samples/queries/XX301-Circle Five - series.js"
 	],
 	"find":
 	{
@@ -837,6 +809,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"_defaultOptions",
+			"?where : Dynamic",
 			"entries",
 			"var_dump",
 			"error_log",
@@ -962,9 +936,7 @@
 			"console",
 			"editor",
 			"fold",
-			"Field",
-			"asyncTransformStack",
-			"transformStack"
+			"Field"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1031,339 +1003,8 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"settings":
-					{
-						"buffer_size": 147,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								147,
-								0
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"auto_name": "/var/tmp//82d34242-244e-b44d-6299-672430777b8b zip",
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"text-indent": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/Users/francoponticelli/Projects/reportgrid/quirrelide/upload.php",
-					"settings":
-					{
-						"buffer_size": 8261,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1933,
-								1933
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"text-indent": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1226.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/francoponticelli/Documents/scripts/haxesrc/haxe/std/js/Boot.hx",
-					"settings":
-					{
-						"buffer_size": 5873,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1934,
-								1934
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"text-indent": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"haxe-build-id": 0,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 0.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/HaXe/HaXe.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 394.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -1398,6 +1039,10 @@
 		]
 	},
 	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 120.0
+	},
 	"replace":
 	{
 		"height": 62.0
@@ -1408,6 +1053,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"auth",
+				"lib/src/rg/util/Auth.hx"
+			],
 			[
 				"quer",
 				"lib/src/rg/query/Query.hx"
@@ -1915,10 +1564,6 @@
 			[
 				"testsu",
 				"visualizations/test/rg/graph/TestSugiyamaMethod.hx"
-			],
-			[
-				"greedyswi",
-				"visualizations/src/rg/graph/GreedySwitchDecrosser.hx"
 			]
 		],
 		"width": 0.0
@@ -1939,6 +1584,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 166.0,
+	"side_bar_width": 320.0,
 	"status_bar_visible": true
 }

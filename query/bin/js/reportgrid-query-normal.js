@@ -27,32 +27,6 @@ Arrays.flatten = function(arr) {
 	}
 	return r;
 }
-Arrays.format = function(v,param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"J");
-	var format = params.shift();
-	switch(format) {
-	case "J":
-		if(v.length == 0) {
-			var empty = null == params[1]?"[]":params[1];
-			return empty;
-		}
-		var sep = null == params[2]?", ":params[2];
-		var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
-		if(null != max && max < v.length) {
-			var elipsis = null == params[4]?" ...":params[4];
-			return v.slice().splice(0,max).map(function(d,i) {
-				return Dynamics.format(d,params[0],null,null,culture);
-			}).join(sep) + elipsis;
-		} else return v.map(function(d,i) {
-			return Dynamics.format(d,params[0],null,null,culture);
-		}).join(sep);
-		break;
-	case "C":
-		return Ints.format(v.length,"I",[],culture);
-	default:
-		throw "Unsupported array format: " + format;
-	}
-}
 Arrays.string = function(arr) {
 	return "[" + arr.map(function(v,_) {
 		return Dynamics.string(v);
@@ -105,6 +79,51 @@ DateTools.getMonthDays = function(d) {
 	if(month != 1) return DateTools.DAYS_OF_MONTH[month];
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 	return isB?29:28;
+}
+var EReg = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = ["EReg"];
+EReg.prototype = {
+	customReplace: function(s,f) {
+		var buf = new StringBuf();
+		while(true) {
+			if(!this.match(s)) break;
+			buf.b += Std.string(this.matchedLeft());
+			buf.b += Std.string(f(this));
+			s = this.matchedRight();
+		}
+		buf.b += Std.string(s);
+		return buf.b;
+	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,matchedRight: function() {
+		if(this.r.m == null) throw "No string matched";
+		var sz = this.r.m.index + this.r.m[0].length;
+		return this.r.s.substr(sz,this.r.s.length - sz);
+	}
+	,matchedLeft: function() {
+		if(this.r.m == null) throw "No string matched";
+		return this.r.s.substr(0,this.r.m.index);
+	}
+	,matched: function(n) {
+		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
+			var $r;
+			throw "EReg::matched";
+			return $r;
+		}(this));
+	}
+	,match: function(s) {
+		if(this.r.global) this.r.lastIndex = 0;
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		return this.r.m != null;
+	}
+	,r: null
+	,__class__: EReg
 }
 var Dates = function() { }
 Dates.__name__ = ["Dates"];
@@ -327,39 +346,6 @@ Dates.snap = function(time,period,mode) {
 }
 var Dynamics = function() { }
 Dynamics.__name__ = ["Dynamics"];
-Dynamics.format = function(v,param,params,nullstring,culture) {
-	return (Dynamics.formatf(param,params,nullstring,culture))(v);
-}
-Dynamics.formatf = function(param,params,nullstring,culture) {
-	if(nullstring == null) nullstring = "null";
-	return function(v) {
-		var $e = (Type["typeof"](v));
-		switch( $e[1] ) {
-		case 0:
-			return nullstring;
-		case 1:
-			return Ints.format(v,param,params,culture);
-		case 2:
-			return Floats.format(v,param,params,culture);
-		case 3:
-			return Bools.format(v,param,params,culture);
-		case 6:
-			var c = $e[2];
-			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
-			break;
-		case 4:
-			return Objects.format(v,param,params,culture);
-		case 5:
-			return "function()";
-		default:
-			return (function($this) {
-				var $r;
-				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 44, className : "Dynamics", methodName : "formatf"});
-				return $r;
-			}(this));
-		}
-	};
-}
 Dynamics.string = function(v) {
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
@@ -604,51 +590,6 @@ Dynamics.same = function(a,b) {
 		return $r;
 	}(this));
 }
-var EReg = function(r,opt) {
-	opt = opt.split("u").join("");
-	this.r = new RegExp(r,opt);
-};
-EReg.__name__ = ["EReg"];
-EReg.prototype = {
-	r: null
-	,match: function(s) {
-		if(this.r.global) this.r.lastIndex = 0;
-		this.r.m = this.r.exec(s);
-		this.r.s = s;
-		return this.r.m != null;
-	}
-	,matched: function(n) {
-		return this.r.m != null && n >= 0 && n < this.r.m.length?this.r.m[n]:(function($this) {
-			var $r;
-			throw "EReg::matched";
-			return $r;
-		}(this));
-	}
-	,matchedLeft: function() {
-		if(this.r.m == null) throw "No string matched";
-		return this.r.s.substr(0,this.r.m.index);
-	}
-	,matchedRight: function() {
-		if(this.r.m == null) throw "No string matched";
-		var sz = this.r.m.index + this.r.m[0].length;
-		return this.r.s.substr(sz,this.r.s.length - sz);
-	}
-	,replace: function(s,by) {
-		return s.replace(this.r,by);
-	}
-	,customReplace: function(s,f) {
-		var buf = new StringBuf();
-		while(true) {
-			if(!this.match(s)) break;
-			buf.add(this.matchedLeft());
-			buf.add(f(this));
-			s = this.matchedRight();
-		}
-		buf.b[buf.b.length] = s == null?"null":s;
-		return buf.b.join("");
-	}
-	,__class__: EReg
-}
 var Enums = function() { }
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
@@ -669,7 +610,8 @@ Enums.compare = function(a,b) {
 }
 var Floats = function() { }
 Floats.__name__ = ["Floats"];
-Floats.range = function(start,stop,step) {
+Floats.range = function(start,stop,step,inclusive) {
+	if(inclusive == null) inclusive = false;
 	if(step == null) step = 1.0;
 	if(null == stop) {
 		stop = start;
@@ -677,7 +619,9 @@ Floats.range = function(start,stop,step) {
 	}
 	if((stop - start) / step == Math.POSITIVE_INFINITY) throw new thx.error.Error("infinite range",null,null,{ fileName : "Floats.hx", lineNumber : 50, className : "Floats", methodName : "range"});
 	var range = [], i = -1.0, j;
-	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
+	if(inclusive) {
+		if(step < 0) while((j = start + step * ++i) >= stop) range.push(j); else while((j = start + step * ++i) <= stop) range.push(j);
+	} else if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
 }
 Floats.format = function(v,param,params,culture) {
@@ -712,7 +656,7 @@ Floats.formatf = function(param,params,culture) {
 	default:
 		return (function($this) {
 			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 145, className : "Floats", methodName : "formatf"});
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Floats.hx", lineNumber : 152, className : "Floats", methodName : "formatf"});
 			return $r;
 		}(this));
 	}
@@ -730,15 +674,12 @@ var Hash = function() {
 };
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
-	h: null
-	,set: function(key,value) {
-		this.h["$" + key] = value;
-	}
-	,get: function(key) {
-		return this.h["$" + key];
-	}
-	,exists: function(key) {
-		return this.h.hasOwnProperty("$" + key);
+	keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
 	}
 	,remove: function(key) {
 		key = "$" + key;
@@ -746,13 +687,16 @@ Hash.prototype = {
 		delete(this.h[key]);
 		return true;
 	}
-	,keys: function() {
-		var a = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
-		}
-		return HxOverrides.iter(a);
+	,exists: function(key) {
+		return this.h.hasOwnProperty("$" + key);
 	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,h: null
 	,__class__: Hash
 }
 var HxOverrides = function() { }
@@ -812,14 +756,8 @@ HxOverrides.iter = function(a) {
 		return this.arr[this.cur++];
 	}};
 }
-var IntHash = function() {
-	this.h = { };
-};
+var IntHash = function() { }
 IntHash.__name__ = ["IntHash"];
-IntHash.prototype = {
-	h: null
-	,__class__: IntHash
-}
 var Ints = function() { }
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
@@ -832,9 +770,6 @@ Ints.range = function(start,stop,step) {
 	var range = [], i = -1, j;
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
-}
-Ints.max = function(a,b) {
-	return a > b?a:b;
 }
 Ints.format = function(v,param,params,culture) {
 	return (Ints.formatf(param,params,culture))(v);
@@ -856,14 +791,6 @@ Iterators.array = function(it) {
 	while( it.hasNext() ) {
 		var v = it.next();
 		result.push(v);
-	}
-	return result;
-}
-Iterators.map = function(it,f) {
-	var result = [], i = 0;
-	while( it.hasNext() ) {
-		var v = it.next();
-		result.push(f(v,i++));
 	}
 	return result;
 }
@@ -898,14 +825,10 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
-var List = function() {
-	this.length = 0;
-};
+var List = function() { }
 List.__name__ = ["List"];
 List.prototype = {
-	h: null
-	,length: null
-	,iterator: function() {
+	iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
 		}, next : function() {
@@ -915,6 +838,7 @@ List.prototype = {
 			return x;
 		}};
 	}
+	,h: null
 	,__class__: List
 }
 var Objects = function() { }
@@ -1002,36 +926,6 @@ Objects.compare = function(a,b) {
 	}
 	return 0;
 }
-Objects.format = function(v,param,params,culture) {
-	return (Objects.formatf(param,params,culture))(v);
-}
-Objects.formatf = function(param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"R");
-	var format = params.shift();
-	switch(format) {
-	case "O":
-		return function(v) {
-			return Std.string(v);
-		};
-	case "R":
-		return function(v) {
-			var buf = [];
-			var _g = 0, _g1 = Reflect.fields(v);
-			while(_g < _g1.length) {
-				var field = _g1[_g];
-				++_g;
-				buf.push(field + ":" + Dynamics.format(Reflect.field(v,field),null,null,null,culture));
-			}
-			return "{" + buf.join(",") + "}";
-		};
-	default:
-		return (function($this) {
-			var $r;
-			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 242, className : "Objects", methodName : "formatf"});
-			return $r;
-		}(this));
-	}
-}
 var Reflect = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
@@ -1075,7 +969,7 @@ Std.string = function(s) {
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
-	if(v == 0 && HxOverrides.cca(x,1) == 120) v = parseInt(x);
+	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
 }
@@ -1083,14 +977,11 @@ Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
 var StringBuf = function() {
-	this.b = new Array();
+	this.b = "";
 };
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
-	add: function(x) {
-		this.b[this.b.length] = x == null?"null":x;
-	}
-	,b: null
+	b: null
 	,__class__: StringBuf
 }
 var StringTools = function() { }
@@ -1136,99 +1027,6 @@ StringTools.hex = function(n,digits) {
 }
 var Strings = function() { }
 Strings.__name__ = ["Strings"];
-Strings.format = function(pattern,values,nullstring,culture) {
-	if(nullstring == null) nullstring = "null";
-	if(null == values || 0 == values.length) return pattern;
-	return (Strings.formatf(pattern,nullstring,culture))(values);
-}
-Strings.formatf = function(pattern,nullstring,culture) {
-	if(nullstring == null) nullstring = "null";
-	var buf = [];
-	while(true) {
-		if(!Strings._reFormat.match(pattern)) {
-			buf.push((function() {
-				return function(_) {
-					return pattern;
-				};
-			})());
-			break;
-		}
-		var pos = Std.parseInt(Strings._reFormat.matched(1));
-		var format = Strings._reFormat.matched(2);
-		if(format == "") format = null;
-		var p = null;
-		var params = [];
-		var _g = 3;
-		while(_g < 20) {
-			var i = _g++;
-			p = Strings._reFormat.matched(i);
-			if(p == null || p == "") break;
-			params.push(thx.culture.FormatParams.cleanQuotes(p));
-		}
-		var left = [Strings._reFormat.matchedLeft()];
-		buf.push((function(left) {
-			return function(_) {
-				return left[0];
-			};
-		})(left));
-		var df = [Dynamics.formatf(format,params,nullstring,culture)];
-		buf.push(((function() {
-			return function(f,i) {
-				return (function() {
-					return function(v) {
-						return f(i,v);
-					};
-				})();
-			};
-		})())((function(df) {
-			return function(i,v) {
-				return df[0](v[i]);
-			};
-		})(df),pos));
-		pattern = Strings._reFormat.matchedRight();
-	}
-	return function(values) {
-		if(null == values) values = [];
-		return buf.map(function(df,_) {
-			return df(values);
-		}).join("");
-	};
-}
-Strings.formatOne = function(v,param,params,culture) {
-	return (Strings.formatOnef(param,params,culture))(v);
-}
-Strings.formatOnef = function(param,params,culture) {
-	params = thx.culture.FormatParams.params(param,params,"S");
-	var format = params.shift();
-	switch(format) {
-	case "S":
-		return function(v) {
-			return v;
-		};
-	case "T":
-		var len = params.length < 1?20:Std.parseInt(params[0]);
-		var ellipsis = params.length < 2?"...":params[1];
-		return Strings.ellipsisf(len,ellipsis);
-	case "PR":
-		var len = params.length < 1?10:Std.parseInt(params[0]);
-		var pad = params.length < 2?" ":params[1];
-		return function(v) {
-			return StringTools.rpad(v,pad,len);
-		};
-	case "PL":
-		var len = params.length < 1?10:Std.parseInt(params[0]);
-		var pad = params.length < 2?" ":params[1];
-		return function(v) {
-			return StringTools.lpad(v,pad,len);
-		};
-	default:
-		return (function($this) {
-			var $r;
-			throw "Unsupported string format: " + format;
-			return $r;
-		}(this));
-	}
-}
 Strings.rtrim = function(value,charlist) {
 	var len = value.length;
 	while(len > 0) {
@@ -1246,13 +1044,6 @@ Strings.ltrim = function(value,charlist) {
 		start++;
 	}
 	return HxOverrides.substr(value,start,null);
-}
-Strings.ellipsisf = function(maxlen,symbol) {
-	if(symbol == null) symbol = "...";
-	if(maxlen == null) maxlen = 20;
-	return function(s) {
-		if(s.length > maxlen) return HxOverrides.substr(s,0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
-	};
 }
 Strings.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
@@ -1376,6 +1167,40 @@ Types.typeName = function(o) {
 	}(this));
 }
 var haxe = {}
+haxe.Firebug = function() { }
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.onerror = haxe.Firebug.onError;
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
+}
+haxe.Log = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
 haxe.Md5 = function() {
 };
 haxe.Md5.__name__ = ["haxe","Md5"];
@@ -1383,77 +1208,7 @@ haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
 }
 haxe.Md5.prototype = {
-	bitOR: function(a,b) {
-		var lsb = a & 1 | b & 1;
-		var msb31 = a >>> 1 | b >>> 1;
-		return msb31 << 1 | lsb;
-	}
-	,bitXOR: function(a,b) {
-		var lsb = a & 1 ^ b & 1;
-		var msb31 = a >>> 1 ^ b >>> 1;
-		return msb31 << 1 | lsb;
-	}
-	,bitAND: function(a,b) {
-		var lsb = a & 1 & (b & 1);
-		var msb31 = a >>> 1 & b >>> 1;
-		return msb31 << 1 | lsb;
-	}
-	,addme: function(x,y) {
-		var lsw = (x & 65535) + (y & 65535);
-		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-		return msw << 16 | lsw & 65535;
-	}
-	,rhex: function(num) {
-		var str = "";
-		var hex_chr = "0123456789abcdef";
-		var _g = 0;
-		while(_g < 4) {
-			var j = _g++;
-			str += hex_chr.charAt(num >> j * 8 + 4 & 15) + hex_chr.charAt(num >> j * 8 & 15);
-		}
-		return str;
-	}
-	,str2blks: function(str) {
-		var nblk = (str.length + 8 >> 6) + 1;
-		var blks = new Array();
-		var _g1 = 0, _g = nblk * 16;
-		while(_g1 < _g) {
-			var i = _g1++;
-			blks[i] = 0;
-		}
-		var i = 0;
-		while(i < str.length) {
-			blks[i >> 2] |= HxOverrides.cca(str,i) << (str.length * 8 + i) % 4 * 8;
-			i++;
-		}
-		blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8;
-		var l = str.length * 8;
-		var k = nblk * 16 - 2;
-		blks[k] = l & 255;
-		blks[k] |= (l >>> 8 & 255) << 8;
-		blks[k] |= (l >>> 16 & 255) << 16;
-		blks[k] |= (l >>> 24 & 255) << 24;
-		return blks;
-	}
-	,rol: function(num,cnt) {
-		return num << cnt | num >>> 32 - cnt;
-	}
-	,cmn: function(q,a,b,x,s,t) {
-		return this.addme(this.rol(this.addme(this.addme(a,q),this.addme(x,t)),s),b);
-	}
-	,ff: function(a,b,c,d,x,s,t) {
-		return this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,d)),a,b,x,s,t);
-	}
-	,gg: function(a,b,c,d,x,s,t) {
-		return this.cmn(this.bitOR(this.bitAND(b,d),this.bitAND(c,~d)),a,b,x,s,t);
-	}
-	,hh: function(a,b,c,d,x,s,t) {
-		return this.cmn(this.bitXOR(this.bitXOR(b,c),d),a,b,x,s,t);
-	}
-	,ii: function(a,b,c,d,x,s,t) {
-		return this.cmn(this.bitXOR(c,this.bitOR(b,~d)),a,b,x,s,t);
-	}
-	,doEncode: function(str) {
+	doEncode: function(str) {
 		var x = this.str2blks(str);
 		var a = 1732584193;
 		var b = -271733879;
@@ -1539,6 +1294,76 @@ haxe.Md5.prototype = {
 		}
 		return this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d);
 	}
+	,ii: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitXOR(c,this.bitOR(b,~d)),a,b,x,s,t);
+	}
+	,hh: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitXOR(this.bitXOR(b,c),d),a,b,x,s,t);
+	}
+	,gg: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitOR(this.bitAND(b,d),this.bitAND(c,~d)),a,b,x,s,t);
+	}
+	,ff: function(a,b,c,d,x,s,t) {
+		return this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,d)),a,b,x,s,t);
+	}
+	,cmn: function(q,a,b,x,s,t) {
+		return this.addme(this.rol(this.addme(this.addme(a,q),this.addme(x,t)),s),b);
+	}
+	,rol: function(num,cnt) {
+		return num << cnt | num >>> 32 - cnt;
+	}
+	,str2blks: function(str) {
+		var nblk = (str.length + 8 >> 6) + 1;
+		var blks = new Array();
+		var _g1 = 0, _g = nblk * 16;
+		while(_g1 < _g) {
+			var i = _g1++;
+			blks[i] = 0;
+		}
+		var i = 0;
+		while(i < str.length) {
+			blks[i >> 2] |= HxOverrides.cca(str,i) << (str.length * 8 + i) % 4 * 8;
+			i++;
+		}
+		blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8;
+		var l = str.length * 8;
+		var k = nblk * 16 - 2;
+		blks[k] = l & 255;
+		blks[k] |= (l >>> 8 & 255) << 8;
+		blks[k] |= (l >>> 16 & 255) << 16;
+		blks[k] |= (l >>> 24 & 255) << 24;
+		return blks;
+	}
+	,rhex: function(num) {
+		var str = "";
+		var hex_chr = "0123456789abcdef";
+		var _g = 0;
+		while(_g < 4) {
+			var j = _g++;
+			str += hex_chr.charAt(num >> j * 8 + 4 & 15) + hex_chr.charAt(num >> j * 8 & 15);
+		}
+		return str;
+	}
+	,addme: function(x,y) {
+		var lsw = (x & 65535) + (y & 65535);
+		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+		return msw << 16 | lsw & 65535;
+	}
+	,bitAND: function(a,b) {
+		var lsb = a & 1 & (b & 1);
+		var msb31 = a >>> 1 & b >>> 1;
+		return msb31 << 1 | lsb;
+	}
+	,bitXOR: function(a,b) {
+		var lsb = a & 1 ^ b & 1;
+		var msb31 = a >>> 1 ^ b >>> 1;
+		return msb31 << 1 | lsb;
+	}
+	,bitOR: function(a,b) {
+		var lsb = a & 1 | b & 1;
+		var msb31 = a >>> 1 | b >>> 1;
+		return msb31 << 1 | lsb;
+	}
 	,__class__: haxe.Md5
 }
 haxe.Timer = function(time_ms) {
@@ -1557,19 +1382,28 @@ haxe.Timer.delay = function(f,time_ms) {
 	return t;
 }
 haxe.Timer.prototype = {
-	id: null
+	run: function() {
+	}
 	,stop: function() {
 		if(this.id == null) return;
 		window.clearInterval(this.id);
 		this.id = null;
 	}
-	,run: function() {
-	}
+	,id: null
 	,__class__: haxe.Timer
 }
 var js = {}
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
+js.Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+js.Boot.__trace = function(v,i) {
+	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
+	msg += js.Boot.__string_rec(v,"");
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -1678,6 +1512,8 @@ js.Boot.__instanceof = function(o,cl) {
 		return o.__enum__ == cl;
 	}
 }
+js.Lib = function() { }
+js.Lib.__name__ = ["js","Lib"];
 var rg = {}
 rg.app = {}
 rg.app.query = {}
@@ -1701,6 +1537,7 @@ rg.app.query.JSBridge.createQuery = function(executor) {
 	return query;
 }
 rg.app.query.JSBridge.main = function() {
+	if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
 	var storage;
 	if(rg.storage.BrowserStorage.hasSessionStorage()) storage = rg.storage.BrowserStorage.sessionStorage(); else storage = new rg.storage.MemoryStorage();
 	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid, timeout = 120, executor = new rg.data.ReportGridExecutorCache(r,storage,timeout);
@@ -1718,7 +1555,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.13.1638"};
+	r.info.query = { version : "1.3.13.1641"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -1757,21 +1594,21 @@ rg.data = {}
 rg.data.IExecutorReportGrid = function() { }
 rg.data.IExecutorReportGrid.__name__ = ["rg","data","IExecutorReportGrid"];
 rg.data.IExecutorReportGrid.prototype = {
-	children: null
-	,propertyCount: null
-	,propertySeries: null
-	,propertyMeans: null
-	,propertyStandardDeviations: null
-	,propertySums: null
-	,propertyValues: null
-	,propertyValueCount: null
-	,propertyValueSeries: null
-	,searchCount: null
-	,searchSeries: null
-	,intersect: null
-	,histogram: null
+	events: null
 	,propertiesHistogram: null
-	,events: null
+	,histogram: null
+	,intersect: null
+	,searchSeries: null
+	,searchCount: null
+	,propertyValueSeries: null
+	,propertyValueCount: null
+	,propertyValues: null
+	,propertySums: null
+	,propertyStandardDeviations: null
+	,propertyMeans: null
+	,propertySeries: null
+	,propertyCount: null
+	,children: null
 	,__class__: rg.data.IExecutorReportGrid
 }
 rg.data.ReportGridExecutorCache = function(executor,storage,timeout) {
@@ -1784,71 +1621,58 @@ rg.data.ReportGridExecutorCache = function(executor,storage,timeout) {
 rg.data.ReportGridExecutorCache.__name__ = ["rg","data","ReportGridExecutorCache"];
 rg.data.ReportGridExecutorCache.__interfaces__ = [rg.data.IExecutorReportGrid];
 rg.data.ReportGridExecutorCache.prototype = {
-	timeout: null
-	,executor: null
-	,storage: null
-	,queue: null
-	,children: function(path,options,success,error) {
-		this.execute("children",path,options,success,error);
+	uidquery: function(method,path,options) {
+		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
+		return haxe.Md5.encode(s);
 	}
-	,propertyCount: function(path,options,success,error) {
-		this.execute("propertyCount",path,options,success,error);
+	,getQueue: function(id) {
+		if(this.timeout < 0) return null;
+		return this.queue.get(id);
 	}
-	,propertySeries: function(path,options,success,error) {
-		this.execute("propertySeries",path,options,success,error);
-	}
-	,propertyMeans: function(path,options,success,error) {
-		this.execute("propertyMeans",path,options,success,error);
-	}
-	,propertyStandardDeviations: function(path,options,success,error) {
-		this.execute("propertyStandardDeviations",path,options,success,error);
-	}
-	,propertySums: function(path,options,success,error) {
-		this.execute("propertySums",path,options,success,error);
-	}
-	,propertyValues: function(path,options,success,error) {
-		this.execute("propertyValues",path,options,success,error);
-	}
-	,propertyValueCount: function(path,options,success,error) {
-		this.execute("propertyValueCount",path,options,success,error);
-	}
-	,propertyValueSeries: function(path,options,success,error) {
-		this.execute("propertyValueSeries",path,options,success,error);
-	}
-	,searchCount: function(path,options,success,error) {
-		this.execute("searchCount",path,options,success,error);
-	}
-	,searchSeries: function(path,options,success,error) {
-		this.execute("searchSeries",path,options,success,error);
-	}
-	,intersect: function(path,options,success,error) {
-		this.execute("intersect",path,options,success,error);
-	}
-	,histogram: function(path,options,success,error) {
-		this.execute("histogram",path,options,success,error);
-	}
-	,propertiesHistogram: function(path,options,success,error) {
-		this.execute("propertiesHistogram",path,options,success,error);
-	}
-	,events: function(path,options,success,error) {
-		this.execute("events",path,options,success,error);
-	}
-	,execute: function(name,path,options,success,error) {
-		this.normalizePeriod(options);
-		var id = this.uidquery(name,path,options), val = this.cacheGet(id);
-		if(null != val) {
-			success(val);
-			return;
+	,cleanOld: function() {
+		var _g = 0, _g1 = this.ids();
+		while(_g < _g1.length) {
+			var id = _g1[_g];
+			++_g;
+			this.clearValueIfOld(id);
 		}
-		var q = this.getQueue(id);
-		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.storageSuccess(id,success),error);
 	}
-	,normalizePeriod: function(options) {
-		var periodicity = options.periodicity;
-		if(null == periodicity && options.start != null && options.end != null) periodicity = rg.util.Periodicity.defaultPeriodicity(options.end - options.start);
-		if(null == periodicity) return;
-		if(null != options.start && periodicity != "single") options.start = Dates.snap(options.start,periodicity,-1);
-		if(null != options.end && periodicity != "single") options.end = Dates.snap(options.end,periodicity,-1);
+	,ids: function() {
+		var len = rg.data.ReportGridExecutorCache.VALUE_PREFIX.length;
+		return Iterators.filter(this.storage.keys(),function(cid) {
+			return HxOverrides.substr(cid,0,len) == rg.data.ReportGridExecutorCache.VALUE_PREFIX;
+		}).map(function(cid,_) {
+			return HxOverrides.substr(cid,len,null);
+		});
+	}
+	,cacheRemove: function(id) {
+		this.storage.remove(rg.data.ReportGridExecutorCache.DATE_PREFIX + id);
+		this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
+	}
+	,cacheGet: function(id) {
+		this.clearValueIfOld(id);
+		var v = this.storage.get(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
+		if(null != v) this.delayedCleanup(id);
+		return v;
+	}
+	,cacheSet: function(id,value) {
+		this.storage.set(rg.data.ReportGridExecutorCache.DATE_PREFIX + id,new Date().getTime());
+		this.storage.set(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id,value);
+	}
+	,delayedCleanup: function(id) {
+		var _g = this;
+		haxe.Timer.delay(function() {
+			_g.cacheRemove(id);
+		},this.timeout * 1000);
+	}
+	,clearValueIfOld: function(id) {
+		var idd = rg.data.ReportGridExecutorCache.DATE_PREFIX + id;
+		var v = this.storage.get(idd);
+		if(null == v) return;
+		if(v < new Date().getTime() - this.timeout * 1000) {
+			this.storage.remove(idd);
+			this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
+		}
 	}
 	,storageSuccess: function(id,success) {
 		var _g = this;
@@ -1871,59 +1695,72 @@ rg.data.ReportGridExecutorCache.prototype = {
 			_g.queue.remove(id);
 		};
 	}
-	,clearValueIfOld: function(id) {
-		var idd = rg.data.ReportGridExecutorCache.DATE_PREFIX + id;
-		var v = this.storage.get(idd);
-		if(null == v) return;
-		if(v < new Date().getTime() - this.timeout * 1000) {
-			this.storage.remove(idd);
-			this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
+	,normalizePeriod: function(options) {
+		var periodicity = options.periodicity;
+		if(null == periodicity && options.start != null && options.end != null) periodicity = rg.util.Periodicity.defaultPeriodicity(options.end - options.start);
+		if(null == periodicity) return;
+		if(null != options.start && periodicity != "single") options.start = Dates.snap(options.start,periodicity,-1);
+		if(null != options.end && periodicity != "single") options.end = Dates.snap(options.end,periodicity,-1);
+	}
+	,execute: function(name,path,options,success,error) {
+		this.normalizePeriod(options);
+		var id = this.uidquery(name,path,options), val = this.cacheGet(id);
+		if(null != val) {
+			success(val);
+			return;
 		}
+		var q = this.getQueue(id);
+		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.storageSuccess(id,success),error);
 	}
-	,delayedCleanup: function(id) {
-		var _g = this;
-		haxe.Timer.delay(function() {
-			_g.cacheRemove(id);
-		},this.timeout * 1000);
+	,events: function(path,options,success,error) {
+		this.execute("events",path,options,success,error);
 	}
-	,cacheSet: function(id,value) {
-		this.storage.set(rg.data.ReportGridExecutorCache.DATE_PREFIX + id,new Date().getTime());
-		this.storage.set(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id,value);
+	,propertiesHistogram: function(path,options,success,error) {
+		this.execute("propertiesHistogram",path,options,success,error);
 	}
-	,cacheGet: function(id) {
-		this.clearValueIfOld(id);
-		var v = this.storage.get(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
-		if(null != v) this.delayedCleanup(id);
-		return v;
+	,histogram: function(path,options,success,error) {
+		this.execute("histogram",path,options,success,error);
 	}
-	,cacheRemove: function(id) {
-		this.storage.remove(rg.data.ReportGridExecutorCache.DATE_PREFIX + id);
-		this.storage.remove(rg.data.ReportGridExecutorCache.VALUE_PREFIX + id);
+	,intersect: function(path,options,success,error) {
+		this.execute("intersect",path,options,success,error);
 	}
-	,ids: function() {
-		var len = rg.data.ReportGridExecutorCache.VALUE_PREFIX.length;
-		return Iterators.filter(this.storage.keys(),function(cid) {
-			return HxOverrides.substr(cid,0,len) == rg.data.ReportGridExecutorCache.VALUE_PREFIX;
-		}).map(function(cid,_) {
-			return HxOverrides.substr(cid,len,null);
-		});
+	,searchSeries: function(path,options,success,error) {
+		this.execute("searchSeries",path,options,success,error);
 	}
-	,cleanOld: function() {
-		var _g = 0, _g1 = this.ids();
-		while(_g < _g1.length) {
-			var id = _g1[_g];
-			++_g;
-			this.clearValueIfOld(id);
-		}
+	,searchCount: function(path,options,success,error) {
+		this.execute("searchCount",path,options,success,error);
 	}
-	,getQueue: function(id) {
-		if(this.timeout < 0) return null;
-		return this.queue.get(id);
+	,propertyValueSeries: function(path,options,success,error) {
+		this.execute("propertyValueSeries",path,options,success,error);
 	}
-	,uidquery: function(method,path,options) {
-		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
-		return haxe.Md5.encode(s);
+	,propertyValueCount: function(path,options,success,error) {
+		this.execute("propertyValueCount",path,options,success,error);
 	}
+	,propertyValues: function(path,options,success,error) {
+		this.execute("propertyValues",path,options,success,error);
+	}
+	,propertySums: function(path,options,success,error) {
+		this.execute("propertySums",path,options,success,error);
+	}
+	,propertyStandardDeviations: function(path,options,success,error) {
+		this.execute("propertyStandardDeviations",path,options,success,error);
+	}
+	,propertyMeans: function(path,options,success,error) {
+		this.execute("propertyMeans",path,options,success,error);
+	}
+	,propertySeries: function(path,options,success,error) {
+		this.execute("propertySeries",path,options,success,error);
+	}
+	,propertyCount: function(path,options,success,error) {
+		this.execute("propertyCount",path,options,success,error);
+	}
+	,children: function(path,options,success,error) {
+		this.execute("children",path,options,success,error);
+	}
+	,queue: null
+	,storage: null
+	,executor: null
+	,timeout: null
 	,__class__: rg.data.ReportGridExecutorCache
 }
 rg.query = {}
@@ -1949,153 +1786,132 @@ rg.query.BaseQuery.stackAsyncTransform = function(t) {
 	};
 }
 rg.query.BaseQuery.prototype = {
-	_first: null
-	,_next: null
-	,_async: null
-	,_store: null
-	,load: function(handler) {
-		return this.stackAsync(function(stack,h) {
-			handler(function(data) {
-				stack.push(data);
-				h(stack);
-			});
+	_this: function(q) {
+		return q;
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + Std.string(null != this._next) + ", async: " + Std.string(null != this._async) + "]");
+	}
+	,_createQuery: function(async,first) {
+		return new rg.query.BaseQuery(async,first);
+	}
+	,_query: function(t) {
+		return t;
+	}
+	,execute: function(handler) {
+		this._first.execute(handler);
+	}
+	,stackClear: function() {
+		return this.stackTransform(function(_) {
+			return [];
 		});
 	}
-	,data: function(values) {
-		if(!js.Boot.__instanceof(values,Array)) values = [values];
-		return this.stackAsync(function(stack,h) {
-			stack.push(values);
-			h(stack);
+	,stackRetrieve: function(name) {
+		var _g = this;
+		if(null == name) name = "";
+		return this.stackTransform(function(arr) {
+			return arr.concat(_g._first._store.get(name));
 		});
 	}
-	,map: function(handler) {
-		return this.transform(rg.query.Transformers.map(handler));
-	}
-	,audit: function(f) {
-		return this.transform(function(d) {
-			f(d);
-			return d;
+	,stackSortValue: function(fieldName,ascending) {
+		if(null == ascending) ascending = true;
+		var sum = function(arr) {
+			return arr.reduce(function(value,item,_) {
+				return value + Reflect.field(item,fieldName);
+			},0);
+		};
+		return this.stackSort(function(a,b) {
+			return (ascending?1:-1) * (sum(a) - sum(b));
 		});
 	}
-	,console: function(label) {
-		return this.stackTransform(function(data) {
-			var API = console;
-			if(null != API) API.log((null == label?"":label + ": ") + Dynamics.string(data));
+	,stackSort: function(f) {
+		return this.stackTransform(function(arr) {
+			arr.sort(f);
+			return arr;
+		});
+	}
+	,stackStore: function(name) {
+		var _g = this;
+		if(null == name) name = "";
+		return this.stackTransform(function(arr) {
+			_g._first._store.set(name,arr.slice());
+			return arr;
+		});
+	}
+	,stackReverse: function() {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			data.reverse();
 			return data;
-		});
+		}));
 	}
-	,renameFields: function(o) {
-		var pairs = Reflect.fields(o).map(function(d,_) {
-			return { src : d, dst : Reflect.field(o,d)};
-		});
-		return this.map(function(src,_) {
-			var out = { };
+	,stackRotate: function(matchingf) {
+		var t = rg.query.Transformers.rotate(matchingf);
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			return t(data);
+		}));
+	}
+	,split: function(f) {
+		if(js.Boot.__instanceof(f,String)) {
+			var name = f;
+			f = function(o) {
+				return Reflect.field(o,name);
+			};
+		}
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			var result = [];
 			var _g = 0;
-			while(_g < pairs.length) {
-				var pair = pairs[_g];
+			while(_g < data.length) {
+				var arr = data[_g];
 				++_g;
-				out[pair.dst] = Reflect.field(src,pair.src);
+				result = result.concat(rg.query.Transformers.split(arr,f));
 			}
-			return out;
-		});
+			return result;
+		}));
 	}
-	,toObject: function(field) {
-		return this.transform(rg.query.Transformers.toObject(field));
+	,stackKeep: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			return data.slice(0,howmany);
+		}));
 	}
-	,transform: function(t) {
-		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
+	,stackDiscard: function(howmany) {
+		if(null == howmany) howmany = 1;
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			var _g = 0;
+			while(_g < howmany) {
+				var i = _g++;
+				data.pop();
+			}
+			return data;
+		}));
 	}
-	,firstElement: function() {
+	,stackMerge: function() {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
+			return [Arrays.flatten(data)];
+		}));
+	}
+	,fold: function(startf,reducef) {
 		return this.transform(function(data) {
-			return data[0];
+			var result = [], acc = Reflect.isFunction(startf)?startf(data,result):startf;
+			data.forEach(function(dp,_) {
+				acc = reducef(acc,dp,result);
+			});
+			return result;
 		});
 	}
-	,stackCross: function() {
-		return this.stackTransform(rg.query.Transformers.crossStack);
+	,unique: function(f) {
+		if(null == f) f = Dynamics.same;
+		return this.transform(rg.query.Transformers.uniquef(f));
 	}
-	,stackTransform: function(t) {
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(t));
+	,reverse: function() {
+		return this.transform(rg.query.Transformers.reverse);
 	}
-	,stackAsync: function(f) {
-		var query = this._createQuery(f,this._first);
-		this._next = query;
-		return query;
-	}
-	,asyncAll: function(f) {
-		return this.stackAsync(function(data,handler) {
-			var tot = data.length, pos = 0, result = [];
-			var complete = function(i,r) {
-				result[i] = r;
-				if(++pos == tot) handler(result);
-			};
-			var _g1 = 0, _g = data.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				f(data[i],(function(f1,i1) {
-					return function(r) {
-						return f1(i1,r);
-					};
-				})(complete,i));
-			}
-		});
-	}
-	,asyncEach: function(f) {
-		return this.asyncAll(function(data,handler) {
-			var tot = data.length, pos = 0, result = [];
-			var complete = function(i,r) {
-				result[i] = r;
-				if(++pos == tot) handler(Arrays.flatten(result));
-			};
-			var _g1 = 0, _g = data.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				f(data[i],(function(f1,i1) {
-					return function(r) {
-						return f1(i1,r);
-					};
-				})(complete,i));
-			}
-		});
-	}
-	,setValue: function(name,f) {
-		return this.transform(rg.query.Transformers.setField(name,f));
-	}
-	,setValues: function(o) {
-		return this.transform(rg.query.Transformers.setFields(o));
-	}
-	,mapValue: function(name,f) {
-		return this.transform(rg.query.Transformers.mapField(name,f));
-	}
-	,mapValues: function(o) {
-		return this.transform(rg.query.Transformers.mapFields(o));
-	}
-	,addIndex: function(name,start) {
-		if(null == name) name = "index";
-		if(null == start) start = 0;
-		return this.fold(function(_,_1) {
-			return start;
-		},function(index,dp,result) {
-			dp[name] = index;
-			result.push(dp);
-			return ++index;
-		});
-	}
-	,filter: function(f) {
-		return this.transform(rg.query.Transformers.filter(f));
-	}
-	,filterValues: function(f) {
-		return this.transform(rg.query.Transformers.filterValues(f));
-	}
-	,filterValue: function(name,f) {
-		return this.transform(rg.query.Transformers.filterValue(name,f));
-	}
-	,sort: function(f) {
-		return this.transform(rg.query.Transformers.sort(f));
-	}
-	,sortValue: function(field,ascending) {
-		var o = { };
-		o[field] = null == ascending?true:ascending;
-		return this.sortValues(o);
+	,limit: function(offset,count) {
+		if(null == count) {
+			count = offset;
+			offset = 0;
+		}
+		return this.transform(rg.query.Transformers.limit(offset,count));
 	}
 	,sortValues: function(o) {
 		var fields = [], orders = [];
@@ -2118,133 +1934,154 @@ rg.query.BaseQuery.prototype = {
 			return 0;
 		});
 	}
-	,limit: function(offset,count) {
-		if(null == count) {
-			count = offset;
-			offset = 0;
-		}
-		return this.transform(rg.query.Transformers.limit(offset,count));
+	,sortValue: function(field,ascending) {
+		var o = { };
+		o[field] = null == ascending?true:ascending;
+		return this.sortValues(o);
 	}
-	,reverse: function() {
-		return this.transform(rg.query.Transformers.reverse);
+	,sort: function(f) {
+		return this.transform(rg.query.Transformers.sort(f));
 	}
-	,unique: function(f) {
-		if(null == f) f = Dynamics.same;
-		return this.transform(rg.query.Transformers.uniquef(f));
+	,filterValue: function(name,f) {
+		return this.transform(rg.query.Transformers.filterValue(name,f));
 	}
-	,fold: function(startf,reducef) {
-		return this.transform(function(data) {
-			var result = [], acc = Reflect.isFunction(startf)?startf(data,result):startf;
-			data.forEach(function(dp,_) {
-				acc = reducef(acc,dp,result);
-			});
-			return result;
+	,filterValues: function(f) {
+		return this.transform(rg.query.Transformers.filterValues(f));
+	}
+	,filter: function(f) {
+		return this.transform(rg.query.Transformers.filter(f));
+	}
+	,addIndex: function(name,start) {
+		if(null == name) name = "index";
+		if(null == start) start = 0;
+		return this.fold(function(_,_1) {
+			return start;
+		},function(index,dp,result) {
+			dp[name] = index;
+			result.push(dp);
+			return ++index;
 		});
 	}
-	,stackMerge: function() {
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			return [Arrays.flatten(data)];
-		}));
+	,mapValues: function(o) {
+		return this.transform(rg.query.Transformers.mapFields(o));
 	}
-	,stackDiscard: function(howmany) {
-		if(null == howmany) howmany = 1;
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			var _g = 0;
-			while(_g < howmany) {
-				var i = _g++;
-				data.pop();
-			}
-			return data;
-		}));
+	,mapValue: function(name,f) {
+		return this.transform(rg.query.Transformers.mapField(name,f));
 	}
-	,stackKeep: function(howmany) {
-		if(null == howmany) howmany = 1;
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			return data.slice(0,howmany);
-		}));
+	,setValues: function(o) {
+		return this.transform(rg.query.Transformers.setFields(o));
 	}
-	,split: function(f) {
-		if(js.Boot.__instanceof(f,String)) {
-			var name = f;
-			f = function(o) {
-				return Reflect.field(o,name);
+	,setValue: function(name,f) {
+		return this.transform(rg.query.Transformers.setField(name,f));
+	}
+	,asyncEach: function(f) {
+		return this.asyncAll(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
+			var complete = function(i,r) {
+				result[i] = r;
+				if(++pos == tot) handler(Arrays.flatten(result));
 			};
-		}
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			var result = [];
-			var _g = 0;
-			while(_g < data.length) {
-				var arr = data[_g];
-				++_g;
-				result = result.concat(rg.query.Transformers.split(arr,f));
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				f(data[i],(function(f1,i1) {
+					return function(r) {
+						return f1(i1,r);
+					};
+				})(complete,i));
 			}
-			return result;
-		}));
+		});
 	}
-	,stackRotate: function(matchingf) {
-		var t = rg.query.Transformers.rotate(matchingf);
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			return t(data);
-		}));
+	,asyncAll: function(f) {
+		return this.stackAsync(function(data,handler) {
+			var tot = data.length, pos = 0, result = [];
+			var complete = function(i,r) {
+				result[i] = r;
+				if(++pos == tot) handler(result);
+			};
+			var _g1 = 0, _g = data.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				f(data[i],(function(f1,i1) {
+					return function(r) {
+						return f1(i1,r);
+					};
+				})(complete,i));
+			}
+		});
 	}
-	,stackReverse: function() {
-		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(function(data) {
-			data.reverse();
+	,stackAsync: function(f) {
+		var query = this._createQuery(f,this._first);
+		this._next = query;
+		return query;
+	}
+	,stackTransform: function(t) {
+		return this.stackAsync(rg.query.BaseQuery.stackAsyncTransform(t));
+	}
+	,stackCross: function() {
+		return this.stackTransform(rg.query.Transformers.crossStack);
+	}
+	,firstElement: function() {
+		return this.transform(function(data) {
+			return data[0];
+		});
+	}
+	,transform: function(t) {
+		return this.stackAsync(rg.query.BaseQuery.asyncTransform(t));
+	}
+	,toObject: function(field) {
+		return this.transform(rg.query.Transformers.toObject(field));
+	}
+	,renameFields: function(o) {
+		var pairs = Reflect.fields(o).map(function(d,_) {
+			return { src : d, dst : Reflect.field(o,d)};
+		});
+		return this.map(function(src,_) {
+			var out = { };
+			var _g = 0;
+			while(_g < pairs.length) {
+				var pair = pairs[_g];
+				++_g;
+				out[pair.dst] = Reflect.field(src,pair.src);
+			}
+			return out;
+		});
+	}
+	,console: function(label) {
+		return this.stackTransform(function(data) {
+			var API = console;
+			if(null != API) API.log((null == label?"":label + ": ") + Dynamics.string(data));
 			return data;
-		}));
-	}
-	,stackStore: function(name) {
-		var _g = this;
-		if(null == name) name = "";
-		return this.stackTransform(function(arr) {
-			_g._first._store.set(name,arr.slice());
-			return arr;
 		});
 	}
-	,stackSort: function(f) {
-		return this.stackTransform(function(arr) {
-			arr.sort(f);
-			return arr;
+	,audit: function(f) {
+		return this.transform(function(d) {
+			f(d);
+			return d;
 		});
 	}
-	,stackSortValue: function(fieldName,ascending) {
-		if(null == ascending) ascending = true;
-		var sum = function(arr) {
-			return arr.reduce(function(value,item,_) {
-				return value + Reflect.field(item,fieldName);
-			},0);
-		};
-		return this.stackSort(function(a,b) {
-			return (ascending?1:-1) * (sum(a) - sum(b));
+	,map: function(handler) {
+		return this.transform(rg.query.Transformers.map(handler));
+	}
+	,data: function(values) {
+		if(!js.Boot.__instanceof(values,Array)) values = [values];
+		return this.stackAsync(function(stack,h) {
+			stack.push(values);
+			h(stack);
 		});
 	}
-	,stackRetrieve: function(name) {
-		var _g = this;
-		if(null == name) name = "";
-		return this.stackTransform(function(arr) {
-			return arr.concat(_g._first._store.get(name));
+	,load: function(handler) {
+		return this.stackAsync(function(stack,h) {
+			handler(function(data) {
+				stack.push(data);
+				h(stack);
+			});
 		});
 	}
-	,stackClear: function() {
-		return this.stackTransform(function(_) {
-			return [];
-		});
-	}
-	,execute: function(handler) {
-		this._first.execute(handler);
-	}
-	,_query: function(t) {
-		return t;
-	}
-	,_createQuery: function(async,first) {
-		return new rg.query.BaseQuery(async,first);
-	}
-	,toString: function() {
-		return Type.getClassName(Type.getClass(this)).split(".").pop() + (" [next: " + Std.string(null != this._next) + ", async: " + Std.string(null != this._async) + "]");
-	}
-	,_this: function(q) {
-		return q;
-	}
+	,_store: null
+	,_async: null
+	,_next: null
+	,_first: null
 	,__class__: rg.query.BaseQuery
 }
 rg.query.Query = function() {
@@ -2293,6 +2130,7 @@ rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
 		options.tag = params.tag;
 		options[params.tag] = Reflect.field(params,params.tag);
 	}
+	if(null != params.disablecache) options.disablecache = params.disablecache;
 	if(null == params.start) return options;
 	options.start = params.start;
 	options.end = params.end;
@@ -2347,7 +2185,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 506, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 510, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -2360,134 +2198,79 @@ rg.query.ReportGridBaseQuery._prefixProperty = function(p) {
 }
 rg.query.ReportGridBaseQuery.__super__ = rg.query.BaseQuery;
 rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
-	executor: null
-	,paths: function(p,keep) {
+	_normalizeKeep: function(k) {
+		return null == k?[]:js.Boot.__instanceof(k,String)?[k]:k;
+	}
+	,_createQuery: function(async,first) {
+		var query = new rg.query.ReportGridBaseQuery(async,first);
+		query.executor = this.executor;
+		return query;
+	}
+	,_params: function(p) {
+		return null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p];
+	}
+	,_crossp: function(p) {
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross();
+	}
+	,rawEvents: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			_g.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,keep,handler));
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ event : params.event});
+			if(null != params.properties) {
+				if(js.Boot.__instanceof(params.properties,Arrays)) {
+					var arr = params.properties;
+					options.properties = arr.join(",");
+				} else options.properties = params.properties;
+			}
+			if(null != params.limit) options.limit = params.limit;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+			_g.executor.events(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.events,params,keep,handler));
 		});
 	}
-	,events: function(p,keep) {
+	,series: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			_g.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,keep,handler));
+			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
+			if(null != params.where) {
+				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
+				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+				_g.executor.searchSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+			} else if(null != params.property) {
+				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
+				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+				options.value = params.value;
+				_g.executor.propertyValueSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,params,keep,handler));
+			} else {
+				options.property = params.event;
+				_g.executor.propertySeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+			}
 		});
 	}
-	,properties: function(p,keep) {
-		var _g = this;
-		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			_g.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,keep,handler));
-		});
-	}
-	,values: function(p,keep) {
+	,propertiesHistogram: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			_g.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
+			_g.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,keep,handler));
 		});
 	}
-	,count: function(p,keep) {
+	,histogram: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
-			if(null != params.where) {
-				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
-				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-				_g.executor.searchCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
-			} else if(null != params.property) {
-				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
-				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
-				options.value = params.value;
-				_g.executor.propertyValueCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueCountTag:rg.query.ReportGridTransformers.propertyValueCount,params,keep,handler));
-			} else {
-				options.property = params.event;
-				_g.executor.propertyCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
-			}
-		});
-	}
-	,summary: function(p,keep) {
-		var _g = this;
-		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			if(null == params.type) params.type = "mean";
-			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
-			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
-			options.periodicity = "single";
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
+			if(null != params.top) {
+				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
+				options.top = params.top;
+			} else if(null != params.bottom) options.bottom = params.bottom;
 			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			switch(params.type.toLowerCase()) {
-			case "mean":
-				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
-				break;
-			case "standarddeviation":
-				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
-				break;
-			case "sum":
-				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
-				break;
-			default:
-				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
-			}
-		});
-	}
-	,summarySeries: function(p,keep) {
-		var _g = this;
-		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			if(null == params.type) params.type = "mean";
-			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
-			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
-			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
-			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			switch(params.type.toLowerCase()) {
-			case "mean":
-				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
-				break;
-			case "standarddeviation":
-				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
-				break;
-			case "sum":
-				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
-				break;
-			default:
-				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
-			}
-		});
-	}
-	,intersect: function(p,keep) {
-		var _g = this;
-		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
-			options.properties = properties;
-			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			var _g1 = 0, _g2 = params.properties.length;
-			while(_g1 < _g2) {
-				var i = _g1++;
-				var item = params.properties[i];
-				if(js.Boot.__instanceof(item,String)) item = params.properties[i] = { property : item};
-				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
-				if(null != item.top) {
-					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
-					o.order = "descending";
-					o.limit = item.top;
-				} else if(null != item.bottom) {
-					o.order = "ascending";
-					o.limit = item.bottom;
-				}
-				properties.push(o);
-			}
-			_g.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,keep,handler));
+			_g.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,keep,handler));
 		});
 	}
 	,intersectSeries: function(p,keep) {
@@ -2517,81 +2300,136 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			_g.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectSeriesTag:rg.query.ReportGridTransformers.intersectSeries,params,keep,handler));
 		});
 	}
-	,histogram: function(p,keep) {
+	,intersect: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			if(null != params.top) {
-				if(null != params.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' in the same query");
-				options.top = params.top;
-			} else if(null != params.bottom) options.bottom = params.bottom;
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ periodicity : "eternity"}), properties = [];
+			options.properties = properties;
 			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			_g.executor.histogram(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.histogramTag:rg.query.ReportGridTransformers.histogram,params,keep,handler));
+			var _g1 = 0, _g2 = params.properties.length;
+			while(_g1 < _g2) {
+				var i = _g1++;
+				var item = params.properties[i];
+				if(js.Boot.__instanceof(item,String)) item = params.properties[i] = { property : item};
+				var o = { property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(item.property)};
+				if(null != item.top) {
+					if(null != item.bottom) rg.query.ReportGridBaseQuery._error("you can't specify both 'top' and 'bottom' for the same property");
+					o.order = "descending";
+					o.limit = item.top;
+				} else if(null != item.bottom) {
+					o.order = "ascending";
+					o.limit = item.bottom;
+				}
+				properties.push(o);
+			}
+			_g.executor.intersect(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.intersectTag:rg.query.ReportGridTransformers.intersect,params,keep,handler));
 		});
 	}
-	,propertiesHistogram: function(p,keep) {
+	,summarySeries: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
-			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
-			_g.executor.propertiesHistogram(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertiesHistogram,params,keep,handler));
-		});
-	}
-	,series: function(p,keep) {
-		var _g = this;
-		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			if(null == params.type) params.type = "mean";
 			rg.query.ReportGridBaseQuery._ensureTimeParams(params);
 			var options = rg.query.ReportGridBaseQuery._defaultSeriesOptions(params);
+			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+			switch(params.type.toLowerCase()) {
+			case "mean":
+				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			case "standarddeviation":
+				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			case "sum":
+				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				break;
+			default:
+				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
+			}
+		});
+	}
+	,summary: function(p,keep) {
+		var _g = this;
+		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			if(null == params.type) params.type = "mean";
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
+			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
+			options.periodicity = "single";
+			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
+			switch(params.type.toLowerCase()) {
+			case "mean":
+				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
+			case "standarddeviation":
+				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
+			case "sum":
+				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				break;
+			default:
+				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
+			}
+		});
+	}
+	,count: function(p,keep) {
+		var _g = this;
+		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params);
 			if(null != params.where) {
 				if(null != params.property) rg.query.ReportGridBaseQuery._error("the 'where' and the 'property' fields cannot be used together in a count query"); else if(null != params.value) rg.query.ReportGridBaseQuery._error("the 'where' and the 'value' fields cannot be used together in a count query");
 				options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-				_g.executor.searchSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+				_g.executor.searchCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
 			} else if(null != params.property) {
 				if(null == params.value) rg.query.ReportGridBaseQuery._error("can't count on a property");
 				options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 				options.value = params.value;
-				_g.executor.propertyValueSeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueSeriesTagGroupedBy:rg.query.ReportGridTransformers.propertyValueSeries,params,keep,handler));
+				_g.executor.propertyValueCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.propertyValueCountTag:rg.query.ReportGridTransformers.propertyValueCount,params,keep,handler));
 			} else {
 				options.property = params.event;
-				_g.executor.propertySeries(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventSeriesTagGroupedBy:rg.query.ReportGridTransformers.eventSeries,params,keep,handler));
+				_g.executor.propertyCount(params.path,options,rg.query.ReportGridBaseQuery._complete(null != params.tag?rg.query.ReportGridTransformers.eventCountTag:rg.query.ReportGridTransformers.eventCount,params,keep,handler));
 			}
 		});
 	}
-	,rawEvents: function(p,keep) {
+	,values: function(p,keep) {
 		var _g = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			rg.query.ReportGridBaseQuery._ensureOptionalTimeParams(params);
-			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ event : params.event});
-			if(null != params.properties) {
-				if(js.Boot.__instanceof(params.properties,Arrays)) {
-					var arr = params.properties;
-					options.properties = arr.join(",");
-				} else options.properties = params.properties;
-			}
-			if(null != params.limit) options.limit = params.limit;
+			var options = rg.query.ReportGridBaseQuery._defaultOptions(params,{ property : params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property)});
 			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			_g.executor.events(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.events,params,keep,handler));
+			_g.executor.propertyValues(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertyValues,params,keep,handler));
 		});
 	}
-	,_crossp: function(p) {
-		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross();
+	,properties: function(p,keep) {
+		var _g = this;
+		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			_g.executor.children(params.path,{ property : params.event},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenProperty,params,keep,handler));
+		});
 	}
-	,_params: function(p) {
-		return null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p];
+	,events: function(p,keep) {
+		var _g = this;
+		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			_g.executor.children(params.path,{ type : "property"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenEvent,params,keep,handler));
+		});
 	}
-	,_createQuery: function(async,first) {
-		var query = new rg.query.ReportGridBaseQuery(async,first);
-		query.executor = this.executor;
-		return query;
+	,paths: function(p,keep) {
+		var _g = this;
+		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
+		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
+			_g.executor.children(params.parent,{ type : "path"},rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.childrenPath,params,keep,handler));
+		});
 	}
-	,_normalizeKeep: function(k) {
-		return null == k?[]:js.Boot.__instanceof(k,String)?[k]:k;
-	}
+	,executor: null
 	,__class__: rg.query.ReportGridBaseQuery
 });
 rg.query.ReportGridQuery = function(executor) {
@@ -3209,11 +3047,10 @@ rg.storage = {}
 rg.storage.IStorage = function() { }
 rg.storage.IStorage.__name__ = ["rg","storage","IStorage"];
 rg.storage.IStorage.prototype = {
-	keys: null
-	,set: null
+	remove: null
 	,get: null
-	,remove: null
-	,clear: null
+	,set: null
+	,keys: null
 	,__class__: rg.storage.IStorage
 }
 rg.storage.BrowserStorage = function(api,kind) {
@@ -3243,22 +3080,7 @@ rg.storage.BrowserStorage.localStorage = function() {
 	return new rg.storage.BrowserStorage(localStorage,"localStorage");
 }
 rg.storage.BrowserStorage.prototype = {
-	storage: null
-	,kind: null
-	,set: function(name,value) {
-		this.storage.setItem(name,thx.json.Json.encode(value));
-	}
-	,get: function(name) {
-		var v = this.storage.getItem(name);
-		if(null == v) return v; else return thx.json.Json.decode(v);
-	}
-	,clear: function() {
-		this.storage.clear();
-	}
-	,remove: function(name) {
-		this.storage.removeItem(name);
-	}
-	,keys: function() {
+	keys: function() {
 		var keys = [];
 		var _g1 = 0, _g = this.storage.length;
 		while(_g1 < _g) {
@@ -3267,6 +3089,18 @@ rg.storage.BrowserStorage.prototype = {
 		}
 		return HxOverrides.iter(keys);
 	}
+	,remove: function(name) {
+		this.storage.removeItem(name);
+	}
+	,get: function(name) {
+		var v = this.storage.getItem(name);
+		if(null == v) return v; else return thx.json.Json.decode(v);
+	}
+	,set: function(name,value) {
+		this.storage.setItem(name,thx.json.Json.encode(value));
+	}
+	,kind: null
+	,storage: null
 	,__class__: rg.storage.BrowserStorage
 }
 rg.storage.MemoryStorage = function() {
@@ -3275,22 +3109,19 @@ rg.storage.MemoryStorage = function() {
 rg.storage.MemoryStorage.__name__ = ["rg","storage","MemoryStorage"];
 rg.storage.MemoryStorage.__interfaces__ = [rg.storage.IStorage];
 rg.storage.MemoryStorage.prototype = {
-	storage: null
-	,set: function(name,value) {
-		this.storage.set(name,value);
-	}
-	,get: function(name) {
-		return this.storage.get(name);
-	}
-	,clear: function() {
-		this.storage = new Hash();
+	keys: function() {
+		return this.storage.keys();
 	}
 	,remove: function(name) {
 		this.storage.remove(name);
 	}
-	,keys: function() {
-		return this.storage.keys();
+	,get: function(name) {
+		return this.storage.get(name);
 	}
+	,set: function(name,value) {
+		this.storage.set(name,value);
+	}
+	,storage: null
 	,__class__: rg.storage.MemoryStorage
 }
 rg.util = {}
@@ -3438,25 +3269,23 @@ thx.culture = {}
 thx.culture.Info = function() { }
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
-	name: null
-	,'native': null
-	,english: null
-	,iso2: null
+	pluralRule: null
 	,iso3: null
-	,pluralRule: null
+	,iso2: null
+	,english: null
+	,'native': null
+	,name: null
 	,__class__: thx.culture.Info
 }
 thx.culture.Culture = function() { }
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {get_cultures:"getCultures"}
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
 thx.culture.Culture.getDefaultCulture = function() {
 	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
-}
-thx.culture.Culture.setDefaultCulture = function(culture) {
-	return thx.culture.Culture._defaultCulture = culture;
 }
 thx.culture.Culture.add = function(culture) {
 	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
@@ -3465,26 +3294,26 @@ thx.culture.Culture.add = function(culture) {
 }
 thx.culture.Culture.__super__ = thx.culture.Info;
 thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
-	language: null
-	,date: null
-	,englishCurrency: null
-	,nativeCurrency: null
-	,currencySymbol: null
-	,currencyIso: null
-	,englishRegion: null
-	,nativeRegion: null
-	,isMetric: null
-	,digits: null
-	,signNeg: null
-	,signPos: null
-	,symbolNaN: null
-	,symbolPercent: null
-	,symbolPermille: null
-	,symbolNegInf: null
-	,symbolPosInf: null
-	,number: null
+	percent: null
 	,currency: null
-	,percent: null
+	,number: null
+	,symbolPosInf: null
+	,symbolNegInf: null
+	,symbolPermille: null
+	,symbolPercent: null
+	,symbolNaN: null
+	,signPos: null
+	,signNeg: null
+	,digits: null
+	,isMetric: null
+	,nativeRegion: null
+	,englishRegion: null
+	,currencyIso: null
+	,currencySymbol: null
+	,nativeCurrency: null
+	,englishCurrency: null
+	,date: null
+	,language: null
 	,__class__: thx.culture.Culture
 });
 thx.culture.FormatDate = function() { }
@@ -3499,7 +3328,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	while(pos < len) {
 		var c = pattern.charAt(pos);
 		if(c != "%") {
-			buf.b[buf.b.length] = c == null?"null":c;
+			buf.b += Std.string(c);
 			pos++;
 			continue;
 		}
@@ -3507,34 +3336,34 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 		c = pattern.charAt(pos);
 		switch(c) {
 		case "a":
-			buf.add(info.abbrDays[date.getDay()]);
+			buf.b += Std.string(info.abbrDays[date.getDay()]);
 			break;
 		case "A":
-			buf.add(info.days[date.getDay()]);
+			buf.b += Std.string(info.days[date.getDay()]);
 			break;
 		case "b":case "h":
-			buf.add(info.abbrMonths[date.getMonth()]);
+			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
 			break;
 		case "B":
-			buf.add(info.months[date.getMonth()]);
+			buf.b += Std.string(info.months[date.getMonth()]);
 			break;
 		case "c":
-			buf.add(thx.culture.FormatDate.dateTime(date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.dateTime(date,culture));
 			break;
 		case "C":
-			buf.add(thx.culture.FormatNumber.digits("" + Math.floor(date.getFullYear() / 100),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + Math.floor(date.getFullYear() / 100),culture));
 			break;
 		case "d":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getDate(),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getDate(),"0",2),culture));
 			break;
 		case "D":
-			buf.add(thx.culture.FormatDate.format("%m/%d/%y",date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.format("%m/%d/%y",date,culture));
 			break;
 		case "e":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getDate()," ",2):"" + date.getDate(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getDate()," ",2):"" + date.getDate(),culture));
 			break;
 		case "f":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + (date.getMonth() + 1)," ",2):"" + (date.getMonth() + 1),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + (date.getMonth() + 1)," ",2):"" + (date.getMonth() + 1),culture));
 			break;
 		case "G":
 			throw "Not Implemented Yet";
@@ -3543,62 +3372,62 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			throw "Not Implemented Yet";
 			break;
 		case "H":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getHours(),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getHours(),"0",2),culture));
 			break;
 		case "i":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getMinutes()," ",2):"" + date.getMinutes(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getMinutes()," ",2):"" + date.getMinutes(),culture));
 			break;
 		case "I":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + thx.culture.FormatDate.getMHours(date),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + thx.culture.FormatDate.getMHours(date),"0",2),culture));
 			break;
 		case "j":
 			throw "Not Implemented Yet";
 			break;
 		case "k":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getHours()," ",2):"" + date.getHours(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getHours()," ",2):"" + date.getHours(),culture));
 			break;
 		case "l":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + thx.culture.FormatDate.getMHours(date)," ",2):"" + thx.culture.FormatDate.getMHours(date),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + thx.culture.FormatDate.getMHours(date)," ",2):"" + thx.culture.FormatDate.getMHours(date),culture));
 			break;
 		case "m":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + (date.getMonth() + 1),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + (date.getMonth() + 1),"0",2),culture));
 			break;
 		case "M":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
 			break;
 		case "n":
-			buf.b[buf.b.length] = "\n";
+			buf.b += Std.string("\n");
 			break;
 		case "p":
-			buf.add(date.getHours() > 11?info.pm:info.am);
+			buf.b += Std.string(date.getHours() > 11?info.pm:info.am);
 			break;
 		case "P":
-			buf.add((date.getHours() > 11?info.pm:info.am).toLowerCase());
+			buf.b += Std.string((date.getHours() > 11?info.pm:info.am).toLowerCase());
 			break;
 		case "q":
-			buf.add(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getSeconds()," ",2):"" + date.getSeconds(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getSeconds()," ",2):"" + date.getSeconds(),culture));
 			break;
 		case "r":
-			buf.add(thx.culture.FormatDate.format("%I:%M:%S %p",date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.format("%I:%M:%S %p",date,culture));
 			break;
 		case "R":
-			buf.add(thx.culture.FormatDate.format("%H:%M",date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M",date,culture));
 			break;
 		case "s":
-			buf.add("" + (date.getTime() / 1000 | 0));
+			buf.b += Std.string("" + (date.getTime() / 1000 | 0));
 			break;
 		case "S":
-			buf.add(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
 			break;
 		case "t":
-			buf.b[buf.b.length] = "\t";
+			buf.b += Std.string("\t");
 			break;
 		case "T":
-			buf.add(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
 			break;
 		case "u":
 			var d = date.getDay();
-			buf.add(thx.culture.FormatNumber.digits(d == 0?"7":"" + d,culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(d == 0?"7":"" + d,culture));
 			break;
 		case "U":
 			throw "Not Implemented Yet";
@@ -3607,38 +3436,38 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			throw "Not Implemented Yet";
 			break;
 		case "w":
-			buf.add(thx.culture.FormatNumber.digits("" + date.getDay(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getDay(),culture));
 			break;
 		case "W":
 			throw "Not Implemented Yet";
 			break;
 		case "x":
-			buf.add(thx.culture.FormatDate.date(date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.date(date,culture));
 			break;
 		case "X":
-			buf.add(thx.culture.FormatDate.time(date,culture));
+			buf.b += Std.string(thx.culture.FormatDate.time(date,culture));
 			break;
 		case "y":
-			buf.add(thx.culture.FormatNumber.digits(HxOverrides.substr("" + date.getFullYear(),-2,null),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits(HxOverrides.substr("" + date.getFullYear(),-2,null),culture));
 			break;
 		case "Y":
-			buf.add(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
 			break;
 		case "z":
-			buf.b[buf.b.length] = "+0000";
+			buf.b += Std.string("+0000");
 			break;
 		case "Z":
-			buf.b[buf.b.length] = "GMT";
+			buf.b += Std.string("GMT");
 			break;
 		case "%":
-			buf.b[buf.b.length] = "%";
+			buf.b += Std.string("%");
 			break;
 		default:
-			buf.add("%" + c);
+			buf.b += Std.string("%" + c);
 		}
 		pos++;
 	}
-	return buf.b.join("");
+	return buf.b;
 }
 thx.culture.FormatDate.getMHours = function(date) {
 	var v = date.getHours();
@@ -3811,6 +3640,7 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 }
 thx.culture.Language = function() { }
 thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
@@ -3847,26 +3677,26 @@ thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDa
 };
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
-	months: null
-	,abbrMonths: null
-	,days: null
-	,abbrDays: null
-	,shortDays: null
-	,am: null
-	,pm: null
-	,separatorDate: null
-	,separatorTime: null
-	,firstWeekDay: null
-	,patternYearMonth: null
-	,patternMonthDay: null
-	,patternDate: null
-	,patternDateShort: null
-	,patternDateRfc: null
-	,patternDateTime: null
-	,patternUniversal: null
-	,patternSortable: null
+	patternTimeShort: null
 	,patternTime: null
-	,patternTimeShort: null
+	,patternSortable: null
+	,patternUniversal: null
+	,patternDateTime: null
+	,patternDateRfc: null
+	,patternDateShort: null
+	,patternDate: null
+	,patternMonthDay: null
+	,patternYearMonth: null
+	,firstWeekDay: null
+	,separatorTime: null
+	,separatorDate: null
+	,pm: null
+	,am: null
+	,shortDays: null
+	,abbrDays: null
+	,days: null
+	,abbrMonths: null
+	,months: null
 	,__class__: thx.culture.core.DateTimeInfo
 }
 thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsSeparator,patternNegative,patternPositive) {
@@ -3879,12 +3709,12 @@ thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsS
 };
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
-	decimals: null
-	,decimalsSeparator: null
-	,groups: null
-	,groupsSeparator: null
+	patternPositive: null
 	,patternNegative: null
-	,patternPositive: null
+	,groupsSeparator: null
+	,groups: null
+	,decimalsSeparator: null
+	,decimals: null
 	,__class__: thx.culture.core.NumberInfo
 }
 thx.languages = {}
@@ -3898,6 +3728,7 @@ thx.languages.En = function() {
 	thx.culture.Language.add(this);
 };
 thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
@@ -3936,6 +3767,7 @@ thx.cultures.EnUS = function() {
 	thx.culture.Culture.add(this);
 };
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
@@ -3948,23 +3780,22 @@ thx.data = {}
 thx.data.IDataHandler = function() { }
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
-	start: null
-	,end: null
-	,objectStart: null
-	,objectFieldStart: null
-	,objectFieldEnd: null
-	,objectEnd: null
-	,arrayStart: null
-	,arrayItemStart: null
-	,arrayItemEnd: null
-	,arrayEnd: null
-	,valueDate: null
-	,valueString: null
-	,valueInt: null
-	,valueFloat: null
+	valueBool: null
 	,valueNull: null
-	,valueBool: null
-	,comment: null
+	,valueFloat: null
+	,valueInt: null
+	,valueString: null
+	,valueDate: null
+	,arrayEnd: null
+	,arrayItemEnd: null
+	,arrayItemStart: null
+	,arrayStart: null
+	,objectEnd: null
+	,objectFieldEnd: null
+	,objectFieldStart: null
+	,objectStart: null
+	,end: null
+	,start: null
 	,__class__: thx.data.IDataHandler
 }
 thx.data.ValueEncoder = function(handler) {
@@ -3972,11 +3803,51 @@ thx.data.ValueEncoder = function(handler) {
 };
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
-	handler: null
-	,encode: function(o) {
-		this.handler.start();
-		this.encodeValue(o);
-		this.handler.end();
+	encodeArray: function(a) {
+		this.handler.arrayStart();
+		var _g = 0;
+		while(_g < a.length) {
+			var item = a[_g];
+			++_g;
+			this.handler.arrayItemStart();
+			this.encodeValue(item);
+			this.handler.arrayItemEnd();
+		}
+		this.handler.arrayEnd();
+	}
+	,encodeList: function(list) {
+		this.handler.arrayStart();
+		var $it0 = list.iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			this.handler.arrayItemStart();
+			this.encodeValue(item);
+			this.handler.arrayItemEnd();
+		}
+		this.handler.arrayEnd();
+	}
+	,encodeHash: function(o) {
+		this.handler.objectStart();
+		var $it0 = o.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			this.handler.objectFieldStart(key);
+			this.encodeValue(o.get(key));
+			this.handler.objectFieldEnd();
+		}
+		this.handler.objectEnd();
+	}
+	,encodeObject: function(o) {
+		this.handler.objectStart();
+		var _g = 0, _g1 = Reflect.fields(o);
+		while(_g < _g1.length) {
+			var key = _g1[_g];
+			++_g;
+			this.handler.objectFieldStart(key);
+			this.encodeValue(Reflect.field(o,key));
+			this.handler.objectFieldEnd();
+		}
+		this.handler.objectEnd();
 	}
 	,encodeValue: function(o) {
 		var $e = (Type["typeof"](o));
@@ -4012,52 +3883,12 @@ thx.data.ValueEncoder.prototype = {
 			break;
 		}
 	}
-	,encodeObject: function(o) {
-		this.handler.objectStart();
-		var _g = 0, _g1 = Reflect.fields(o);
-		while(_g < _g1.length) {
-			var key = _g1[_g];
-			++_g;
-			this.handler.objectFieldStart(key);
-			this.encodeValue(Reflect.field(o,key));
-			this.handler.objectFieldEnd();
-		}
-		this.handler.objectEnd();
+	,encode: function(o) {
+		this.handler.start();
+		this.encodeValue(o);
+		this.handler.end();
 	}
-	,encodeHash: function(o) {
-		this.handler.objectStart();
-		var $it0 = o.keys();
-		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			this.handler.objectFieldStart(key);
-			this.encodeValue(o.get(key));
-			this.handler.objectFieldEnd();
-		}
-		this.handler.objectEnd();
-	}
-	,encodeList: function(list) {
-		this.handler.arrayStart();
-		var $it0 = list.iterator();
-		while( $it0.hasNext() ) {
-			var item = $it0.next();
-			this.handler.arrayItemStart();
-			this.encodeValue(item);
-			this.handler.arrayItemEnd();
-		}
-		this.handler.arrayEnd();
-	}
-	,encodeArray: function(a) {
-		this.handler.arrayStart();
-		var _g = 0;
-		while(_g < a.length) {
-			var item = a[_g];
-			++_g;
-			this.handler.arrayItemStart();
-			this.encodeValue(item);
-			this.handler.arrayItemEnd();
-		}
-		this.handler.arrayEnd();
-	}
+	,handler: null
 	,__class__: thx.data.ValueEncoder
 }
 thx.data.ValueHandler = function() {
@@ -4065,61 +3896,59 @@ thx.data.ValueHandler = function() {
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
-	value: null
-	,_stack: null
-	,_names: null
-	,start: function() {
-		this._stack = [];
-		this._names = [];
+	valueBool: function(b) {
+		this._stack.push(b);
 	}
-	,end: function() {
-		this.value = this._stack.pop();
+	,valueNull: function() {
+		this._stack.push(null);
 	}
-	,objectStart: function() {
-		this._stack.push({ });
+	,valueFloat: function(f) {
+		this._stack.push(f);
 	}
-	,objectEnd: function() {
+	,valueInt: function(i) {
+		this._stack.push(i);
 	}
-	,objectFieldStart: function(name) {
-		this._names.push(name);
+	,valueString: function(s) {
+		this._stack.push(s);
 	}
-	,objectFieldEnd: function() {
-		var value = this._stack.pop();
-		var last = Arrays.last(this._stack);
-		last[this._names.pop()] = value;
-	}
-	,arrayStart: function() {
-		this._stack.push([]);
-	}
-	,arrayEnd: function() {
-	}
-	,arrayItemStart: function() {
+	,valueDate: function(d) {
+		this._stack.push(d);
 	}
 	,arrayItemEnd: function() {
 		var value = this._stack.pop();
 		var last = Arrays.last(this._stack);
 		last.push(value);
 	}
-	,valueDate: function(d) {
-		this._stack.push(d);
+	,arrayItemStart: function() {
 	}
-	,valueString: function(s) {
-		this._stack.push(s);
+	,arrayEnd: function() {
 	}
-	,valueInt: function(i) {
-		this._stack.push(i);
+	,arrayStart: function() {
+		this._stack.push([]);
 	}
-	,valueFloat: function(f) {
-		this._stack.push(f);
+	,objectFieldEnd: function() {
+		var value = this._stack.pop();
+		var last = Arrays.last(this._stack);
+		last[this._names.pop()] = value;
 	}
-	,valueNull: function() {
-		this._stack.push(null);
+	,objectFieldStart: function(name) {
+		this._names.push(name);
 	}
-	,valueBool: function(b) {
-		this._stack.push(b);
+	,objectEnd: function() {
 	}
-	,comment: function(s) {
+	,objectStart: function() {
+		this._stack.push({ });
 	}
+	,end: function() {
+		this.value = this._stack.pop();
+	}
+	,start: function() {
+		this._stack = [];
+		this._names = [];
+	}
+	,_names: null
+	,_stack: null
+	,value: null
 	,__class__: thx.data.ValueHandler
 }
 thx.date = {}
@@ -4357,11 +4186,8 @@ thx.util.Message = function(message,params,param) {
 };
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
-	message: null
-	,params: null
-	,toString: function() {
-		return Strings.format(this.message,this.params);
-	}
+	params: null
+	,message: null
 	,__class__: thx.util.Message
 }
 thx.error = {}
@@ -4373,14 +4199,6 @@ thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 	pos: null
-	,toString: function() {
-		try {
-			return Strings.format(this.message,this.params);
-		} catch( e ) {
-			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
-			return "";
-		}
-	}
 	,__class__: thx.error.Error
 });
 thx.json = {}
@@ -4405,128 +4223,82 @@ thx.json.JsonDecoder = function(handler,tabsize) {
 };
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
-	col: null
-	,line: null
-	,tabsize: null
-	,src: null
-	,'char': null
-	,pos: null
-	,handler: null
-	,decode: function(s) {
-		this.col = 0;
-		this.line = 0;
-		this.src = s;
-		this["char"] = null;
-		this.pos = 0;
-		this.ignoreWhiteSpace();
-		var p = null;
-		this.handler.start();
+	error: function(msg) {
+		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + HxOverrides.substr(this.src,this.pos,null) + "...";
+		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
+	}
+	,parseDigits: function(atleast) {
+		if(atleast == null) atleast = 0;
+		var buf = "";
+		while(true) {
+			var c = null;
+			try {
+				c = this.readChar();
+			} catch( e ) {
+				if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+					if(buf.length < atleast) this.error("expected digit");
+					return buf;
+				} else throw(e);
+			}
+			var i = HxOverrides.cca(c,0);
+			if(i < 48 || i > 57) {
+				if(buf.length < atleast) this.error("expected digit");
+				this.col += buf.length;
+				this["char"] = c;
+				return buf;
+			} else buf += c;
+		}
+		return null;
+	}
+	,parseFloat: function() {
+		var v = "";
+		if(this.expect("-")) v = "-";
+		if(this.expect("0")) v += "0"; else {
+			var c = this.readChar();
+			var i = HxOverrides.cca(c,0);
+			if(i < 49 || i > 57) this.error("expected digit between 1 and 9");
+			v += c;
+			this.col++;
+		}
 		try {
-			p = this.parse();
+			v += this.parseDigits();
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.error("unexpected end of stream");
+				this.handler.valueInt(Std.parseInt(v));
+				return;
 			} else throw(e);
 		}
-		this.ignoreWhiteSpace();
-		if(this.pos < this.src.length) this.error("the stream contains unrecognized characters at its end");
-		this.handler.end();
-	}
-	,ignoreWhiteSpace: function() {
-		while(this.pos < this.src.length) {
-			var c = this.readChar();
-			switch(c) {
-			case " ":
-				this.col++;
-				break;
-			case "\n":
-				this.col = 0;
-				this.line++;
-				break;
-			case "\r":
-				break;
-			case "\t":
-				this.col += this.tabsize;
-				break;
-			default:
-				this["char"] = c;
+		try {
+			if(this.expect(".")) v += "." + this.parseDigits(1); else {
+				this.handler.valueInt(Std.parseInt(v));
 				return;
 			}
-		}
-	}
-	,parse: function() {
-		var c = this.readChar();
-		switch(c) {
-		case "{":
-			this.col++;
-			this.ignoreWhiteSpace();
-			return this.parseObject();
-		case "[":
-			this.col++;
-			this.ignoreWhiteSpace();
-			return this.parseArray();
-		case "\"":
-			this["char"] = c;
-			return this.parseString();
-		default:
-			this["char"] = c;
-			return this.parseValue();
-		}
-	}
-	,readChar: function() {
-		if(null == this["char"]) {
-			if(this.pos == this.src.length) throw thx.json._JsonDecoder.StreamError.Eof;
-			return this.src.charAt(this.pos++);
-		} else {
-			var c = this["char"];
-			this["char"] = null;
-			return c;
-		}
-	}
-	,expect: function(word) {
-		var test = null == this["char"]?HxOverrides.substr(this.src,this.pos,word.length):this["char"] + HxOverrides.substr(this.src,this.pos,word.length - 1);
-		if(test == word) {
-			if(null == this["char"]) this.pos += word.length; else {
-				this.pos += word.length - 1;
-				this["char"] = null;
+			if(this.expect("e") || this.expect("E")) {
+				v += "e";
+				if(this.expect("+")) {
+				} else if(this.expect("-")) v += "-";
+				v += this.parseDigits(1);
 			}
-			return true;
-		} else return false;
-	}
-	,parseObject: function() {
-		var first = true;
-		this.handler.objectStart();
-		while(true) {
-			this.ignoreWhiteSpace();
-			if(this.expect("}")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
-			var k = this._parseString();
-			this.ignoreWhiteSpace();
-			if(!this.expect(":")) this.error("expected ':'");
-			this.ignoreWhiteSpace();
-			this.handler.objectFieldStart(k);
-			this.parse();
-			this.handler.objectFieldEnd();
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+				this.handler.valueFloat(Std.parseFloat(v));
+				return;
+			} else throw(e);
 		}
-		this.handler.objectEnd();
+		this.handler.valueFloat(Std.parseFloat(v));
 	}
-	,parseArray: function() {
-		this.ignoreWhiteSpace();
-		var first = true;
-		this.handler.arrayStart();
-		while(true) {
-			this.ignoreWhiteSpace();
-			if(this.expect("]")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
-			this.handler.arrayItemStart();
-			this.parse();
-			this.handler.arrayItemEnd();
+	,parseHexa: function() {
+		var v = [];
+		var _g = 0;
+		while(_g < 4) {
+			var i = _g++;
+			var c = this.readChar();
+			var i1 = HxOverrides.cca(c.toLowerCase(),0);
+			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
+			v.push(c);
 		}
-		this.handler.arrayEnd();
-	}
-	,parseValue: function() {
-		if(this.expect("true")) this.handler.valueBool(true); else if(this.expect("false")) this.handler.valueBool(false); else if(this.expect("null")) this.handler.valueNull(); else this.parseFloat();
-	}
-	,parseString: function() {
-		this.handler.valueString(this._parseString());
+		this.handler.valueInt(Std.parseInt("0x" + v.join("")));
+		return Std.parseInt("0x" + v.join(""));
 	}
 	,_parseString: function() {
 		if(!this.expect("\"")) this.error("expected double quote");
@@ -4583,83 +4355,129 @@ thx.json.JsonDecoder.prototype = {
 		} catch( e ) { if( e != "__break__" ) throw e; }
 		return buf;
 	}
-	,parseHexa: function() {
-		var v = [];
-		var _g = 0;
-		while(_g < 4) {
-			var i = _g++;
-			var c = this.readChar();
-			var i1 = HxOverrides.cca(c.toLowerCase(),0);
-			if(!(i1 >= 48 && i1 <= 57 || i1 >= 97 && i1 <= 102)) this.error("invalid hexadecimal value " + c);
-			v.push(c);
-		}
-		this.handler.valueInt(Std.parseInt("0x" + v.join("")));
-		return Std.parseInt("0x" + v.join(""));
+	,parseString: function() {
+		this.handler.valueString(this._parseString());
 	}
-	,parseFloat: function() {
-		var v = "";
-		if(this.expect("-")) v = "-";
-		if(this.expect("0")) v += "0"; else {
-			var c = this.readChar();
-			var i = HxOverrides.cca(c,0);
-			if(i < 49 || i > 57) this.error("expected digit between 1 and 9");
-			v += c;
-			this.col++;
-		}
-		try {
-			v += this.parseDigits();
-		} catch( e ) {
-			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.handler.valueInt(Std.parseInt(v));
-				return;
-			} else throw(e);
-		}
-		try {
-			if(this.expect(".")) v += "." + this.parseDigits(1); else {
-				this.handler.valueInt(Std.parseInt(v));
-				return;
-			}
-			if(this.expect("e") || this.expect("E")) {
-				v += "e";
-				if(this.expect("+")) {
-				} else if(this.expect("-")) v += "-";
-				v += this.parseDigits(1);
-			}
-		} catch( e ) {
-			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-				this.handler.valueFloat(Std.parseFloat(v));
-				return;
-			} else throw(e);
-		}
-		this.handler.valueFloat(Std.parseFloat(v));
+	,parseValue: function() {
+		if(this.expect("true")) this.handler.valueBool(true); else if(this.expect("false")) this.handler.valueBool(false); else if(this.expect("null")) this.handler.valueNull(); else this.parseFloat();
 	}
-	,parseDigits: function(atleast) {
-		if(atleast == null) atleast = 0;
-		var buf = "";
+	,parseArray: function() {
+		this.ignoreWhiteSpace();
+		var first = true;
+		this.handler.arrayStart();
 		while(true) {
-			var c = null;
-			try {
-				c = this.readChar();
-			} catch( e ) {
-				if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
-					if(buf.length < atleast) this.error("expected digit");
-					return buf;
-				} else throw(e);
-			}
-			var i = HxOverrides.cca(c,0);
-			if(i < 48 || i > 57) {
-				if(buf.length < atleast) this.error("expected digit");
-				this.col += buf.length;
-				this["char"] = c;
-				return buf;
-			} else buf += c;
+			this.ignoreWhiteSpace();
+			if(this.expect("]")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
+			this.handler.arrayItemStart();
+			this.parse();
+			this.handler.arrayItemEnd();
 		}
-		return null;
+		this.handler.arrayEnd();
 	}
-	,error: function(msg) {
-		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + HxOverrides.substr(this.src,this.pos,null) + "...";
-		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
+	,parseObject: function() {
+		var first = true;
+		this.handler.objectStart();
+		while(true) {
+			this.ignoreWhiteSpace();
+			if(this.expect("}")) break; else if(first) first = false; else if(this.expect(",")) this.ignoreWhiteSpace(); else this.error("expected ','");
+			var k = this._parseString();
+			this.ignoreWhiteSpace();
+			if(!this.expect(":")) this.error("expected ':'");
+			this.ignoreWhiteSpace();
+			this.handler.objectFieldStart(k);
+			this.parse();
+			this.handler.objectFieldEnd();
+		}
+		this.handler.objectEnd();
 	}
+	,expect: function(word) {
+		var test = null == this["char"]?HxOverrides.substr(this.src,this.pos,word.length):this["char"] + HxOverrides.substr(this.src,this.pos,word.length - 1);
+		if(test == word) {
+			if(null == this["char"]) this.pos += word.length; else {
+				this.pos += word.length - 1;
+				this["char"] = null;
+			}
+			return true;
+		} else return false;
+	}
+	,readChar: function() {
+		if(null == this["char"]) {
+			if(this.pos == this.src.length) throw thx.json._JsonDecoder.StreamError.Eof;
+			return this.src.charAt(this.pos++);
+		} else {
+			var c = this["char"];
+			this["char"] = null;
+			return c;
+		}
+	}
+	,parse: function() {
+		var c = this.readChar();
+		switch(c) {
+		case "{":
+			this.col++;
+			this.ignoreWhiteSpace();
+			return this.parseObject();
+		case "[":
+			this.col++;
+			this.ignoreWhiteSpace();
+			return this.parseArray();
+		case "\"":
+			this["char"] = c;
+			return this.parseString();
+		default:
+			this["char"] = c;
+			return this.parseValue();
+		}
+	}
+	,ignoreWhiteSpace: function() {
+		while(this.pos < this.src.length) {
+			var c = this.readChar();
+			switch(c) {
+			case " ":
+				this.col++;
+				break;
+			case "\n":
+				this.col = 0;
+				this.line++;
+				break;
+			case "\r":
+				break;
+			case "\t":
+				this.col += this.tabsize;
+				break;
+			default:
+				this["char"] = c;
+				return;
+			}
+		}
+	}
+	,decode: function(s) {
+		this.col = 0;
+		this.line = 0;
+		this.src = s;
+		this["char"] = null;
+		this.pos = 0;
+		this.ignoreWhiteSpace();
+		var p = null;
+		this.handler.start();
+		try {
+			p = this.parse();
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
+				this.error("unexpected end of stream");
+			} else throw(e);
+		}
+		this.ignoreWhiteSpace();
+		if(this.pos < this.src.length) this.error("the stream contains unrecognized characters at its end");
+		this.handler.end();
+	}
+	,handler: null
+	,pos: null
+	,'char': null
+	,src: null
+	,tabsize: null
+	,line: null
+	,col: null
 	,__class__: thx.json.JsonDecoder
 }
 thx.json._JsonDecoder = {}
@@ -4672,73 +4490,71 @@ thx.json.JsonEncoder = function() {
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
-	encodedString: null
-	,buf: null
-	,lvl: null
-	,count: null
+	quote: function(s) {
+		return "\"" + new EReg(".","").customReplace(new EReg("(\n)","g").replace(new EReg("(\"|\\\\)","g").replace(s,"\\$1"),"\\n"),function(r) {
+			var c = HxOverrides.cca(r.matched(0),0);
+			return c >= 32 && c <= 127?String.fromCharCode(c):"\\u" + StringTools.hex(c,4);
+		}) + "\"";
+	}
+	,valueBool: function(b) {
+		this.buf.b += Std.string(b?"true":"false");
+	}
+	,valueNull: function() {
+		this.buf.b += Std.string("null");
+	}
+	,valueFloat: function(f) {
+		this.buf.b += Std.string(f);
+	}
+	,valueInt: function(i) {
+		this.buf.b += Std.string(i);
+	}
+	,valueString: function(s) {
+		this.buf.b += Std.string(this.quote(s));
+	}
+	,valueDate: function(d) {
+		this.buf.b += Std.string(d.getTime());
+	}
+	,arrayEnd: function() {
+		this.buf.b += Std.string("]");
+		this.count.pop();
+	}
+	,arrayItemEnd: function() {
+	}
+	,arrayItemStart: function() {
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+	}
+	,arrayStart: function() {
+		this.buf.b += Std.string("[");
+		this.count.push(0);
+	}
+	,objectEnd: function() {
+		this.buf.b += Std.string("}");
+		this.count.pop();
+	}
+	,objectFieldEnd: function() {
+	}
+	,objectFieldStart: function(name) {
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		this.buf.b += Std.string(this.quote(name) + ":");
+	}
+	,objectStart: function() {
+		this.buf.b += Std.string("{");
+		this.count.push(0);
+	}
+	,end: function() {
+		this.encodedString = this.buf.b;
+		this.buf = null;
+	}
 	,start: function() {
 		this.lvl = 0;
 		this.buf = new StringBuf();
 		this.encodedString = null;
 		this.count = [];
 	}
-	,end: function() {
-		this.encodedString = this.buf.b.join("");
-		this.buf = null;
-	}
-	,objectStart: function() {
-		this.buf.add("{");
-		this.count.push(0);
-	}
-	,objectFieldStart: function(name) {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
-		this.buf.add(this.quote(name) + ":");
-	}
-	,objectFieldEnd: function() {
-	}
-	,objectEnd: function() {
-		this.buf.add("}");
-		this.count.pop();
-	}
-	,arrayStart: function() {
-		this.buf.add("[");
-		this.count.push(0);
-	}
-	,arrayItemStart: function() {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.add(",");
-	}
-	,arrayItemEnd: function() {
-	}
-	,arrayEnd: function() {
-		this.buf.add("]");
-		this.count.pop();
-	}
-	,valueDate: function(d) {
-		this.buf.add(d.getTime());
-	}
-	,valueString: function(s) {
-		this.buf.add(this.quote(s));
-	}
-	,valueInt: function(i) {
-		this.buf.add(i);
-	}
-	,valueFloat: function(f) {
-		this.buf.add(f);
-	}
-	,valueNull: function() {
-		this.buf.add("null");
-	}
-	,valueBool: function(b) {
-		this.buf.add(b?"true":"false");
-	}
-	,comment: function(s) {
-	}
-	,quote: function(s) {
-		return "\"" + new EReg(".","").customReplace(new EReg("(\n)","g").replace(new EReg("(\"|\\\\)","g").replace(s,"\\$1"),"\\n"),function(r) {
-			var c = HxOverrides.cca(r.matched(0),0);
-			return c >= 32 && c <= 127?String.fromCharCode(c):"\\u" + StringTools.hex(c,4);
-		}) + "\"";
-	}
+	,count: null
+	,lvl: null
+	,buf: null
+	,encodedString: null
 	,__class__: thx.json.JsonEncoder
 }
 thx.math = {}
@@ -4751,17 +4567,6 @@ thx.math.Random.prototype = {
 	seed: null
 	,__class__: thx.math.Random
 }
-thx.translation = {}
-thx.translation.ITranslation = function() { }
-thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
-thx.translation.ITranslation.prototype = {
-	domain: null
-	,singular: null
-	,plural: null
-	,__class__: thx.translation.ITranslation
-}
-thx.util.MacroVersion = function() { }
-thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
 var $_;
 function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
@@ -4850,6 +4655,16 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+var Void = { __ename__ : ["Void"]};
+if(typeof document != "undefined") js.Lib.document = document;
+if(typeof window != "undefined") {
+	js.Lib.window = window;
+	js.Lib.window.onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if(f == null) return false;
+		return f(msg,[url + ":" + line]);
+	};
+}
 var r = window.ReportGrid?window.ReportGrid:window.ReportGrid = { };
 r.$ = r.$ || { };
 r.$.pk = r.$.pk || { };
@@ -4868,7 +4683,6 @@ if(null != (j = window.JSON)) {
 	thx.json.Json.nativeEncoder = j.stringify;
 }
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
-Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
 rg.data.ReportGridExecutorCache.DATE_PREFIX = "D:";
 rg.data.ReportGridExecutorCache.VALUE_PREFIX = "V:";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
@@ -4900,6 +4714,6 @@ thx.date.DateParser.period = "minute|minutes|hour|hours|day|days|week|weeks|mont
 thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.sfullmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.sshortmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,?\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sfullmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sshortmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.month + ")/" + thx.date.DateParser.day + "(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "/(" + thx.date.DateParser.month + ")(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b(\\d{2,4})-(" + thx.date.DateParser.month + ")-" + thx.date.DateParser.day + "\\b" + ")|(?:" + "^\\s*" + thx.date.DateParser.day + "\\s*$" + "))","i");
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
-thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "(?:\\b|T)(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 rg.app.query.JSBridge.main();
 })();

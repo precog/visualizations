@@ -2,7 +2,7 @@ package rg.util;
 import chx.crypt.RSA;
 import chx.crypt.RSAEncrypt;
 
-class Decrypt 
+class Decrypt
 {
 	public static function decrypt(s : String)
 	{

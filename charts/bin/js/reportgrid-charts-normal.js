@@ -1,16 +1,43 @@
 (function () { "use strict";
-var $estr = function() { return js.Boot.__string_rec(this,''); };
+var $hxClasses = {},$estr = function() { return js.Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
 var Arrays = function() { }
+$hxClasses["Arrays"] = Arrays;
 Arrays.__name__ = ["Arrays"];
 Arrays.addIf = function(arr,condition,value) {
 	if(null != condition) {
 		if(condition) arr.push(value);
 	} else if(null != value) arr.push(value);
+	return arr;
+}
+Arrays.add = function(arr,value) {
+	arr.push(value);
+	return arr;
+}
+Arrays["delete"] = function(arr,value) {
+	HxOverrides.remove(arr,value);
+	return arr;
+}
+Arrays.removef = function(arr,f) {
+	var index = -1;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(f(arr[i])) {
+			index = i;
+			break;
+		}
+	}
+	if(index < 0) return false;
+	arr.splice(index,1);
+	return true;
+}
+Arrays.deletef = function(arr,f) {
+	Arrays.removef(arr,f);
 	return arr;
 }
 Arrays.filter = function(arr,f) {
@@ -46,6 +73,63 @@ Arrays.min = function(arr,f) {
 		}
 		return arr[p];
 	}
+}
+Arrays.floatMin = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+	}
+	return a;
+}
+Arrays.bounds = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var b = arr[0], q = 0;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var comp = Dynamics.comparef(a);
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+			if(comp(b,arr[i]) < 0) b = arr[q = i];
+		}
+		return [arr[p],arr[q]];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var c = f(arr[0]), q = 0, d;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(c < (d = f(arr[i]))) {
+				c = d;
+				q = i;
+			}
+		}
+		return [arr[p],arr[q]];
+	}
+}
+Arrays.boundsFloat = function(arr,f) {
+	if(arr.length == 0) return null;
+	var a = f(arr[0]), b;
+	var c = f(arr[0]), d;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+		if(c < (d = f(arr[i]))) c = d;
+	}
+	return [a,c];
 }
 Arrays.max = function(arr,f) {
 	if(arr.length == 0) return null;
@@ -91,9 +175,55 @@ Arrays.flatten = function(arr) {
 	}
 	return r;
 }
+Arrays.map = function(arr,f) {
+	return arr.map(f);
+}
+Arrays.reduce = function(arr,f,initialValue) {
+	return arr.reduce(f,initialValue);
+}
 Arrays.order = function(arr,f) {
 	arr.sort(null == f?Dynamics.compare:f);
 	return arr;
+}
+Arrays.orderMultiple = function(arr,f,rest) {
+	var swap = true, t;
+	HxOverrides.remove(rest,arr);
+	while(swap) {
+		swap = false;
+		var _g1 = 0, _g = arr.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(f(arr[i],arr[i + 1]) > 0) {
+				swap = true;
+				t = arr[i];
+				arr[i] = arr[i + 1];
+				arr[i + 1] = t;
+				var _g2 = 0;
+				while(_g2 < rest.length) {
+					var a = rest[_g2];
+					++_g2;
+					t = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = t;
+				}
+			}
+		}
+	}
+}
+Arrays.split = function(arr,f) {
+	if(null == f) f = function(v,_) {
+		return v == null;
+	};
+	var arrays = [], i = -1, values = [], value;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		if(f(value = arr[i1],i1)) values = []; else {
+			if(values.length == 0) arrays.push(values);
+			values.push(value);
+		}
+	}
+	return arrays;
 }
 Arrays.exists = function(arr,value,f) {
 	if(null != f) {
@@ -139,6 +269,147 @@ Arrays.format = function(v,param,params,culture) {
 		throw "Unsupported array format: " + format;
 	}
 }
+Arrays.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		return function(v) {
+			if(v.length == 0) {
+				var empty = null == params[1]?"[]":params[1];
+				return empty;
+			}
+			var sep = null == params[2]?", ":params[2];
+			var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+			if(null != max && max < v.length) {
+				var elipsis = null == params[4]?" ...":params[4];
+				return v.slice().splice(0,max).map(function(d,i) {
+					return Dynamics.format(d,params[0],null,null,culture);
+				}).join(sep) + elipsis;
+			} else return v.map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep);
+		};
+	case "C":
+		var f = Ints.formatf("I",[],culture);
+		return function(v) {
+			return f(v.length);
+		};
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.interpolate = function(v,a,b,equation) {
+	return (Arrays.interpolatef(a,b,equation))(v);
+}
+Arrays.interpolatef = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Floats.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateStrings = function(v,a,b,equation) {
+	return (Arrays.interpolateStringsf(a,b,equation))(v);
+}
+Arrays.interpolateStringsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Strings.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateInts = function(v,a,b,equation) {
+	return (Arrays.interpolateIntsf(a,b,equation))(v);
+}
+Arrays.interpolateIntsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Ints.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v = [b[i]];
+		functions.push((function(v) {
+			return function(_) {
+				return v[0];
+			};
+		})(v));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.indexOf = function(arr,el) {
+	return arr.indexOf(el);
+}
+Arrays.every = function(arr,f) {
+	return arr.every(f);
+}
+Arrays.each = function(arr,f) {
+	arr.forEach(f);
+}
+Arrays.any = function(arr,f) {
+	return Iterators.any(HxOverrides.iter(arr),f);
+}
+Arrays.all = function(arr,f) {
+	return Iterators.all(HxOverrides.iter(arr),f);
+}
+Arrays.random = function(arr) {
+	return arr[Std.random(arr.length)];
+}
 Arrays.string = function(arr) {
 	return "[" + arr.map(function(v,_) {
 		return Dynamics.string(v);
@@ -146,6 +417,14 @@ Arrays.string = function(arr) {
 }
 Arrays.last = function(arr) {
 	return arr[arr.length - 1];
+}
+Arrays.lastf = function(arr,f) {
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) return arr[i];
+	return null;
+}
+Arrays.first = function(arr) {
+	return arr[0];
 }
 Arrays.firstf = function(arr,f) {
 	var _g = 0;
@@ -155,6 +434,28 @@ Arrays.firstf = function(arr,f) {
 		if(f(v)) return v;
 	}
 	return null;
+}
+Arrays.bisect = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	return Arrays.bisectRight(a,x,lo,hi);
+}
+Arrays.bisectRight = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(x < a[mid]) hi = mid; else lo = mid + 1;
+	}
+	return lo;
+}
+Arrays.bisectLeft = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(a[mid] < x) lo = mid + 1; else hi = mid;
+	}
+	return lo;
 }
 Arrays.nearest = function(a,x,f) {
 	var delta = [];
@@ -178,6 +479,34 @@ Arrays.compare = function(a,b) {
 	}
 	return 0;
 }
+Arrays.product = function(a) {
+	if(a.length == 0) return [];
+	var arr = a.slice(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.slice().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	return result;
+}
 Arrays.rotate = function(a) {
 	if(a.length == 0) return [];
 	var result = [];
@@ -197,7 +526,50 @@ Arrays.rotate = function(a) {
 	}
 	return result;
 }
+Arrays.shuffle = function(a) {
+	var t = Ints.range(a.length), arr = [];
+	while(t.length > 0) {
+		var pos = Std.random(t.length), index = t[pos];
+		t.splice(pos,1);
+		arr.push(a[index]);
+	}
+	return arr;
+}
+Arrays.scanf = function(arr,weightf,incremental) {
+	if(incremental == null) incremental = true;
+	var tot = 0.0, weights = [];
+	if(incremental) {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = tot += weightf(arr[i],i);
+		}
+	} else {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = weightf(arr[i],i);
+		}
+		tot = weights[weights.length - 1];
+	}
+	var scan = (function($this) {
+		var $r;
+		var scan1 = null;
+		scan1 = function(v,start,end) {
+			if(start == end) return arr[start];
+			var mid = Math.floor((end - start) / 2) + start, value = weights[mid];
+			if(v < value) return scan1(v,start,mid); else return scan1(v,mid + 1,end);
+		};
+		$r = scan1;
+		return $r;
+	}(this));
+	return function(v) {
+		if(v < 0 || v > tot) return null;
+		return scan(v,0,weights.length - 1);
+	};
+}
 var Bools = function() { }
+$hxClasses["Bools"] = Bools;
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
 	return (Bools.formatf(param,params,culture))(v);
@@ -223,6 +595,19 @@ Bools.formatf = function(param,params,culture) {
 		throw "Unsupported bool format: " + format;
 	}
 }
+Bools.interpolate = function(v,a,b,equation) {
+	return (Bools.interpolatef(a,b,equation))(v);
+}
+Bools.interpolatef = function(a,b,equation) {
+	if(a == b) return function(_) {
+		return a;
+	}; else {
+		var f = Floats.interpolatef(0,1,equation);
+		return function(v) {
+			return f(v) < 0.5?a:b;
+		};
+	}
+}
 Bools.canParse = function(s) {
 	s = s.toLowerCase();
 	return s == "true" || s == "false";
@@ -237,6 +622,7 @@ var Bytes = function(length,b) {
 	this.length = length;
 	this.b = b;
 };
+$hxClasses["Bytes"] = Bytes;
 Bytes.__name__ = ["Bytes"];
 Bytes.alloc = function(length) {
 	var a = new Array();
@@ -252,7 +638,7 @@ Bytes.ofString = function(s) {
 	var _g1 = 0, _g = s.length;
 	while(_g1 < _g) {
 		var i = _g1++;
-		var c = s.cca(i);
+		var c = HxOverrides.cca(s,i);
 		if(c <= 127) a.push(c); else if(c <= 2047) {
 			a.push(192 | c >> 6);
 			a.push(128 | c & 63);
@@ -269,8 +655,56 @@ Bytes.ofString = function(s) {
 	}
 	return new Bytes(a.length,a);
 }
+Bytes.ofStringData = function(s) {
+	var a = new Array();
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a.push(HxOverrides.cca(s,i));
+	}
+	return new Bytes(a.length,a);
+}
+Bytes.ofData = function(b) {
+	return new Bytes(b.length,b);
+}
+Bytes.ofHex = function(hs) {
+	var s = StringTools.stripWhite(hs);
+	s = StringTools.replaceRecurse(s,":","").toLowerCase();
+	if(StringTools.startsWith(s,"0x")) s = HxOverrides.substr(s,2,null);
+	if((s.length & 1) == 1) s = "0" + s;
+	var b = new BytesBuffer();
+	var l = s.length / 2 | 0;
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = HxOverrides.substr(s,x * 2,2);
+		b.b.push(Std.parseInt("0x" + ch));
+	}
+	return b.getBytes();
+}
 Bytes.prototype = {
-	toString: function() {
+	toHex: function(sep,pos,len) {
+		if(pos == null) pos = 0;
+		if(sep == null) sep = "";
+		if(len == null) len = this.length - pos;
+		var data = this.sub(pos,len);
+		var sb = new StringBuf();
+		var l = data.length;
+		var first = true;
+		var _g = 0;
+		while(_g < l) {
+			var i = _g++;
+			if(first) first = false; else sb.b += Std.string(sep);
+			sb.b += Std.string(StringTools.hex(this.b[i],2).toLowerCase());
+		}
+		var s = StringTools.rtrim(sb.b);
+		if(sep == "" && s.length % 2 != 0) s = "0" + s;
+		return s;
+	}
+	,getData: function() {
+		return this.b;
+	}
+	,toString: function() {
 		return this.readString(0,this.length);
 	}
 	,readString: function(pos,len) {
@@ -295,6 +729,17 @@ Bytes.prototype = {
 			}
 		}
 		return s;
+	}
+	,compare: function(other) {
+		var b1 = this.b;
+		var b2 = other.b;
+		var len = this.length < other.length?this.length:other.length;
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			if(b1[i] != b2[i]) return b1[i] - b2[i];
+		}
+		return this.length - other.length;
 	}
 	,sub: function(pos,len) {
 		if(len == null) len = this.length - pos;
@@ -322,6 +767,12 @@ Bytes.prototype = {
 			b1[i + pos] = b2[i + srcpos];
 		}
 	}
+	,set: function(pos,v) {
+		this.b[pos] = v & 255;
+	}
+	,get: function(pos) {
+		return this.b[pos];
+	}
 	,b: null
 	,length: null
 	,__class__: Bytes
@@ -329,9 +780,16 @@ Bytes.prototype = {
 var BytesBuffer = function() {
 	this.b = new Array();
 };
+$hxClasses["BytesBuffer"] = BytesBuffer;
 BytesBuffer.__name__ = ["BytesBuffer"];
 BytesBuffer.prototype = {
-	getBytes: function() {
+	writeBytes: function(src,pos,len) {
+		this.addBytes(src,pos,len);
+	}
+	,writeByte: function(b) {
+		this.b.push(b);
+	}
+	,getBytes: function() {
 		var bytes = new Bytes(this.b.length,this.b);
 		this.b = null;
 		return bytes;
@@ -355,11 +813,39 @@ BytesBuffer.prototype = {
 			this.b.push(b2[i]);
 		}
 	}
+	,addByte: function($byte) {
+		this.b.push($byte);
+	}
 	,b: null
 	,__class__: BytesBuffer
 }
 var BytesUtil = function() { }
+$hxClasses["BytesUtil"] = BytesUtil;
 BytesUtil.__name__ = ["BytesUtil"];
+BytesUtil.EMPTY = null;
+BytesUtil.byteArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.byteToHex = function(b) {
+	b = b & 255;
+	return StringTools.hex(b,2).toLowerCase();
+}
+BytesUtil.byte32ToHex = function(b) {
+	var bs = b & 255 & -1;
+	return StringTools.hex(bs,2).toLowerCase();
+}
+BytesUtil.bytesToInt32LE = function(s) {
+	return I32.unpackLE(BytesUtil.nullPad(s,4));
+}
 BytesUtil.cleanHexFormat = function(hex) {
 	var e = StringTools.replace(hex,":","");
 	e = e.split("|").join("");
@@ -369,26 +855,265 @@ BytesUtil.cleanHexFormat = function(hex) {
 	if((e.length & 1) == 1) e = "0" + e;
 	return e.toLowerCase();
 }
+BytesUtil.encodeToBase = function(buf,base) {
+	var bc = new haxe.BaseCode(Bytes.ofString(base));
+	return bc.encodeBytes(buf);
+}
+BytesUtil.eq = function(a,b) {
+	if(a.length != b.length) return false;
+	var l = a.length;
+	var _g = 0;
+	while(_g < l) {
+		var i = _g++;
+		if(a.b[i] != b.b[i]) return false;
+	}
+	return true;
+}
 BytesUtil.hexDump = function(b,separator) {
 	return BytesUtil.toHex(b,separator);
 }
+BytesUtil.int32ToBytesLE = function(l) {
+	return I32.packLE(l);
+}
+BytesUtil.int32ArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var v = a[_g];
+		++_g;
+		var i = v & -1;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.intArrayToBytes = function(a,padToBytes) {
+	var sb = new BytesBuffer();
+	var _g = 0;
+	while(_g < a.length) {
+		var i = a[_g];
+		++_g;
+		if(i > 255 || i < 0) throw "Value out of range";
+		sb.b.push(i);
+	}
+	if(padToBytes != null && padToBytes > 0) return BytesUtil.nullPad(sb.getBytes(),padToBytes);
+	return sb.getBytes();
+}
+BytesUtil.nullBytes = function(len) {
+	var sb = Bytes.alloc(len);
+	var _g = 0;
+	while(_g < len) {
+		var i = _g++;
+		sb.b[i] = 0;
+	}
+	return sb;
+}
+BytesUtil.nullPad = function(s,chunkLen) {
+	var r = chunkLen - s.length % chunkLen;
+	if(r == chunkLen) return s;
+	var sb = new BytesBuffer();
+	sb.add(s);
+	var _g = 0;
+	while(_g < r) {
+		var x = _g++;
+		sb.b.push(0);
+	}
+	return sb.getBytes();
+}
+BytesUtil.ofIntArray = function(a) {
+	var b = new BytesBuffer();
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		b.b.push(BytesUtil.cleanValue(a[i]));
+	}
+	return b.getBytes();
+}
+BytesUtil.ofHex = function(hs) {
+	var s = BytesUtil.cleanHexFormat(hs);
+	var b = new BytesBuffer();
+	var l = s.length / 2 | 0;
+	var _g = 0;
+	while(_g < l) {
+		var x = _g++;
+		var ch = HxOverrides.substr(s,x * 2,2);
+		var v = Std.parseInt("0x" + ch);
+		if(v > 255) throw "error";
+		b.b.push(v);
+	}
+	return b.getBytes();
+}
 BytesUtil.toHex = function(b,separator) {
 	if(separator == null) separator = " ";
-	var sb = new String();
+	var sb = new StringBuf();
 	var l = b.length;
 	var first = true;
 	var _g = 0;
 	while(_g < l) {
 		var i = _g++;
-		if(first) first = false; else sb += separator;
-		sb += StringTools.hex(b.b[i],2).toLowerCase();
+		if(first) first = false; else sb.b += Std.string(separator);
+		sb.b += Std.string(StringTools.hex(b.b[i],2).toLowerCase());
 	}
-	return StringTools.rtrim(sb);
+	return StringTools.rtrim(sb.b);
+}
+BytesUtil.unNullPad = function(s) {
+	var p = s.length - 1;
+	while(p-- > 0) if(s.b[p] != 0) break;
+	if(p == 0 && s.b[0] == 0) {
+		var bb = new BytesBuffer();
+		return bb.getBytes();
+	}
+	p++;
+	var b = Bytes.alloc(p);
+	b.blit(0,s,0,p);
+	return b;
+}
+BytesUtil.cleanValue = function(v) {
+	var neg = false;
+	if(v < 0) {
+		if(v < -128) throw "not a byte";
+		neg = true;
+		v = v & 255 | 128;
+	}
+	if(v > 255) throw "not a byte";
+	return v;
 }
 var Constants = function() { }
+$hxClasses["Constants"] = Constants;
 Constants.__name__ = ["Constants"];
 var DateTools = function() { }
+$hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
+DateTools.__format_get = function(d,e) {
+	return (function($this) {
+		var $r;
+		switch(e) {
+		case "%":
+			$r = "%";
+			break;
+		case "a":
+			$r = DateTools.WEEKDAYS_ABBREV[d.getDay()];
+			break;
+		case "b":
+			$r = DateTools.MONTHS_ABBREV[d.getMonth()];
+			break;
+		case "C":
+			$r = StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
+			break;
+		case "d":
+			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+			break;
+		case "D":
+			$r = DateTools.__format(d,"%m/%d/%y");
+			break;
+		case "e":
+			$r = Std.string(d.getDate());
+			break;
+		case "H":case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":case "l":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "m":
+			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+			break;
+		case "M":
+			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+			break;
+		case "n":
+			$r = "\n";
+			break;
+		case "p":
+			$r = d.getHours() > 11?"PM":"AM";
+			break;
+		case "r":
+			$r = DateTools.__format(d,"%I:%M:%S %p");
+			break;
+		case "R":
+			$r = DateTools.__format(d,"%H:%M");
+			break;
+		case "s":
+			$r = Std.string(d.getTime() / 1000 | 0);
+			break;
+		case "S":
+			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+			break;
+		case "t":
+			$r = "\t";
+			break;
+		case "T":
+			$r = DateTools.__format(d,"%H:%M:%S");
+			break;
+		case "u":
+			$r = (function($this) {
+				var $r;
+				var t = d.getDay();
+				$r = t == 0?"7":Std.string(t);
+				return $r;
+			}($this));
+			break;
+		case "w":
+			$r = Std.string(d.getDay());
+			break;
+		case "y":
+			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+			break;
+		case "Y":
+			$r = Std.string(d.getFullYear());
+			break;
+		case "z":
+			$r = (function($this) {
+				var $r;
+				var o = d.getTimezoneOffset();
+				var i = Std.string(Math.abs(Math.floor(o / 60 * 100)) | 0);
+				var neg = o < 0?true:false;
+				var s = StringTools.lpad(i,"0",4);
+				$r = neg?"-" + s:"+" + s;
+				return $r;
+			}($this));
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "Date.format %" + e + "- not implemented yet.";
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+}
+DateTools.__format = function(d,f) {
+	var r = new StringBuf();
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) break;
+		r.b += HxOverrides.substr(f,p,np - p);
+		r.b += Std.string(DateTools.__format_get(d,HxOverrides.substr(f,np + 1,1)));
+		p = np + 2;
+	}
+	r.b += HxOverrides.substr(f,p,f.length - p);
+	return r.b;
+}
+DateTools.format = function(d,f) {
+	return DateTools.__format(d,f);
+}
+DateTools.delta = function(d,t) {
+	return (function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(d.getTime() + t);
+		$r = d1;
+		return $r;
+	}(this));
+}
 DateTools.getMonthDays = function(d) {
 	var month = d.getMonth();
 	var year = d.getFullYear();
@@ -396,25 +1121,55 @@ DateTools.getMonthDays = function(d) {
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 	return isB?29:28;
 }
+DateTools.seconds = function(n) {
+	return n * 1000.0;
+}
+DateTools.minutes = function(n) {
+	return n * 60.0 * 1000.0;
+}
+DateTools.hours = function(n) {
+	return n * 60.0 * 60.0 * 1000.0;
+}
+DateTools.days = function(n) {
+	return n * 24.0 * 60.0 * 60.0 * 1000.0;
+}
+DateTools.parse = function(t) {
+	var s = t / 1000;
+	var m = s / 60;
+	var h = m / 60;
+	return { ms : t % 1000, seconds : s % 60 | 0, minutes : m % 60 | 0, hours : h % 24 | 0, days : h / 24 | 0};
+}
+DateTools.make = function(o) {
+	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+}
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
+$hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	customReplace: function(s,f) {
-		var buf = new String();
+		var buf = new StringBuf();
 		while(true) {
 			if(!this.match(s)) break;
-			buf += this.matchedLeft();
-			buf += f(this);
+			buf.b += Std.string(this.matchedLeft());
+			buf.b += Std.string(f(this));
 			s = this.matchedRight();
 		}
-		buf += s;
-		return buf;
+		buf.b += Std.string(s);
+		return buf.b;
 	}
 	,replace: function(s,by) {
 		return s.replace(this.r,by);
+	}
+	,split: function(s) {
+		var d = "#__delim__#";
+		return s.replace(this.r,d).split(d);
+	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
 	}
 	,matchedRight: function() {
 		if(this.r.m == null) throw "No string matched";
@@ -447,6 +1202,7 @@ EReg.prototype = {
 	,__class__: EReg
 }
 var Dates = function() { }
+$hxClasses["Dates"] = Dates;
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
 	return (Dates.formatf(param,params,culture))(d);
@@ -735,6 +1491,7 @@ Dates.compare = function(a,b) {
 	return Floats.compare(a.getTime(),b.getTime());
 }
 var Dynamics = function() { }
+$hxClasses["Dynamics"] = Dynamics;
 Dynamics.__name__ = ["Dynamics"];
 Dynamics.format = function(v,param,params,nullstring,culture) {
 	return (Dynamics.formatf(param,params,nullstring,culture))(v);
@@ -768,6 +1525,44 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 			}(this));
 		}
 	};
+}
+Dynamics.interpolate = function(v,a,b,equation) {
+	return (Dynamics.interpolatef(a,b,equation))(v);
+}
+Dynamics.interpolatef = function(a,b,equation) {
+	var ta = Type["typeof"](a);
+	var tb = Type["typeof"](b);
+	if(!((js.Boot.__instanceof(a,Float) || js.Boot.__instanceof(a,Int)) && (js.Boot.__instanceof(b,Float) || js.Boot.__instanceof(b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
+	var $e = (ta);
+	switch( $e[1] ) {
+	case 0:
+		return function(_) {
+			return null;
+		};
+	case 1:
+		if(js.Boot.__instanceof(b,Int)) return Ints.interpolatef(a,b,equation); else return Floats.interpolatef(a,b,equation);
+		break;
+	case 2:
+		return Floats.interpolatef(a,b,equation);
+	case 3:
+		return Bools.interpolatef(a,b,equation);
+	case 4:
+		return Objects.interpolatef(a,b,equation);
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "String":
+			return Strings.interpolatef(a,b,equation);
+		case "Date":
+			return Dates.interpolatef(a,b,equation);
+		default:
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
+		}
+		break;
+	default:
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
+	}
 }
 Dynamics.string = function(v) {
 	var $e = (Type["typeof"](v));
@@ -1046,7 +1841,27 @@ Dynamics.same = function(a,b) {
 		return $r;
 	}(this));
 }
+Dynamics.number = function(v) {
+	return Number(v);
+}
+var DynamicsT = function() { }
+$hxClasses["DynamicsT"] = DynamicsT;
+DynamicsT.__name__ = ["DynamicsT"];
+DynamicsT.toHash = function(ob) {
+	var hash = new Hash();
+	return DynamicsT.copyToHash(ob,hash);
+}
+DynamicsT.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
 var Enums = function() { }
+$hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
 	var cons = e[0];
@@ -1065,9 +1880,16 @@ Enums.compare = function(a,b) {
 	return Arrays.compare(a.slice(2),b.slice(2));
 }
 var Floats = function() { }
+$hxClasses["Floats"] = Floats;
 Floats.__name__ = ["Floats"];
 Floats.normalize = function(v) {
 	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+}
+Floats.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Floats.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
 }
 Floats.range = function(start,stop,step,inclusive) {
 	if(inclusive == null) inclusive = false;
@@ -1083,11 +1905,22 @@ Floats.range = function(start,stop,step,inclusive) {
 	} else if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
 }
+Floats.sign = function(v) {
+	return v < 0?-1:1;
+}
+Floats.abs = function(a) {
+	return a < 0?-a:a;
+}
 Floats.min = function(a,b) {
 	return a < b?a:b;
 }
 Floats.max = function(a,b) {
 	return a > b?a:b;
+}
+Floats.wrap = function(v,min,max) {
+	var range = max - min + 1;
+	if(v < min) v += range * ((min - v) / range + 1);
+	return min + (v - min) % range;
 }
 Floats.circularWrap = function(v,max) {
 	v = v % max;
@@ -1107,6 +1940,15 @@ Floats.interpolatef = function(a,b,equation) {
 	var d = b - a;
 	return function(f) {
 		return a + equation(f) * d;
+	};
+}
+Floats.interpolateClampf = function(min,max,equation) {
+	if(null == equation) equation = thx.math.Equations.linear;
+	return function(a,b) {
+		var d = b - a;
+		return function(f) {
+			return a + equation(Floats.clamp(f,min,max)) * d;
+		};
 	};
 }
 Floats.format = function(v,param,params,culture) {
@@ -1156,6 +1998,9 @@ Floats.parse = function(s) {
 Floats.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
 }
+Floats.isNumeric = function(v) {
+	return js.Boot.__instanceof(v,Float) || js.Boot.__instanceof(v,Int);
+}
 Floats.equals = function(a,b,approx) {
 	if(approx == null) approx = 1e-5;
 	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
@@ -1167,12 +2012,38 @@ Floats.uninterpolatef = function(a,b) {
 		return (x - a) * b;
 	};
 }
+Floats.uninterpolateClampf = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return Floats.clamp((x - a) * b,0.0,1.0);
+	};
+}
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
+}
 var Hash = function() {
 	this.h = { };
 };
+$hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
-	iterator: function() {
+	toString: function() {
+		var s = new StringBuf();
+		s.b += Std.string("{");
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b += Std.string(i);
+			s.b += Std.string(" => ");
+			s.b += Std.string(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += Std.string(", ");
+		}
+		s.b += Std.string("}");
+		return s.b;
+	}
+	,iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
 			return this.it.hasNext();
 		}, next : function() {
@@ -1205,8 +2076,102 @@ Hash.prototype = {
 	,h: null
 	,__class__: Hash
 }
+var Hashes = function() { }
+$hxClasses["Hashes"] = Hashes;
+Hashes.__name__ = ["Hashes"];
+Hashes.entries = function(h) {
+	var arr = [];
+	var $it0 = h.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		arr.push({ key : key, value : h.get(key)});
+	}
+	return arr;
+}
+Hashes.toDynamic = function(hash) {
+	var o = { };
+	var $it0 = hash.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		o[key] = hash.get(key);
+	}
+	return o;
+}
+Hashes.importObject = function(hash,ob) {
+	return DynamicsT.copyToHash(ob,hash);
+}
+Hashes.copyTo = function(from,to) {
+	var $it0 = from.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		to.set(k,from.get(k));
+	}
+	return to;
+}
+Hashes.clone = function(src) {
+	var h = new Hash();
+	Hashes.copyTo(src,h);
+	return h;
+}
+Hashes.arrayOfKeys = function(hash) {
+	return Iterators.array(hash.keys());
+}
+Hashes.setOfKeys = function(hash) {
+	var set = new thx.collection.Set();
+	var $it0 = hash.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		set.add(k);
+	}
+	return set;
+}
+Hashes.empty = function(hash) {
+	return Hashes.count(hash) == 0;
+}
+Hashes.count = function(hash) {
+	var i = 0;
+	var $it0 = hash.iterator();
+	while( $it0.hasNext() ) {
+		var _ = $it0.next();
+		i++;
+	}
+	return i;
+}
+Hashes.mergef = function(hash,new_hash,f) {
+	var $it0 = new_hash.keys();
+	while( $it0.hasNext() ) {
+		var k = $it0.next();
+		var new_val = new_hash.get(k);
+		if(hash.exists(k)) {
+			var old_val = hash.get(k);
+			hash.set(k,f(k,old_val,new_val));
+		} else hash.set(k,new_val);
+	}
+}
+Hashes.merge = function(hash,new_hash) {
+	Hashes.mergef(hash,new_hash,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
+Hashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
 var HxOverrides = function() { }
+$hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = ["HxOverrides"];
+HxOverrides.dateStr = function(date) {
+	var m = date.getMonth() + 1;
+	var d = date.getDate();
+	var h = date.getHours();
+	var mi = date.getMinutes();
+	var s = date.getSeconds();
+	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+}
 HxOverrides.strDate = function(s) {
 	switch(s.length) {
 	case 8:
@@ -1263,7 +2228,32 @@ HxOverrides.iter = function(a) {
 	}};
 }
 var I32 = function() { }
+$hxClasses["I32"] = I32;
 I32.__name__ = ["I32"];
+I32.B4 = function(v) {
+	return v >>> 24 & -1;
+}
+I32.B3 = function(v) {
+	return v >>> 16 & 255 & -1;
+}
+I32.B2 = function(v) {
+	return v >>> 8 & 255 & -1;
+}
+I32.B1 = function(v) {
+	return v & 255 & -1;
+}
+I32.abs = function(v) {
+	return Math.abs(v) | 0;
+}
+I32.add = function(a,b) {
+	return a + b;
+}
+I32.alphaFromArgb = function(v) {
+	return v >>> 24 & -1;
+}
+I32.and = function(a,b) {
+	return a & b;
+}
 I32.baseEncode = function(v,radix) {
 	if(radix < 2 || radix > 36) throw "radix out of range";
 	var sb = "";
@@ -1278,12 +2268,197 @@ I32.baseEncode = function(v,radix) {
 	if(v < 0) return "-" + sb;
 	return sb;
 }
+I32.complement = function(v) {
+	return ~v;
+}
+I32.compare = function(a,b) {
+	return a - b;
+}
+I32.div = function(a,b) {
+	return a / b | 0;
+}
+I32.encodeBE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i >>> 24 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i & 255 & -1);
+	return sb.getBytes();
+}
+I32.encodeLE = function(i) {
+	var sb = new BytesBuffer();
+	sb.b.push(i & 255 & -1);
+	sb.b.push(i >>> 8 & 255 & -1);
+	sb.b.push(i >>> 16 & 255 & -1);
+	sb.b.push(i >>> 24 & -1);
+	return sb.getBytes();
+}
+I32.decodeBE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos + 3];
+	var b1 = s.b[pos + 2];
+	var b2 = s.b[pos + 1];
+	var b3 = s.b[pos];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
+}
+I32.decodeLE = function(s,pos) {
+	if(pos == null) pos = 0;
+	var b0 = s.b[pos];
+	var b1 = s.b[pos + 1];
+	var b2 = s.b[pos + 2];
+	var b3 = s.b[pos + 3];
+	b1 = b1 << 8;
+	b2 = b2 << 16;
+	b3 = b3 << 24;
+	var a = b0 + b1;
+	a = a + b2;
+	a = a + b3;
+	return a;
+}
+I32.eq = function(a,b) {
+	return a == b;
+}
+I32.gt = function(a,b) {
+	return a > b;
+}
+I32.gteq = function(a,b) {
+	return a >= b;
+}
+I32.lt = function(a,b) {
+	return a < b;
+}
+I32.lteq = function(a,b) {
+	return a <= b;
+}
+I32.make = function(high,low) {
+	return (high << 16) + low;
+}
+I32.makeColor = function(alpha,rgb) {
+	return alpha << 24 | rgb & 16777215;
+}
+I32.mod = function(a,b) {
+	return a % b;
+}
+I32.mul = function(a,b) {
+	return a * b;
+}
+I32.neg = function(v) {
+	return -v;
+}
+I32.ofInt = function(v) {
+	return v;
+}
+I32.or = function(a,b) {
+	return a | b;
+}
+I32.packBE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] >>> 24 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] & 255 & -1);
+	}
+	return sb.getBytes();
+}
+I32.packLE = function(l) {
+	var sb = new BytesBuffer();
+	var _g1 = 0, _g = l.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		sb.b.push(l[i] & 255 & -1);
+		sb.b.push(l[i] >>> 8 & 255 & -1);
+		sb.b.push(l[i] >>> 16 & 255 & -1);
+		sb.b.push(l[i] >>> 24 & -1);
+	}
+	return sb.getBytes();
+}
+I32.rgbFromArgb = function(v) {
+	return v & 16777215;
+}
+I32.sub = function(a,b) {
+	return a - b;
+}
+I32.shl = function(v,bits) {
+	return v << bits;
+}
+I32.shr = function(v,bits) {
+	return v >> bits;
+}
+I32.toColor = function(v) {
+	return { alpha : v >>> 24 & -1, color : v & 16777215};
+}
+I32.toFloat = function(v) {
+	return v * 1.0;
+}
+I32.toInt = function(v) {
+	return v & -1;
+}
+I32.toNativeArray = function(v) {
+	return v;
+}
+I32.unpackLE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	var len = s.length;
+	while(pos < len) {
+		a[i] = I32.decodeLE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
+}
+I32.unpackBE = function(s) {
+	if(s == null || s.length == 0) return new Array();
+	if(s.length % 4 != 0) throw "Buffer not multiple of 4 bytes";
+	var a = new Array();
+	var pos = 0;
+	var i = 0;
+	while(pos < s.length) {
+		a[i] = I32.decodeBE(s,pos);
+		pos += 4;
+		i++;
+	}
+	return a;
+}
+I32.ushr = function(v,bits) {
+	return v >>> bits;
+}
+I32.xor = function(a,b) {
+	return a ^ b;
+}
 var IntHash = function() {
 	this.h = { };
 };
+$hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
-	iterator: function() {
+	toString: function() {
+		var s = new StringBuf();
+		s.b += Std.string("{");
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b += Std.string(i);
+			s.b += Std.string(" => ");
+			s.b += Std.string(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += Std.string(", ");
+		}
+		s.b += Std.string("}");
+		return s.b;
+	}
+	,iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
 			return this.it.hasNext();
 		}, next : function() {
@@ -1303,6 +2478,9 @@ IntHash.prototype = {
 		delete(this.h[key]);
 		return true;
 	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty(key);
+	}
 	,get: function(key) {
 		return this.h[key];
 	}
@@ -1313,7 +2491,11 @@ IntHash.prototype = {
 	,__class__: IntHash
 }
 var IntHashes = function() { }
+$hxClasses["IntHashes"] = IntHashes;
 IntHashes.__name__ = ["IntHashes"];
+IntHashes.empty = function(hash) {
+	return IntHashes.count(hash) == 0;
+}
 IntHashes.count = function(hash) {
 	var i = 0;
 	var $it0 = hash.iterator();
@@ -1323,7 +2505,33 @@ IntHashes.count = function(hash) {
 	}
 	return i;
 }
+IntHashes.clear = function(hash) {
+	var _hash = hash;
+	_hash.h = {}
+	if(_hash.h.__proto__ != null) {
+		_hash.h.__proto__ = null;
+		delete(_hash.h.__proto__);
+	}
+}
+var IntIter = function(min,max) {
+	this.min = min;
+	this.max = max;
+};
+$hxClasses["IntIter"] = IntIter;
+IntIter.__name__ = ["IntIter"];
+IntIter.prototype = {
+	next: function() {
+		return this.min++;
+	}
+	,hasNext: function() {
+		return this.min < this.max;
+	}
+	,max: null
+	,min: null
+	,__class__: IntIter
+}
 var Ints = function() { }
+$hxClasses["Ints"] = Ints;
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
 	if(step == null) step = 1;
@@ -1336,6 +2544,9 @@ Ints.range = function(start,stop,step) {
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
 }
+Ints.sign = function(v) {
+	return v < 0?-1:1;
+}
 Ints.abs = function(a) {
 	return a < 0?-a:a;
 }
@@ -1345,8 +2556,14 @@ Ints.min = function(a,b) {
 Ints.max = function(a,b) {
 	return a > b?a:b;
 }
+Ints.wrap = function(v,min,max) {
+	return Math.round(Floats.wrap(v,min,max));
+}
 Ints.clamp = function(v,min,max) {
 	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Ints.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
 }
 Ints.interpolate = function(f,min,max,equation) {
 	if(max == null) max = 100.0;
@@ -1376,14 +2593,71 @@ Ints.parse = function(s) {
 	if(HxOverrides.substr(s,0,1) == "+") s = HxOverrides.substr(s,1,null);
 	return Std.parseInt(s);
 }
+Ints.compare = function(a,b) {
+	return a - b;
+}
 var Iterables = function() { }
+$hxClasses["Iterables"] = Iterables;
 Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count($iterator(it)());
+}
+Iterables.indexOf = function(it,v,f) {
+	return Iterators.indexOf($iterator(it)(),v,f);
+}
+Iterables.contains = function(it,v,f) {
+	return Iterators.contains($iterator(it)(),v,f);
+}
+Iterables.array = function(it) {
+	return Iterators.array($iterator(it)());
+}
+Iterables.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array($iterator(it)()).join(glue);
+}
+Iterables.map = function(it,f) {
+	return Iterators.map($iterator(it)(),f);
+}
+Iterables.each = function(it,f) {
+	return Iterators.each($iterator(it)(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter($iterator(it)(),f);
+}
+Iterables.reduce = function(it,f,initialValue) {
+	return Iterators.reduce($iterator(it)(),f,initialValue);
+}
+Iterables.random = function(it) {
+	return Arrays.random(Iterators.array($iterator(it)()));
+}
+Iterables.any = function(it,f) {
+	return Iterators.any($iterator(it)(),f);
+}
+Iterables.all = function(it,f) {
+	return Iterators.all($iterator(it)(),f);
+}
+Iterables.last = function(it) {
+	return Iterators.last($iterator(it)());
+}
+Iterables.lastf = function(it,f) {
+	return Iterators.lastf($iterator(it)(),f);
+}
+Iterables.first = function(it) {
+	return $iterator(it)().next();
+}
+Iterables.firstf = function(it,f) {
+	return Iterators.firstf($iterator(it)(),f);
+}
+Iterables.order = function(it,f) {
+	return Arrays.order(Iterators.array($iterator(it)()),f);
+}
 Iterables.isIterable = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"iterator")) return false;
 	return Reflect.isFunction(Reflect.field(v,"iterator"));
 }
 var Iterators = function() { }
+$hxClasses["Iterators"] = Iterators;
 Iterators.__name__ = ["Iterators"];
 Iterators.count = function(it) {
 	var i = 0;
@@ -1393,6 +2667,28 @@ Iterators.count = function(it) {
 	}
 	return i;
 }
+Iterators.indexOf = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return c; else c++;
+	}
+	return -1;
+}
+Iterators.contains = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return true;
+	}
+	return false;
+}
 Iterators.array = function(it) {
 	var result = [];
 	while( it.hasNext() ) {
@@ -1400,6 +2696,10 @@ Iterators.array = function(it) {
 		result.push(v);
 	}
 	return result;
+}
+Iterators.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it).join(glue);
 }
 Iterators.map = function(it,f) {
 	var result = [], i = 0;
@@ -1424,6 +2724,44 @@ Iterators.filter = function(it,f) {
 	}
 	return result;
 }
+Iterators.reduce = function(it,f,initialValue) {
+	var accumulator = initialValue, i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		accumulator = f(accumulator,o,i++);
+	}
+	return accumulator;
+}
+Iterators.random = function(it) {
+	return Arrays.random(Iterators.array(it));
+}
+Iterators.any = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return true;
+	}
+	return false;
+}
+Iterators.all = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(!f(v)) return false;
+	}
+	return true;
+}
+Iterators.last = function(it) {
+	var o = null;
+	while(it.hasNext()) o = it.next();
+	return o;
+}
+Iterators.lastf = function(it,f) {
+	var rev = Iterators.array(it);
+	rev.reverse();
+	return Arrays.lastf(rev,f);
+}
+Iterators.first = function(it) {
+	return it.next();
+}
 Iterators.firstf = function(it,f) {
 	while( it.hasNext() ) {
 		var v = it.next();
@@ -1431,13 +2769,54 @@ Iterators.firstf = function(it,f) {
 	}
 	return null;
 }
+Iterators.order = function(it,f) {
+	return Arrays.order(Iterators.array(it),f);
+}
 Iterators.isIterator = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) return false;
 	return Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
 }
 var Lambda = function() { }
+$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = new Array();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+}
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+}
+Lambda.map = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(x));
+	}
+	return l;
+}
+Lambda.mapi = function(it,f) {
+	var l = new List();
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(i++,x));
+	}
+	return l;
+}
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
 		var $it0 = $iterator(it)();
@@ -1454,12 +2833,141 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
+Lambda.exists = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+}
+Lambda.foreach = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(!f(x)) return false;
+	}
+	return true;
+}
+Lambda.iter = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		f(x);
+	}
+}
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+}
+Lambda.fold = function(it,f,first) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		first = f(x,first);
+	}
+	return first;
+}
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var $it0 = $iterator(it)();
+		while( $it0.hasNext() ) {
+			var _ = $it0.next();
+			n++;
+		}
+	} else {
+		var $it1 = $iterator(it)();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+}
+Lambda.empty = function(it) {
+	return !$iterator(it)().hasNext();
+}
+Lambda.indexOf = function(it,v) {
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var v2 = $it0.next();
+		if(v == v2) return i;
+		i++;
+	}
+	return -1;
+}
+Lambda.concat = function(a,b) {
+	var l = new List();
+	var $it0 = $iterator(a)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(x);
+	}
+	var $it1 = $iterator(b)();
+	while( $it1.hasNext() ) {
+		var x = $it1.next();
+		l.add(x);
+	}
+	return l;
+}
 var List = function() {
 	this.length = 0;
 };
+$hxClasses["List"] = List;
 List.__name__ = ["List"];
 List.prototype = {
-	iterator: function() {
+	map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b += Std.string(sep);
+			s.b += Std.string(l[0]);
+			l = l[1];
+		}
+		return s.b;
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b += Std.string("{");
+		while(l != null) {
+			if(first) first = false; else s.b += Std.string(", ");
+			s.b += Std.string(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b += Std.string("}");
+		return s.b;
+	}
+	,iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
 		}, next : function() {
@@ -1469,12 +2977,79 @@ List.prototype = {
 			return x;
 		}};
 	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
 	,length: null
+	,q: null
 	,h: null
 	,__class__: List
 }
 var Objects = function() { }
+$hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
+Objects.field = function(o,fieldname,alt) {
+	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+}
+Objects.keys = function(o) {
+	return Reflect.fields(o);
+}
+Objects.values = function(o) {
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		arr.push(Reflect.field(o,key));
+	}
+	return arr;
+}
 Objects.entries = function(o) {
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(o);
@@ -1484,6 +3059,72 @@ Objects.entries = function(o) {
 		arr.push({ key : key, value : Reflect.field(o,key)});
 	}
 	return arr;
+}
+Objects.each = function(o,handler) {
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		handler(key,Reflect.field(o,key));
+	}
+}
+Objects.map = function(o,handler) {
+	var results = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		results.push(handler(key,Reflect.field(o,key)));
+	}
+	return results;
+}
+Objects["with"] = function(ob,f) {
+	f(ob);
+	return ob;
+}
+Objects.toHash = function(ob) {
+	var hash = new Hash();
+	return Objects.copyToHash(ob,hash);
+}
+Objects.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
+Objects.interpolate = function(v,a,b,equation) {
+	return (Objects.interpolatef(a,b,equation))(v);
+}
+Objects.interpolatef = function(a,b,equation) {
+	var i = { }, c = { }, keys = Reflect.fields(a);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(Reflect.hasField(b,key)) {
+			var va = Reflect.field(a,key);
+			i[key] = Dynamics.interpolatef(va,Reflect.field(b,key));
+		} else c[key] = Reflect.field(a,key);
+	}
+	keys = Reflect.fields(b);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(!Reflect.hasField(a,key)) c[key] = Reflect.field(b,key);
+	}
+	return function(t) {
+		var _g = 0, _g1 = Reflect.fields(i);
+		while(_g < _g1.length) {
+			var k = _g1[_g];
+			++_g;
+			c[k] = Reflect.field(i,k).apply(i,[t]);
+		}
+		return c;
+	};
 }
 Objects.copyTo = function(src,dst) {
 	var _g = 0, _g1 = Reflect.fields(src);
@@ -1500,6 +3141,52 @@ Objects.clone = function(src) {
 	var dst = { };
 	return Objects.copyTo(src,dst);
 }
+Objects.mergef = function(ob,new_ob,f) {
+	var _g = 0, _g1 = Reflect.fields(new_ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var new_val = Reflect.field(new_ob,field);
+		if(Reflect.hasField(ob,field)) {
+			var old_val = Reflect.field(ob,field);
+			ob[field] = f(field,old_val,new_val);
+		} else ob[field] = new_val;
+	}
+}
+Objects.merge = function(ob,new_ob) {
+	Objects.mergef(ob,new_ob,function(key,old_v,new_v) {
+		return new_v;
+	});
+}
+Objects._flatten = function(src,cum,arr,levels,level) {
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var clone = Objects.clone(cum);
+		var v = Reflect.field(src,field);
+		clone.fields.push(field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && (levels == 0 || level + 1 < levels)) Objects._flatten(v,clone,arr,levels,level + 1); else {
+			clone.value = v;
+			arr.push(clone);
+		}
+	}
+}
+Objects.flatten = function(src,levels) {
+	if(levels == null) levels = 0;
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(src);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var v = Reflect.field(src,field);
+		if(Reflect.isObject(v) && null == Type.getClass(v) && levels != 1) {
+			var item = { fields : [field], value : null};
+			Objects._flatten(v,item,arr,levels,1);
+		} else arr.push({ fields : [field], value : v});
+	}
+	return arr;
+}
 Objects.compare = function(a,b) {
 	var v, fields;
 	if((v = Arrays.compare(fields = Reflect.fields(a),Reflect.fields(b))) != 0) return v;
@@ -1510,6 +3197,18 @@ Objects.compare = function(a,b) {
 		if((v = Dynamics.compare(Reflect.field(a,field),Reflect.field(b,field))) != 0) return v;
 	}
 	return 0;
+}
+Objects.addFields = function(o,fields,values) {
+	var _g1 = 0, _g = fields.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Objects.addField(o,fields[i],values[i]);
+	}
+	return o;
+}
+Objects.addField = function(o,field,value) {
+	o[field] = value;
+	return o;
 }
 Objects.format = function(v,param,params,culture) {
 	return (Objects.formatf(param,params,culture))(v);
@@ -1542,6 +3241,7 @@ Objects.formatf = function(param,params,culture) {
 	}
 }
 var Reflect = function() { }
+$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
 	return Object.prototype.hasOwnProperty.call(o,field);
@@ -1553,6 +3253,20 @@ Reflect.field = function(o,field) {
 	} catch( e ) {
 	}
 	return v;
+}
+Reflect.setField = function(o,field,value) {
+	o[field] = value;
+}
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
+Reflect.callMethod = function(o,func,args) {
+	return func.apply(o,args);
 }
 Reflect.fields = function(o) {
 	var a = [];
@@ -1566,6 +3280,9 @@ Reflect.fields = function(o) {
 }
 Reflect.isFunction = function(f) {
 	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
+}
+Reflect.compare = function(a,b) {
+	return a == b?0:a > b?1:-1;
 }
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
@@ -1582,10 +3299,33 @@ Reflect.deleteField = function(o,f) {
 	delete(o[f]);
 	return true;
 }
+Reflect.copy = function(o) {
+	var o2 = { };
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+}
+Reflect.makeVarArgs = function(f) {
+	return function() {
+		var a = Array.prototype.slice.call(arguments);
+		return f(a);
+	};
+}
 var Std = function() { }
+$hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
+Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+}
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
+}
+Std["int"] = function(x) {
+	return x | 0;
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
@@ -1596,7 +3336,32 @@ Std.parseInt = function(x) {
 Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
+Std.random = function(x) {
+	return Math.floor(Math.random() * x);
+}
+var StringBuf = function() {
+	this.b = "";
+};
+$hxClasses["StringBuf"] = StringBuf;
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	toString: function() {
+		return this.b;
+	}
+	,addSub: function(s,pos,len) {
+		this.b += HxOverrides.substr(s,pos,len);
+	}
+	,addChar: function(c) {
+		this.b += String.fromCharCode(c);
+	}
+	,add: function(x) {
+		this.b += Std.string(x);
+	}
+	,b: null
+	,__class__: StringBuf
+}
 var StringTools = function() { }
+$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
 	return encodeURIComponent(s);
@@ -1604,8 +3369,19 @@ StringTools.urlEncode = function(s) {
 StringTools.urlDecode = function(s) {
 	return decodeURIComponent(s.split("+").join(" "));
 }
+StringTools.htmlEscape = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+}
 StringTools.startsWith = function(s,start) {
 	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
+}
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
 }
 StringTools.isSpace = function(s,pos) {
 	var c = HxOverrides.cca(s,pos);
@@ -1665,17 +3441,64 @@ StringTools.hex = function(n,digits) {
 	if(digits != null) while(s.length < digits) s = "0" + s;
 	return s;
 }
+StringTools.fastCodeAt = function(s,index) {
+	return HxOverrides.cca(s,index);
+}
+StringTools.isEOF = function(c) {
+	return c != c;
+}
+StringTools.replaceRecurse = function(s,sub,by) {
+	if(sub.length == 0) return StringTools.replace(s,sub,by);
+	if(by.indexOf(sub) >= 0) throw "Infinite recursion";
+	var ns = s.toString();
+	var olen = 0;
+	var nlen = ns.length;
+	while(olen != nlen) {
+		olen = ns.length;
+		StringTools.replace(ns,sub,by);
+		nlen = ns.length;
+	}
+	return ns;
+}
 StringTools.stripWhite = function(s) {
 	var l = s.length;
 	var i = 0;
-	var sb = new String();
+	var sb = new StringBuf();
 	while(i < l) {
-		if(!StringTools.isSpace(s,i)) sb += s.charAt(i);
+		if(!StringTools.isSpace(s,i)) sb.b += Std.string(s.charAt(i));
 		i++;
 	}
-	return sb;
+	return sb.b;
+}
+StringTools.isNum = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c >= 48 && c <= 57;
+}
+StringTools.isAlpha = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c >= 65 && c <= 90 || c >= 97 && c <= 122;
+}
+StringTools.num = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	if(c > 0) {
+		c -= 48;
+		if(c < 0 || c > 9) return null;
+		return c;
+	}
+	return null;
+}
+StringTools.splitLines = function(str) {
+	var ret = str.split("\n");
+	var _g1 = 0, _g = ret.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var l = ret[i];
+		if(HxOverrides.substr(l,-1,1) == "\r") ret[i] = HxOverrides.substr(l,0,-1);
+	}
+	return ret;
 }
 var Strings = function() { }
+$hxClasses["Strings"] = Strings;
 Strings.__name__ = ["Strings"];
 Strings.format = function(pattern,values,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
@@ -1770,6 +3593,14 @@ Strings.formatOnef = function(param,params,culture) {
 		}(this));
 	}
 }
+Strings.upTo = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return HxOverrides.substr(value,0,pos);
+}
+Strings.startFrom = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return HxOverrides.substr(value,pos + searchFor.length,null);
+}
 Strings.rtrim = function(value,charlist) {
 	var len = value.length;
 	while(len > 0) {
@@ -1788,6 +3619,9 @@ Strings.ltrim = function(value,charlist) {
 	}
 	return HxOverrides.substr(value,start,null);
 }
+Strings.trim = function(value,charlist) {
+	return Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+}
 Strings.collapse = function(value) {
 	return Strings._reCollapse.replace(StringTools.trim(value)," ");
 }
@@ -1800,14 +3634,29 @@ Strings.lcfirst = function(value) {
 Strings.empty = function(value) {
 	return value == null || value == "";
 }
+Strings.isAlphaNum = function(value) {
+	return value == null?false:Strings.__alphaNumPattern.match(value);
+}
+Strings.digitsOnly = function(value) {
+	return value == null?false:Strings.__digitsPattern.match(value);
+}
 Strings.ucwords = function(value) {
 	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
+}
+Strings.ucwordsws = function(value) {
+	return Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
 }
 Strings.__upperMatch = function(re) {
 	return re.matched(0).toUpperCase();
 }
 Strings.humanize = function(s) {
 	return StringTools.replace(Strings.underscore(s),"_"," ");
+}
+Strings.capitalize = function(s) {
+	return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,null);
+}
+Strings.succ = function(s) {
+	return HxOverrides.substr(s,0,-1) + String.fromCharCode(HxOverrides.cca(HxOverrides.substr(s,-1,null),0) + 1);
 }
 Strings.underscore = function(s) {
 	s = new EReg("::","g").replace(s,"/");
@@ -1818,6 +3667,60 @@ Strings.underscore = function(s) {
 }
 Strings.dasherize = function(s) {
 	return StringTools.replace(s,"_","-");
+}
+Strings.repeat = function(s,times) {
+	var b = [];
+	var _g = 0;
+	while(_g < times) {
+		var i = _g++;
+		b.push(s);
+	}
+	return b.join("");
+}
+Strings.wrapColumns = function(s,columns,indent,newline) {
+	if(newline == null) newline = "\n";
+	if(indent == null) indent = "";
+	if(columns == null) columns = 78;
+	var parts = Strings._reSplitWC.split(s);
+	var result = [];
+	var _g = 0;
+	while(_g < parts.length) {
+		var part = parts[_g];
+		++_g;
+		result.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(part," ")),columns,indent,newline));
+	}
+	return result.join(newline);
+}
+Strings._wrapColumns = function(s,columns,indent,newline) {
+	var parts = [];
+	var pos = 0;
+	var len = s.length;
+	var ilen = indent.length;
+	columns -= ilen;
+	while(true) {
+		if(pos + columns >= len - ilen) {
+			parts.push(HxOverrides.substr(s,pos,null));
+			break;
+		}
+		var i = 0;
+		while(!StringTools.isSpace(s,pos + columns - i) && i < columns) i++;
+		if(i == columns) {
+			i = 0;
+			while(!StringTools.isSpace(s,pos + columns + i) && pos + columns + i < len) i++;
+			parts.push(HxOverrides.substr(s,pos,columns + i));
+			pos += columns + i + 1;
+		} else {
+			parts.push(HxOverrides.substr(s,pos,columns - i));
+			pos += columns - i + 1;
+		}
+	}
+	return indent + parts.join(newline + indent);
+}
+Strings.stripTags = function(s) {
+	return Strings._reStripTags.replace(s,"");
+}
+Strings.interpolate = function(v,a,b,equation) {
+	return (Strings.interpolatef(a,b,equation))(v);
 }
 Strings.interpolatef = function(a,b,equation) {
 	var extract = function(value,s,f) {
@@ -1889,6 +3792,46 @@ Strings.interpolatef = function(a,b,equation) {
 		}).join("");
 	};
 }
+Strings.interpolateChars = function(v,a,b,equation) {
+	return (Strings.interpolateCharsf(a,b,equation))(v);
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.splice(0,0," ");
+	while(ab.length > aa.length) aa.splice(0,0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	return function(v) {
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		return StringTools.trim(r.join(""));
+	};
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	return (Strings.interpolateCharf(a,b,equation))(v);
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
+	var ca = HxOverrides.cca(a,0), cb = HxOverrides.cca(b,0), i = Ints.interpolatef(ca,cb,equation);
+	return function(v) {
+		return String.fromCharCode(i(v));
+	};
+}
+Strings.ellipsis = function(s,maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	if(s.length > maxlen) return HxOverrides.substr(s,0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+}
 Strings.ellipsisf = function(maxlen,symbol) {
 	if(symbol == null) symbol = "...";
 	if(maxlen == null) maxlen = 20;
@@ -1899,7 +3842,7 @@ Strings.ellipsisf = function(maxlen,symbol) {
 Strings.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
 }
-var ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
 ValueType.TNull.__enum__ = ValueType;
@@ -1924,6 +3867,7 @@ ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
 var Type = function() { }
+$hxClasses["Type"] = Type;
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
@@ -1933,6 +3877,9 @@ Type.getEnum = function(o) {
 	if(o == null) return null;
 	return o.__enum__;
 }
+Type.getSuperClass = function(c) {
+	return c.__super__;
+}
 Type.getClassName = function(c) {
 	var a = c.__name__;
 	return a.join(".");
@@ -1940,6 +3887,16 @@ Type.getClassName = function(c) {
 Type.getEnumName = function(e) {
 	var a = e.__ename__;
 	return a.join(".");
+}
+Type.resolveClass = function(name) {
+	var cl = $hxClasses[name];
+	if(cl == null || !cl.__name__) return null;
+	return cl;
+}
+Type.resolveEnum = function(name) {
+	var e = $hxClasses[name];
+	if(e == null || !e.__ename__) return null;
+	return e;
 }
 Type.createInstance = function(cl,args) {
 	switch(args.length) {
@@ -1980,12 +3937,30 @@ Type.createEnum = function(e,constr,params) {
 	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
 	return f;
 }
+Type.createEnumIndex = function(e,index,params) {
+	var c = e.__constructs__[index];
+	if(c == null) throw index + " is not a valid enum constructor index";
+	return Type.createEnum(e,c,params);
+}
 Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
 	HxOverrides.remove(a,"__class__");
 	HxOverrides.remove(a,"__properties__");
 	return a;
+}
+Type.getClassFields = function(c) {
+	var a = Reflect.fields(c);
+	HxOverrides.remove(a,"__name__");
+	HxOverrides.remove(a,"__interfaces__");
+	HxOverrides.remove(a,"__properties__");
+	HxOverrides.remove(a,"__super__");
+	HxOverrides.remove(a,"prototype");
+	return a;
+}
+Type.getEnumConstructs = function(e) {
+	var a = e.__constructs__;
+	return a.slice();
 }
 Type["typeof"] = function(v) {
 	switch(typeof(v)) {
@@ -2028,8 +4003,36 @@ Type.enumEq = function(a,b) {
 	}
 	return true;
 }
+Type.enumConstructor = function(e) {
+	return e[0];
+}
+Type.enumParameters = function(e) {
+	return e.slice(2);
+}
+Type.enumIndex = function(e) {
+	return e[1];
+}
+Type.allEnums = function(e) {
+	var all = [];
+	var cst = e.__constructs__;
+	var _g = 0;
+	while(_g < cst.length) {
+		var c = cst[_g];
+		++_g;
+		var v = Reflect.field(e,c);
+		if(!Reflect.isFunction(v)) all.push(v);
+	}
+	return all;
+}
 var Types = function() { }
+$hxClasses["Types"] = Types;
 Types.__name__ = ["Types"];
+Types.className = function(o) {
+	return Type.getClassName(Type.getClass(o)).split(".").pop();
+}
+Types.fullName = function(o) {
+	return Type.getClassName(Type.getClass(o));
+}
 Types.typeName = function(o) {
 	return (function($this) {
 		var $r;
@@ -2068,11 +4071,41 @@ Types.typeName = function(o) {
 		return $r;
 	}(this));
 }
+Types.hasSuperClass = function(type,sup) {
+	while(null != type) {
+		if(type == sup) return true;
+		type = Type.getSuperClass(type);
+	}
+	return false;
+}
 Types.isAnonymous = function(v) {
 	return Reflect.isObject(v) && null == Type.getClass(v);
 }
 Types["as"] = function(value,type) {
 	return js.Boot.__instanceof(value,type)?value:null;
+}
+Types.ifIs = function(value,type,handler) {
+	if(js.Boot.__instanceof(value,type)) handler(value);
+	return value;
+}
+Types.of = function(type,value) {
+	return js.Boot.__instanceof(value,type)?value:null;
+}
+Types.sameType = function(a,b) {
+	if(null == a && b == null) return true;
+	if(null == a || b == null) return false;
+	var tb = Type["typeof"](b);
+	var $e = (tb);
+	switch( $e[1] ) {
+	case 6:
+		var c = $e[2];
+		return js.Boot.__instanceof(a,c);
+	case 7:
+		var e = $e[2];
+		return js.Boot.__instanceof(a,e);
+	default:
+		return Type["typeof"](a) == tb;
+	}
 }
 Types.isPrimitive = function(v) {
 	return (function($this) {
@@ -2102,14 +4135,17 @@ Types.isPrimitive = function(v) {
 var chx = {}
 chx.crypt = {}
 chx.crypt.IBlockCipher = function() { }
+$hxClasses["chx.crypt.IBlockCipher"] = chx.crypt.IBlockCipher;
 chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
 	decryptBlock: null
 	,encryptBlock: null
 	,blockSize: null
 	,__class__: chx.crypt.IBlockCipher
+	,__properties__: {get_blockSize:"__getBlockSize"}
 }
 chx.crypt.IPad = function() { }
+$hxClasses["chx.crypt.IPad"] = chx.crypt.IPad;
 chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
 chx.crypt.IPad.prototype = {
 	getBytesReadPerBlock: null
@@ -2120,6 +4156,7 @@ chx.crypt.IPad.prototype = {
 	,pad: null
 	,blockSize: null
 	,__class__: chx.crypt.IPad
+	,__properties__: {set_blockSize:"setBlockSize"}
 }
 chx.crypt.PadPkcs1Type1 = function(size) {
 	this.blockSize = size;
@@ -2127,6 +4164,7 @@ chx.crypt.PadPkcs1Type1 = function(size) {
 	this.typeByte = 1;
 	this.setPadByte(255);
 };
+$hxClasses["chx.crypt.PadPkcs1Type1"] = chx.crypt.PadPkcs1Type1;
 chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
 chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
 chx.crypt.PadPkcs1Type1.prototype = {
@@ -2194,20 +4232,40 @@ chx.crypt.PadPkcs1Type1.prototype = {
 	,textSize: null
 	,blockSize: null
 	,__class__: chx.crypt.PadPkcs1Type1
+	,__properties__: {set_blockSize:"setBlockSize",set_padByte:"setPadByte",get_padByte:"getPadByte"}
 }
+chx.crypt.PadPkcs1Type2 = function(size) {
+	chx.crypt.PadPkcs1Type1.call(this,size);
+	this.typeByte = 2;
+	this.rng = new math.prng.Random();
+};
+$hxClasses["chx.crypt.PadPkcs1Type2"] = chx.crypt.PadPkcs1Type2;
+chx.crypt.PadPkcs1Type2.__name__ = ["chx","crypt","PadPkcs1Type2"];
+chx.crypt.PadPkcs1Type2.__interfaces__ = [chx.crypt.IPad];
+chx.crypt.PadPkcs1Type2.__super__ = chx.crypt.PadPkcs1Type1;
+chx.crypt.PadPkcs1Type2.prototype = $extend(chx.crypt.PadPkcs1Type1.prototype,{
+	getPadByte: function() {
+		var x = 0;
+		while(x == 0) x = this.rng.next();
+		return x;
+	}
+	,rng: null
+	,__class__: chx.crypt.PadPkcs1Type2
+});
 chx.crypt.RSAEncrypt = function(nHex,eHex) {
 	this.init();
 	if(nHex != null) this.setPublic(nHex,eHex);
 };
+$hxClasses["chx.crypt.RSAEncrypt"] = chx.crypt.RSAEncrypt;
 chx.crypt.RSAEncrypt.__name__ = ["chx","crypt","RSAEncrypt"];
 chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSAEncrypt.prototype = {
 	toString: function() {
-		var sb = new String();
-		sb += "Public:\n";
-		sb += "N:\t" + this.n.toHex() + "\n";
-		sb += "E:\t" + math.BigInteger.ofInt(this.e).toHex() + "\n";
-		return sb;
+		var sb = new StringBuf();
+		sb.b += Std.string("Public:\n");
+		sb.b += Std.string("N:\t" + this.n.toHex() + "\n");
+		sb.b += Std.string("E:\t" + math.BigInteger.ofInt(this.e).toHex() + "\n");
+		return sb.b;
 	}
 	,__getBlockSize: function() {
 		if(this.n == null) return 0;
@@ -2233,6 +4291,22 @@ chx.crypt.RSAEncrypt.prototype = {
 		}
 		return msg.getBytes();
 	}
+	,doBufferEncrypt: function(src,f,pf) {
+		var bs = this.__getBlockSize();
+		var ts = bs - 11;
+		var idx = 0;
+		var msg = new BytesBuffer();
+		while(idx < src.length) {
+			if(idx + ts > src.length) ts = src.length - idx;
+			var m = math.BigInteger.ofBytes(pf.pad(src.sub(idx,ts)),true);
+			var c = f(m);
+			var h = c.toBytesUnsigned();
+			if((h.length & 1) != 0) msg.b.push(0);
+			msg.add(h);
+			idx += ts;
+		}
+		return msg.getBytes();
+	}
 	,verify: function(data) {
 		return this.doBufferDecrypt(data,$bind(this,this.doPublic),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
 	}
@@ -2246,6 +4320,10 @@ chx.crypt.RSAEncrypt.prototype = {
 		var ie = Std.parseInt("0x" + BytesUtil.cleanHexFormat(eHex));
 		if(ie == null || ie == 0) throw 3;
 		this.e = ie;
+	}
+	,encyptText: function(text,separator) {
+		if(separator == null) separator = ":";
+		return BytesUtil.toHex(this.encrypt(Bytes.ofString(text)),":");
 	}
 	,encryptBlock: function(block) {
 		var bsize = this.__getBlockSize();
@@ -2273,6 +4351,9 @@ chx.crypt.RSAEncrypt.prototype = {
 		}
 		return biRes;
 	}
+	,encrypt: function(buf) {
+		return this.doBufferEncrypt(buf,$bind(this,this.doPublic),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
+	}
 	,decryptBlock: function(enc) {
 		throw "Not a private key";
 		return null;
@@ -2285,23 +4366,57 @@ chx.crypt.RSAEncrypt.prototype = {
 	,e: null
 	,n: null
 	,__class__: chx.crypt.RSAEncrypt
+	,__properties__: {get_blockSize:"__getBlockSize"}
 }
-chx.crypt.RSA = function() { }
+chx.crypt.RSA = function(nHex,eHex,dHex) {
+	chx.crypt.RSAEncrypt.call(this,null,null);
+	this.init();
+	if(nHex != null) this.setPrivate(nHex,eHex,dHex);
+};
+$hxClasses["chx.crypt.RSA"] = chx.crypt.RSA;
 chx.crypt.RSA.__name__ = ["chx","crypt","RSA"];
 chx.crypt.RSA.__interfaces__ = [chx.crypt.IBlockCipher];
+chx.crypt.RSA.generate = function(B,E) {
+	var rng = new math.prng.Random();
+	var key = new chx.crypt.RSA();
+	var qs = B >> 1;
+	key.e = Std.parseInt(StringTools.startsWith(E,"0x")?E:"0x" + E);
+	var ee = math.BigInteger.ofInt(key.e);
+	while(true) {
+		key.p = math.BigInteger.randomPrime(B - qs,ee,10,true,rng);
+		key.q = math.BigInteger.randomPrime(qs,ee,10,true,rng);
+		if(key.p.compare(key.q) <= 0) {
+			var t = key.p;
+			key.p = key.q;
+			key.q = t;
+		}
+		var p1 = key.p.sub(math.BigInteger.getONE());
+		var q1 = key.q.sub(math.BigInteger.getONE());
+		var phi = p1.mul(q1);
+		if(phi.gcd(ee).compare(math.BigInteger.getONE()) == 0) {
+			key.n = key.p.mul(key.q);
+			key.d = ee.modInverse(phi);
+			key.dmp1 = key.d.mod(p1);
+			key.dmq1 = key.d.mod(q1);
+			key.coeff = key.q.modInverse(key.p);
+			break;
+		}
+	}
+	return key;
+}
 chx.crypt.RSA.__super__ = chx.crypt.RSAEncrypt;
 chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 	toString: function() {
-		var sb = new String();
-		sb += chx.crypt.RSAEncrypt.prototype.toString.call(this);
-		sb += "Private:\n";
-		sb += "D:\t" + this.d.toHex() + "\n";
-		if(this.p != null) sb += "P:\t" + this.p.toHex() + "\n";
-		if(this.q != null) sb += "Q:\t" + this.q.toHex() + "\n";
-		if(this.dmp1 != null) sb += "DMP1:\t" + this.dmp1.toHex() + "\n";
-		if(this.dmq1 != null) sb += "DMQ1:\t" + this.dmq1.toHex() + "\n";
-		if(this.coeff != null) sb += "COEFF:\t" + this.coeff.toHex() + "\n";
-		return sb;
+		var sb = new StringBuf();
+		sb.b += Std.string(chx.crypt.RSAEncrypt.prototype.toString.call(this));
+		sb.b += Std.string("Private:\n");
+		sb.b += Std.string("D:\t" + this.d.toHex() + "\n");
+		if(this.p != null) sb.b += Std.string("P:\t" + this.p.toHex() + "\n");
+		if(this.q != null) sb.b += Std.string("Q:\t" + this.q.toHex() + "\n");
+		if(this.dmp1 != null) sb.b += Std.string("DMP1:\t" + this.dmp1.toHex() + "\n");
+		if(this.dmq1 != null) sb.b += Std.string("DMQ1:\t" + this.dmq1.toHex() + "\n");
+		if(this.coeff != null) sb.b += Std.string("COEFF:\t" + this.coeff.toHex() + "\n");
+		return sb.b;
 	}
 	,doPrivate: function(x) {
 		if(this.p == null || this.q == null) return x.modPow(this.d,this.n);
@@ -2309,6 +4424,42 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 		var xq = x.mod(this.q).modPow(this.dmq1,this.q);
 		while(xp.compare(xq) < 0) xp = xp.add(this.p);
 		return xp.sub(xq).mul(this.coeff).mod(this.p).mul(this.q).add(xq);
+	}
+	,recalcCRT: function() {
+		if(this.p != null && this.q != null) {
+			if(this.dmp1 == null) this.dmp1 = this.d.mod(this.p.sub(math.BigInteger.getONE()));
+			if(this.dmq1 == null) this.dmq1 = this.d.mod(this.q.sub(math.BigInteger.getONE()));
+			if(this.coeff == null) this.coeff = this.q.modInverse(this.p);
+		}
+	}
+	,setPrivateEx: function(N,E,D,P,Q,DP,DQ,C) {
+		this.init();
+		this.setPrivate(N,E,D);
+		if(P != null && Q != null) {
+			this.p = math.BigInteger.ofString(BytesUtil.cleanHexFormat(P),16);
+			this.q = math.BigInteger.ofString(BytesUtil.cleanHexFormat(Q),16);
+			this.dmp1 = null;
+			this.dmq1 = null;
+			this.coeff = null;
+			if(DP != null) this.dmp1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DP),16);
+			if(DQ != null) this.dmq1 = math.BigInteger.ofString(BytesUtil.cleanHexFormat(DQ),16);
+			if(C != null) this.coeff = math.BigInteger.ofString(BytesUtil.cleanHexFormat(C),16);
+			this.recalcCRT();
+		} else throw "Invalid RSA private key ex";
+	}
+	,setPrivate: function(N,E,D) {
+		this.init();
+		chx.crypt.RSAEncrypt.prototype.setPublic.call(this,N,E);
+		if(D != null && D.length > 0) {
+			var s = BytesUtil.cleanHexFormat(D);
+			this.d = math.BigInteger.ofString(s,16);
+		} else throw "Invalid RSA private key";
+	}
+	,sign: function(content) {
+		return this.doBufferEncrypt(content,$bind(this,this.doPrivate),new chx.crypt.PadPkcs1Type1(this.__getBlockSize()));
+	}
+	,decryptText: function(hexString) {
+		return this.decrypt(BytesUtil.ofHex(BytesUtil.cleanHexFormat(hexString)));
 	}
 	,decryptBlock: function(enc) {
 		var c = math.BigInteger.ofBytes(enc,true);
@@ -2335,6 +4486,9 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 		}
 		return ba;
 	}
+	,decrypt: function(buf) {
+		return this.doBufferDecrypt(buf,$bind(this,this.doPrivate),new chx.crypt.PadPkcs1Type2(this.__getBlockSize()));
+	}
 	,init: function() {
 		chx.crypt.RSAEncrypt.prototype.init.call(this);
 		this.d = null;
@@ -2354,7 +4508,28 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 });
 chx.formats = {}
 chx.formats.Base64 = function() { }
+$hxClasses["chx.formats.Base64"] = chx.formats.Base64;
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
+chx.formats.Base64.enc = null;
+chx.formats.Base64.encode = function(bytes) {
+	var ext = (function($this) {
+		var $r;
+		switch(bytes.length % 3) {
+		case 1:
+			$r = "==";
+			break;
+		case 2:
+			$r = "=";
+			break;
+		case 0:
+			$r = "";
+			break;
+		}
+		return $r;
+	}(this));
+	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
+	return chx.formats.Base64.enc.encodeBytes(bytes).toString() + ext;
+}
 chx.formats.Base64.decode = function(s) {
 	s = StringTools.stripWhite(s);
 	s = StringTools.replace(s,"=","");
@@ -2371,6 +4546,7 @@ chx.formats.Base64.decode = function(s) {
 }
 chx.io = {}
 chx.io.Input = function() { }
+$hxClasses["chx.io.Input"] = chx.io.Input;
 chx.io.Input.__name__ = ["chx","io","Input"];
 chx.io.Input.prototype = {
 	__setEndian: function(b) {
@@ -2381,6 +4557,163 @@ chx.io.Input.prototype = {
 		return (function($this) {
 			var $r;
 			throw new chx.lang.FatalException("Not implemented");
+			return $r;
+		}(this));
+	}
+	,readMultiByteString: function(len,charset) {
+		var cset = charset.toLowerCase();
+		switch(cset) {
+		case "latin1":
+			break;
+		case "us-ascii":
+			break;
+		default:
+			throw new chx.lang.UnsupportedException(cset + " not supported");
+		}
+		return this.readString(len);
+	}
+	,readUTF: function() {
+		var len = this.readUInt16();
+		return this.readString(len);
+	}
+	,readString: function(len) {
+		var b = Bytes.alloc(len);
+		this.readFullBytes(b,0,len);
+		return b.toString();
+	}
+	,readInt32: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		return this.bigEndian?(ch1 << 8 | ch2) << 16 | (ch3 << 8 | ch4):(ch4 << 8 | ch3) << 16 | (ch2 << 8 | ch1);
+	}
+	,readUInt30: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var ch4 = this.readByte();
+		if((this.bigEndian?ch1:ch4) >= 64) throw new chx.lang.OverflowException();
+		return this.bigEndian?ch4 | ch3 << 8 | ch2 << 16 | ch1 << 24:ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readInt31: function() {
+		var ch1, ch2, ch3, ch4;
+		if(this.bigEndian) {
+			ch4 = this.readByte();
+			ch3 = this.readByte();
+			ch2 = this.readByte();
+			ch1 = this.readByte();
+		} else {
+			ch1 = this.readByte();
+			ch2 = this.readByte();
+			ch3 = this.readByte();
+			ch4 = this.readByte();
+		}
+		if((ch4 & 128) == 0 != ((ch4 & 64) == 0)) throw new chx.lang.OverflowException();
+		return ch1 | ch2 << 8 | ch3 << 16 | ch4 << 24;
+	}
+	,readUInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		return this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+	}
+	,readInt24: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var ch3 = this.readByte();
+		var n = this.bigEndian?ch3 | ch2 << 8 | ch1 << 16:ch1 | ch2 << 8 | ch3 << 16;
+		if((n & 8388608) != 0) return n - 16777216;
+		return n;
+	}
+	,readUInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		return this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+	}
+	,readInt16: function() {
+		var ch1 = this.readByte();
+		var ch2 = this.readByte();
+		var n = this.bigEndian?ch2 | ch1 << 8:ch1 | ch2 << 8;
+		if((n & 32768) != 0) return n - 65536;
+		return n;
+	}
+	,readUInt8: function() {
+		return this.readByte();
+	}
+	,readInt8: function() {
+		var n = this.readByte();
+		if(n >= 128) return n - 256;
+		return n;
+	}
+	,readDouble: function() {
+		return math.IEEE754.bytesToFloat(this.read(8),this.bigEndian);
+	}
+	,readFloat: function() {
+		return math.IEEE754.bytesToFloat(this.read(4),this.bigEndian);
+	}
+	,readLine: function() {
+		var buf = new StringBuf();
+		var last;
+		var s;
+		try {
+			while((last = this.readByte()) != 10) buf.b += String.fromCharCode(last);
+			s = buf.b;
+			if(HxOverrides.cca(s,s.length - 1) == 13) s = HxOverrides.substr(s,0,-1);
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+				s = buf.b;
+				if(s.length == 0) throw e;
+			} else throw(e);
+		}
+		return s;
+	}
+	,readUntil: function(end) {
+		var buf = new StringBuf();
+		var last;
+		while((last = this.readByte()) != end) buf.b += String.fromCharCode(last);
+		return buf.b;
+	}
+	,read: function(nbytes) {
+		var s = Bytes.alloc(nbytes);
+		var p = 0;
+		while(nbytes > 0) {
+			var k = this.readBytes(s,p,nbytes);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			nbytes -= k;
+		}
+		return s;
+	}
+	,readFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.readBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+	}
+	,readAll: function(bufsize) {
+		if(bufsize == null) bufsize = 16384;
+		var buf = Bytes.alloc(bufsize);
+		var total = new BytesBuffer();
+		try {
+			while(true) {
+				var len = this.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				total.addBytes(buf,0,len);
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return total.getBytes();
+	}
+	,close: function() {
+	}
+	,isEof: function() {
+		return (function($this) {
+			var $r;
+			throw new chx.lang.UnsupportedException("Not implemented for this input type");
 			return $r;
 		}(this));
 	}
@@ -2403,9 +4736,20 @@ chx.io.Input.prototype = {
 		}(this));
 	}
 	,bigEndian: null
+	,bytesAvailable: null
 	,__class__: chx.io.Input
+	,__properties__: {get_bytesAvailable:"__getBytesAvailable",set_bigEndian:"__setEndian"}
 }
-chx.io.BytesInput = function() { }
+chx.io.BytesInput = function(b,pos,len) {
+	if(pos == null) pos = 0;
+	if(len == null) len = b.length - pos;
+	if(pos < 0 || len < 0 || pos + len > b.length) throw new chx.lang.OutsideBoundsException();
+	this.b = b.b;
+	this.pos = pos;
+	this.len = len;
+	this.__setEndian(false);
+};
+$hxClasses["chx.io.BytesInput"] = chx.io.BytesInput;
 chx.io.BytesInput.__name__ = ["chx","io","BytesInput"];
 chx.io.BytesInput.__super__ = chx.io.Input;
 chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
@@ -2416,6 +4760,14 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 		this.len = this.len + (this.getPosition() - p);
 		this.pos = p;
 		return p;
+	}
+	,peek: function(pos) {
+		if(pos == null) pos = this.getPosition();
+		var orig = this.getPosition();
+		this.setPosition(pos);
+		var d = this.readByte();
+		this.setPosition(orig);
+		return d;
 	}
 	,__getBytesAvailable: function() {
 		return this.len >= 0?this.len:0;
@@ -2440,17 +4792,189 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 		this.len--;
 		return this.b[this.pos++];
 	}
+	,getBytesCopy: function() {
+		var orig = this.getPosition();
+		var rv = null;
+		rv = Bytes.ofData(this.b.slice(0,this.b.length));
+		this.setPosition(orig);
+		return rv;
+	}
 	,len: null
 	,pos: null
 	,b: null
+	,position: null
 	,__class__: chx.io.BytesInput
+	,__properties__: $extend(chx.io.Input.prototype.__properties__,{set_position:"setPosition",get_position:"getPosition"})
 });
 chx.io.Output = function() { }
+$hxClasses["chx.io.Output"] = chx.io.Output;
 chx.io.Output.__name__ = ["chx","io","Output"];
 chx.io.Output.prototype = {
-	setBigEndian: function(b) {
+	toString: function() {
+		return Type.getClassName(Type.getClass(this));
+	}
+	,printf: function(format,args,prependLength) {
+		if(prependLength == null) prependLength = false;
+		var s = chx.text.Sprintf.format(format,args);
+		if(prependLength) this.writeUTF(s); else this.writeString(s);
+		return this;
+	}
+	,writeUTF: function(s) {
+		if(s.length > 65535) throw new chx.lang.OverflowException();
+		this.writeUInt16(s.length);
+		this.writeString(s);
+		return this;
+	}
+	,writeString: function(s) {
+		var b = Bytes.ofString(s);
+		this.writeFullBytes(b,0,b.length);
+		return this;
+	}
+	,writeInput: function(i,bufsize) {
+		if(bufsize == null) bufsize = 4096;
+		var buf = Bytes.alloc(bufsize);
+		try {
+			while(true) {
+				var len = i.readBytes(buf,0,bufsize);
+				if(len == 0) throw new chx.lang.BlockedException();
+				var p = 0;
+				while(len > 0) {
+					var k = this.writeBytes(buf,p,len);
+					if(k == 0) throw new chx.lang.BlockedException();
+					p += k;
+					len -= k;
+				}
+			}
+		} catch( e ) {
+			if( js.Boot.__instanceof(e,chx.lang.EofException) ) {
+			} else throw(e);
+		}
+		return this;
+	}
+	,prepare: function(nbytes) {
+		return this;
+	}
+	,writeInt32: function(x) {
+		if(this.bigEndian) {
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+		} else {
+			this.writeByte(haxe.Int32.toInt(x & (255 | 0)));
+			this.writeByte(haxe.Int32.toInt(x >>> 8) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 16) & 255);
+			this.writeByte(haxe.Int32.toInt(x >>> 24));
+		}
+		return this;
+	}
+	,writeUInt30: function(x) {
+		if(x < 0 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeInt31: function(x) {
+		if(x < -1073741824 || x >= 1073741824) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >>> 24);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16 & 255);
+			this.writeByte(x >>> 24);
+		}
+		return this;
+	}
+	,writeUInt24: function(x) {
+		if(x < 0 || x >= 16777216) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 16);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8 & 255);
+			this.writeByte(x >> 16);
+		}
+		return this;
+	}
+	,writeInt24: function(x) {
+		if(x < -8388608 || x >= 8388608) throw new chx.lang.OverflowException();
+		this.writeUInt24(x & 16777215);
+		return this;
+	}
+	,writeUInt16: function(x) {
+		if(x < 0 || x >= 65536) throw new chx.lang.OverflowException();
+		if(this.bigEndian) {
+			this.writeByte(x >> 8);
+			this.writeByte(x & 255);
+		} else {
+			this.writeByte(x & 255);
+			this.writeByte(x >> 8);
+		}
+		return this;
+	}
+	,writeInt16: function(x) {
+		if(x < -32768 || x >= 32768) throw new chx.lang.OverflowException();
+		this.writeUInt16(x & 65535);
+		return this;
+	}
+	,writeUInt8: function(x) {
+		return this.writeByte(x);
+	}
+	,writeInt8: function(x) {
+		if(x < -128 || x >= 128) throw new chx.lang.OverflowException();
+		this.writeByte(x & 255);
+		return this;
+	}
+	,writeDouble: function(x) {
+		this.write(math.IEEE754.doubleToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeFloat: function(x) {
+		this.write(math.IEEE754.floatToBytes(x,this.bigEndian));
+		return this;
+	}
+	,writeFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.writeBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+		return this;
+	}
+	,write: function(b) {
+		var l = b.length;
+		var p = 0;
+		while(l > 0) {
+			var k = this.writeBytes(b,p,l);
+			if(k == 0) throw new chx.lang.BlockedException();
+			p += k;
+			l -= k;
+		}
+		return this;
+	}
+	,setBigEndian: function(b) {
 		this.bigEndian = b;
 		return b;
+	}
+	,close: function() {
+	}
+	,flush: function() {
+		return this;
 	}
 	,writeBytes: function(s,pos,len) {
 		var k = len;
@@ -2470,14 +4994,22 @@ chx.io.Output.prototype = {
 			return $r;
 		}(this));
 	}
+	,lock: null
 	,bigEndian: null
 	,__class__: chx.io.Output
+	,__properties__: {set_bigEndian:"setBigEndian"}
 }
-chx.io.BytesOutput = function() { }
+chx.io.BytesOutput = function() {
+	this.b = new BytesBuffer();
+};
+$hxClasses["chx.io.BytesOutput"] = chx.io.BytesOutput;
 chx.io.BytesOutput.__name__ = ["chx","io","BytesOutput"];
 chx.io.BytesOutput.__super__ = chx.io.Output;
 chx.io.BytesOutput.prototype = $extend(chx.io.Output.prototype,{
-	writeBytes: function(buf,pos,len) {
+	getBytes: function() {
+		return this.b.getBytes();
+	}
+	,writeBytes: function(buf,pos,len) {
 		this.b.addBytes(buf,pos,len);
 		return len;
 	}
@@ -2493,6 +5025,7 @@ chx.lang.Exception = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
+$hxClasses["chx.lang.Exception"] = chx.lang.Exception;
 chx.lang.Exception.__name__ = ["chx","lang","Exception"];
 chx.lang.Exception.prototype = {
 	toString: function() {
@@ -2505,14 +5038,25 @@ chx.lang.Exception.prototype = {
 chx.lang.IOException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.IOException"] = chx.lang.IOException;
 chx.lang.IOException.__name__ = ["chx","lang","IOException"];
 chx.lang.IOException.__super__ = chx.lang.Exception;
 chx.lang.IOException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.IOException
 });
+chx.lang.BlockedException = function(msg,cause) {
+	chx.lang.IOException.call(this,msg,cause);
+};
+$hxClasses["chx.lang.BlockedException"] = chx.lang.BlockedException;
+chx.lang.BlockedException.__name__ = ["chx","lang","BlockedException"];
+chx.lang.BlockedException.__super__ = chx.lang.IOException;
+chx.lang.BlockedException.prototype = $extend(chx.lang.IOException.prototype,{
+	__class__: chx.lang.BlockedException
+});
 chx.lang.EofException = function(msg,cause) {
 	chx.lang.IOException.call(this,msg,cause);
 };
+$hxClasses["chx.lang.EofException"] = chx.lang.EofException;
 chx.lang.EofException.__name__ = ["chx","lang","EofException"];
 chx.lang.EofException.__super__ = chx.lang.IOException;
 chx.lang.EofException.prototype = $extend(chx.lang.IOException.prototype,{
@@ -2525,15 +5069,20 @@ chx.lang.FatalException = function(msg,cause) {
 	this.message = msg;
 	this.cause = cause;
 };
+$hxClasses["chx.lang.FatalException"] = chx.lang.FatalException;
 chx.lang.FatalException.__name__ = ["chx","lang","FatalException"];
 chx.lang.FatalException.prototype = {
-	cause: null
+	toString: function() {
+		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
+	}
+	,cause: null
 	,message: null
 	,__class__: chx.lang.FatalException
 }
 chx.lang.NullPointerException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.NullPointerException"] = chx.lang.NullPointerException;
 chx.lang.NullPointerException.__name__ = ["chx","lang","NullPointerException"];
 chx.lang.NullPointerException.__super__ = chx.lang.Exception;
 chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
@@ -2542,26 +5091,317 @@ chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
 chx.lang.OutsideBoundsException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.OutsideBoundsException"] = chx.lang.OutsideBoundsException;
 chx.lang.OutsideBoundsException.__name__ = ["chx","lang","OutsideBoundsException"];
 chx.lang.OutsideBoundsException.__super__ = chx.lang.Exception;
 chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.OutsideBoundsException
 });
+chx.lang.OverflowException = function(msg,cause) {
+	chx.lang.Exception.call(this,msg,cause);
+};
+$hxClasses["chx.lang.OverflowException"] = chx.lang.OverflowException;
+chx.lang.OverflowException.__name__ = ["chx","lang","OverflowException"];
+chx.lang.OverflowException.__super__ = chx.lang.Exception;
+chx.lang.OverflowException.prototype = $extend(chx.lang.Exception.prototype,{
+	__class__: chx.lang.OverflowException
+});
 chx.lang.UnsupportedException = function(msg,cause) {
 	chx.lang.Exception.call(this,msg,cause);
 };
+$hxClasses["chx.lang.UnsupportedException"] = chx.lang.UnsupportedException;
 chx.lang.UnsupportedException.__name__ = ["chx","lang","UnsupportedException"];
 chx.lang.UnsupportedException.__super__ = chx.lang.Exception;
 chx.lang.UnsupportedException.prototype = $extend(chx.lang.Exception.prototype,{
 	__class__: chx.lang.UnsupportedException
 });
+chx.text = {}
+chx.text.Sprintf = function() { }
+$hxClasses["chx.text.Sprintf"] = chx.text.Sprintf;
+chx.text.Sprintf.__name__ = ["chx","text","Sprintf"];
+chx.text.Sprintf.format = function(format,args) {
+	if(format == null) return "";
+	if(args == null) args = [];
+	var destString = "";
+	var argIndex = 0;
+	var formatIndex = 0;
+	var percentIndex = 0;
+	var ch = 0;
+	var value = null;
+	var length = 0;
+	var precision = 0;
+	var properties = 0;
+	var fieldCount = 0;
+	var fieldOutcome;
+	while(formatIndex < format.length) {
+		percentIndex = format.indexOf("%",formatIndex);
+		if(percentIndex == -1) {
+			destString += HxOverrides.substr(format,formatIndex,null);
+			formatIndex = format.length;
+		} else {
+			destString += HxOverrides.substr(format,formatIndex,percentIndex - formatIndex);
+			fieldOutcome = "** sprintf: invalid format at " + argIndex + " **";
+			length = properties = fieldCount = 0;
+			precision = -1;
+			formatIndex = percentIndex + 1;
+			value = args[argIndex++];
+			while(js.Boot.__instanceof(fieldOutcome,String) && formatIndex < format.length) {
+				ch = HxOverrides.cca(format,formatIndex++);
+				switch(ch) {
+				case 35:
+					if(fieldCount == 0) properties |= 16; else fieldOutcome = "** sprintf: \"#\" came too late **";
+					break;
+				case 45:
+					if(fieldCount == 0) properties |= 2; else fieldOutcome = "** sprintf: \"-\" came too late **";
+					break;
+				case 43:
+					if(fieldCount == 0) properties |= 4; else fieldOutcome = "** sprintf: \"+\" came too late **";
+					break;
+				case 32:
+					if(fieldCount == 0) properties |= 8; else fieldOutcome = "** sprintf: \" \" came too late **";
+					break;
+				case 46:
+					if(fieldCount < 2) {
+						fieldCount = 2;
+						precision = 0;
+					} else fieldOutcome = "** sprintf: \".\" came too late **";
+					break;
+				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 100:case 105:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatD(value,properties,length,precision);
+					break;
+				case 111:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatO(value,properties,length,precision);
+					break;
+				case 120:case 88:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatX(value,properties,length,precision,ch == 88);
+					break;
+				case 101:case 69:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatE(value,properties,length,precision,ch == 69);
+					break;
+				case 102:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatF(value,properties,length,precision);
+					break;
+				case 103:case 71:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatG(value,properties,length,precision,ch == 71);
+					break;
+				case 99:case 67:case 115:case 83:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 37:
+					fieldOutcome = true;
+					destString += "%";
+					argIndex--;
+					break;
+				default:
+					fieldOutcome = "** sprintf: " + Std.string(ch - 48) + " not supported **";
+				}
+			}
+			if(fieldOutcome != true) {
+				if(chx.text.Sprintf.DEBUG) destString += Std.string(fieldOutcome);
+				if(chx.text.Sprintf.TRACE) null;
+			}
+		}
+	}
+	return destString;
+}
+chx.text.Sprintf.finish = function(output,value,properties,length,precision,prefix) {
+	if(prefix == null) prefix = "";
+	if(prefix == null) prefix = "";
+	if(value < 0) prefix = "-" + prefix; else if((properties & 4) != 0) prefix = "+" + prefix; else if((properties & 8) != 0) prefix = " " + prefix;
+	if(length == 0 && precision > -1) {
+		length = precision;
+		properties |= 1;
+	}
+	while(output.length + prefix.length < length) if((properties & 2) != 0) output = output + " "; else if((properties & 1) != 0) output = "0" + output; else prefix = " " + prefix;
+	return prefix + output;
+}
+chx.text.Sprintf.number = function(v) {
+	if(v == null) return 0.;
+	if(js.Boot.__instanceof(v,String)) {
+		if(v == "") return 0.0;
+		return Std.parseFloat(v);
+	}
+	if(js.Boot.__instanceof(v,Float)) {
+		if(Math.isNaN(v)) return v;
+		return v;
+	}
+	if(js.Boot.__instanceof(v,Int)) return v * 1.0;
+	if(js.Boot.__instanceof(v,Bool)) return v?1.0:0.0;
+	return Math.NaN;
+}
+chx.text.Sprintf.formatD = function(value,properties,length,precision) {
+	var output = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 || value != 0) output = Std.string(Math.floor(Math.abs(value)));
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision);
+}
+chx.text.Sprintf.formatO = function(value,properties,length,precision) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(8);
+	if((properties & 16) != 0) prefix = "0";
+	while(output.length < precision) output = "0" + output;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatX = function(value,properties,length,precision,upper) {
+	var output = "";
+	var prefix = "";
+	value = chx.text.Sprintf.number(value);
+	if(precision != 0 && value != 0) output = value.toString(16);
+	if((properties & 16) != 0) prefix = "0x";
+	while(output.length < precision) output = "0" + output;
+	if(upper) {
+		prefix = prefix.toUpperCase();
+		output = output.toUpperCase();
+	} else output = output.toLowerCase();
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,prefix);
+}
+chx.text.Sprintf.formatE = function(value,properties,length,precision,upper) {
+	var output = "";
+	var expCount = 0;
+	value = chx.text.Sprintf.number(value);
+	if(Math.abs(value) > 1) while(Math.abs(value) > 10) {
+		value /= 10;
+		expCount++;
+	} else while(Math.abs(value) < 1) {
+		value *= 10;
+		expCount--;
+	}
+	var expCountStr = chx.text.Sprintf.format("%c%+.2d",[upper?"E":"e",expCount]);
+	if((properties & 2) != 0) {
+		output = chx.text.Sprintf.formatF(value,properties,1,precision) + expCountStr;
+		while(output.length < length) output += " ";
+	} else output = chx.text.Sprintf.formatF(value,properties,Math.max(length - expCountStr.length,0) | 0,precision) + expCount;
+	return output;
+}
+chx.text.Sprintf.formatF = function(value,properties,length,precision) {
+	var output = "";
+	var intPortion = "";
+	var decPortion = "";
+	if(precision == -1) precision = 6;
+	var valStr = Std.string(value);
+	if(valStr.indexOf(".") == -1) {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(valStr)));
+		decPortion = "0";
+	} else {
+		intPortion = Std.string(Math.abs(chx.text.Sprintf.number(HxOverrides.substr(valStr,0,valStr.indexOf(".")))));
+		decPortion = HxOverrides.substr(valStr,valStr.indexOf(".") + 1,null);
+	}
+	if(chx.text.Sprintf.number(decPortion) == 0) {
+		decPortion = "";
+		while(decPortion.length < precision) decPortion += "0";
+	} else {
+		if(decPortion.length > precision) {
+			var dec = Math.round(Math.pow(10,precision) * chx.text.Sprintf.number("0." + decPortion));
+			if(Std.string(dec).length > precision && dec != 0) {
+				decPortion = "0";
+				intPortion = Std.string((Math.abs(chx.text.Sprintf.number(intPortion)) + 1) * (chx.text.Sprintf.number(intPortion) >= 0?1:-1));
+			} else decPortion = Std.string(dec);
+		}
+		if(decPortion.length < precision) {
+			decPortion = new String(decPortion);
+			while(decPortion.length < precision) decPortion += "0";
+		}
+	}
+	if(precision == 0) {
+		output = intPortion;
+		if((properties & 16) != 0) output += ".";
+	} else output = intPortion + "." + decPortion;
+	return chx.text.Sprintf.finish(output,Std.parseFloat(valStr),properties,length,precision,"");
+}
+chx.text.Sprintf.formatG = function(value,properties,length,precision,upper) {
+	var out1 = chx.text.Sprintf.formatE(value,properties,1,precision,upper);
+	var out2 = chx.text.Sprintf.formatF(value,properties,1,precision);
+	if(out1.length < out2.length) return chx.text.Sprintf.formatE(value,properties,length,precision,upper); else return chx.text.Sprintf.formatF(value,properties,length,precision);
+}
+chx.text.Sprintf.formatS = function(value,properties,length,precision) {
+	var output = Std.string(value);
+	if(precision > 0 && precision < output.length) output = HxOverrides.substr(output,0,precision);
+	properties &= -30;
+	return chx.text.Sprintf.finish(output,value,properties,length,precision,"");
+}
+chx.vm = {}
+chx.vm.Lock = function() {
+	this.lock = 1;
+};
+$hxClasses["chx.vm.Lock"] = chx.vm.Lock;
+chx.vm.Lock.__name__ = ["chx","vm","Lock"];
+chx.vm.Lock.prototype = {
+	release: function() {
+		this.lock--;
+	}
+	,wait: function(waitMs) {
+		var checktime = true;
+		var limit = 0.0;
+		if(waitMs == null) checktime = false;
+		if(checktime) limit = new Date().getTime() + waitMs;
+		while(this.lock > 0) if(checktime && new Date().getTime() >= limit) return false;
+		this.lock++;
+		return true;
+	}
+	,lock: null
+	,__class__: chx.vm.Lock
+}
 var dhx = {}
 dhx.Access = function(selection) {
 	this.selection = selection;
 };
+$hxClasses["dhx.Access"] = dhx.Access;
 dhx.Access.__name__ = ["dhx","Access"];
+dhx.Access.getData = function(d) {
+	return Reflect.field(d,"__dhx_data__");
+}
+dhx.Access.setData = function(d,v) {
+	d.__dhx_data__ = v;
+}
+dhx.Access.emptyHtmlDom = function(v) {
+	return { __dhx_data__ : v};
+}
+dhx.Access.eventName = function(event) {
+	return "__dhx_on__" + event;
+}
+dhx.Access.getEvent = function(d,event) {
+	return Reflect.field(d,"__dhx_on__" + event);
+}
+dhx.Access.hasEvent = function(d,event) {
+	return null != Reflect.field(d,"__dhx_on__" + event);
+}
+dhx.Access.addEvent = function(d,event,listener) {
+	d["__dhx_on__" + event] = listener;
+}
+dhx.Access.removeEvent = function(d,event) {
+	Reflect.deleteField(d,"__dhx_on__" + event);
+}
+dhx.Access.setTransition = function(d,id) {
+	if(Reflect.hasField(d,"__dhx_transition__")) Reflect.field(d,"__dhx_transition__").owner = id; else d.__dhx_transition__ = { owner : id};
+}
+dhx.Access.getTransition = function(d) {
+	return Reflect.field(d,"__dhx_transition__");
+}
+dhx.Access.resetTransition = function(d) {
+	Reflect.deleteField(d,"__dhx_transition__");
+}
 dhx.Access.prototype = {
-	selection: null
+	_that: function() {
+		return this.selection;
+	}
+	,selection: null
 	,__class__: dhx.Access
 }
 dhx.AccessAttribute = function(name,selection) {
@@ -2569,6 +5409,7 @@ dhx.AccessAttribute = function(name,selection) {
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
+$hxClasses["dhx.AccessAttribute"] = dhx.AccessAttribute;
 dhx.AccessAttribute.__name__ = ["dhx","AccessAttribute"];
 dhx.AccessAttribute.__super__ = dhx.Access;
 dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
@@ -2601,6 +5442,20 @@ dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
 		}
 		return this.selection;
 	}
+	,remove: function() {
+		if(null == this.qname) {
+			var n = this.name;
+			this.selection.eachNode(function(node,i) {
+				node.removeAttribute(n);
+			});
+		} else {
+			var q = this.qname;
+			this.selection.eachNode(function(node,i) {
+				node.removeAttributeNS(q.space,q.local);
+			});
+		}
+		return this.selection;
+	}
 	,getFloat: function() {
 		var v = this.get();
 		if(dhx.AccessAttribute.refloat.match(v)) return Std.parseFloat(dhx.AccessAttribute.refloat.matched(1)); else return Math.NaN;
@@ -2618,10 +5473,16 @@ dhx.AccessAttribute.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataAttribute = function(name,selection) {
 	dhx.AccessAttribute.call(this,name,selection);
 };
+$hxClasses["dhx.AccessDataAttribute"] = dhx.AccessDataAttribute;
 dhx.AccessDataAttribute.__name__ = ["dhx","AccessDataAttribute"];
 dhx.AccessDataAttribute.__super__ = dhx.AccessAttribute;
 dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
-	floatf: function(v) {
+	data: function() {
+		return this.stringf(function(d,_) {
+			return "" + Std.string(d);
+		});
+	}
+	,floatf: function(v) {
 		if(null == this.qname) {
 			var n = this.name;
 			this.selection.eachNode(function(node,i) {
@@ -2658,15 +5519,33 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 dhx.AccessClassed = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessClassed"] = dhx.AccessClassed;
 dhx.AccessClassed.__name__ = ["dhx","AccessClassed"];
 dhx.AccessClassed.escapeERegChars = function(s) {
 	return dhx.AccessClassed._escapePattern.customReplace(s,function(e) {
 		return "\\" + e.matched(0);
 	});
 }
+dhx.AccessClassed.getRe = function(name) {
+	return new EReg("(^|\\s+)" + dhx.AccessClassed.escapeERegChars(name) + "(\\s+|$)","g");
+}
 dhx.AccessClassed.__super__ = dhx.Access;
 dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
-	_add: function(name,node,i) {
+	get: function() {
+		var node = this.selection.node(), list = node.classList;
+		if(null != list) {
+			var result = [];
+			var _g1 = 0, _g = list.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				result.push(list.item(i));
+			}
+			return result.join(" ");
+		}
+		var cls = node.className, clsb = null != cls.baseVal;
+		if(clsb) return cls.baseVal; else return cls;
+	}
+	,_add: function(name,node,i) {
 		var list = node.classList;
 		if(null != list) {
 			list.add(name);
@@ -2706,23 +5585,67 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 		})($bind(this,this._remove),name));
 		return this.selection;
 	}
+	,exists: function(name) {
+		return this.selection.firstNode(function(node) {
+			var list = node.classList;
+			if(null != list) return list.contains(name);
+			var cls = node.className;
+			var re = new EReg("(^|\\s+)" + dhx.AccessClassed.escapeERegChars(name) + "(\\s+|$)","g");
+			var bv = cls.baseVal;
+			return re.match(null != bv?bv:cls);
+		});
+	}
+	,toggle: function(name) {
+		if(this.exists(name)) this.remove(name); else this.add(name);
+		return this.selection;
+	}
 	,__class__: dhx.AccessClassed
 });
 dhx.AccessDataClassed = function(selection) {
 	dhx.AccessClassed.call(this,selection);
 };
+$hxClasses["dhx.AccessDataClassed"] = dhx.AccessDataClassed;
 dhx.AccessDataClassed.__name__ = ["dhx","AccessDataClassed"];
 dhx.AccessDataClassed.__super__ = dhx.AccessClassed;
 dhx.AccessDataClassed.prototype = $extend(dhx.AccessClassed.prototype,{
-	__class__: dhx.AccessDataClassed
+	addf: function(v) {
+		var f = $bind(this,this._add);
+		this.selection.eachNode(function(node,i) {
+			var c = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != c) f(c,node,i);
+		});
+		return this.selection;
+	}
+	,removef: function(v) {
+		var f = $bind(this,this._remove);
+		this.selection.eachNode(function(node,i) {
+			var c = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != c) f(c,node,i);
+		});
+		return this.selection;
+	}
+	,__class__: dhx.AccessDataClassed
 });
 dhx.AccessHtml = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessHtml"] = dhx.AccessHtml;
 dhx.AccessHtml.__name__ = ["dhx","AccessHtml"];
 dhx.AccessHtml.__super__ = dhx.Access;
 dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
-	string: function(v) {
+	'float': function(v) {
+		this.selection.eachNode(function(node,i) {
+			node.innerHTML = "" + v;
+		});
+		return this.selection;
+	}
+	,clear: function() {
+		this.selection.eachNode(function(node,i) {
+			node.innerHTML = "";
+		});
+		return this.selection;
+	}
+	,string: function(v) {
 		this.selection.eachNode(function(node,i) {
 			node.innerHTML = v;
 		});
@@ -2738,10 +5661,23 @@ dhx.AccessHtml.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataHtml = function(selection) {
 	dhx.AccessHtml.call(this,selection);
 };
+$hxClasses["dhx.AccessDataHtml"] = dhx.AccessDataHtml;
 dhx.AccessDataHtml.__name__ = ["dhx","AccessDataHtml"];
 dhx.AccessDataHtml.__super__ = dhx.AccessHtml;
 dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
-	stringf: function(v) {
+	data: function() {
+		return this.stringf(function(d,_) {
+			return "" + Std.string(d);
+		});
+	}
+	,floatf: function(v) {
+		this.selection.eachNode(function(node,i) {
+			var f = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == f) node.innerHTML = ""; else node.innerHTML = "" + f;
+		});
+		return this.selection;
+	}
+	,stringf: function(v) {
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__dhx_data__"),i);
 			if(null == s) s = "";
@@ -2751,10 +5687,80 @@ dhx.AccessDataHtml.prototype = $extend(dhx.AccessHtml.prototype,{
 	}
 	,__class__: dhx.AccessDataHtml
 });
+dhx.AccessProperty = function(name,selection) {
+	dhx.Access.call(this,selection);
+	this.name = name;
+};
+$hxClasses["dhx.AccessProperty"] = dhx.AccessProperty;
+dhx.AccessProperty.__name__ = ["dhx","AccessProperty"];
+dhx.AccessProperty.__super__ = dhx.Access;
+dhx.AccessProperty.prototype = $extend(dhx.Access.prototype,{
+	'float': function(v) {
+		var s = "" + v;
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			node[n] = s;
+		});
+		return this.selection;
+	}
+	,string: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			node[n] = v;
+		});
+		return this.selection;
+	}
+	,remove: function() {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			Reflect.deleteField(node,n);
+		});
+		return this.selection;
+	}
+	,get: function() {
+		var n = this.name;
+		return this.selection.firstNode(function(node) {
+			return Reflect.field(node,n);
+		});
+	}
+	,name: null
+	,__class__: dhx.AccessProperty
+});
+dhx.AccessDataProperty = function(name,selection) {
+	dhx.AccessProperty.call(this,name,selection);
+};
+$hxClasses["dhx.AccessDataProperty"] = dhx.AccessDataProperty;
+dhx.AccessDataProperty.__name__ = ["dhx","AccessDataProperty"];
+dhx.AccessDataProperty.__super__ = dhx.AccessProperty;
+dhx.AccessDataProperty.prototype = $extend(dhx.AccessProperty.prototype,{
+	data: function() {
+		return this.stringf(function(d,_) {
+			return "" + Std.string(d);
+		});
+	}
+	,floatf: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == s) Reflect.deleteField(node,n); else node[n] = "" + s;
+		});
+		return this.selection;
+	}
+	,stringf: function(v) {
+		var n = this.name;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null == s) Reflect.deleteField(node,n); else node[n] = s;
+		});
+		return this.selection;
+	}
+	,__class__: dhx.AccessDataProperty
+});
 dhx.AccessStyle = function(name,selection) {
 	dhx.Access.call(this,selection);
 	this.name = name;
 };
+$hxClasses["dhx.AccessStyle"] = dhx.AccessStyle;
 dhx.AccessStyle.__name__ = ["dhx","AccessStyle"];
 dhx.AccessStyle._getPropertyName = function(key) {
 	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
@@ -2814,6 +5820,13 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 		});
 		return this.selection;
 	}
+	,remove: function() {
+		var _g = this;
+		this.selection.eachNode(function(node,i) {
+			dhx.AccessStyle.removeStyleProperty(node,_g.name);
+		});
+		return this.selection;
+	}
 	,getFloat: function() {
 		var v = this.get();
 		if(dhx.AccessStyle.refloat.match(v)) return Std.parseFloat(dhx.AccessStyle.refloat.matched(1)); else return Math.NaN;
@@ -2830,10 +5843,32 @@ dhx.AccessStyle.prototype = $extend(dhx.Access.prototype,{
 dhx.AccessDataStyle = function(name,selection) {
 	dhx.AccessStyle.call(this,name,selection);
 };
+$hxClasses["dhx.AccessDataStyle"] = dhx.AccessDataStyle;
 dhx.AccessDataStyle.__name__ = ["dhx","AccessDataStyle"];
 dhx.AccessDataStyle.__super__ = dhx.AccessStyle;
 dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
-	stringf: function(v,priority) {
+	data: function() {
+		return this.stringf(function(d,_) {
+			return "" + Std.string(d);
+		});
+	}
+	,colorf: function(v,priority) {
+		var _g = this;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(s == null) dhx.AccessStyle.removeStyleProperty(node,_g.name); else dhx.AccessStyle.setStyleProperty(node,_g.name,"" + s.toRgbString(),priority);
+		});
+		return this.selection;
+	}
+	,floatf: function(v,priority) {
+		var _g = this;
+		this.selection.eachNode(function(node,i) {
+			var s = v(Reflect.field(node,"__dhx_data__"),i);
+			if(s == null) dhx.AccessStyle.removeStyleProperty(node,_g.name); else dhx.AccessStyle.setStyleProperty(node,_g.name,"" + s,priority);
+		});
+		return this.selection;
+	}
+	,stringf: function(v,priority) {
 		var _g = this;
 		this.selection.eachNode(function(node,i) {
 			var s = v(Reflect.field(node,"__dhx_data__"),i);
@@ -2846,10 +5881,34 @@ dhx.AccessDataStyle.prototype = $extend(dhx.AccessStyle.prototype,{
 dhx.AccessText = function(selection) {
 	dhx.Access.call(this,selection);
 };
+$hxClasses["dhx.AccessText"] = dhx.AccessText;
 dhx.AccessText.__name__ = ["dhx","AccessText"];
 dhx.AccessText.__super__ = dhx.Access;
 dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
-	clear: function() {
+	floatNodef: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(node,i);
+			if(null != x) node.textContent = "" + x;
+		});
+		return this.selection;
+	}
+	,stringNodef: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(node,i);
+			if(null != x) node.textContent = x;
+		});
+		return this.selection;
+	}
+	,'float': function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,_) {
+			node.textContent = "" + v;
+		});
+		return this.selection;
+	}
+	,clear: function() {
 		this.selection.eachNode(function(node,i) {
 			node.textContent = "";
 		});
@@ -2862,15 +5921,34 @@ dhx.AccessText.prototype = $extend(dhx.Access.prototype,{
 		});
 		return this.selection;
 	}
+	,get: function() {
+		return this.selection.firstNode(function(node) {
+			return node.textContent;
+		});
+	}
 	,__class__: dhx.AccessText
 });
 dhx.AccessDataText = function(selection) {
 	dhx.AccessText.call(this,selection);
 };
+$hxClasses["dhx.AccessDataText"] = dhx.AccessDataText;
 dhx.AccessDataText.__name__ = ["dhx","AccessDataText"];
 dhx.AccessDataText.__super__ = dhx.AccessText;
 dhx.AccessDataText.prototype = $extend(dhx.AccessText.prototype,{
-	stringf: function(v) {
+	data: function() {
+		return this.stringf(function(d,_) {
+			return "" + Std.string(d);
+		});
+	}
+	,floatf: function(v) {
+		this.clear();
+		this.selection.eachNode(function(node,i) {
+			var x = v(Reflect.field(node,"__dhx_data__"),i);
+			if(null != x) node.textContent = "" + x;
+		});
+		return this.selection;
+	}
+	,stringf: function(v) {
 		this.clear();
 		this.selection.eachNode(function(node,i) {
 			var x = v(Reflect.field(node,"__dhx_data__"),i);
@@ -2884,11 +5962,30 @@ dhx.AccessTween = function(transition,tweens) {
 	this.transition = transition;
 	this.tweens = tweens;
 };
+$hxClasses["dhx.AccessTween"] = dhx.AccessTween;
 dhx.AccessTween.__name__ = ["dhx","AccessTween"];
 dhx.AccessTween.prototype = {
-	transitionFloatTween: function(value) {
+	_that: function() {
+		return this.transition;
+	}
+	,transitionFloatTweenf: function(f) {
+		return function(d,i,a) {
+			return Floats.interpolatef(a,f(d,i));
+		};
+	}
+	,transitionFloatTween: function(value) {
 		return function(d,i,a) {
 			return Floats.interpolatef(a,value);
+		};
+	}
+	,transitionCharsTweenf: function(f) {
+		return function(d,i,a) {
+			return Strings.interpolateCharsf(a,f(d,i));
+		};
+	}
+	,transitionCharsTween: function(value) {
+		return function(d,i,a) {
+			return Strings.interpolateCharsf(a,value);
 		};
 	}
 	,transitionStringTweenf: function(f) {
@@ -2901,6 +5998,16 @@ dhx.AccessTween.prototype = {
 			return Strings.interpolatef(a,value);
 		};
 	}
+	,transitionColorTweenf: function(f) {
+		return function(d,i,a) {
+			return thx.color.Rgb.interpolatef(a,f(d,i));
+		};
+	}
+	,transitionColorTween: function(value) {
+		return function(d,i,a) {
+			return thx.color.Rgb.interpolatef(a,value);
+		};
+	}
 	,tweens: null
 	,transition: null
 	,__class__: dhx.AccessTween
@@ -2910,6 +6017,7 @@ dhx.AccessTweenAttribute = function(name,transition,tweens) {
 	this.name = name;
 	this.qname = dhx.Namespace.qualify(name);
 };
+$hxClasses["dhx.AccessTweenAttribute"] = dhx.AccessTweenAttribute;
 dhx.AccessTweenAttribute.__name__ = ["dhx","AccessTweenAttribute"];
 dhx.AccessTweenAttribute.__super__ = dhx.AccessTween;
 dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
@@ -2933,6 +6041,9 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 	,'float': function(value) {
 		return this.floatTweenNodef(this.transitionFloatTween(value));
 	}
+	,floatNodef: function(f) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(f));
+	}
 	,stringTweenNodef: function(tween) {
 		var name = this.name;
 		var attrTween = function(d,i) {
@@ -2953,6 +6064,9 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 	,string: function(value) {
 		return this.stringTweenNodef(this.transitionStringTween(value));
 	}
+	,stringNodef: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f));
+	}
 	,qname: null
 	,name: null
 	,__class__: dhx.AccessTweenAttribute
@@ -2960,10 +6074,50 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 dhx.AccessDataTweenAttribute = function(name,transition,tweens) {
 	dhx.AccessTweenAttribute.call(this,name,transition,tweens);
 };
+$hxClasses["dhx.AccessDataTweenAttribute"] = dhx.AccessDataTweenAttribute;
 dhx.AccessDataTweenAttribute.__name__ = ["dhx","AccessDataTweenAttribute"];
 dhx.AccessDataTweenAttribute.__super__ = dhx.AccessTweenAttribute;
 dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.prototype,{
-	stringf: function(f) {
+	floatTweenf: function(tween) {
+		var name = this.name;
+		var attrTween = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,Std.parseFloat(n.getAttribute(name)));
+			return function(t) {
+				n.setAttribute(name,"" + f(t));
+			};
+		};
+		var attrTweenNS = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,Std.parseFloat(n.getAttributeNS(name.space,name.local)));
+			return function(t) {
+				n.setAttributeNS(name.space,name.local,"" + f(t));
+			};
+		};
+		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+		return this.transition;
+	}
+	,stringTweenf: function(tween) {
+		var name = this.name;
+		var attrTween = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,n.getAttribute(name));
+			return function(t) {
+				n.setAttribute(name,f(t));
+			};
+		};
+		var attrTweenNS = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,n.getAttributeNS(name.space,name.local));
+			return function(t) {
+				n.setAttributeNS(name.space,name.local,f(t));
+			};
+		};
+		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
+		return this.transition;
+	}
+	,floatf: function(f) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,stringf: function(f) {
 		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
 			return f(Reflect.field(n,"__dhx_data__"),i);
 		}));
@@ -2974,10 +6128,47 @@ dhx.AccessTweenStyle = function(name,transition,tweens) {
 	dhx.AccessTween.call(this,transition,tweens);
 	this.name = name;
 };
+$hxClasses["dhx.AccessTweenStyle"] = dhx.AccessTweenStyle;
 dhx.AccessTweenStyle.__name__ = ["dhx","AccessTweenStyle"];
 dhx.AccessTweenStyle.__super__ = dhx.AccessTween;
 dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
-	floatTweenNodef: function(tween,priority) {
+	colorTweenNodef: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(d,i,thx.color.Colors.parse(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,color: function(value,priority) {
+		return this.colorTweenNodef(this.transitionColorTween(thx.color.Colors.parse(value)),priority);
+	}
+	,colorNodef: function(f,priority) {
+		return this.colorTweenNodef(this.transitionColorTweenf(f),priority);
+	}
+	,stringTweenNodef: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(d,i,dhx.AccessStyle.getComputedStyleValue(d,name));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,string: function(value,priority) {
+		return this.stringTweenNodef(this.transitionStringTween(value),priority);
+	}
+	,stringNodef: function(f,priority) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f),priority);
+	}
+	,floatTweenNodef: function(tween,priority) {
 		var name = this.name;
 		var styleTween = function(d,i) {
 			var f = tween(d,i,Std.parseFloat(dhx.AccessStyle.getComputedStyleValue(d,name)));
@@ -2991,10 +6182,133 @@ dhx.AccessTweenStyle.prototype = $extend(dhx.AccessTween.prototype,{
 	,'float': function(value,priority) {
 		return this.floatTweenNodef(this.transitionFloatTween(value),priority);
 	}
+	,floatNodef: function(f,priority) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(f),priority);
+	}
 	,name: null
 	,__class__: dhx.AccessTweenStyle
 });
-dhx.HostType = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
+dhx.AccessDataTweenStyle = function(name,transition,tweens) {
+	dhx.AccessTweenStyle.call(this,name,transition,tweens);
+};
+$hxClasses["dhx.AccessDataTweenStyle"] = dhx.AccessDataTweenStyle;
+dhx.AccessDataTweenStyle.__name__ = ["dhx","AccessDataTweenStyle"];
+dhx.AccessDataTweenStyle.__super__ = dhx.AccessTweenStyle;
+dhx.AccessDataTweenStyle.prototype = $extend(dhx.AccessTweenStyle.prototype,{
+	colorTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,thx.color.Colors.parse(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t).toRgbString(),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,colorf: function(f,priority) {
+		return this.colorTweenNodef(this.transitionColorTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,stringTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,dhx.AccessStyle.getComputedStyleValue(d,name));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,stringf: function(f,priority) {
+		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,floatTweenf: function(tween,priority) {
+		if(null == priority) priority = null;
+		var name = this.name;
+		var styleTween = function(d,i) {
+			var f = tween(Reflect.field(d,"__dhx_data__"),i,Std.parseFloat(dhx.AccessStyle.getComputedStyleValue(d,name)));
+			return function(t) {
+				dhx.AccessStyle.setStyleProperty(d,name,"" + f(t),priority);
+			};
+		};
+		this.tweens.set("style." + name,styleTween);
+		return this.transition;
+	}
+	,floatf: function(f,priority) {
+		return this.floatTweenNodef(this.transitionFloatTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}),priority);
+	}
+	,__class__: dhx.AccessDataTweenStyle
+});
+dhx.AccessTweenText = function(transition,tweens) {
+	dhx.AccessTween.call(this,transition,tweens);
+};
+$hxClasses["dhx.AccessTweenText"] = dhx.AccessTweenText;
+dhx.AccessTweenText.__name__ = ["dhx","AccessTweenText"];
+dhx.AccessTweenText.__super__ = dhx.AccessTween;
+dhx.AccessTweenText.prototype = $extend(dhx.AccessTween.prototype,{
+	chars: function(value) {
+		return this.stringTweenNodef(this.transitionCharsTween(value));
+	}
+	,charsNodef: function(f) {
+		return this.stringTweenNodef(this.transitionCharsTweenf(f));
+	}
+	,stringTweenNodef: function(tween) {
+		var handler = function(d,i) {
+			var f = tween(d,i,d.textContent);
+			return function(t) {
+				d.textContent = f(t);
+			};
+		};
+		this.tweens.set("text",handler);
+		return this.transition;
+	}
+	,string: function(value) {
+		return this.stringTweenNodef(this.transitionStringTween(value));
+	}
+	,stringNodef: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(f));
+	}
+	,__class__: dhx.AccessTweenText
+});
+dhx.AccessDataTweenText = function(transition,tweens) {
+	dhx.AccessTweenText.call(this,transition,tweens);
+};
+$hxClasses["dhx.AccessDataTweenText"] = dhx.AccessDataTweenText;
+dhx.AccessDataTweenText.__name__ = ["dhx","AccessDataTweenText"];
+dhx.AccessDataTweenText.__super__ = dhx.AccessTweenText;
+dhx.AccessDataTweenText.prototype = $extend(dhx.AccessTweenText.prototype,{
+	stringTweenf: function(tween) {
+		var handler = function(n,i) {
+			var f = tween(Reflect.field(n,"__dhx_data__"),i,d.textContent);
+			return function(t) {
+				d.textContent = f(t);
+			};
+		};
+		this.tweens.set("text",handler);
+		return this.transition;
+	}
+	,charsf: function(f) {
+		return this.stringTweenNodef(this.transitionCharsTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,stringf: function(f) {
+		return this.stringTweenNodef(this.transitionStringTweenf(function(n,i) {
+			return f(Reflect.field(n,"__dhx_data__"),i);
+		}));
+	}
+	,__class__: dhx.AccessDataTweenText
+});
+dhx.HostType = $hxClasses["dhx.HostType"] = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
 dhx.HostType.UnknownServer = ["UnknownServer",0];
 dhx.HostType.UnknownServer.toString = $estr;
 dhx.HostType.UnknownServer.__enum__ = dhx.HostType;
@@ -3007,7 +6321,7 @@ dhx.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__en
 dhx.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
-dhx.EnvironmentType = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
+dhx.EnvironmentType = $hxClasses["dhx.EnvironmentType"] = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
 dhx.EnvironmentType.Mobile = ["Mobile",0];
 dhx.EnvironmentType.Mobile.toString = $estr;
 dhx.EnvironmentType.Mobile.__enum__ = dhx.EnvironmentType;
@@ -3020,7 +6334,7 @@ dhx.EnvironmentType.Server.__enum__ = dhx.EnvironmentType;
 dhx.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
 dhx.EnvironmentType.UnknownEnvironment.toString = $estr;
 dhx.EnvironmentType.UnknownEnvironment.__enum__ = dhx.EnvironmentType;
-dhx.OSType = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
+dhx.OSType = $hxClasses["dhx.OSType"] = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
 dhx.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = dhx.OSType; $x.toString = $estr; return $x; }
 dhx.OSType.IOs = ["IOs",1];
 dhx.OSType.IOs.toString = $estr;
@@ -3038,7 +6352,11 @@ dhx.OSType.UnknownOs = ["UnknownOs",5];
 dhx.OSType.UnknownOs.toString = $estr;
 dhx.OSType.UnknownOs.__enum__ = dhx.OSType;
 dhx.ClientHost = function() { }
+$hxClasses["dhx.ClientHost"] = dhx.ClientHost;
 dhx.ClientHost.__name__ = ["dhx","ClientHost"];
+dhx.ClientHost.host = null;
+dhx.ClientHost.environment = null;
+dhx.ClientHost.os = null;
 dhx.ClientHost.isIE = function() {
 	return (function($this) {
 		var $r;
@@ -3052,6 +6370,65 @@ dhx.ClientHost.isIE = function() {
 		return $r;
 	}(this));
 }
+dhx.ClientHost.hostVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (dhx.ClientHost.host);
+		switch( $e[1] ) {
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.hostString = function() {
+	return (function($this) {
+		var $r;
+		switch( (dhx.ClientHost.host)[1] ) {
+		case 0:
+			$r = "unknown_server";
+			break;
+		case 7:
+			$r = "unknown";
+			break;
+		case 1:
+			$r = "nodejs";
+			break;
+		default:
+			$r = dhx.ClientHost.host[0];
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.osString = function() {
+	return dhx.ClientHost.os[0];
+}
+dhx.ClientHost.osVersion = function() {
+	return (function($this) {
+		var $r;
+		var $e = (dhx.ClientHost.os);
+		switch( $e[1] ) {
+		case 0:
+			var v = $e[2];
+			$r = v;
+			break;
+		default:
+			$r = null;
+		}
+		return $r;
+	}(this));
+}
+dhx.ClientHost.environmentString = function() {
+	return dhx.ClientHost.environment[0];
+}
 dhx.ClientHost.userAgent = function() {
 	return "" + navigator.userAgent;
 }
@@ -3060,14 +6437,28 @@ dhx.ClientHost.hasNavigator = function() {
 }
 var js = {}
 js.Lib = function() { }
+$hxClasses["js.Lib"] = js.Lib;
 js.Lib.__name__ = ["js","Lib"];
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.debug = function() {
+	debugger;
+}
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
+}
+js.Lib["eval"] = function(code) {
+	return eval(code);
+}
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
 }
 dhx.Group = function(nodes) {
 	this.nodes = nodes;
 };
+$hxClasses["dhx.Group"] = dhx.Group;
 dhx.Group.__name__ = ["dhx","Group"];
+dhx.Group.current = null;
 dhx.Group.merge = function(source,target) {
 	if(target.length != source.length) throw "Group length not equal";
 	var _g1 = 0, _g = target.length;
@@ -3086,7 +6477,19 @@ dhx.Group.merge = function(source,target) {
 	return target;
 }
 dhx.Group.prototype = {
-	iterator: function() {
+	sort: function(comparator) {
+		this.nodes.sort(comparator);
+	}
+	,push: function(node) {
+		this.nodes.push(node);
+	}
+	,count: function() {
+		return this.nodes.length;
+	}
+	,get: function(i) {
+		return this.nodes[i];
+	}
+	,iterator: function() {
 		return HxOverrides.iter(this.nodes);
 	}
 	,each: function(f) {
@@ -3103,6 +6506,7 @@ dhx.Group.prototype = {
 dhx.BaseSelection = function(groups) {
 	this.groups = groups;
 };
+$hxClasses["dhx.BaseSelection"] = dhx.BaseSelection;
 dhx.BaseSelection.__name__ = ["dhx","BaseSelection"];
 dhx.BaseSelection.listenerEnterLeave = function(f,dom,i) {
 	var e = dhx.Dom.event, target = e.relatedTarget;
@@ -3347,6 +6751,27 @@ dhx.BaseSelection.prototype = {
 		}
 		return null;
 	}
+	,sortNode: function(comparator) {
+		var m = this.groups.length;
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			var group = this.groups[i];
+			group.nodes.sort(comparator);
+			var n = group.nodes.length;
+			var prev = group.nodes[0];
+			var _g1 = 1;
+			while(_g1 < n) {
+				var j = _g1++;
+				var node = group.nodes[j];
+				if(null != node) {
+					if(null != prev) prev.parentNode.insertBefore(node,prev.nextSibling);
+					prev = node;
+				}
+			}
+		}
+		return this;
+	}
 	,insert: function(name,before,beforeSelector) {
 		var qname = dhx.Namespace.qualify(name);
 		var insertDom = function(node) {
@@ -3390,6 +6815,9 @@ dhx.BaseSelection.prototype = {
 		};
 		return this._select(null == qname?append:appendNS);
 	}
+	,_this: function() {
+		return this;
+	}
 	,selectAll: function(selector) {
 		return this._selectAll(function(el) {
 			return dhx.Dom.selectionEngine.selectAll(selector,el);
@@ -3407,10 +6835,15 @@ dhx.BaseSelection.prototype = {
 dhx.UnboundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
+$hxClasses["dhx.UnboundSelection"] = dhx.UnboundSelection;
 dhx.UnboundSelection.__name__ = ["dhx","UnboundSelection"];
 dhx.UnboundSelection.__super__ = dhx.BaseSelection;
 dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
-	data: function(d,join) {
+	selectAllData: function(selector) {
+		var selection = this.selectAll(selector);
+		return new dhx.ResumeSelection(selection.groups);
+	}
+	,data: function(d,join) {
 		var update = [], enter = [], exit = [];
 		if(null == join) {
 			var _g = 0, _g1 = this.groups;
@@ -3435,6 +6868,9 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 	,style: function(name) {
 		return new dhx.AccessStyle(name,this);
 	}
+	,property: function(name) {
+		return new dhx.AccessProperty(name,this);
+	}
 	,classed: function() {
 		return new dhx.AccessClassed(this);
 	}
@@ -3452,9 +6888,19 @@ dhx.UnboundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 dhx.Selection = function(groups) {
 	dhx.UnboundSelection.call(this,groups);
 };
+$hxClasses["dhx.Selection"] = dhx.Selection;
 dhx.Selection.__name__ = ["dhx","Selection"];
+dhx.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
+dhx.Selection.current = null;
+dhx.Selection.currentNode = null;
 dhx.Selection.create = function(groups) {
 	return new dhx.Selection(groups);
+}
+dhx.Selection.getCurrent = function() {
+	return dhx.Dom.selectNode(dhx.Group.current);
+}
+dhx.Selection.getCurrentNode = function() {
+	return dhx.Group.current;
 }
 dhx.Selection.__super__ = dhx.UnboundSelection;
 dhx.Selection.prototype = $extend(dhx.UnboundSelection.prototype,{
@@ -3464,6 +6910,7 @@ dhx.Selection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	,__class__: dhx.Selection
 });
 dhx.ISelectorEngine = function() { }
+$hxClasses["dhx.ISelectorEngine"] = dhx.ISelectorEngine;
 dhx.ISelectorEngine.__name__ = ["dhx","ISelectorEngine"];
 dhx.ISelectorEngine.prototype = {
 	selectAll: null
@@ -3472,6 +6919,7 @@ dhx.ISelectorEngine.prototype = {
 }
 dhx.NativeSelectorEngine = function() {
 };
+$hxClasses["dhx.NativeSelectorEngine"] = dhx.NativeSelectorEngine;
 dhx.NativeSelectorEngine.__name__ = ["dhx","NativeSelectorEngine"];
 dhx.NativeSelectorEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.NativeSelectorEngine.supported = function() {
@@ -3497,6 +6945,7 @@ dhx.NativeSelectorEngine.prototype = {
 }
 dhx.SizzleEngine = function() {
 };
+$hxClasses["dhx.SizzleEngine"] = dhx.SizzleEngine;
 dhx.SizzleEngine.__name__ = ["dhx","SizzleEngine"];
 dhx.SizzleEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.SizzleEngine.supported = function() {
@@ -3515,6 +6964,7 @@ dhx.SizzleEngine.prototype = {
 	,__class__: dhx.SizzleEngine
 }
 dhx.Dom = function() { }
+$hxClasses["dhx.Dom"] = dhx.Dom;
 dhx.Dom.__name__ = ["dhx","Dom"];
 dhx.Dom.select = function(selector) {
 	return dhx.Dom.doc.select(selector);
@@ -3525,10 +6975,15 @@ dhx.Dom.selectAll = function(selector) {
 dhx.Dom.selectNode = function(node) {
 	return dhx.Selection.create([new dhx.Group([node])]);
 }
+dhx.Dom.selectNodes = function(nodes) {
+	return dhx.Selection.create([new dhx.Group(nodes)]);
+}
 dhx.Dom.selectNodeData = function(node) {
 	return dhx.ResumeSelection.create([new dhx.Group([node])]);
 }
+dhx.Dom.event = null;
 dhx.Namespace = function() { }
+$hxClasses["dhx.Namespace"] = dhx.Namespace;
 dhx.Namespace.__name__ = ["dhx","Namespace"];
 dhx.Namespace.qualify = function(name) {
 	var i = name.indexOf(":");
@@ -3542,6 +6997,7 @@ dhx.NSQualifier = function(space,local) {
 	this.space = space;
 	this.local = local;
 };
+$hxClasses["dhx.NSQualifier"] = dhx.NSQualifier;
 dhx.NSQualifier.__name__ = ["dhx","NSQualifier"];
 dhx.NSQualifier.prototype = {
 	local: null
@@ -3551,6 +7007,7 @@ dhx.NSQualifier.prototype = {
 dhx.BoundSelection = function(groups) {
 	dhx.BaseSelection.call(this,groups);
 };
+$hxClasses["dhx.BoundSelection"] = dhx.BoundSelection;
 dhx.BoundSelection.__name__ = ["dhx","BoundSelection"];
 dhx.BoundSelection.__super__ = dhx.BaseSelection;
 dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
@@ -3560,14 +7017,47 @@ dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 			listener(Reflect.field(n,"__dhx_data__"),i);
 		},capture);
 	}
+	,first: function(f) {
+		return this.firstNode(function(n) {
+			return f(Reflect.field(n,"__dhx_data__"));
+		});
+	}
+	,map: function(f) {
+		var ngroups = [];
+		var _g = 0, _g1 = this.groups;
+		while(_g < _g1.length) {
+			var group = _g1[_g];
+			++_g;
+			var ngroup = new dhx.Group([]);
+			var i = 0;
+			var $it0 = HxOverrides.iter(group.nodes);
+			while( $it0.hasNext() ) {
+				var node = $it0.next();
+				if(null != node) node.__dhx_data__ = f(Reflect.field(node,"__dhx_data__"),i++);
+				ngroup.nodes.push(node);
+			}
+			ngroups.push(ngroup);
+		}
+		return this.createSelection(ngroups);
+	}
 	,filter: function(f) {
 		return this.filterNode(function(n,i) {
 			return f(Reflect.field(n,"__dhx_data__"),i);
 		});
 	}
+	,sort: function(comparator) {
+		return this.sortNode(function(a,b) {
+			return comparator(Reflect.field(a,"__dhx_data__"),Reflect.field(b,"__dhx_data__"));
+		});
+	}
 	,each: function(f) {
 		return this.eachNode(function(n,i) {
 			f(Reflect.field(n,"__dhx_data__"),i);
+		});
+	}
+	,selfData: function() {
+		return this.dataf(function(d,_) {
+			return d;
 		});
 	}
 	,dataf: function(fd,join) {
@@ -3591,11 +7081,33 @@ dhx.BoundSelection.prototype = $extend(dhx.BaseSelection.prototype,{
 			return new dhx.DataChoice(update,enter,exit);
 		}
 	}
+	,data: function(d,join) {
+		var update = [], enter = [], exit = [];
+		if(null == join) {
+			var _g = 0, _g1 = this.groups;
+			while(_g < _g1.length) {
+				var group = _g1[_g];
+				++_g;
+				dhx.BaseSelection.bind(group,d,update,enter,exit);
+			}
+		} else {
+			var _g = 0, _g1 = this.groups;
+			while(_g < _g1.length) {
+				var group = _g1[_g];
+				++_g;
+				dhx.BaseSelection.bindJoin(join,group,d,update,enter,exit);
+			}
+		}
+		return new dhx.DataChoice(update,enter,exit);
+	}
 	,transition: function() {
 		return new dhx.BoundTransition(this);
 	}
 	,style: function(name) {
 		return new dhx.AccessDataStyle(name,this);
+	}
+	,property: function(name) {
+		return new dhx.AccessDataProperty(name,this);
 	}
 	,classed: function() {
 		return new dhx.AccessDataClassed(this);
@@ -3615,6 +7127,7 @@ dhx.UpdateSelection = function(update,choice) {
 	dhx.BoundSelection.call(this,update);
 	this._choice = choice;
 };
+$hxClasses["dhx.UpdateSelection"] = dhx.UpdateSelection;
 dhx.UpdateSelection.__name__ = ["dhx","UpdateSelection"];
 dhx.UpdateSelection.__super__ = dhx.BoundSelection;
 dhx.UpdateSelection.prototype = $extend(dhx.BoundSelection.prototype,{
@@ -3639,6 +7152,7 @@ dhx.DataChoice = function(update,enter,exit) {
 	this._exit = exit;
 	dhx.UpdateSelection.call(this,this._update,this);
 };
+$hxClasses["dhx.DataChoice"] = dhx.DataChoice;
 dhx.DataChoice.__name__ = ["dhx","DataChoice"];
 dhx.DataChoice.merge = function(groups,dc) {
 	dhx.Group.merge(groups,dc._update);
@@ -3659,6 +7173,7 @@ dhx.DataChoice.prototype = $extend(dhx.UpdateSelection.prototype,{
 dhx.ResumeSelection = function(groups) {
 	dhx.BoundSelection.call(this,groups);
 };
+$hxClasses["dhx.ResumeSelection"] = dhx.ResumeSelection;
 dhx.ResumeSelection.__name__ = ["dhx","ResumeSelection"];
 dhx.ResumeSelection.create = function(groups) {
 	return new dhx.ResumeSelection(groups);
@@ -3674,6 +7189,7 @@ dhx.PreEnterSelection = function(enter,choice) {
 	this.groups = enter;
 	this._choice = choice;
 };
+$hxClasses["dhx.PreEnterSelection"] = dhx.PreEnterSelection;
 dhx.PreEnterSelection.__name__ = ["dhx","PreEnterSelection"];
 dhx.PreEnterSelection.prototype = {
 	_select: function(selectf) {
@@ -3699,6 +7215,20 @@ dhx.PreEnterSelection.prototype = {
 	,createSelection: function(groups) {
 		return new dhx.EnterSelection(groups,this._choice);
 	}
+	,insert: function(name,before,beforeSelector) {
+		var qname = dhx.Namespace.qualify(name);
+		var insertDom = function(node) {
+			var n = js.Lib.document.createElement(name), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			node.insertBefore(n,bf);
+			return n;
+		};
+		var insertNsDom = function(node) {
+			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			node.insertBefore(n,bf);
+			return n;
+		};
+		return this._select(null == qname?insertDom:insertNsDom);
+	}
 	,append: function(name) {
 		var qname = dhx.Namespace.qualify(name);
 		var append = function(node) {
@@ -3721,11 +7251,15 @@ dhx.EnterSelection = function(enter,choice) {
 	dhx.BoundSelection.call(this,enter);
 	this._choice = choice;
 };
+$hxClasses["dhx.EnterSelection"] = dhx.EnterSelection;
 dhx.EnterSelection.__name__ = ["dhx","EnterSelection"];
 dhx.EnterSelection.__super__ = dhx.BoundSelection;
 dhx.EnterSelection.prototype = $extend(dhx.BoundSelection.prototype,{
 	update: function() {
 		return this._choice.update();
+	}
+	,exit: function() {
+		return this._choice.exit();
 	}
 	,createSelection: function(groups) {
 		return new dhx.EnterSelection(groups,this._choice);
@@ -3737,11 +7271,15 @@ dhx.ExitSelection = function(exit,choice) {
 	dhx.UnboundSelection.call(this,exit);
 	this._choice = choice;
 };
+$hxClasses["dhx.ExitSelection"] = dhx.ExitSelection;
 dhx.ExitSelection.__name__ = ["dhx","ExitSelection"];
 dhx.ExitSelection.__super__ = dhx.UnboundSelection;
 dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	update: function() {
 		return this._choice.update();
+	}
+	,enter: function() {
+		return this._choice.enter();
 	}
 	,createSelection: function(groups) {
 		return new dhx.ExitSelection(groups,this._choice);
@@ -3750,6 +7288,7 @@ dhx.ExitSelection.prototype = $extend(dhx.UnboundSelection.prototype,{
 	,__class__: dhx.ExitSelection
 });
 dhx.Svg = function() { }
+$hxClasses["dhx.Svg"] = dhx.Svg;
 dhx.Svg.__name__ = ["dhx","Svg"];
 dhx.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
@@ -3770,6 +7309,7 @@ dhx.Svg.mouse = function(dom) {
 	return [point.x,point.y];
 }
 dhx.Timer = function() { }
+$hxClasses["dhx.Timer"] = dhx.Timer;
 dhx.Timer.__name__ = ["dhx","Timer"];
 dhx.Timer.timer = function(f,delay) {
 	if(delay == null) delay = 0.0;
@@ -3811,6 +7351,15 @@ dhx.Timer.step = function() {
 		window.requestAnimationFrame(dhx.Timer._step);
 	}
 }
+dhx.Timer.flush = function() {
+	var elapsed, now = new Date().getTime(), t1 = dhx.Timer.queue;
+	while(null != t1) {
+		elapsed = now - t1.then;
+		if(t1.delay == 0) t1.flush = t1.f(elapsed);
+		t1 = t1.next;
+	}
+	dhx.Timer._flush();
+}
 dhx.Timer._flush = function() {
 	var t0 = null, t1 = dhx.Timer.queue, then = Math.POSITIVE_INFINITY;
 	while(null != t1) if(t1.flush) t1 = null != t0?t0.next = t1.next:dhx.Timer.queue = t1.next; else {
@@ -3836,6 +7385,7 @@ dhx.BaseTransition = function(selection) {
 	this.delay(null,0);
 	this.duration(null,250);
 };
+$hxClasses["dhx.BaseTransition"] = dhx.BaseTransition;
 dhx.BaseTransition.__name__ = ["dhx","BaseTransition"];
 dhx.BaseTransition.CUBIC_EQUATION = function(t) {
 	return Math.pow(t,3);
@@ -3853,6 +7403,36 @@ dhx.BaseTransition.prototype = {
 			throw "abstract method";
 			return $r;
 		}(this));
+	}
+	,selectAll: function(selector) {
+		var k, t = this.createTransition(this.selection.selectAll(selector));
+		t._ease = this._ease;
+		var delay = this._delay;
+		var duration = this._duration;
+		k = -1;
+		t.delay(function(d,i) {
+			return delay[i > 0?k:++k];
+		});
+		k = -1;
+		t.delay(function(d,i) {
+			return duration[i > 0?k:++k];
+		});
+		return t;
+	}
+	,select: function(selector) {
+		var k, t = this.createTransition(this.selection.select(selector));
+		t._ease = this._ease;
+		var delay = this._delay;
+		var duration = this._duration;
+		k = -1;
+		t.delay(function(d,i) {
+			return delay[++k];
+		});
+		k = -1;
+		t.delay(function(d,i) {
+			return duration[++k];
+		});
+		return t;
 	}
 	,remove: function(v) {
 		if(v == null) v = true;
@@ -3895,8 +7475,20 @@ dhx.BaseTransition.prototype = {
 		dhx.Timer.timer(this._step,delayMin);
 		return this._this();
 	}
+	,stop: function() {
+		var k = -1, me = this;
+		this.selection.eachNode(function(n,i) {
+			me._stage[++k] = 2;
+			Reflect.deleteField(n,"__dhx_transition__");
+		});
+		return this._this();
+	}
 	,endNode: function(f) {
 		this._end = f;
+		return this._this();
+	}
+	,startNode: function(f) {
+		this._start = f;
 		return this._this();
 	}
 	,step: function(elapsed) {
@@ -3969,28 +7561,52 @@ dhx.BaseTransition.prototype = {
 dhx.UnboundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
+$hxClasses["dhx.UnboundTransition"] = dhx.UnboundTransition;
 dhx.UnboundTransition.__name__ = ["dhx","UnboundTransition"];
 dhx.UnboundTransition.__super__ = dhx.BaseTransition;
 dhx.UnboundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 	createTransition: function(selection) {
 		return new dhx.UnboundTransition(selection);
 	}
+	,attr: function(name) {
+		return new dhx.AccessTweenAttribute(name,this,this._tweens);
+	}
 	,style: function(name) {
 		return new dhx.AccessTweenStyle(name,this,this._tweens);
+	}
+	,text: function() {
+		return new dhx.AccessTweenText(this,this._tweens);
 	}
 	,__class__: dhx.UnboundTransition
 });
 dhx.BoundTransition = function(selection) {
 	dhx.BaseTransition.call(this,selection);
 };
+$hxClasses["dhx.BoundTransition"] = dhx.BoundTransition;
 dhx.BoundTransition.__name__ = ["dhx","BoundTransition"];
 dhx.BoundTransition.__super__ = dhx.BaseTransition;
 dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 	createTransition: function(selection) {
 		return new dhx.BoundTransition(selection);
 	}
+	,end: function(f) {
+		return this.endNode(function(n,i) {
+			f(Reflect.field(n,"__dhx_data__"),i);
+		});
+	}
+	,start: function(f) {
+		return this.startNode(function(n,i) {
+			f(Reflect.field(n,"__dhx_data__"),i);
+		});
+	}
 	,attr: function(name) {
 		return new dhx.AccessDataTweenAttribute(name,this,this._tweens);
+	}
+	,style: function(name) {
+		return new dhx.AccessDataTweenStyle(name,this,this._tweens);
+	}
+	,text: function() {
+		return new dhx.AccessDataTweenText(this,this._tweens);
 	}
 	,__class__: dhx.BoundTransition
 });
@@ -4003,9 +7619,24 @@ haxe.BaseCode = function(base) {
 	this.base = base;
 	this.nbits = nbits;
 };
+$hxClasses["haxe.BaseCode"] = haxe.BaseCode;
 haxe.BaseCode.__name__ = ["haxe","BaseCode"];
+haxe.BaseCode.encode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.encodeString(s);
+}
+haxe.BaseCode.decode = function(s,base) {
+	var b = new haxe.BaseCode(Bytes.ofString(base));
+	return b.decodeString(s);
+}
 haxe.BaseCode.prototype = {
-	decodeBytes: function(b) {
+	decodeString: function(s) {
+		return this.decodeBytes(Bytes.ofString(s)).toString();
+	}
+	,encodeString: function(s) {
+		return this.encodeBytes(Bytes.ofString(s)).toString();
+	}
+	,decodeBytes: function(b) {
 		var nbits = this.nbits;
 		var base = this.base;
 		if(this.tbl == null) this.initTable();
@@ -4043,6 +7674,28 @@ haxe.BaseCode.prototype = {
 		}
 		this.tbl = tbl;
 	}
+	,encodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		var size = b.length * 8 / nbits | 0;
+		var out = Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
+		var buf = 0;
+		var curbits = 0;
+		var mask = (1 << nbits) - 1;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < nbits) {
+				curbits += 8;
+				buf <<= 8;
+				buf |= b.b[pin++];
+			}
+			curbits -= nbits;
+			out.b[pout++] = base.b[buf >> curbits & mask] & 255;
+		}
+		if(curbits > 0) out.b[pout++] = base.b[buf << nbits - curbits & mask] & 255;
+		return out;
+	}
 	,tbl: null
 	,nbits: null
 	,base: null
@@ -4054,7 +7707,21 @@ haxe.Http = function(url) {
 	this.params = new Hash();
 	this.async = true;
 };
+$hxClasses["haxe.Http"] = haxe.Http;
 haxe.Http.__name__ = ["haxe","Http"];
+haxe.Http.requestUrl = function(url) {
+	var h = new haxe.Http(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw e;
+	};
+	h.request(false);
+	return r;
+}
 haxe.Http.prototype = {
 	onStatus: function(status) {
 	}
@@ -4121,6 +7788,9 @@ haxe.Http.prototype = {
 		r.send(uri);
 		if(!this.async) onreadystatechange();
 	}
+	,setPostData: function(data) {
+		this.postData = data;
+	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
 	}
@@ -4134,8 +7804,89 @@ haxe.Http.prototype = {
 	,url: null
 	,__class__: haxe.Http
 }
+haxe.Int32 = function() { }
+$hxClasses["haxe.Int32"] = haxe.Int32;
+haxe.Int32.__name__ = ["haxe","Int32"];
+haxe.Int32.make = function(a,b) {
+	return a << 16 | b;
+}
+haxe.Int32.ofInt = function(x) {
+	return x | 0;
+}
+haxe.Int32.clamp = function(x) {
+	return x | 0;
+}
+haxe.Int32.toInt = function(x) {
+	if((x >> 30 & 1) != x >>> 31) throw "Overflow " + Std.string(x);
+	return x;
+}
+haxe.Int32.toNativeInt = function(x) {
+	return x;
+}
+haxe.Int32.add = function(a,b) {
+	return a + b | 0;
+}
+haxe.Int32.sub = function(a,b) {
+	return a - b | 0;
+}
+haxe.Int32.mul = function(a,b) {
+	return a * (b & 65535) + (a * (b >>> 16) << 16 | 0) | 0;
+}
+haxe.Int32.div = function(a,b) {
+	return a / b | 0;
+}
+haxe.Int32.mod = function(a,b) {
+	return a % b;
+}
+haxe.Int32.shl = function(a,b) {
+	return a << b;
+}
+haxe.Int32.shr = function(a,b) {
+	return a >> b;
+}
+haxe.Int32.ushr = function(a,b) {
+	return a >>> b;
+}
+haxe.Int32.and = function(a,b) {
+	return a & b;
+}
+haxe.Int32.or = function(a,b) {
+	return a | b;
+}
+haxe.Int32.xor = function(a,b) {
+	return a ^ b;
+}
+haxe.Int32.neg = function(a) {
+	return -a;
+}
+haxe.Int32.isNeg = function(a) {
+	return a < 0;
+}
+haxe.Int32.isZero = function(a) {
+	return a == 0;
+}
+haxe.Int32.complement = function(a) {
+	return ~a;
+}
+haxe.Int32.compare = function(a,b) {
+	return a - b;
+}
+haxe.Int32.ucompare = function(a,b) {
+	if(a < 0) return b < 0?~b - ~a:1;
+	return b < 0?-1:a - b;
+}
+haxe.Log = function() { }
+$hxClasses["haxe.Log"] = haxe.Log;
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
 haxe.Md5 = function() {
 };
+$hxClasses["haxe.Md5"] = haxe.Md5;
 haxe.Md5.__name__ = ["haxe","Md5"];
 haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
@@ -4305,6 +8056,7 @@ haxe.Timer = function(time_ms) {
 		me.run();
 	},time_ms);
 };
+$hxClasses["haxe.Timer"] = haxe.Timer;
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
 	var t = new haxe.Timer(time_ms);
@@ -4313,6 +8065,15 @@ haxe.Timer.delay = function(f,time_ms) {
 		f();
 	};
 	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return new Date().getTime() / 1000;
 }
 haxe.Timer.prototype = {
 	run: function() {
@@ -4329,9 +8090,32 @@ var hxevents = {}
 hxevents.Dispatcher = function() {
 	this.handlers = new Array();
 };
+$hxClasses["hxevents.Dispatcher"] = hxevents.Dispatcher;
 hxevents.Dispatcher.__name__ = ["hxevents","Dispatcher"];
 hxevents.Dispatcher.prototype = {
-	_stop: null
+	stop: function() {
+		this._stop = true;
+	}
+	,_stop: null
+	,has: function(h) {
+		if(null == h) return this.handlers.length > 0; else {
+			var _g = 0, _g1 = this.handlers;
+			while(_g < _g1.length) {
+				var handler = _g1[_g];
+				++_g;
+				if(h == handler) return true;
+			}
+			return false;
+		}
+	}
+	,dispatchAndAutomate: function(e) {
+		this.dispatch(e);
+		this.handlers = [];
+		this.add = function(h) {
+			h(e);
+			return h;
+		};
+	}
 	,dispatch: function(e) {
 		var list = this.handlers.slice();
 		var _g = 0;
@@ -4344,6 +8128,9 @@ hxevents.Dispatcher.prototype = {
 			}
 			l(e);
 		}
+	}
+	,clear: function() {
+		this.handlers = new Array();
 	}
 	,remove: function(h) {
 		var _g1 = 0, _g = this.handlers.length;
@@ -4373,9 +8160,32 @@ hxevents.Dispatcher.prototype = {
 hxevents.Notifier = function() {
 	this.handlers = new Array();
 };
+$hxClasses["hxevents.Notifier"] = hxevents.Notifier;
 hxevents.Notifier.__name__ = ["hxevents","Notifier"];
 hxevents.Notifier.prototype = {
-	_stop: null
+	stop: function() {
+		this._stop = true;
+	}
+	,_stop: null
+	,has: function(h) {
+		if(null == h) return this.handlers.length > 0; else {
+			var _g = 0, _g1 = this.handlers;
+			while(_g < _g1.length) {
+				var handler = _g1[_g];
+				++_g;
+				if(h == handler) return true;
+			}
+			return false;
+		}
+	}
+	,dispatchAndAutomate: function() {
+		this.dispatch();
+		this.handlers = [];
+		this.add = function(h) {
+			h();
+			return h;
+		};
+	}
 	,dispatch: function() {
 		var list = this.handlers.slice();
 		var _g = 0;
@@ -4388,6 +8198,9 @@ hxevents.Notifier.prototype = {
 			}
 			l();
 		}
+	}
+	,clear: function() {
+		this.handlers = new Array();
 	}
 	,remove: function(h) {
 		var _g1 = 0, _g = this.handlers.length;
@@ -4415,7 +8228,30 @@ hxevents.Notifier.prototype = {
 	,__class__: hxevents.Notifier
 }
 js.Boot = function() { }
+$hxClasses["js.Boot"] = js.Boot;
 js.Boot.__name__ = ["js","Boot"];
+js.Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+js.Boot.__trace = function(v,i) {
+	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
+	msg += js.Boot.__string_rec(v,"");
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+}
+js.Boot.__clear_trace = function() {
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML = "";
+}
+js.Boot.isClass = function(o) {
+	return o.__name__;
+}
+js.Boot.isEnum = function(e) {
+	return e.__ename__;
+}
+js.Boot.getClass = function(o) {
+	return o.__class__;
+}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -4528,6 +8364,7 @@ js.Boot.__cast = function(o,t) {
 	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 }
 js.Scroll = function() { }
+$hxClasses["js.Scroll"] = js.Scroll;
 js.Scroll.__name__ = ["js","Scroll"];
 js.Scroll.getTop = function() {
 	var sy = window.pageYOffset;
@@ -4546,6 +8383,9 @@ js.Scroll.getLeft = function() {
 		if(sx) return sx;
 	}
 	return document.documentElement.scrollLeft;
+}
+js.Scroll.set = function(left,top) {
+	window.scroll(left,top);
 }
 var math = {}
 math.BigInteger = function() {
@@ -4567,7 +8407,23 @@ math.BigInteger = function() {
 		null;
 	}
 };
+$hxClasses["math.BigInteger"] = math.BigInteger;
 math.BigInteger.__name__ = ["math","BigInteger"];
+math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
+math.BigInteger.DB = null;
+math.BigInteger.DM = null;
+math.BigInteger.DV = null;
+math.BigInteger.BI_FP = null;
+math.BigInteger.FV = null;
+math.BigInteger.F1 = null;
+math.BigInteger.F2 = null;
+math.BigInteger.ZERO = null;
+math.BigInteger.ONE = null;
+math.BigInteger.BI_RM = null;
+math.BigInteger.BI_RC = null;
+math.BigInteger.lowprimes = null;
+math.BigInteger.lplim = null;
+math.BigInteger.defaultAm = null;
 math.BigInteger.initBiRc = function() {
 	math.BigInteger.BI_RC = new Array();
 	var rr = HxOverrides.cca("0",0);
@@ -4674,6 +8530,11 @@ math.BigInteger.ofInt = function(x) {
 	i.fromInt(x);
 	return i;
 }
+math.BigInteger.ofInt32 = function(x) {
+	var i = math.BigInteger.nbi();
+	i.fromInt32(x);
+	return i;
+}
 math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
 	if(pos == null) pos = 0;
 	if(len == null) len = r.length - pos;
@@ -4703,6 +8564,46 @@ math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
 	bi.clamp();
 	return bi;
 }
+math.BigInteger.random = function(bits,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(bits < 2) return math.BigInteger.ofInt(1);
+	var len = (bits >> 3) + 1;
+	var x = Bytes.alloc(len);
+	var t = bits & 7;
+	rng.nextBytes(x,0,len);
+	if(t > 0) {
+		var v = x.b[0];
+		v &= (1 << t) - 1;
+		x.b[0] = v & 255;
+	} else x.b[0] = 0;
+	return math.BigInteger.ofString(BytesUtil.hexDump(x,""),16);
+}
+math.BigInteger.randomPrime = function(bits,gcdExp,iterations,forceLength,rng) {
+	if(rng == null) rng = new math.prng.Random();
+	if(iterations < 1) iterations = 1;
+	while(true) {
+		var i = math.BigInteger.random(bits,rng);
+		if(forceLength) {
+			if(!i.testBit(bits - 1)) i.bitwiseTo(math.BigInteger.getONE().shl(bits - 1),math.BigInteger.op_or,i);
+		}
+		if(i.isEven()) i.dAddOffset(1,0);
+		i.primify(bits,1);
+		if(i.sub(math.BigInteger.getONE()).gcd(gcdExp).compare(math.BigInteger.getONE()) == 0 && i.isProbablePrime(iterations)) return i;
+	}
+	return null;
+}
+math.BigInteger.op_and = function(x,y) {
+	return x & y;
+}
+math.BigInteger.op_or = function(x,y) {
+	return x | y;
+}
+math.BigInteger.op_xor = function(x,y) {
+	return x ^ y;
+}
+math.BigInteger.op_andnot = function(x,y) {
+	return x & ~y;
+}
 math.BigInteger.nbits = function(x) {
 	var r = 1;
 	var t;
@@ -4728,10 +8629,49 @@ math.BigInteger.nbits = function(x) {
 	}
 	return r;
 }
+math.BigInteger.cbit = function(x) {
+	var r = 0;
+	while(x != 0) {
+		x &= x - 1;
+		++r;
+	}
+	return r;
+}
 math.BigInteger.intAt = function(s,i) {
 	var c = math.BigInteger.BI_RC[HxOverrides.cca(s,i)];
 	if(c == null) return -1;
 	return c;
+}
+math.BigInteger.int2charCode = function(n) {
+	return HxOverrides.cca(math.BigInteger.BI_RM,n);
+}
+math.BigInteger.lbit = function(x) {
+	if(x == 0) return -1;
+	var r = 0;
+	if((x & 65535) == 0) {
+		x >>= 16;
+		r += 16;
+	}
+	if((x & 255) == 0) {
+		x >>= 8;
+		r += 8;
+	}
+	if((x & 15) == 0) {
+		x >>= 4;
+		r += 4;
+	}
+	if((x & 3) == 0) {
+		x >>= 2;
+		r += 2;
+	}
+	if((x & 1) == 0) ++r;
+	return r;
+}
+math.BigInteger.dumpBi = function(r) {
+	var s = "sign: " + Std.string(r.sign);
+	s += " t: " + r.t;
+	s += Std.string(r.chunks);
+	return s;
 }
 math.BigInteger.prototype = {
 	am3: function(i,x,w,j,c,n) {
@@ -4816,6 +8756,30 @@ math.BigInteger.prototype = {
 		r.sign = this.sign;
 		r.clamp();
 	}
+	,millerRabin: function(v) {
+		var n1 = this.sub(math.BigInteger.getONE());
+		var k = n1.getLowestSetBit();
+		if(k <= 0) return false;
+		var r = n1.shr(k);
+		v = v + 1 >> 1;
+		if(v > math.BigInteger.lowprimes.length) v = math.BigInteger.lowprimes.length;
+		var a = math.BigInteger.nbi();
+		var _g = 0;
+		while(_g < v) {
+			var i = _g++;
+			a.fromInt(math.BigInteger.lowprimes[i]);
+			var y = a.modPow(r,this);
+			if(y.compare(math.BigInteger.getONE()) != 0 && y.compare(n1) != 0) {
+				var j = 1;
+				while(j++ < k && y.compare(n1) != 0) {
+					y = y.modPowInt(2,this);
+					if(y.compare(math.BigInteger.getONE()) == 0) return false;
+				}
+				if(y.compare(n1) != 0) return false;
+			}
+		}
+		return true;
+	}
 	,exp: function(e,z) {
 		if(e > 2147483647 || e < 1) return math.BigInteger.getONE();
 		var r = math.BigInteger.nbi();
@@ -4837,6 +8801,77 @@ math.BigInteger.prototype = {
 		this.chunks[this.t] = this.am(0,n - 1,this,0,0,this.t);
 		this.t++;
 		this.clamp();
+	}
+	,chunkSize: function(r) {
+		return Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(r));
+	}
+	,changeBit: function(n,op) {
+		var r = math.BigInteger.getONE().shl(n);
+		this.bitwiseTo(r,op,r);
+		return r;
+	}
+	,bitwiseTo: function(a,op,r) {
+		var f;
+		var m = Math.min(a.t,this.t) | 0;
+		var _g = 0;
+		while(_g < m) {
+			var i = _g++;
+			r.chunks[i] = op(this.chunks[i],a.chunks[i]);
+		}
+		if(a.t < this.t) {
+			f = a.sign & math.BigInteger.DM;
+			var _g1 = m, _g = this.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(this.chunks[i],f);
+			}
+			r.t = this.t;
+		} else {
+			f = this.sign & math.BigInteger.DM;
+			var _g1 = m, _g = a.t;
+			while(_g1 < _g) {
+				var i = _g1++;
+				r.chunks[i] = op(f,a.chunks[i]);
+			}
+			r.t = a.t;
+		}
+		r.sign = op(this.sign,a.sign);
+		r.clamp();
+	}
+	,primify: function(bits,ta) {
+		while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		while(!this.isProbablePrime(ta)) {
+			this.dAddOffset(2,0);
+			while(this.bitLength() > bits) this.subTo(math.BigInteger.getONE().shl(bits - 1),this);
+		}
+	}
+	,isProbablePrime: function(v) {
+		var i;
+		var x = this.abs();
+		if(x.t == 1 && x.chunks[0] <= math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1]) {
+			var _g1 = 0, _g = math.BigInteger.lowprimes.length;
+			while(_g1 < _g) {
+				var i1 = _g1++;
+				if(x.chunks[0] == math.BigInteger.lowprimes[i1]) return true;
+			}
+			return false;
+		}
+		if(x.isEven()) return false;
+		i = 1;
+		while(i < math.BigInteger.lowprimes.length) {
+			var m = math.BigInteger.lowprimes[i];
+			var j = i + 1;
+			while(j < math.BigInteger.lowprimes.length && m < math.BigInteger.lplim) {
+				m *= math.BigInteger.lowprimes[j];
+				j++;
+			}
+			m = x.modInt(m);
+			while(i < j) {
+				if(m % math.BigInteger.lowprimes[i] == 0) return false;
+				i++;
+			}
+		}
+		return x.millerRabin(v);
 	}
 	,invDigit: function() {
 		if(this.t < 1) return 0;
@@ -4892,11 +8927,51 @@ math.BigInteger.prototype = {
 	,sigNum: function() {
 		if(this.sign < 0) return -1; else if(this.t <= 0 || this.t == 1 && this.chunks[0] <= 0) return 0; else return 1;
 	}
+	,byteValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 24 >> 24;
+	}
+	,shortValue: function() {
+		return this.t == 0?this.sign:this.chunks[0] << 16 >> 16;
+	}
 	,padTo: function(n) {
 		while(this.t < n) {
 			this.chunks[this.t] = 0;
 			this.t++;
 		}
+	}
+	,gcd: function(a) {
+		var x = this.sign < 0?this.neg():this.clone();
+		var y = a.sign < 0?a.neg():a.clone();
+		if(x.compare(y) < 0) {
+			var t = x;
+			x = y;
+			y = t;
+		}
+		var i = x.getLowestSetBit(), g = y.getLowestSetBit();
+		if(g < 0) return x;
+		if(i < g) g = i;
+		if(g > 0) {
+			x.rShiftTo(g,x);
+			y.rShiftTo(g,y);
+		}
+		while(x.sigNum() > 0) {
+			if((i = x.getLowestSetBit()) > 0) x.rShiftTo(i,x);
+			if((i = y.getLowestSetBit()) > 0) y.rShiftTo(i,y);
+			if(x.compare(y) >= 0) {
+				x.subTo(y,x);
+				x.rShiftTo(1,x);
+			} else {
+				y.subTo(x,y);
+				y.rShiftTo(1,y);
+			}
+		}
+		if(g > 0) y.lShiftTo(g,y);
+		return y;
+	}
+	,clone: function() {
+		var r = math.BigInteger.nbi();
+		this.copyTo(r);
+		return r;
 	}
 	,clamp: function() {
 		var c = this.sign & math.BigInteger.DM;
@@ -5122,14 +9197,98 @@ math.BigInteger.prototype = {
 		r.t = i;
 		r.clamp();
 	}
+	,xor: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_xor,r);
+		return r;
+	}
+	,testBit: function(n) {
+		var j = Math.floor(n / math.BigInteger.DB);
+		if(j >= this.t) return this.sign != 0;
+		return (this.chunks[j] & 1 << n % math.BigInteger.DB) != 0;
+	}
+	,shr: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.lShiftTo(-n,r); else this.rShiftTo(n,r);
+		return r;
+	}
+	,shl: function(n) {
+		var r = math.BigInteger.nbi();
+		if(n < 0) this.rShiftTo(-n,r); else this.lShiftTo(n,r);
+		return r;
+	}
+	,setBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_or);
+	}
+	,or: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_or,r);
+		return r;
+	}
+	,not: function() {
+		var r = math.BigInteger.nbi();
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r.chunks[i] = math.BigInteger.DM & ~this.chunks[i];
+		}
+		r.t = this.t;
+		r.sign = ~this.sign;
+		return r;
+	}
+	,getLowestSetBit: function() {
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.chunks[i] != 0) return i * math.BigInteger.DB + math.BigInteger.lbit(this.chunks[i]);
+		}
+		if(this.sign < 0) return this.t * math.BigInteger.DB;
+		return -1;
+	}
+	,flipBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_xor);
+	}
+	,clearBit: function(n) {
+		return this.changeBit(n,math.BigInteger.op_andnot);
+	}
+	,complement: function() {
+		return this.not();
+	}
 	,bitLength: function() {
 		if(this.t <= 0) return 0;
 		return math.BigInteger.DB * (this.t - 1) + math.BigInteger.nbits(this.chunks[this.t - 1] ^ this.sign & math.BigInteger.DM);
+	}
+	,bitCount: function() {
+		var r = 0, x = this.sign & math.BigInteger.DM;
+		var _g1 = 0, _g = this.t;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r += math.BigInteger.cbit(this.chunks[i] ^ x);
+		}
+		return r;
+	}
+	,andNot: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_andnot,r);
+		return r;
+	}
+	,and: function(a) {
+		var r = math.BigInteger.nbi();
+		this.bitwiseTo(a,math.BigInteger.op_and,r);
+		return r;
 	}
 	,sub: function(a) {
 		var r = math.BigInteger.nbi();
 		this.subTo(a,r);
 		return r;
+	}
+	,remainder: function(a) {
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,null,r);
+		return r;
+	}
+	,pow: function(e) {
+		return this.exp(e,new math.reduction.Null());
 	}
 	,neg: function() {
 		var r = math.BigInteger.nbi();
@@ -5219,14 +9378,91 @@ math.BigInteger.prototype = {
 		}
 		return z.revert(r);
 	}
+	,modInverse: function(m) {
+		var ac = m.isEven();
+		if(this.isEven() && ac || m.sigNum() == 0) return math.BigInteger.getZERO();
+		var u = m.clone();
+		var v = this.clone();
+		var a = math.BigInteger.nbv(1);
+		var b = math.BigInteger.nbv(0);
+		var c = math.BigInteger.nbv(0);
+		var d = math.BigInteger.nbv(1);
+		while(u.sigNum() != 0) {
+			while(u.isEven()) {
+				u.rShiftTo(1,u);
+				if(ac) {
+					if(!a.isEven() || !b.isEven()) {
+						a.addTo(this,a);
+						b.subTo(m,b);
+					}
+					a.rShiftTo(1,a);
+				} else if(!b.isEven()) b.subTo(m,b);
+				b.rShiftTo(1,b);
+			}
+			while(v.isEven()) {
+				v.rShiftTo(1,v);
+				if(ac) {
+					if(!c.isEven() || !d.isEven()) {
+						c.addTo(this,c);
+						d.subTo(m,d);
+					}
+					c.rShiftTo(1,c);
+				} else if(!d.isEven()) d.subTo(m,d);
+				d.rShiftTo(1,d);
+			}
+			if(u.compare(v) >= 0) {
+				u.subTo(v,u);
+				if(ac) a.subTo(c,a);
+				b.subTo(d,b);
+			} else {
+				v.subTo(u,v);
+				if(ac) c.subTo(a,c);
+				d.subTo(b,d);
+			}
+		}
+		if(v.compare(math.BigInteger.getONE()) != 0) return math.BigInteger.getZERO();
+		if(d.compare(m) >= 0) return d.sub(m);
+		if(d.sigNum() < 0) d.addTo(m,d); else return d;
+		return d;
+	}
+	,modInt: function(n) {
+		if(n <= 0) return 0;
+		var d = math.BigInteger.DV % n;
+		var r = this.sign < 0?n - 1:0;
+		if(this.t > 0) {
+			if(d == 0) r = this.chunks[0] % n; else {
+				var i = this.t - 1;
+				while(i >= 0) {
+					r = (d * r + this.chunks[i]) % n;
+					--i;
+				}
+			}
+		}
+		return r;
+	}
 	,mod: function(a) {
 		var r = math.BigInteger.nbi();
 		this.abs().divRemTo(a,null,r);
 		if(this.sign < 0 && r.compare(math.BigInteger.getZERO()) > 0) a.subTo(r,r);
 		return r;
 	}
+	,min: function(a) {
+		return this.compare(a) < 0?this:a;
+	}
+	,max: function(a) {
+		return this.compare(a) > 0?this:a;
+	}
 	,isEven: function() {
 		return (this.t > 0?this.chunks[0] & 1:this.sign) == 0;
+	}
+	,eq: function(a) {
+		return this.compare(a) == 0;
+	}
+	,divideAndRemainder: function(a) {
+		var q = math.BigInteger.nbi();
+		var r = math.BigInteger.nbi();
+		this.divRemTo(a,q,r);
+		return [q,r];
 	}
 	,div: function(a) {
 		var r = math.BigInteger.nbi();
@@ -5305,8 +9541,51 @@ math.BigInteger.prototype = {
 		}
 		return bb.getBytes();
 	}
+	,toBytes: function() {
+		var i = this.t;
+		var r = new Array();
+		r[0] = this.sign;
+		var p = math.BigInteger.DB - i * math.BigInteger.DB % 8;
+		var d;
+		var k = 0;
+		if(i-- > 0) {
+			if(p < math.BigInteger.DB && (d = this.chunks[i] >> p) != (this.sign & math.BigInteger.DM) >> p) {
+				r[k] = d | this.sign << math.BigInteger.DB - p;
+				k++;
+			}
+			while(i >= 0) {
+				if(p < 8) {
+					d = (this.chunks[i] & (1 << p) - 1) << 8 - p;
+					--i;
+					d |= this.chunks[i] >> (p += math.BigInteger.DB - 8);
+				} else {
+					d = this.chunks[i] >> (p -= 8) & 255;
+					if(p <= 0) {
+						p += math.BigInteger.DB;
+						--i;
+					}
+				}
+				if((d & 128) != 0) d |= -256;
+				if(k == 0 && (this.sign & 128) != (d & 128)) ++k;
+				if(k > 0 || d != this.sign) {
+					r[k] = d;
+					k++;
+				}
+			}
+		}
+		var bb = new BytesBuffer();
+		var _g1 = 0, _g = r.length;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			bb.b.push(r[i1]);
+		}
+		return bb.getBytes();
+	}
 	,toHex: function() {
 		return this.toRadix(16).toString();
+	}
+	,toString: function() {
+		return this.toRadix(10).toString();
 	}
 	,toInt32: function() {
 		return this.toInt();
@@ -5316,6 +9595,9 @@ math.BigInteger.prototype = {
 			if(this.t == 1) return this.chunks[0] - math.BigInteger.DV; else if(this.t == 0) return -1;
 		} else if(this.t == 1) return this.chunks[0]; else if(this.t == 0) return 0;
 		return (this.chunks[1] & (1 << 32 - math.BigInteger.DB) - 1) << math.BigInteger.DB | this.chunks[0];
+	}
+	,fromInt32: function(x) {
+		this.fromInt(x);
 	}
 	,fromInt: function(x) {
 		this.t = 1;
@@ -5329,8 +9611,537 @@ math.BigInteger.prototype = {
 	,t: null
 	,__class__: math.BigInteger
 }
+math._IEEE754 = {}
+math._IEEE754.Status = $hxClasses["math._IEEE754.Status"] = { __ename__ : ["math","_IEEE754","Status"], __constructs__ : ["Normal","Overflow","Underflow","Denormalized","Quiet","Signalling"] }
+math._IEEE754.Status.Normal = ["Normal",0];
+math._IEEE754.Status.Normal.toString = $estr;
+math._IEEE754.Status.Normal.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Overflow = ["Overflow",1];
+math._IEEE754.Status.Overflow.toString = $estr;
+math._IEEE754.Status.Overflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Underflow = ["Underflow",2];
+math._IEEE754.Status.Underflow.toString = $estr;
+math._IEEE754.Status.Underflow.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Denormalized = ["Denormalized",3];
+math._IEEE754.Status.Denormalized.toString = $estr;
+math._IEEE754.Status.Denormalized.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Quiet = ["Quiet",4];
+math._IEEE754.Status.Quiet.toString = $estr;
+math._IEEE754.Status.Quiet.__enum__ = math._IEEE754.Status;
+math._IEEE754.Status.Signalling = ["Signalling",5];
+math._IEEE754.Status.Signalling.toString = $estr;
+math._IEEE754.Status.Signalling.__enum__ = math._IEEE754.Status;
+math.IEEE754 = function(size) {
+	this.Size = size;
+	this.BinaryPower = 0;
+	this.StatCond = math._IEEE754.Status.Normal;
+	this.StatCond64 = math._IEEE754.Status.Normal;
+	if(this.Size == 32) {
+		this.ExpBias = 127;
+		this.MaxExp = 127;
+		this.MinExp = -126;
+		this.MinUnnormExp = -149;
+	} else {
+		this.Size = 64;
+		this.ExpBias = 1023;
+		this.MaxExp = 1023;
+		this.MinExp = -1022;
+		this.MinUnnormExp = -1074;
+	}
+};
+$hxClasses["math.IEEE754"] = math.IEEE754;
+math.IEEE754.__name__ = ["math","IEEE754"];
+math.IEEE754.floatToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(32);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.doubleToBytes = function(v,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	var ieee = new math.IEEE754(64);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	return ieee.convert(v);
+}
+math.IEEE754.bytesToFloat = function(b,bigEndian) {
+	if(bigEndian == null) bigEndian = false;
+	if(b.length != 4 && b.length != 8) throw "Bytes must be 4 or 8 bytes long";
+	var size = b.length == 4?32:64;
+	var ieee = new math.IEEE754(size);
+	ieee.setEndian(bigEndian);
+	ieee.rounding = true;
+	if(!bigEndian) return ieee.bytesToBin(ieee.littleToBigEndian(b)); else return ieee.bytesToBin(b);
+}
+math.IEEE754.splitFloat = function(v) {
+	var rv = { integral : 0.0, decimal : 0.0};
+	var val = Std.string(v).toLowerCase();
+	var p = val.indexOf("e");
+	var exp = 0;
+	if(p >= 0) exp = Std.parseInt(HxOverrides.substr(val,p + 1,null)); else {
+		p = val.indexOf(".");
+		if(p >= 0) {
+			rv.integral = Std.parseFloat(HxOverrides.substr(val,0,p));
+			rv.decimal = Std.parseFloat("0." + HxOverrides.substr(val,p + 1,null));
+		} else rv.integral = Std.parseFloat(val);
+		return rv;
+	}
+	var fp = HxOverrides.substr(val,0,p);
+	p = fp.indexOf(".");
+	fp = StringTools.replace(fp,".","");
+	var dp = "0.";
+	if(exp > 0) {
+		p += exp;
+		if(p == fp.length) rv.integral = Std.parseFloat(fp); else if(p > fp.length) rv.integral = v; else {
+			rv.integral = Std.parseFloat(HxOverrides.substr(fp,0,p));
+			rv.decimal = Std.parseFloat("0." + HxOverrides.substr(fp,p + 1,null));
+		}
+	} else {
+		exp += p;
+		if(exp == 0) rv.decimal = Std.parseFloat("0." + fp); else if(exp < 0) rv.decimal = Std.parseFloat("0." + fp + "e" + Std.string(exp)); else {
+			rv.integral = Std.parseFloat(HxOverrides.substr(fp,0,exp));
+			rv.decimal = Std.parseFloat("0." + HxOverrides.substr(fp,exp,null));
+		}
+	}
+	return rv;
+}
+math.IEEE754.prototype = {
+	numStrClipOff: function(input,precision) {
+		var result = "";
+		var numerals = "0123456789";
+		var tempstr = input.toUpperCase();
+		var expstr = "";
+		var signstr = "";
+		var stop = 0;
+		var expnum = 0;
+		var locE = tempstr.indexOf("E");
+		if(locE != -1) {
+			stop = locE;
+			expstr = HxOverrides.substr(input,locE + 1,input.length);
+			expnum = Std.parseInt(expstr);
+		} else {
+			stop = input.length;
+			expnum = 0;
+		}
+		if(input.indexOf(".") == -1) {
+			tempstr = HxOverrides.substr(input,0,stop);
+			tempstr += ".";
+			if(input.length != stop) tempstr += HxOverrides.substr(input,locE,input.length);
+			input = tempstr;
+			locE = locE + 1;
+			stop = stop + 1;
+		}
+		var locDP = input.indexOf(".");
+		var start = 0;
+		if(input.charAt(start) == "-") {
+			start++;
+			signstr = "-";
+		} else signstr = "";
+		var MSD = start;
+		var MSDfound = false;
+		while(MSD < stop && !MSDfound) {
+			var index = 1;
+			while(index < numerals.length) {
+				if(input.charAt(MSD) == numerals.charAt(index)) {
+					MSDfound = true;
+					break;
+				}
+				index++;
+			}
+			MSD++;
+		}
+		MSD--;
+		var expdelta = 0;
+		if(MSDfound) {
+			expdelta = locDP - MSD;
+			if(expdelta > 0) expdelta = expdelta - 1;
+			expnum = expnum + expdelta;
+			expstr = "e" + expnum;
+		} else MSD = start;
+		var digits = stop - MSD;
+		tempstr = HxOverrides.substr(input,MSD,stop);
+		if(tempstr.indexOf(".") != -1) digits = digits - 1;
+		var number = digits;
+		if(precision < digits) number = precision;
+		tempstr = HxOverrides.substr(input,MSD,MSD + number + 1);
+		if(MSD != start || tempstr.indexOf(".") == -1) {
+			result = signstr;
+			result += HxOverrides.substr(input,MSD,MSD + 1);
+			result += ".";
+			result += HxOverrides.substr(input,MSD + 1,MSD + number);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			result += expstr;
+		} else {
+			result = HxOverrides.substr(input,0,start + number + 1);
+			while(digits < precision) {
+				result += "0";
+				digits += 1;
+			}
+			if(input.length != stop) result += HxOverrides.substr(input,locE,input.length);
+		}
+		return result;
+	}
+	,Convert2Dec: function() {
+		var LN10 = Math.log(10);
+		var s = this.Size == 32?9:12;
+		var dp = 0;
+		var val = 0.0;
+		if(this.BinaryPower < this.MinExp || this.BinaryPower > this.MaxExp) {
+			dp = 0;
+			val = 0;
+		} else {
+			dp = -1;
+			val = 1;
+		}
+		var _g1 = s, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			val += (this.Result[i] | 0) * Math.pow(2,dp + s - i);
+		}
+		var decValue = val * Math.pow(2,this.BinaryPower);
+		if(this.Size == 32) {
+			s = 8;
+			if(val > 0) {
+				var power = Math.floor(Math.log(decValue) / LN10);
+				decValue += 0.5 * Math.pow(10,power - s + 1);
+				val += 5E-8;
+			}
+		} else s = 17;
+		if(this.Result[0] == 1) decValue = -decValue;
+		decValue = Std.parseFloat(this.numStrClipOff(Std.string(decValue),s));
+		return decValue;
+	}
+	,bytesToBin: function(b) {
+		this.initBuffers();
+		var index1 = 0;
+		var p = 0;
+		var me = this;
+		var store = function(temp,idx) {
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp *= 2.0;
+				if(temp >= 1.0) {
+					me.Result[idx + i] = 1;
+					temp -= 1;
+				} else me.Result[idx + i] = 0;
+			}
+		};
+		while(index1 < this.Size) {
+			var nibble = (b.b[p] & 240) >> 4;
+			store(nibble / 16,index1);
+			index1 += 4;
+			var nibble1 = b.b[p] & 15;
+			store(nibble1 / 16,index1);
+			index1 += 4;
+			p++;
+		}
+		var binexpnt = 0;
+		var index2 = this.Size == 32?9:12;
+		var _g = 1;
+		while(_g < index2) {
+			var i = _g++;
+			binexpnt += this.Result[i] * Math.pow(2,index2 - i - 1) | 0;
+		}
+		binexpnt -= this.ExpBias;
+		this.BinaryPower = binexpnt;
+		index1 = 1024 - binexpnt;
+		if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) {
+			this.BinVal[index1] = 1;
+			index1++;
+		}
+		var index3 = index1;
+		var zeroFirst = false;
+		if(this.Result[index2] == 0) zeroFirst = true;
+		this.BinVal[index1] = this.Result[index2];
+		index2++;
+		index1++;
+		var zeroRest = true;
+		while(index2 < this.Size && index1 < 2102) {
+			if(this.Result[index2] == 1) zeroRest = false;
+			this.BinVal[index1] = this.Result[index2];
+			index2++;
+			index1++;
+		}
+		while(index3 < 2102 && this.BinVal[index3] != 1) index3++;
+		var binexpnt2 = 1024 - index3;
+		if(binexpnt < this.MinExp) {
+			if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+		} else if(binexpnt > this.MaxExp) {
+			if(zeroFirst && zeroRest) {
+				this.StatCond = math._IEEE754.Status.Overflow;
+				if(this.Result[0] == 1) return Math.NEGATIVE_INFINITY; else return Math.POSITIVE_INFINITY;
+			} else if(!zeroFirst && zeroRest && this.Result[0] == 1) this.StatCond = math._IEEE754.Status.Quiet; else if(!zeroFirst) this.StatCond = math._IEEE754.Status.Quiet; else this.StatCond = math._IEEE754.Status.Signalling;
+			return Math.NaN;
+		}
+		return this.Convert2Dec();
+	}
+	,toBytes: function() {
+		var c = this.Size == 32?4:8;
+		var out = Bytes.alloc(c);
+		var index = 0;
+		var pos = 0;
+		while(index < this.Size) {
+			var temp = 0;
+			var v = 0;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += (Math.pow(2,3 - i) | 0) * this.Result[index + i];
+			}
+			v = temp << 4;
+			temp = 0;
+			index += 4;
+			var _g = 0;
+			while(_g < 4) {
+				var i = _g++;
+				temp += (Math.pow(2,3 - i) | 0) * this.Result[index + i];
+			}
+			v = v | temp;
+			out.b[pos++] = v & 255;
+			index += 4;
+		}
+		if(!this.bigEndian) {
+			var out2 = Bytes.alloc(c);
+			var idx = c - 1;
+			var _g = 0;
+			while(_g < c) {
+				var i = _g++;
+				out2.b[idx] = out.b[i] & 255;
+				idx--;
+			}
+			out = out2;
+		}
+		return out;
+	}
+	,Convert2Bin: function() {
+		var power = this.BinaryPower;
+		var lastbit = 0;
+		var rounded = 0;
+		var binexpnt = 0;
+		var binexpnt2 = 0;
+		var index1 = 0;
+		var index2 = this.Size == 32?9:12;
+		var index3 = 0;
+		if(this.rounding && this.StatCond64 == math._IEEE754.Status.Normal) {
+			while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+			binexpnt = 1024 - index1;
+			if(binexpnt >= this.MinExp) index1++; else {
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+			lastbit = this.Size - 1 - index2 + index1;
+			if(this.BinVal[lastbit + 1] == 1) {
+				rounded = 0;
+				if(this.BinVal[lastbit] == 1) rounded = 1; else {
+					index3 = lastbit + 2;
+					while(rounded == 0 && index3 < 2102) {
+						rounded = this.BinVal[index3];
+						index3++;
+					}
+				}
+				index3 = lastbit;
+				while(rounded == 1 && index3 >= 0) {
+					if(this.BinVal[index3] == 0) {
+						this.BinVal[index3] = 1;
+						rounded = 0;
+					} else this.BinVal[index3] = 0;
+					index3--;
+				}
+			}
+			index1 = index1 - 2;
+			if(index1 < 0) index1 = 0;
+		}
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		binexpnt2 = 1024 - index1;
+		if(this.StatCond64 == math._IEEE754.Status.Normal) {
+			binexpnt = binexpnt2;
+			if(binexpnt >= this.MinExp && binexpnt <= this.MaxExp) index1++; else if(binexpnt < this.MinExp) {
+				if(binexpnt2 == -1078) this.StatCond = math._IEEE754.Status.Normal; else if(binexpnt2 < this.MinUnnormExp) this.StatCond = math._IEEE754.Status.Underflow; else this.StatCond = math._IEEE754.Status.Denormalized;
+				binexpnt = this.MinExp - 1;
+				index1 = 1024 - binexpnt;
+			}
+		} else {
+			binexpnt = power;
+			index1 = 1024 - binexpnt;
+			if(binexpnt > this.MaxExp) binexpnt = this.MaxExp + 1; else if(binexpnt < this.MinExp) binexpnt = this.MinExp - 1;
+		}
+		while(index2 < this.Size && index1 < 2102) {
+			this.Result[index2] = this.BinVal[index1];
+			index2++;
+			index1++;
+		}
+		if(binexpnt > this.MaxExp || this.StatCond64 != math._IEEE754.Status.Normal) {
+			if(this.StatCond64 == math._IEEE754.Status.Normal) return this.infinity(this.Result[0] == 1); else this.StatCond = this.StatCond64;
+		}
+		if(this.Size == 32) index1 = 8; else index1 = 11;
+		this.BinaryPower = binexpnt;
+		binexpnt += this.ExpBias;
+		var fbxp = binexpnt * 1.0;
+		while(fbxp / 2.0 != 0.0) {
+			var mod = (fbxp | 0) % 2;
+			this.Result[index1] = mod;
+			if(mod == 0) fbxp = fbxp / 2.0; else fbxp = fbxp / 2.0 - 0.5;
+			index1--;
+			fbxp = math.IEEE754.splitFloat(fbxp * 10.0).integral / 10.0;
+		}
+		binexpnt = fbxp | 0;
+		return this.toBytes();
+	}
+	,convert: function(v) {
+		this.input = v;
+		this.StatCond = math._IEEE754.Status.Normal;
+		this.StatCond64 = math._IEEE754.Status.Normal;
+		if(this.input == Math.POSITIVE_INFINITY) return this.infinity(false); else if(this.input == Math.NEGATIVE_INFINITY) return this.infinity(true); else if(Math.isNaN(this.input)) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(192);
+			} else {
+				bb.b.push(255);
+				bb.b.push(248);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+		this.BinaryPower = 0;
+		var binexpnt = 0;
+		this.initBuffers();
+		this.Result[0] = 0;
+		if(this.input < 0) this.Result[0] = 1;
+		var value = Math.abs(this.input);
+		var vp = math.IEEE754.splitFloat(value);
+		var intpart = vp.integral;
+		var decpart = vp.decimal;
+		var index1 = 1024;
+		while(intpart / 2.0 != 0.0 && index1 >= 0) {
+			var fip = intpart;
+			while(fip > 2147483647.0) fip /= 10.0;
+			var mod = (fip | 0) % 2;
+			this.BinVal[index1] = mod;
+			if(mod == 0) intpart = intpart / 2.0; else intpart = intpart / 2.0 - 0.5;
+			intpart = math.IEEE754.splitFloat(intpart * 10.0).integral / 10.0;
+			index1--;
+		}
+		index1 = 1025;
+		while(decpart > 0.0 && index1 < 2102) {
+			decpart *= 2;
+			if(decpart >= 1.0) {
+				this.BinVal[index1] = 1;
+				decpart--;
+				index1++;
+			} else {
+				this.BinVal[index1] = 0;
+				index1++;
+			}
+		}
+		index1 = 0;
+		while(index1 < 2102 && this.BinVal[index1] != 1) index1++;
+		this.BinaryPower = 1024 - index1;
+		if(this.BinaryPower < this.MinExp) this.BinaryPower = this.MinExp - 1;
+		return this.Convert2Bin();
+	}
+	,infinity: function(negative) {
+		if(negative) {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(255);
+				bb.b.push(128);
+			} else {
+				bb.b.push(255);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		} else {
+			var bb = new BytesBuffer();
+			var cnt = 2;
+			if(this.Size == 32) {
+				bb.b.push(127);
+				bb.b.push(128);
+			} else {
+				bb.b.push(127);
+				bb.b.push(240);
+				cnt = 6;
+			}
+			var _g = 0;
+			while(_g < cnt) {
+				var i = _g++;
+				bb.b.push(0);
+			}
+			return this.bufToEndian(bb.getBytes());
+		}
+	}
+	,bufToEndian: function(inbuf) {
+		var rv = inbuf;
+		if(!this.bigEndian) rv = this.littleToBigEndian(rv);
+		return rv;
+	}
+	,littleToBigEndian: function(inbuf) {
+		var c = this.Size == 32?4:8;
+		var nb = Bytes.alloc(c);
+		var idx = c - 1;
+		var _g = 0;
+		while(_g < c) {
+			var i = _g++;
+			nb.b[idx] = inbuf.b[i] & 255;
+			idx--;
+		}
+		return nb;
+	}
+	,initBuffers: function() {
+		this.BinVal = new Array();
+		var _g = 0;
+		while(_g < 2102) {
+			var i = _g++;
+			this.BinVal[i] = 0;
+		}
+		this.Result = new Array();
+		var _g1 = 0, _g = this.Size;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.Result[i] = 0;
+		}
+	}
+	,setEndian: function(b) {
+		this.bigEndian = b;
+		return b;
+	}
+	,StatCond64: null
+	,StatCond: null
+	,Result: null
+	,MinUnnormExp: null
+	,MinExp: null
+	,MaxExp: null
+	,ExpBias: null
+	,BinVal: null
+	,BinaryPower: null
+	,Size: null
+	,rounding: null
+	,input: null
+	,bigEndian: null
+	,__class__: math.IEEE754
+	,__properties__: {set_bigEndian:"setEndian"}
+}
 math.prng = {}
 math.prng.IPrng = function() { }
+$hxClasses["math.prng.IPrng"] = math.prng.IPrng;
 math.prng.IPrng.__name__ = ["math","prng","IPrng"];
 math.prng.IPrng.prototype = {
 	toString: null
@@ -5339,8 +10150,131 @@ math.prng.IPrng.prototype = {
 	,size: null
 	,__class__: math.prng.IPrng
 }
+math.prng.ArcFour = function() {
+	this.i = 0;
+	this.j = 0;
+	this.S = new Array();
+	this.setSize(256);
+};
+$hxClasses["math.prng.ArcFour"] = math.prng.ArcFour;
+math.prng.ArcFour.__name__ = ["math","prng","ArcFour"];
+math.prng.ArcFour.__interfaces__ = [math.prng.IPrng];
+math.prng.ArcFour.prototype = {
+	toString: function() {
+		return "ArcFour";
+	}
+	,setSize: function(v) {
+		if(v % 4 != 0 || v < 32) throw "invalid size";
+		this.size = v;
+		return v;
+	}
+	,next: function() {
+		if(this.S.length == 0) throw "not initialized";
+		var t;
+		this.i = this.i + 1 & 255;
+		this.j = this.j + this.S[this.i] & 255;
+		t = this.S[this.i];
+		this.S[this.i] = this.S[this.j];
+		this.S[this.j] = t;
+		return this.S[t + this.S[this.i] & 255];
+	}
+	,init: function(key) {
+		var t;
+		var _g = 0;
+		while(_g < 256) {
+			var x = _g++;
+			this.S[x] = x;
+		}
+		this.j = 0;
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			this.j = this.j + this.S[i] + key[i % key.length] & 255;
+			t = this.S[i];
+			this.S[i] = this.j;
+			this.S[this.j] = t;
+		}
+		this.i = 0;
+		this.j = 0;
+	}
+	,size: null
+	,S: null
+	,j: null
+	,i: null
+	,__class__: math.prng.ArcFour
+}
+math.prng.Random = function(backend) {
+	this.createState(backend);
+	this.initialized = false;
+};
+$hxClasses["math.prng.Random"] = math.prng.Random;
+math.prng.Random.__name__ = ["math","prng","Random"];
+math.prng.Random.prototype = {
+	createState: function(backend) {
+		if(backend == null) this.state = new math.prng.ArcFour(); else this.state = backend;
+		if(this.pool == null) {
+			this.pool = new Array();
+			this.pptr = 0;
+			var t;
+			while(this.pptr < this.state.size) {
+				t = Math.floor(65536 * Math.random());
+				this.pool[this.pptr++] = t >>> 8;
+				this.pool[this.pptr++] = t & 255;
+			}
+			this.pptr = 0;
+			this.seedTime();
+		}
+	}
+	,seedTime: function() {
+		var dt = new Date().getTime();
+		var m = dt * 1000 | 0;
+		this.seedInt(m);
+	}
+	,seedInt: function(x) {
+		this.pool[this.pptr++] ^= x & 255;
+		this.pool[this.pptr++] ^= x >> 8 & 255;
+		this.pool[this.pptr++] ^= x >> 16 & 255;
+		this.pool[this.pptr++] ^= x >> 24 & 255;
+		if(this.pptr >= this.state.size) this.pptr -= this.state.size;
+	}
+	,nextBytesStream: function(out,count) {
+		var _g = 0;
+		while(_g < count) {
+			var i = _g++;
+			out.writeUInt8(this.next());
+		}
+	}
+	,nextBytes: function(bytes,pos,len) {
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			bytes.b[pos + i] = this.next() & 255;
+		}
+	}
+	,next: function() {
+		if(this.initialized == false) {
+			this.createState();
+			this.state.init(this.pool);
+			var _g1 = 0, _g = this.pool.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.pool[i] = 0;
+			}
+			this.pptr = 0;
+			this.pool = new Array();
+			this.initialized = true;
+		}
+		return this.state.next();
+	}
+	,initialized: null
+	,pptr: null
+	,pool: null
+	,state: null
+	,__class__: math.prng.Random
+}
 math.reduction = {}
 math.reduction.ModularReduction = function() { }
+$hxClasses["math.reduction.ModularReduction"] = math.reduction.ModularReduction;
 math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
 math.reduction.ModularReduction.prototype = {
 	sqrTo: null
@@ -5357,6 +10291,7 @@ math.reduction.Barrett = function(m) {
 	this.mu = this.r2.div(m);
 	this.m = m;
 };
+$hxClasses["math.reduction.Barrett"] = math.reduction.Barrett;
 math.reduction.Barrett.__name__ = ["math","reduction","Barrett"];
 math.reduction.Barrett.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Barrett.prototype = {
@@ -5400,6 +10335,7 @@ math.reduction.Barrett.prototype = {
 math.reduction.Classic = function(m) {
 	this.m = m;
 };
+$hxClasses["math.reduction.Classic"] = math.reduction.Classic;
 math.reduction.Classic.__name__ = ["math","reduction","Classic"];
 math.reduction.Classic.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Classic.prototype = {
@@ -5432,6 +10368,7 @@ math.reduction.Montgomery = function(x) {
 	this.um = (1 << math.BigInteger.DB - 15) - 1;
 	this.mt2 = 2 * this.m.t;
 };
+$hxClasses["math.reduction.Montgomery"] = math.reduction.Montgomery;
 math.reduction.Montgomery.__name__ = ["math","reduction","Montgomery"];
 math.reduction.Montgomery.__interfaces__ = [math.reduction.ModularReduction];
 math.reduction.Montgomery.prototype = {
@@ -5483,8 +10420,31 @@ math.reduction.Montgomery.prototype = {
 	,m: null
 	,__class__: math.reduction.Montgomery
 }
+math.reduction.Null = function() {
+};
+$hxClasses["math.reduction.Null"] = math.reduction.Null;
+math.reduction.Null.__name__ = ["math","reduction","Null"];
+math.reduction.Null.__interfaces__ = [math.reduction.ModularReduction];
+math.reduction.Null.prototype = {
+	reduce: function(x) {
+	}
+	,sqrTo: function(x,r) {
+		x.squareTo(r);
+	}
+	,mulTo: function(x,y,r) {
+		x.multiplyTo(y,r);
+	}
+	,revert: function(x) {
+		return x;
+	}
+	,convert: function(x) {
+		return x;
+	}
+	,__class__: math.reduction.Null
+}
 var rg = {}
 rg.RGConst = function() { }
+$hxClasses["rg.RGConst"] = rg.RGConst;
 rg.RGConst.__name__ = ["rg","RGConst"];
 rg.app = {}
 rg.app.charts = {}
@@ -5492,6 +10452,7 @@ rg.app.charts.App = function(notifier) {
 	this.layouts = new Hash();
 	this.globalNotifier = notifier;
 };
+$hxClasses["rg.app.charts.App"] = rg.app.charts.App;
 rg.app.charts.App.__name__ = ["rg","app","charts","App"];
 rg.app.charts.App.nextid = function() {
 	return ":RGVIZ-" + ++rg.app.charts.App.lastid;
@@ -5579,10 +10540,20 @@ rg.app.charts.App.prototype = {
 	,__class__: rg.app.charts.App
 }
 rg.app.charts.JSBridge = function() { }
+$hxClasses["rg.app.charts.JSBridge"] = rg.app.charts.JSBridge;
 rg.app.charts.JSBridge.__name__ = ["rg","app","charts","JSBridge"];
 rg.app.charts.JSBridge.log = function(msg) {
 	var c = (window.console && window.console.warn) || alert;
 	c(msg);
+}
+rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
+	var rv = -1.0;
+	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
+		var ua = js.Lib.window.navigator.userAgent;
+		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
+		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
+	}
+	return rv;
 }
 rg.app.charts.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid;
@@ -5678,7 +10649,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.34.8664"};
+	r.info.charts = { version : "1.4.46.8713"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -5712,6 +10683,7 @@ rg.app.charts.JSBridge.chartopt = function(ob,viz) {
 	return ob;
 }
 rg.app.charts.MVPOptions = function() { }
+$hxClasses["rg.app.charts.MVPOptions"] = rg.app.charts.MVPOptions;
 rg.app.charts.MVPOptions.__name__ = ["rg","app","charts","MVPOptions"];
 rg.app.charts.MVPOptions.a1 = function(params,handler) {
 	var authcode = ReportGrid.authCode, authorized = false;
@@ -5844,6 +10816,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 }
 rg.axis = {}
 rg.axis.IAxis = function() { }
+$hxClasses["rg.axis.IAxis"] = rg.axis.IAxis;
 rg.axis.IAxis.__name__ = ["rg","axis","IAxis"];
 rg.axis.IAxis.prototype = {
 	createStats: null
@@ -5854,14 +10827,17 @@ rg.axis.IAxis.prototype = {
 	,__class__: rg.axis.IAxis
 }
 rg.axis.IAxisDiscrete = function() { }
+$hxClasses["rg.axis.IAxisDiscrete"] = rg.axis.IAxisDiscrete;
 rg.axis.IAxisDiscrete.__name__ = ["rg","axis","IAxisDiscrete"];
 rg.axis.IAxisDiscrete.__interfaces__ = [rg.axis.IAxis];
 rg.axis.IAxisDiscrete.prototype = {
 	range: null
 	,scaleDistribution: null
 	,__class__: rg.axis.IAxisDiscrete
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.IAxisOrdinal = function() { }
+$hxClasses["rg.axis.IAxisOrdinal"] = rg.axis.IAxisOrdinal;
 rg.axis.IAxisOrdinal.__name__ = ["rg","axis","IAxisOrdinal"];
 rg.axis.IAxisOrdinal.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.IAxisOrdinal.prototype = {
@@ -5874,6 +10850,7 @@ rg.axis.IAxisOrdinal.prototype = {
 rg.axis.AxisOrdinal = function() {
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
 };
+$hxClasses["rg.axis.AxisOrdinal"] = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
 rg.axis.AxisOrdinal.__interfaces__ = [rg.axis.IAxisOrdinal];
 rg.axis.AxisOrdinal.prototype = {
@@ -5933,11 +10910,13 @@ rg.axis.AxisOrdinal.prototype = {
 	}
 	,scaleDistribution: null
 	,__class__: rg.axis.AxisOrdinal
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.AxisOrdinalFixedValues = function(arr) {
 	rg.axis.AxisOrdinal.call(this);
 	this._values = arr;
 };
+$hxClasses["rg.axis.AxisOrdinalFixedValues"] = rg.axis.AxisOrdinalFixedValues;
 rg.axis.AxisOrdinalFixedValues.__name__ = ["rg","axis","AxisOrdinalFixedValues"];
 rg.axis.AxisOrdinalFixedValues.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalFixedValues.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -5951,6 +10930,7 @@ rg.axis.AxisGroupByTime = function(groupby) {
 	rg.axis.AxisOrdinalFixedValues.call(this,rg.axis.AxisGroupByTime.valuesByGroup(groupby));
 	this.groupBy = groupby;
 };
+$hxClasses["rg.axis.AxisGroupByTime"] = rg.axis.AxisGroupByTime;
 rg.axis.AxisGroupByTime.__name__ = ["rg","axis","AxisGroupByTime"];
 rg.axis.AxisGroupByTime.valuesByGroup = function(groupby) {
 	return Ints.range(rg.axis.AxisGroupByTime.defaultMin(groupby),rg.axis.AxisGroupByTime.defaultMax(groupby) + 1);
@@ -5988,12 +10968,16 @@ rg.axis.AxisGroupByTime.prototype = $extend(rg.axis.AxisOrdinalFixedValues.proto
 });
 rg.axis.AxisNumeric = function() {
 };
+$hxClasses["rg.axis.AxisNumeric"] = rg.axis.AxisNumeric;
 rg.axis.AxisNumeric.__name__ = ["rg","axis","AxisNumeric"];
 rg.axis.AxisNumeric.__interfaces__ = [rg.axis.IAxis];
 rg.axis.AxisNumeric._step = function(span,m) {
 	var step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / span * step;
 	if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 	return step;
+}
+rg.axis.AxisNumeric.nice = function(v) {
+	return Math.pow(10,Math.round(Math.log(v) / 2.302585092994046) - 1);
 }
 rg.axis.AxisNumeric.niceMin = function(d,v) {
 	var dv = Math.pow(10,Math.round(Math.log(d) / 2.302585092994046) - 1);
@@ -6043,6 +11027,7 @@ rg.axis.AxisOrdinalStats = function(variable) {
 	rg.axis.AxisOrdinal.call(this);
 	this.variable = variable;
 };
+$hxClasses["rg.axis.AxisOrdinalStats"] = rg.axis.AxisOrdinalStats;
 rg.axis.AxisOrdinalStats.__name__ = ["rg","axis","AxisOrdinalStats"];
 rg.axis.AxisOrdinalStats.__super__ = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
@@ -6056,6 +11041,7 @@ rg.axis.AxisTime = function(periodicity) {
 	this.periodicity = periodicity;
 	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
 };
+$hxClasses["rg.axis.AxisTime"] = rg.axis.AxisTime;
 rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
 rg.axis.AxisTime.__interfaces__ = [rg.axis.IAxisDiscrete];
 rg.axis.AxisTime.prototype = {
@@ -6132,8 +11118,10 @@ rg.axis.AxisTime.prototype = {
 	,scaleDistribution: null
 	,periodicity: null
 	,__class__: rg.axis.AxisTime
+	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.ITickmark = function() { }
+$hxClasses["rg.axis.ITickmark"] = rg.axis.ITickmark;
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
 	label: null
@@ -6141,8 +11129,9 @@ rg.axis.ITickmark.prototype = {
 	,major: null
 	,delta: null
 	,__class__: rg.axis.ITickmark
+	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
 }
-rg.axis.ScaleDistribution = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
+rg.axis.ScaleDistribution = $hxClasses["rg.axis.ScaleDistribution"] = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
 rg.axis.ScaleDistribution.ScaleFit.toString = $estr;
 rg.axis.ScaleDistribution.ScaleFit.__enum__ = rg.axis.ScaleDistribution;
@@ -6156,6 +11145,7 @@ rg.axis.ScaleDistribution.ScaleAfter = ["ScaleAfter",3];
 rg.axis.ScaleDistribution.ScaleAfter.toString = $estr;
 rg.axis.ScaleDistribution.ScaleAfter.__enum__ = rg.axis.ScaleDistribution;
 rg.axis.ScaleDistributions = function() { }
+$hxClasses["rg.axis.ScaleDistributions"] = rg.axis.ScaleDistributions;
 rg.axis.ScaleDistributions.__name__ = ["rg","axis","ScaleDistributions"];
 rg.axis.ScaleDistributions.distribute = function(scale,pos,values) {
 	switch( (scale)[1] ) {
@@ -6174,6 +11164,7 @@ rg.axis.Stats = function(type,sortf) {
 	this.sortf = sortf;
 	this.reset();
 };
+$hxClasses["rg.axis.Stats"] = rg.axis.Stats;
 rg.axis.Stats.__name__ = ["rg","axis","Stats"];
 rg.axis.Stats.prototype = {
 	addMany: function(it) {
@@ -6217,6 +11208,7 @@ rg.axis.StatsNumeric = function(type,sortf) {
 	if(null == sortf) sortf = Floats.compare;
 	rg.axis.Stats.call(this,type,sortf);
 };
+$hxClasses["rg.axis.StatsNumeric"] = rg.axis.StatsNumeric;
 rg.axis.StatsNumeric.__name__ = ["rg","axis","StatsNumeric"];
 rg.axis.StatsNumeric.__super__ = rg.axis.Stats;
 rg.axis.StatsNumeric.prototype = $extend(rg.axis.Stats.prototype,{
@@ -6247,10 +11239,14 @@ rg.axis.Tickmark = function(value,major,delta) {
 	this.major = major;
 	this.delta = delta;
 };
+$hxClasses["rg.axis.Tickmark"] = rg.axis.Tickmark;
 rg.axis.Tickmark.__name__ = ["rg","axis","Tickmark"];
 rg.axis.Tickmark.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.Tickmark.prototype = {
-	getLabel: function() {
+	toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
+	,getLabel: function() {
 		return rg.util.RGStrings.humanize(this.getValue());
 	}
 	,getValue: function() {
@@ -6267,6 +11263,7 @@ rg.axis.Tickmark.prototype = {
 	,major: null
 	,delta: null
 	,__class__: rg.axis.Tickmark
+	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
 }
 rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
@@ -6275,6 +11272,7 @@ rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	this.scaleDistribution = scaleDistribution;
 	this.major = major;
 };
+$hxClasses["rg.axis.TickmarkOrdinal"] = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkOrdinal.__name__ = ["rg","axis","TickmarkOrdinal"];
 rg.axis.TickmarkOrdinal.__interfaces__ = [rg.axis.ITickmark];
 rg.axis.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
@@ -6283,7 +11281,10 @@ rg.axis.TickmarkOrdinal.fromArray = function(values,scaleDistribution) {
 	});
 }
 rg.axis.TickmarkOrdinal.prototype = {
-	getLabel: function() {
+	toString: function() {
+		return rg.axis.Tickmarks.string(this);
+	}
+	,getLabel: function() {
 		return rg.util.RGStrings.humanize(this.values[this.pos]);
 	}
 	,label: null
@@ -6303,11 +11304,13 @@ rg.axis.TickmarkOrdinal.prototype = {
 	,values: null
 	,pos: null
 	,__class__: rg.axis.TickmarkOrdinal
+	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
 }
 rg.axis.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
 	rg.axis.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
 	this.periodicity = periodicity;
 };
+$hxClasses["rg.axis.TickmarkTime"] = rg.axis.TickmarkTime;
 rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
 rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
@@ -6318,6 +11321,7 @@ rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
 	,__class__: rg.axis.TickmarkTime
 });
 rg.axis.Tickmarks = function() { }
+$hxClasses["rg.axis.Tickmarks"] = rg.axis.Tickmarks;
 rg.axis.Tickmarks.__name__ = ["rg","axis","Tickmarks"];
 rg.axis.Tickmarks.bound = function(tickmarks,max) {
 	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
@@ -6340,12 +11344,19 @@ rg.axis.Tickmarks.reduce = function(arr,max) {
 	do result.push(arr[Math.round(keep * i++)]); while(max > result.length);
 	return result;
 }
+rg.axis.Tickmarks.string = function(tick) {
+	return Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
+}
+rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
+	return new rg.axis.Tickmark(value,major,(value - start) / (end - start));
+}
 rg.data = {}
 rg.data.DataLoader = function(loader) {
 	if(null == loader) throw new thx.error.NullArgument("loader","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "DataLoader.hx", lineNumber : 11, className : "rg.data.DataLoader", methodName : "new"}); else null;
 	this.loader = loader;
 	this.onLoad = new hxevents.Dispatcher();
 };
+$hxClasses["rg.data.DataLoader"] = rg.data.DataLoader;
 rg.data.DataLoader.__name__ = ["rg","data","DataLoader"];
 rg.data.DataLoader.prototype = {
 	load: function() {
@@ -6360,6 +11371,7 @@ rg.data.DataLoader.prototype = {
 }
 rg.data.DependentVariableProcessor = function() {
 };
+$hxClasses["rg.data.DependentVariableProcessor"] = rg.data.DependentVariableProcessor;
 rg.data.DependentVariableProcessor.__name__ = ["rg","data","DependentVariableProcessor"];
 rg.data.DependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6382,6 +11394,7 @@ rg.data.DependentVariableProcessor.prototype = {
 }
 rg.data.IndependentVariableProcessor = function() {
 };
+$hxClasses["rg.data.IndependentVariableProcessor"] = rg.data.IndependentVariableProcessor;
 rg.data.IndependentVariableProcessor.__name__ = ["rg","data","IndependentVariableProcessor"];
 rg.data.IndependentVariableProcessor.prototype = {
 	process: function(data,variables) {
@@ -6405,6 +11418,7 @@ rg.data.Segmenter = function(on,transform,scale,values) {
 	this.scale = scale;
 	this.values = values;
 };
+$hxClasses["rg.data.Segmenter"] = rg.data.Segmenter;
 rg.data.Segmenter.__name__ = ["rg","data","Segmenter"];
 rg.data.Segmenter.prototype = {
 	segment: function(data) {
@@ -6452,6 +11466,7 @@ rg.data.Variable = function(type,scaleDistribution) {
 	this.scaleDistribution = scaleDistribution;
 	this.meta = { };
 };
+$hxClasses["rg.data.Variable"] = rg.data.Variable;
 rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype = {
 	getMaxF: function() {
@@ -6492,10 +11507,12 @@ rg.data.Variable.prototype = {
 	,scaleDistribution: null
 	,type: null
 	,__class__: rg.data.Variable
+	,__properties__: {set_minf:"setMinF",get_minf:"getMinF",set_maxf:"setMaxF",get_maxf:"getMaxF"}
 }
 rg.data.VariableDependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
+$hxClasses["rg.data.VariableDependent"] = rg.data.VariableDependent;
 rg.data.VariableDependent.__name__ = ["rg","data","VariableDependent"];
 rg.data.VariableDependent.__super__ = rg.data.Variable;
 rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
@@ -6504,6 +11521,7 @@ rg.data.VariableDependent.prototype = $extend(rg.data.Variable.prototype,{
 rg.data.VariableIndependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
 };
+$hxClasses["rg.data.VariableIndependent"] = rg.data.VariableIndependent;
 rg.data.VariableIndependent.__name__ = ["rg","data","VariableIndependent"];
 rg.data.VariableIndependent.__super__ = rg.data.Variable;
 rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
@@ -6512,6 +11530,7 @@ rg.data.VariableIndependent.prototype = $extend(rg.data.Variable.prototype,{
 rg.factory = {}
 rg.factory.FactoryAxis = function() {
 };
+$hxClasses["rg.factory.FactoryAxis"] = rg.factory.FactoryAxis;
 rg.factory.FactoryAxis.__name__ = ["rg","factory","FactoryAxis"];
 rg.factory.FactoryAxis.prototype = {
 	createDiscrete: function(type,variable,samples,groupBy) {
@@ -6527,6 +11546,7 @@ rg.factory.FactoryAxis.prototype = {
 }
 rg.factory.FactoryGeoProjection = function() {
 };
+$hxClasses["rg.factory.FactoryGeoProjection"] = rg.factory.FactoryGeoProjection;
 rg.factory.FactoryGeoProjection.__name__ = ["rg","factory","FactoryGeoProjection"];
 rg.factory.FactoryGeoProjection.prototype = {
 	create: function(info) {
@@ -6567,6 +11587,7 @@ rg.factory.FactoryGeoProjection.prototype = {
 }
 rg.factory.FactoryHtmlVisualization = function() {
 };
+$hxClasses["rg.factory.FactoryHtmlVisualization"] = rg.factory.FactoryHtmlVisualization;
 rg.factory.FactoryHtmlVisualization.__name__ = ["rg","factory","FactoryHtmlVisualization"];
 rg.factory.FactoryHtmlVisualization.prototype = {
 	create: function(type,container,options) {
@@ -6588,6 +11609,7 @@ rg.factory.FactoryHtmlVisualization.prototype = {
 }
 rg.factory.FactoryLayout = function() {
 };
+$hxClasses["rg.factory.FactoryLayout"] = rg.factory.FactoryLayout;
 rg.factory.FactoryLayout.__name__ = ["rg","factory","FactoryLayout"];
 rg.factory.FactoryLayout.size = function(container,info,heightmargin) {
 	var v, width = null == info.width?(v = container.node().clientWidth) > 10?v:400:info.width, height = (null == info.height?(v = container.node().clientHeight) > 10?v:300:info.height) - heightmargin;
@@ -6607,6 +11629,7 @@ rg.factory.FactoryLayout.prototype = {
 }
 rg.factory.FactorySvgVisualization = function() {
 };
+$hxClasses["rg.factory.FactorySvgVisualization"] = rg.factory.FactorySvgVisualization;
 rg.factory.FactorySvgVisualization.__name__ = ["rg","factory","FactorySvgVisualization"];
 rg.factory.FactorySvgVisualization.prototype = {
 	create: function(type,layout,options) {
@@ -6657,9 +11680,60 @@ rg.factory.FactoryVariable = function() {
 	this.independentFactory = new rg.factory.FactoryVariableIndependent();
 	this.dependentFactory = new rg.factory.FactoryVariableDependent();
 };
+$hxClasses["rg.factory.FactoryVariable"] = rg.factory.FactoryVariable;
 rg.factory.FactoryVariable.__name__ = ["rg","factory","FactoryVariable"];
 rg.factory.FactoryVariable.prototype = {
-	createVariables: function(arr) {
+	createDependents: function(info) {
+		var result = [], ordinal;
+		var _g = 0;
+		while(_g < info.length) {
+			var i = info[_g];
+			++_g;
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 2:
+					$r = false;
+					break;
+				case 0:
+					$r = false;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.dependentFactory.create(i,null));
+		}
+		return result;
+	}
+	,createIndependents: function(info) {
+		var result = [], ordinal, discrete, ctx;
+		var _g = 0;
+		while(_g < info.length) {
+			var i = info[_g];
+			++_g;
+			var moveon = (function($this) {
+				var $r;
+				switch( (i.variableType)[1] ) {
+				case 1:
+					$r = false;
+					break;
+				case 0:
+					$r = true;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this));
+			if(moveon) continue;
+			result.push(this.independentFactory.create(i));
+		}
+		return result;
+	}
+	,createVariables: function(arr) {
 		var _g = this;
 		return arr.map(function(info,_) {
 			switch( (info.variableType)[1] ) {
@@ -6678,6 +11752,7 @@ rg.factory.FactoryVariable.prototype = {
 }
 rg.factory.FactoryVariableDependent = function() {
 };
+$hxClasses["rg.factory.FactoryVariableDependent"] = rg.factory.FactoryVariableDependent;
 rg.factory.FactoryVariableDependent.__name__ = ["rg","factory","FactoryVariableDependent"];
 rg.factory.FactoryVariableDependent.prototype = {
 	create: function(info,isnumeric) {
@@ -6692,6 +11767,7 @@ rg.factory.FactoryVariableDependent.prototype = {
 }
 rg.factory.FactoryVariableIndependent = function() {
 };
+$hxClasses["rg.factory.FactoryVariableIndependent"] = rg.factory.FactoryVariableIndependent;
 rg.factory.FactoryVariableIndependent.__name__ = ["rg","factory","FactoryVariableIndependent"];
 rg.factory.FactoryVariableIndependent.convertBound = function(axis,value) {
 	if(null == value || Reflect.isFunction(value)) return value;
@@ -6724,9 +11800,13 @@ rg.frame = {}
 rg.frame.Frame = function() {
 	this.x = this.y = this.width = this.height = 0;
 };
+$hxClasses["rg.frame.Frame"] = rg.frame.Frame;
 rg.frame.Frame.__name__ = ["rg","frame","Frame"];
 rg.frame.Frame.prototype = {
-	setLayout: function(x,y,width,height) {
+	toString: function() {
+		return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
+	}
+	,setLayout: function(x,y,width,height) {
 		if(this.x == x && this.y == y && this.width == width && this.height == height) return;
 		this.x = x;
 		this.y = y;
@@ -6742,13 +11822,13 @@ rg.frame.Frame.prototype = {
 	,x: null
 	,__class__: rg.frame.Frame
 }
-rg.frame.FrameLayout = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.frame.FrameLayout = $hxClasses["rg.frame.FrameLayout"] = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
 rg.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.frame.Orientation = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.frame.Orientation = $hxClasses["rg.frame.Orientation"] = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.frame.Orientation.Vertical = ["Vertical",0];
 rg.frame.Orientation.Vertical.toString = $estr;
 rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
@@ -6761,9 +11841,13 @@ rg.frame.Stack = function(width,height,orientation) {
 	this.width = width;
 	this.height = height;
 };
+$hxClasses["rg.frame.Stack"] = rg.frame.Stack;
 rg.frame.Stack.__name__ = ["rg","frame","Stack"];
 rg.frame.Stack.prototype = {
-	setSize: function(width,height) {
+	toString: function() {
+		return "Stack [width: " + this.width + ", height: " + this.height + ", children: " + this.children.length + "]";
+	}
+	,setSize: function(width,height) {
 		if(this.width == width && this.height == height) return this;
 		this.width = width;
 		this.height = height;
@@ -6909,6 +11993,9 @@ rg.frame.Stack.prototype = {
 		}
 		if(available < 0) this.moreSpaceRequired(required);
 	}
+	,iterator: function() {
+		return HxOverrides.iter(this.children);
+	}
 	,removeChild: function(child) {
 		if(!HxOverrides.remove(this.children,child)) return false;
 		var f = child;
@@ -6956,11 +12043,13 @@ rg.frame.Stack.prototype = {
 	,width: null
 	,children: null
 	,__class__: rg.frame.Stack
+	,__properties__: {get_length:"getLength"}
 }
 rg.frame.StackItem = function(disposition) {
 	rg.frame.Frame.call(this);
 	this.setDisposition(disposition);
 };
+$hxClasses["rg.frame.StackItem"] = rg.frame.StackItem;
 rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
 rg.frame.StackItem.__super__ = rg.frame.Frame;
 rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
@@ -6976,6 +12065,7 @@ rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
 	,parent: null
 	,disposition: null
 	,__class__: rg.frame.StackItem
+	,__properties__: {set_disposition:"setDisposition"}
 });
 rg.html = {}
 rg.html.chart = {}
@@ -6991,6 +12081,7 @@ rg.html.chart.Leadeboard = function(container) {
 	this.useMax = false;
 	this.colorScale = false;
 };
+$hxClasses["rg.html.chart.Leadeboard"] = rg.html.chart.Leadeboard;
 rg.html.chart.Leadeboard.__name__ = ["rg","html","chart","Leadeboard"];
 rg.html.chart.Leadeboard.prototype = {
 	id: function(dp,_) {
@@ -7099,9 +12190,25 @@ thx.color.Rgb = function(r,g,b) {
 	this.green = Ints.clamp(g,0,255);
 	this.blue = Ints.clamp(b,0,255);
 };
+$hxClasses["thx.color.Rgb"] = thx.color.Rgb;
 thx.color.Rgb.__name__ = ["thx","color","Rgb"];
+thx.color.Rgb.fromFloats = function(r,g,b) {
+	return new thx.color.Rgb(Ints.interpolate(r,0,255,null),Ints.interpolate(g,0,255,null),Ints.interpolate(b,0,255,null));
+}
 thx.color.Rgb.fromInt = function(v) {
 	return new thx.color.Rgb(v >> 16 & 255,v >> 8 & 255,v & 255);
+}
+thx.color.Rgb.equals = function(a,b) {
+	return a.red == b.red && a.green == b.green && a.blue == b.blue;
+}
+thx.color.Rgb.darker = function(color,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,0,equation),Ints.interpolate(t,color.green,0,equation),Ints.interpolate(t,color.blue,0,equation));
+}
+thx.color.Rgb.lighter = function(color,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,color.red,255,equation),Ints.interpolate(t,color.green,255,equation),Ints.interpolate(t,color.blue,255,equation));
+}
+thx.color.Rgb.interpolate = function(a,b,t,equation) {
+	return new thx.color.Rgb(Ints.interpolate(t,a.red,b.red,equation),Ints.interpolate(t,a.green,b.green,equation),Ints.interpolate(t,a.blue,b.blue,equation));
 }
 thx.color.Rgb.interpolatef = function(a,b,equation) {
 	var r = Ints.interpolatef(a.red,b.red,equation), g = Ints.interpolatef(a.green,b.green,equation), b1 = Ints.interpolatef(a.blue,b.blue,equation);
@@ -7109,10 +12216,36 @@ thx.color.Rgb.interpolatef = function(a,b,equation) {
 		return new thx.color.Rgb(r(t),g(t),b1(t));
 	};
 }
+thx.color.Rgb.contrast = function(c) {
+	var nc = thx.color.Hsl.toHsl(c);
+	if(nc.lightness < .5) return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness + 0.5); else return new thx.color.Hsl(nc.hue,nc.saturation,nc.lightness - 0.5);
+}
 thx.color.Rgb.contrastBW = function(c) {
 	var g = thx.color.Grey.toGrey(c);
 	var nc = thx.color.Hsl.toHsl(c);
 	if(g.grey < .5) return new thx.color.Hsl(nc.hue,nc.saturation,1.0); else return new thx.color.Hsl(nc.hue,nc.saturation,0);
+}
+thx.color.Rgb.interpolateBrightness = function(t,equation) {
+	return (thx.color.Rgb.interpolateBrightnessf(equation))(t);
+}
+thx.color.Rgb.interpolateBrightnessf = function(equation) {
+	var i = Ints.interpolatef(0,255,equation);
+	return function(t) {
+		var g = i(t);
+		return new thx.color.Rgb(g,g,g);
+	};
+}
+thx.color.Rgb.interpolateHeat = function(t,middle,equation) {
+	return (thx.color.Rgb.interpolateHeatf(middle,equation))(t);
+}
+thx.color.Rgb.interpolateHeatf = function(middle,equation) {
+	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,0),null != middle?middle:new thx.color.Rgb(255,127,0),new thx.color.Rgb(255,255,255)],equation);
+}
+thx.color.Rgb.interpolateRainbow = function(t,equation) {
+	return (thx.color.Rgb.interpolateRainbowf(equation))(t);
+}
+thx.color.Rgb.interpolateRainbowf = function(equation) {
+	return thx.color.Rgb.interpolateStepsf([new thx.color.Rgb(0,0,255),new thx.color.Rgb(0,255,255),new thx.color.Rgb(0,255,0),new thx.color.Rgb(255,255,0),new thx.color.Rgb(255,0,0)],equation);
 }
 thx.color.Rgb.interpolateStepsf = function(steps,equation) {
 	if(steps.length <= 0) return (function($this) {
@@ -7135,12 +12268,21 @@ thx.color.Rgb.interpolateStepsf = function(steps,equation) {
 	};
 }
 thx.color.Rgb.prototype = {
-	toRgbString: function() {
+	toString: function() {
+		return this.toRgbString();
+	}
+	,toRgbString: function() {
 		return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+	}
+	,toCss: function() {
+		return this.hex("#");
 	}
 	,hex: function(prefix) {
 		if(prefix == null) prefix = "";
 		return prefix + StringTools.hex(this.red,2) + StringTools.hex(this.green,2) + StringTools.hex(this.blue,2);
+	}
+	,'int': function() {
+		return (this.red & 255) << 16 | (this.green & 255) << 8 | this.blue & 255;
 	}
 	,red: null
 	,green: null
@@ -7153,6 +12295,7 @@ thx.color.Hsl = function(h,s,l) {
 	this.lightness = l = Floats.normalize(l);
 	thx.color.Rgb.call(this,Ints.interpolate(thx.color.Hsl._c(h + 120,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h,s,l),0,255,null),Ints.interpolate(thx.color.Hsl._c(h - 120,s,l),0,255,null));
 };
+$hxClasses["thx.color.Hsl"] = thx.color.Hsl;
 thx.color.Hsl.__name__ = ["thx","color","Hsl"];
 thx.color.Hsl._c = function(d,s,l) {
 	var m2 = l <= 0.5?l * (1 + s):l + s - l * s;
@@ -7170,11 +12313,17 @@ thx.color.Hsl.toHsl = function(c) {
 	}
 	return new thx.color.Hsl(h,s,l);
 }
+thx.color.Hsl.equals = function(a,b) {
+	return a.hue == b.hue && a.saturation == b.saturation && a.lightness == b.lightness;
+}
 thx.color.Hsl.darker = function(color,t,equation) {
 	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,0,equation));
 }
 thx.color.Hsl.lighter = function(color,t,equation) {
 	return new thx.color.Hsl(color.hue,color.saturation,Floats.interpolate(t,color.lightness,1,equation));
+}
+thx.color.Hsl.interpolate = function(a,b,t,equation) {
+	return new thx.color.Hsl(Floats.interpolate(t,a.hue,b.hue,equation),Floats.interpolate(t,a.saturation,b.saturation,equation),Floats.interpolate(t,a.lightness,b.lightness,equation));
 }
 thx.color.Hsl.interpolatef = function(a,b,equation) {
 	return function(t) {
@@ -7183,13 +12332,17 @@ thx.color.Hsl.interpolatef = function(a,b,equation) {
 }
 thx.color.Hsl.__super__ = thx.color.Rgb;
 thx.color.Hsl.prototype = $extend(thx.color.Rgb.prototype,{
-	lightness: null
+	toHslString: function() {
+		return "hsl(" + this.hue + "," + this.saturation * 100 + "%," + this.lightness * 100 + "%)";
+	}
+	,lightness: null
 	,saturation: null
 	,hue: null
 	,__class__: thx.color.Hsl
 });
 thx.math = {}
 thx.math.Equations = function() { }
+$hxClasses["thx.math.Equations"] = thx.math.Equations;
 thx.math.Equations.__name__ = ["thx","math","Equations"];
 thx.math.Equations.linear = function(v) {
 	return v;
@@ -7197,8 +12350,29 @@ thx.math.Equations.linear = function(v) {
 thx.math.Equations.polynomial = function(t,e) {
 	return Math.pow(t,e);
 }
+thx.math.Equations.quadratic = function(t) {
+	return thx.math.Equations.polynomial(t,2);
+}
 thx.math.Equations.cubic = function(t) {
 	return thx.math.Equations.polynomial(t,3);
+}
+thx.math.Equations.sin = function(t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+thx.math.Equations.exponential = function(t) {
+	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+}
+thx.math.Equations.circle = function(t) {
+	return 1 - Math.sqrt(1 - t * t);
+}
+thx.math.Equations.elastic = function(t,a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
 }
 thx.math.Equations.elasticf = function(a,p) {
 	var s;
@@ -7211,6 +12385,24 @@ thx.math.Equations.elasticf = function(a,p) {
 		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
 	};
 }
+thx.math.Equations.back = function(t,s) {
+	if(null == s) s = 1.70158;
+	return t * t * ((s + 1) * t - s);
+}
+thx.math.Equations.backf = function(s) {
+	if(null == s) s = 1.70158;
+	return function(t) {
+		return t * t * ((s + 1) * t - s);
+	};
+}
+thx.math.Equations.bounce = function(t) {
+	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+}
+thx.math.Equations.polynomialf = function(e) {
+	return function(t) {
+		thx.math.Equations.polynomial(t,e);
+	};
+}
 rg.html.chart.PivotTable = function(container) {
 	this.ready = new hxevents.Notifier();
 	this.container = container;
@@ -7221,6 +12413,7 @@ rg.html.chart.PivotTable = function(container) {
 	this.colorEnd = rg.html.chart.PivotTable.defaultColorEnd;
 	this.incolumns = 1;
 };
+$hxClasses["rg.html.chart.PivotTable"] = rg.html.chart.PivotTable;
 rg.html.chart.PivotTable.__name__ = ["rg","html","chart","PivotTable"];
 rg.html.chart.PivotTable.prototype = {
 	range: function(variable) {
@@ -7629,6 +12822,7 @@ rg.html.widget.DownloaderMenu = function(handler,position,formats,container) {
 	this.title = rg.html.widget.DownloaderMenu.DEFAULT_TITLE;
 	this.build(position,container);
 };
+$hxClasses["rg.html.widget.DownloaderMenu"] = rg.html.widget.DownloaderMenu;
 rg.html.widget.DownloaderMenu.__name__ = ["rg","html","widget","DownloaderMenu"];
 rg.html.widget.DownloaderMenu.prototype = {
 	click: function(format,_) {
@@ -7687,7 +12881,7 @@ rg.html.widget.DownloaderMenu.prototype = {
 	,handler: null
 	,__class__: rg.html.widget.DownloaderMenu
 }
-rg.html.widget.DownloaderPosition = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.html.widget.DownloaderPosition = $hxClasses["rg.html.widget.DownloaderPosition"] = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
 rg.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
 rg.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
 rg.html.widget.DownloaderPosition.TopLeft.toString = $estr;
@@ -7708,6 +12902,7 @@ rg.html.widget.DownloaderPosition.After = ["After",6];
 rg.html.widget.DownloaderPosition.After.toString = $estr;
 rg.html.widget.DownloaderPosition.After.__enum__ = rg.html.widget.DownloaderPosition;
 rg.html.widget.DownloaderPositions = function() { }
+$hxClasses["rg.html.widget.DownloaderPositions"] = rg.html.widget.DownloaderPositions;
 rg.html.widget.DownloaderPositions.__name__ = ["rg","html","widget","DownloaderPositions"];
 rg.html.widget.DownloaderPositions.parse = function(v) {
 	switch(v.toLowerCase()) {
@@ -7736,6 +12931,7 @@ rg.html.widget.Logo = function(container,padright) {
 	var timer = new haxe.Timer(5000);
 	timer.run = $bind(this,this.live);
 };
+$hxClasses["rg.html.widget.Logo"] = rg.html.widget.Logo;
 rg.html.widget.Logo.__name__ = ["rg","html","widget","Logo"];
 rg.html.widget.Logo.pageIsBranded = function() {
 	var _g = 0, _g1 = rg.html.widget.Logo.getLogos();
@@ -7852,13 +13048,16 @@ rg.html.widget.Tooltip = function(el) {
 	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute");
 	this.setAnchorClass("");
 	this.container = this.tooltip.append("div").style("position").string("relative").attr("class").string("rg_container");
-	this.background = this.container.append("div").style("display").string("block").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
+	this.background = this.container.append("div").style("display").string("block").style("position").string("static").append("div").style("z-index").string("-1").attr("class").string("rg_background").style("position").string("absolute").style("left").string("0").style("right").string("0").style("top").string("0").style("bottom").string("0");
 	this.content = this.container.append("div").attr("class").string("rg_content");
 	this.content.onNode("DOMSubtreeModified",$bind(this,this.resize));
 	this.anchortype = "bottomright";
 	this.anchordistance = 0;
 };
+$hxClasses["rg.html.widget.Tooltip"] = rg.html.widget.Tooltip;
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
+rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
+rg.html.widget.Tooltip.instance = null;
 rg.html.widget.Tooltip.getInstance = function() {
 	if(null == rg.html.widget.Tooltip.instance) {
 		rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
@@ -7947,6 +13146,7 @@ rg.html.widget.Tooltip.prototype = {
 }
 rg.info = {}
 rg.info.Info = function() { }
+$hxClasses["rg.info.Info"] = rg.info.Info;
 rg.info.Info.__name__ = ["rg","info","Info"];
 rg.info.Info.feed = function(info,ob) {
 	if(null == ob) return info;
@@ -7987,6 +13187,7 @@ rg.info.InfoAnimation = function() {
 	this.delay = 150;
 	this.ease = thx.math.Equations.elasticf();
 };
+$hxClasses["rg.info.InfoAnimation"] = rg.info.InfoAnimation;
 rg.info.InfoAnimation.__name__ = ["rg","info","InfoAnimation"];
 rg.info.InfoAnimation.filters = function() {
 	return [rg.info.filter.FilterDescription.toBool("animated"),rg.info.filter.FilterDescription.toInt("duration"),rg.info.filter.FilterDescription.toInt("delay"),rg.info.filter.FilterDescription.toFunction("ease")];
@@ -8037,6 +13238,7 @@ rg.info.InfoCartesianChart = function() {
 	this.paddingTickMajor = 1;
 	this.paddingLabel = 10;
 };
+$hxClasses["rg.info.InfoCartesianChart"] = rg.info.InfoCartesianChart;
 rg.info.InfoCartesianChart.__name__ = ["rg","info","InfoCartesianChart"];
 rg.info.InfoCartesianChart.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelAxis),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmarks",["displayMinorTick","displayMajorTick","displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickminor",["displayMinorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmajor",["displayMajorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayticklabel",["displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinetick",["displayAnchorLineTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrules",["displayMinorRule","displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayruleminor",["displayMinorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrulemajor",["displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinerule",["displayAnchorLineRule"]),rg.info.filter.FilterDescription.toFloat("lengthtick",["lengthTickMajor","lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickminor",["lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickmajor",["lengthTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingtick",["paddingTickMajor","paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickminor",["paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickmajor",["paddingTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingticklabel",["paddingLabel"]),rg.info.filter.FilterDescription.toFunctionOrString("labelorientation",["labelOrientation"]),rg.info.filter.FilterDescription.toFunctionOrString("labelanchor",["labelAnchor"]),rg.info.filter.FilterDescription.toFunctionOrFloat("labelangle",["labelAngle"])];
@@ -8072,6 +13274,7 @@ rg.info.InfoBarChart = function() {
 	this.barPaddingDataPoint = 2;
 	this.horizontal = false;
 };
+$hxClasses["rg.info.InfoBarChart"] = rg.info.InfoBarChart;
 rg.info.InfoBarChart.__name__ = ["rg","info","InfoBarChart"];
 rg.info.InfoBarChart.filters = function() {
 	return [rg.info.filter.FilterDescription.toBool("stacked"),rg.info.filter.FilterDescription.toBool("horizontal"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}"))),rg.info.filter.FilterDescription.toFloat("barpadding",["barPadding"]),rg.info.filter.FilterDescription.toFloat("barpaddingaxis",["barPaddingAxis"]),rg.info.filter.FilterDescription.toFloat("barpaddingdatapoint",["barPaddingDataPoint"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
@@ -8091,6 +13294,7 @@ rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 });
 rg.info.InfoDataSource = function() {
 };
+$hxClasses["rg.info.InfoDataSource"] = rg.info.InfoDataSource;
 rg.info.InfoDataSource.__name__ = ["rg","info","InfoDataSource"];
 rg.info.InfoDataSource.filters = function() {
 	return [rg.info.filter.FilterDescription.toDataFunctionFromArray("data",["loader"]),rg.info.filter.FilterDescription.toDataFunctionFromArray("datapoints",["loader"]),rg.info.filter.FilterDescription.toLoaderFunction("load",["loader"])];
@@ -8101,6 +13305,7 @@ rg.info.InfoDataSource.prototype = {
 }
 rg.info.InfoDomType = function() {
 };
+$hxClasses["rg.info.InfoDomType"] = rg.info.InfoDomType;
 rg.info.InfoDomType.__name__ = ["rg","info","InfoDomType"];
 rg.info.InfoDomType.filters = function() {
 	return [rg.info.filter.FilterDescription.custom("visualization",["kind"],function(value) {
@@ -8112,7 +13317,7 @@ rg.info.InfoDomType.prototype = {
 	kind: null
 	,__class__: rg.info.InfoDomType
 }
-rg.info.DomKind = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
+rg.info.DomKind = $hxClasses["rg.info.DomKind"] = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
 rg.info.DomKind.Html = ["Html",0];
 rg.info.DomKind.Html.toString = $estr;
 rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
@@ -8124,6 +13329,7 @@ rg.info.InfoDownload = function() {
 	this.legacyservice = rg.RGConst.LEGACY_RENDERING_STATIC;
 	this.formats = ["pdf","png","jpg","svg"];
 };
+$hxClasses["rg.info.InfoDownload"] = rg.info.InfoDownload;
 rg.info.InfoDownload.__name__ = ["rg","info","InfoDownload"];
 rg.info.InfoDownload.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("handler"),rg.info.filter.FilterDescription.toStr("service"),rg.info.filter.FilterDescription.toStr("legacyservice"),rg.info.filter.FilterDescription.toArray("formats"),rg.info.filter.FilterDescription.custom("position",null,function(value) {
@@ -8146,6 +13352,7 @@ rg.info.InfoFunnelChart = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.25);
 	this.arrowSize = 30;
 };
+$hxClasses["rg.info.InfoFunnelChart"] = rg.info.InfoFunnelChart;
 rg.info.InfoFunnelChart.__name__ = ["rg","info","InfoFunnelChart"];
 rg.info.InfoFunnelChart.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelFunnel),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFloat("segmentpadding",["padding"]),rg.info.filter.FilterDescription.toFloat("flatness"),rg.info.filter.FilterDescription.custom("effect",null,function(value) {
@@ -8166,6 +13373,7 @@ rg.info.InfoFunnelChart.prototype = {
 rg.info.InfoGeneral = function() {
 	this.forcelegacy = false;
 };
+$hxClasses["rg.info.InfoGeneral"] = rg.info.InfoGeneral;
 rg.info.InfoGeneral.__name__ = ["rg","info","InfoGeneral"];
 rg.info.InfoGeneral.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("ready"),rg.info.filter.FilterDescription.toBool("forcelegacy")];
@@ -8179,6 +13387,7 @@ rg.info.InfoGeo = function() {
 	this.label = new rg.info.InfoLabel();
 	this.map = [rg.info.Info.feed(new rg.info.InfoMap(),{ template : "world"})];
 };
+$hxClasses["rg.info.InfoGeo"] = rg.info.InfoGeo;
 rg.info.InfoGeo.__name__ = ["rg","info","InfoGeo"];
 rg.info.InfoGeo.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfoArray("map",null,rg.info.InfoMap)];
@@ -8192,6 +13401,7 @@ rg.info.InfoHeatGrid = function() {
 	rg.info.InfoCartesianChart.call(this);
 	this.colorScaleMode = rg.svg.chart.ColorScaleMode.FromCssInterpolation();
 };
+$hxClasses["rg.info.InfoHeatGrid"] = rg.info.InfoHeatGrid;
 rg.info.InfoHeatGrid.__name__ = ["rg","info","InfoHeatGrid"];
 rg.info.InfoHeatGrid.filters = function() {
 	return [rg.info.filter.FilterDescription.toBool("contour"),rg.info.filter.FilterDescription.simplified("color",["colorScaleMode"],rg.svg.chart.ColorScaleModes.createFromDynamic,function(v) {
@@ -8206,6 +13416,7 @@ rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 });
 rg.info.InfoLabel = function() {
 };
+$hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunctionOrString("title"),rg.info.filter.FilterDescription.toFunction("datapoint"),rg.info.filter.FilterDescription.toFunction("datapointover")];
@@ -8219,6 +13430,7 @@ rg.info.InfoLabel.prototype = {
 rg.info.InfoLabelAxis = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelAxis"] = rg.info.InfoLabelAxis;
 rg.info.InfoLabelAxis.__name__ = ["rg","info","InfoLabelAxis"];
 rg.info.InfoLabelAxis.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("axis"),rg.info.filter.FilterDescription.toFunction("tickmark")].concat(rg.info.InfoLabel.filters());
@@ -8232,6 +13444,7 @@ rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelFunnel = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelFunnel"] = rg.info.InfoLabelFunnel;
 rg.info.InfoLabelFunnel.__name__ = ["rg","info","InfoLabelFunnel"];
 rg.info.InfoLabelFunnel.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("arrow")].concat(rg.info.InfoLabel.filters());
@@ -8244,6 +13457,7 @@ rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelLeaderboard = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelLeaderboard"] = rg.info.InfoLabelLeaderboard;
 rg.info.InfoLabelLeaderboard.__name__ = ["rg","info","InfoLabelLeaderboard"];
 rg.info.InfoLabelLeaderboard.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunctionOrNull("rank"),rg.info.filter.FilterDescription.toFunctionOrNull("value")].concat(rg.info.InfoLabel.filters());
@@ -8257,6 +13471,7 @@ rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
 rg.info.InfoLabelPivotTable = function() {
 	rg.info.InfoLabelAxis.call(this);
 };
+$hxClasses["rg.info.InfoLabelPivotTable"] = rg.info.InfoLabelPivotTable;
 rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
 rg.info.InfoLabelPivotTable.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("total"),rg.info.filter.FilterDescription.toFunction("totalover"),rg.info.filter.FilterDescription.toFunction("axisvalue")].concat(rg.info.InfoLabelAxis.filters());
@@ -8271,6 +13486,7 @@ rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,
 rg.info.InfoLabelSankey = function() {
 	rg.info.InfoLabel.call(this);
 };
+$hxClasses["rg.info.InfoLabelSankey"] = rg.info.InfoLabelSankey;
 rg.info.InfoLabelSankey.__name__ = ["rg","info","InfoLabelSankey"];
 rg.info.InfoLabelSankey.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunction("edge"),rg.info.filter.FilterDescription.toFunction("edgeover"),rg.info.filter.FilterDescription.toFunction("node")].concat(rg.info.InfoLabel.filters());
@@ -8288,6 +13504,7 @@ rg.info.InfoLayout = function() {
 	this.scalePattern = rg.layout.ScalePattern.ScalesAlternating;
 	this.padding = new rg.info.InfoPadding();
 };
+$hxClasses["rg.info.InfoLayout"] = rg.info.InfoLayout;
 rg.info.InfoLayout.__name__ = ["rg","info","InfoLayout"];
 rg.info.InfoLayout.filters = function() {
 	return [rg.info.filter.FilterDescription.custom("layout",null,function(value) {
@@ -8332,6 +13549,7 @@ rg.info.InfoLeaderboard = function() {
 	this.displaybar = true;
 	this.colorscale = false;
 };
+$hxClasses["rg.info.InfoLeaderboard"] = rg.info.InfoLeaderboard;
 rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
 rg.info.InfoLeaderboard.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation,function(info) {
@@ -8356,6 +13574,7 @@ rg.info.InfoLineChart = function() {
 	this.displayarea = false;
 	this.sensibleradius = 100;
 };
+$hxClasses["rg.info.InfoLineChart"] = rg.info.InfoLineChart;
 rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
 rg.info.InfoLineChart.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
@@ -8385,6 +13604,7 @@ rg.info.InfoMap = function() {
 		return 10;
 	};
 };
+$hxClasses["rg.info.InfoMap"] = rg.info.InfoMap;
 rg.info.InfoMap.__name__ = ["rg","info","InfoMap"];
 rg.info.InfoMap.filters = function() {
 	return [rg.info.filter.FilterDescription.toStr("url"),rg.info.filter.FilterDescription.toStr("type"),rg.info.filter.FilterDescription.toFloat("scale"),rg.info.filter.FilterDescription.toStr("projection"),rg.info.filter.FilterDescription.toStr("classname"),rg.info.filter.FilterDescription.toArray("translate"),rg.info.filter.FilterDescription.toArray("origin"),rg.info.filter.FilterDescription.toArray("parallels"),rg.info.filter.FilterDescription.toTry("mode",null,function(v) {
@@ -8415,6 +13635,7 @@ rg.info.InfoMap.prototype = {
 }
 rg.info.filter = {}
 rg.info.filter.ITransformer = function() { }
+$hxClasses["rg.info.filter.ITransformer"] = rg.info.filter.ITransformer;
 rg.info.filter.ITransformer.__name__ = ["rg","info","filter","ITransformer"];
 rg.info.filter.ITransformer.prototype = {
 	transform: null
@@ -8422,6 +13643,7 @@ rg.info.filter.ITransformer.prototype = {
 }
 rg.info.MapTransformer = function() {
 };
+$hxClasses["rg.info.MapTransformer"] = rg.info.MapTransformer;
 rg.info.MapTransformer.__name__ = ["rg","info","MapTransformer"];
 rg.info.MapTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.MapTransformer.prototype = {
@@ -8432,6 +13654,7 @@ rg.info.MapTransformer.prototype = {
 }
 rg.info.TemplateTransformer = function() {
 };
+$hxClasses["rg.info.TemplateTransformer"] = rg.info.TemplateTransformer;
 rg.info.TemplateTransformer.__name__ = ["rg","info","TemplateTransformer"];
 rg.info.TemplateTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.TemplateTransformer.prototype = {
@@ -8462,6 +13685,7 @@ rg.info.TemplateTransformer.prototype = {
 }
 rg.info.InfoPadding = function() {
 };
+$hxClasses["rg.info.InfoPadding"] = rg.info.InfoPadding;
 rg.info.InfoPadding.__name__ = ["rg","info","InfoPadding"];
 rg.info.InfoPadding.filters = function() {
 	return [rg.info.filter.FilterDescription.toInt("top"),rg.info.filter.FilterDescription.toInt("bottom"),rg.info.filter.FilterDescription.toInt("left"),rg.info.filter.FilterDescription.toInt("right")];
@@ -8485,6 +13709,7 @@ rg.info.InfoPieChart = function() {
 	this.effect = rg.svg.chart.GradientEffect.Gradient(1.2);
 	this.dontfliplabel = true;
 };
+$hxClasses["rg.info.InfoPieChart"] = rg.info.InfoPieChart;
 rg.info.InfoPieChart.__name__ = ["rg","info","InfoPieChart"];
 rg.info.InfoPieChart.validateOrientation = function(s) {
 	var name = s.split(":")[0].toLowerCase();
@@ -8534,6 +13759,7 @@ rg.info.InfoPivotTable = function() {
 	this.displayRowTotal = true;
 	this.columnAxes = 1;
 };
+$hxClasses["rg.info.InfoPivotTable"] = rg.info.InfoPivotTable;
 rg.info.InfoPivotTable.__name__ = ["rg","info","InfoPivotTable"];
 rg.info.InfoPivotTable.filters = function() {
 	return [rg.info.filter.FilterDescription.toInt("columnaxes",["columnAxes"]),rg.info.filter.FilterDescription.toBool("displayheatmap",["displayHeatmap"]),rg.info.filter.FilterDescription.toBool("displaycolumntotal",["displayColumnTotal"]),rg.info.filter.FilterDescription.toBool("displayrowtotal",["displayRowTotal"]),rg.info.filter.FilterDescription.toTry("startcolor",["heatmapColorStart"],function(value) {
@@ -8565,6 +13791,7 @@ rg.info.InfoSankey = function() {
 	this.stackbackedges = true;
 	this.thinbackedges = false;
 };
+$hxClasses["rg.info.InfoSankey"] = rg.info.InfoSankey;
 rg.info.InfoSankey.__name__ = ["rg","info","InfoSankey"];
 rg.info.InfoSankey.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelSankey),rg.info.filter.FilterDescription.toFloat("layerwidth",["layerWidth"]),rg.info.filter.FilterDescription.toFloat("nodespacing",["nodeSpacing"]),rg.info.filter.FilterDescription.toFloat("dummyspacing",["dummySpacing"]),rg.info.filter.FilterDescription.toFloat("extrawidth",["extraWidth"]),rg.info.filter.FilterDescription.toFloat("backedgespacing",["backEdgeSpacing"]),rg.info.filter.FilterDescription.toFloat("extraheight",["extraHeight"]),rg.info.filter.FilterDescription.toFloat("extraradius",["extraRadius"]),rg.info.filter.FilterDescription.toFloat("imagewidth",["imageWidth"]),rg.info.filter.FilterDescription.toFloat("imageheight",["imageHeight"]),rg.info.filter.FilterDescription.toFloat("imagespacing",["imageSpacing"]),rg.info.filter.FilterDescription.toFloat("labelnodespacing",["labelNodeSpacing"]),rg.info.filter.FilterDescription.toFunction("imagepath",["imagePath"]),rg.info.filter.FilterDescription.toFunction("click",["click"]),rg.info.filter.FilterDescription.toFunction("clickedge",["clickEdge"]),rg.info.filter.FilterDescription.toObject("layoutmap"),rg.info.filter.FilterDescription.toStr("layoutmethod"),rg.info.filter.FilterDescription.toFunctionOrString("nodeclass"),rg.info.filter.FilterDescription.toFunctionOrString("edgeclass"),rg.info.filter.FilterDescription.toFunctionOrBool("displayentry"),rg.info.filter.FilterDescription.toFunctionOrBool("displayexit"),rg.info.filter.FilterDescription.toBool("stackbackedges"),rg.info.filter.FilterDescription.toBool("thinbackedges")];
@@ -8605,6 +13832,7 @@ rg.info.InfoScatterGraph = function() {
 		return rg.svg.util.SymbolCache.cache.get("circle",16);
 	};
 };
+$hxClasses["rg.info.InfoScatterGraph"] = rg.info.InfoScatterGraph;
 rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
 rg.info.InfoScatterGraph.filters = function() {
 	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
@@ -8621,6 +13849,7 @@ rg.info.InfoScatterGraph.prototype = $extend(rg.info.InfoCartesianChart.prototyp
 rg.info.InfoSegment = function() {
 	this.values = [];
 };
+$hxClasses["rg.info.InfoSegment"] = rg.info.InfoSegment;
 rg.info.InfoSegment.__name__ = ["rg","info","InfoSegment"];
 rg.info.InfoSegment.filters = function() {
 	return [rg.info.filter.FilterDescription.toStr("on"),rg.info.filter.FilterDescription.toFunction("transform"),rg.info.filter.FilterDescription.toFunction("scale"),rg.info.filter.FilterDescription.toArray("values")];
@@ -8638,6 +13867,7 @@ rg.info.InfoStreamGraph = function() {
 	this.interpolation = thx.svg.LineInterpolator.Cardinal();
 	this.effect = rg.svg.chart.StreamEffect.GradientVertical(1.25);
 };
+$hxClasses["rg.info.InfoStreamGraph"] = rg.info.InfoStreamGraph;
 rg.info.InfoStreamGraph.__name__ = ["rg","info","InfoStreamGraph"];
 rg.info.InfoStreamGraph.filters = function() {
 	return [rg.info.filter.FilterDescription.toTry("interpolation",null,function(value) {
@@ -8658,6 +13888,7 @@ rg.info.InfoStreamGraph.prototype = $extend(rg.info.InfoCartesianChart.prototype
 rg.info.InfoVariable = function() {
 	this.variableType = rg.info.VariableType.Unknown;
 };
+$hxClasses["rg.info.InfoVariable"] = rg.info.InfoVariable;
 rg.info.InfoVariable.__name__ = ["rg","info","InfoVariable"];
 rg.info.InfoVariable.filters = function() {
 	return [rg.info.filter.FilterDescription.toStr("type"),rg.info.filter.FilterDescription.custom("view",["min"],function(value) {
@@ -8687,7 +13918,7 @@ rg.info.InfoVariable.prototype = $extend(rg.info.Info.prototype,{
 	,type: null
 	,__class__: rg.info.InfoVariable
 });
-rg.info.VariableType = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
+rg.info.VariableType = $hxClasses["rg.info.VariableType"] = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
 rg.info.VariableType.Unknown = ["Unknown",0];
 rg.info.VariableType.Unknown.toString = $estr;
 rg.info.VariableType.Unknown.__enum__ = rg.info.VariableType;
@@ -8699,6 +13930,7 @@ rg.info.VariableType.Dependent.toString = $estr;
 rg.info.VariableType.Dependent.__enum__ = rg.info.VariableType;
 rg.info.InfoVisualizationOption = function() {
 };
+$hxClasses["rg.info.InfoVisualizationOption"] = rg.info.InfoVisualizationOption;
 rg.info.InfoVisualizationOption.__name__ = ["rg","info","InfoVisualizationOption"];
 rg.info.InfoVisualizationOption.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfoArray("axes",["variables"],rg.info.InfoVariable),rg.info.filter.FilterDescription.toObject("options")];
@@ -8711,6 +13943,7 @@ rg.info.InfoVisualizationOption.prototype = {
 rg.info.InfoVisualizationType = function() {
 	this.replace = true;
 };
+$hxClasses["rg.info.InfoVisualizationType"] = rg.info.InfoVisualizationType;
 rg.info.InfoVisualizationType.__name__ = ["rg","info","InfoVisualizationType"];
 rg.info.InfoVisualizationType.filters = function() {
 	return [rg.info.filter.FilterDescription.custom("visualization",["type"],function(value) {
@@ -8726,6 +13959,7 @@ rg.info.InfoVisualizationType.prototype = {
 rg.info.filter.EmptyTransformer = function(mapto) {
 	this.mapto = mapto;
 };
+$hxClasses["rg.info.filter.EmptyTransformer"] = rg.info.filter.EmptyTransformer;
 rg.info.filter.EmptyTransformer.__name__ = ["rg","info","filter","EmptyTransformer"];
 rg.info.filter.EmptyTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.EmptyTransformer.prototype = {
@@ -8739,6 +13973,7 @@ rg.info.filter.FilterDescription = function(name,transformer) {
 	this.name = name;
 	this.transformer = null == transformer?new rg.info.filter.EmptyTransformer(name):transformer;
 };
+$hxClasses["rg.info.filter.FilterDescription"] = rg.info.filter.FilterDescription;
 rg.info.filter.FilterDescription.__name__ = ["rg","info","filter","FilterDescription"];
 rg.info.filter.FilterDescription.toBool = function(name,maps) {
 	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerBool.instance);
@@ -8877,6 +14112,7 @@ rg.info.filter.FilterDescription.prototype = {
 rg.info.filter.CustomTransformer = function(transformer) {
 	this.transformer = transformer;
 };
+$hxClasses["rg.info.filter.CustomTransformer"] = rg.info.filter.CustomTransformer;
 rg.info.filter.CustomTransformer.__name__ = ["rg","info","filter","CustomTransformer"];
 rg.info.filter.CustomTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.CustomTransformer.simplified = function(filter,validate) {
@@ -8893,6 +14129,7 @@ rg.info.filter.CustomTransformer.prototype = {
 	,__class__: rg.info.filter.CustomTransformer
 }
 rg.info.filter.TransformerChainer = function() { }
+$hxClasses["rg.info.filter.TransformerChainer"] = rg.info.filter.TransformerChainer;
 rg.info.filter.TransformerChainer.__name__ = ["rg","info","filter","TransformerChainer"];
 rg.info.filter.TransformerChainer.onResult = function(src,success,failure) {
 	return function(value) {
@@ -8909,6 +14146,7 @@ rg.info.filter.TransformerChainer.onResult = function(src,success,failure) {
 }
 rg.info.filter.TransformerArray = function() {
 };
+$hxClasses["rg.info.filter.TransformerArray"] = rg.info.filter.TransformerArray;
 rg.info.filter.TransformerArray.__name__ = ["rg","info","filter","TransformerArray"];
 rg.info.filter.TransformerArray.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerArray.prototype = {
@@ -8919,6 +14157,7 @@ rg.info.filter.TransformerArray.prototype = {
 }
 rg.info.filter.TransformerObject = function() {
 };
+$hxClasses["rg.info.filter.TransformerObject"] = rg.info.filter.TransformerObject;
 rg.info.filter.TransformerObject.__name__ = ["rg","info","filter","TransformerObject"];
 rg.info.filter.TransformerObject.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerObject.prototype = {
@@ -8929,6 +14168,7 @@ rg.info.filter.TransformerObject.prototype = {
 }
 rg.info.filter.TransformerString = function() {
 };
+$hxClasses["rg.info.filter.TransformerString"] = rg.info.filter.TransformerString;
 rg.info.filter.TransformerString.__name__ = ["rg","info","filter","TransformerString"];
 rg.info.filter.TransformerString.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerString.prototype = {
@@ -8951,6 +14191,7 @@ rg.info.filter.TransformerString.prototype = {
 }
 rg.info.filter.TransformerBool = function() {
 };
+$hxClasses["rg.info.filter.TransformerBool"] = rg.info.filter.TransformerBool;
 rg.info.filter.TransformerBool.__name__ = ["rg","info","filter","TransformerBool"];
 rg.info.filter.TransformerBool.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerBool.prototype = {
@@ -8976,6 +14217,7 @@ rg.info.filter.TransformerBool.prototype = {
 }
 rg.info.filter.TransformerInt = function() {
 };
+$hxClasses["rg.info.filter.TransformerInt"] = rg.info.filter.TransformerInt;
 rg.info.filter.TransformerInt.__name__ = ["rg","info","filter","TransformerInt"];
 rg.info.filter.TransformerInt.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerInt.prototype = {
@@ -8995,6 +14237,7 @@ rg.info.filter.TransformerInt.prototype = {
 }
 rg.info.filter.TransformerFloat = function() {
 };
+$hxClasses["rg.info.filter.TransformerFloat"] = rg.info.filter.TransformerFloat;
 rg.info.filter.TransformerFloat.__name__ = ["rg","info","filter","TransformerFloat"];
 rg.info.filter.TransformerFloat.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerFloat.prototype = {
@@ -9013,6 +14256,7 @@ rg.info.filter.TransformerFloat.prototype = {
 }
 rg.info.filter.TransformerFunction = function() {
 };
+$hxClasses["rg.info.filter.TransformerFunction"] = rg.info.filter.TransformerFunction;
 rg.info.filter.TransformerFunction.__name__ = ["rg","info","filter","TransformerFunction"];
 rg.info.filter.TransformerFunction.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerFunction.prototype = {
@@ -9022,6 +14266,7 @@ rg.info.filter.TransformerFunction.prototype = {
 	,__class__: rg.info.filter.TransformerFunction
 }
 rg.info.filter.ReturnMessageIfNot = function() { }
+$hxClasses["rg.info.filter.ReturnMessageIfNot"] = rg.info.filter.ReturnMessageIfNot;
 rg.info.filter.ReturnMessageIfNot.__name__ = ["rg","info","filter","ReturnMessageIfNot"];
 rg.info.filter.ReturnMessageIfNot.isString = function(v) {
 	return js.Boot.__instanceof(v,String)?null:"not a string";
@@ -9030,6 +14275,7 @@ rg.info.filter.ReturnMessageIfNot.isObject = function(v) {
 	return Reflect.isObject(v) && null == Type.getClass(v)?null:"not an object";
 }
 rg.info.filter.ReturnMessageChainer = function() { }
+$hxClasses["rg.info.filter.ReturnMessageChainer"] = rg.info.filter.ReturnMessageChainer;
 rg.info.filter.ReturnMessageChainer.__name__ = ["rg","info","filter","ReturnMessageChainer"];
 rg.info.filter.ReturnMessageChainer.make = function(f,msg) {
 	return function(v) {
@@ -9042,10 +14288,16 @@ rg.info.filter.ReturnMessageChainer.or = function(f1,f2) {
 		if(null == o) return f2(v); else return o;
 	};
 }
+rg.info.filter.ReturnMessageChainer.and = function(f1,f2) {
+	return function(v) {
+		return null == f1(v) && null == f2(v);
+	};
+}
 rg.info.filter.PairTransformer = function(names,valueTransformer) {
 	this.names = names;
 	this.valueTransformer = valueTransformer;
 };
+$hxClasses["rg.info.filter.PairTransformer"] = rg.info.filter.PairTransformer;
 rg.info.filter.PairTransformer.__name__ = ["rg","info","filter","PairTransformer"];
 rg.info.filter.PairTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.PairTransformer.prototype = {
@@ -9071,6 +14323,7 @@ rg.info.filter.Pairs = function(names,values) {
 	this.names = names;
 	this.values = values;
 };
+$hxClasses["rg.info.filter.Pairs"] = rg.info.filter.Pairs;
 rg.info.filter.Pairs.__name__ = ["rg","info","filter","Pairs"];
 rg.info.filter.Pairs.prototype = {
 	iterator: function() {
@@ -9086,7 +14339,7 @@ rg.info.filter.Pairs.prototype = {
 	,names: null
 	,__class__: rg.info.filter.Pairs
 }
-rg.info.filter.TransformResult = { __ename__ : ["rg","info","filter","TransformResult"], __constructs__ : ["Success","Failure"] }
+rg.info.filter.TransformResult = $hxClasses["rg.info.filter.TransformResult"] = { __ename__ : ["rg","info","filter","TransformResult"], __constructs__ : ["Success","Failure"] }
 rg.info.filter.TransformResult.Success = function(value) { var $x = ["Success",0,value]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
 rg.info.filter.TransformResult.Failure = function(reason) { var $x = ["Failure",1,reason]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
 rg.interactive = {}
@@ -9095,7 +14348,13 @@ rg.interactive.RGDownloader = function(container,serviceurl) {
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
+$hxClasses["rg.interactive.RGDownloader"] = rg.interactive.RGDownloader;
 rg.interactive.RGDownloader.__name__ = ["rg","interactive","RGDownloader"];
+rg.interactive.RGDownloader.getClassName = function(container) {
+	var name = container.attr("class").get();
+	name = StringTools.trim(new EReg("\\s+","g").replace(new EReg("(^rg$|^rg\\s+|\\s+rg\\s+|\\s+rg$)","g").replace(name," ")," "));
+	return "" == name?null:name;
+}
 rg.interactive.RGDownloader.appendArgument = function(url,name,value) {
 	var sep = url.indexOf("?") >= 0?"&":"?";
 	return url + sep + name + "=" + StringTools.urlEncode(value);
@@ -9171,6 +14430,7 @@ rg.interactive.RGLegacyRenderer = function(container,serviceurl) {
 	this.serviceUrl = serviceurl;
 	this.tokenId = rg.util.RG.getTokenId();
 };
+$hxClasses["rg.interactive.RGLegacyRenderer"] = rg.interactive.RGLegacyRenderer;
 rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
 rg.interactive.RGLegacyRenderer.getIframeDoc = function(iframe) {
 	var iframeDoc = null;
@@ -9277,7 +14537,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	,__class__: rg.interactive.RGLegacyRenderer
 }
 rg.layout = {}
-rg.layout.Anchor = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
+rg.layout.Anchor = $hxClasses["rg.layout.Anchor"] = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.layout.Anchor.Top = ["Top",0];
 rg.layout.Anchor.Top.toString = $estr;
 rg.layout.Anchor.Top.__enum__ = rg.layout.Anchor;
@@ -9295,6 +14555,7 @@ rg.layout.Layout = function(width,height,container) {
 	container.classed().add("rg");
 	this.space = new rg.svg.panel.Space(this.width = width,this.height = height,container.append("div"));
 };
+$hxClasses["rg.layout.Layout"] = rg.layout.Layout;
 rg.layout.Layout.__name__ = ["rg","layout","Layout"];
 rg.layout.Layout.prototype = {
 	adjustPadding: function() {
@@ -9369,6 +14630,7 @@ rg.layout.LayoutCartesian = function(width,height,container) {
 	this.alternating = true;
 	this.yitems = [];
 };
+$hxClasses["rg.layout.LayoutCartesian"] = rg.layout.LayoutCartesian;
 rg.layout.LayoutCartesian.__name__ = ["rg","layout","LayoutCartesian"];
 rg.layout.LayoutCartesian.__super__ = rg.layout.Layout;
 rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
@@ -9613,6 +14875,7 @@ rg.layout.LayoutSimple = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
+$hxClasses["rg.layout.LayoutSimple"] = rg.layout.LayoutSimple;
 rg.layout.LayoutSimple.__name__ = ["rg","layout","LayoutSimple"];
 rg.layout.LayoutSimple.__super__ = rg.layout.Layout;
 rg.layout.LayoutSimple.prototype = $extend(rg.layout.Layout.prototype,{
@@ -9653,6 +14916,7 @@ rg.layout.LayoutX = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
 };
+$hxClasses["rg.layout.LayoutX"] = rg.layout.LayoutX;
 rg.layout.LayoutX.__name__ = ["rg","layout","LayoutX"];
 rg.layout.LayoutX.__super__ = rg.layout.Layout;
 rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
@@ -9755,13 +15019,14 @@ rg.layout.PanelContext = function(panel,anchor) {
 	this.panel = panel;
 	this.anchor = anchor;
 };
+$hxClasses["rg.layout.PanelContext"] = rg.layout.PanelContext;
 rg.layout.PanelContext.__name__ = ["rg","layout","PanelContext"];
 rg.layout.PanelContext.prototype = {
 	anchor: null
 	,panel: null
 	,__class__: rg.layout.PanelContext
 }
-rg.layout.ScalePattern = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
+rg.layout.ScalePattern = $hxClasses["rg.layout.ScalePattern"] = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
 rg.layout.ScalePattern.ScalesBefore.toString = $estr;
 rg.layout.ScalePattern.ScalesBefore.__enum__ = rg.layout.ScalePattern;
@@ -9777,6 +15042,7 @@ rg.query.BaseQuery = function(async,first) {
 	this._first = first;
 	this._store = new Hash();
 };
+$hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
@@ -10095,6 +15361,7 @@ rg.query.BaseQuery.prototype = {
 rg.query.Query = function() {
 	rg.query.BaseQuery.call(this,null,this);
 };
+$hxClasses["rg.query.Query"] = rg.query.Query;
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.create = function() {
 	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
@@ -10129,6 +15396,7 @@ rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
 	,__class__: rg.query.Query
 });
 rg.query.Transformers = function() { }
+$hxClasses["rg.query.Transformers"] = rg.query.Transformers;
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.crossStack = function(data) {
 	if(data.length <= 1) return data;
@@ -10395,6 +15663,7 @@ rg.svg.panel.Layer = function(panel) {
 	this.g.attr("class").string("layer");
 	this._resize();
 };
+$hxClasses["rg.svg.panel.Layer"] = rg.svg.panel.Layer;
 rg.svg.panel.Layer.__name__ = ["rg","svg","panel","Layer"];
 rg.svg.panel.Layer.prototype = {
 	setCustomClass: function(v) {
@@ -10414,6 +15683,12 @@ rg.svg.panel.Layer.prototype = {
 		this.height = this.frame.height;
 		this.resize();
 	}
+	,toggleClass: function(name) {
+		this.g.classed().toggle(name);
+	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
 	,addClass: function(name) {
 		var _g = this;
 		name.split(" ").forEach(function(d,i) {
@@ -10427,6 +15702,7 @@ rg.svg.panel.Layer.prototype = {
 	,frame: null
 	,panel: null
 	,__class__: rg.svg.panel.Layer
+	,__properties__: {set_customClass:"setCustomClass"}
 }
 rg.svg.chart = {}
 rg.svg.chart.Chart = function(panel) {
@@ -10436,6 +15712,7 @@ rg.svg.chart.Chart = function(panel) {
 	this.animationEase = thx.math.Equations.linear;
 	this.ready = new hxevents.Notifier();
 };
+$hxClasses["rg.svg.chart.Chart"] = rg.svg.chart.Chart;
 rg.svg.chart.Chart.__name__ = ["rg","svg","chart","Chart"];
 rg.svg.chart.Chart.__super__ = rg.svg.panel.Layer;
 rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -10470,6 +15747,7 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 rg.svg.chart.CartesianChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 };
+$hxClasses["rg.svg.chart.CartesianChart"] = rg.svg.chart.CartesianChart;
 rg.svg.chart.CartesianChart.__name__ = ["rg","svg","chart","CartesianChart"];
 rg.svg.chart.CartesianChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -10496,6 +15774,7 @@ rg.svg.chart.BarChart = function(panel) {
 	this.paddingDataPoint = 2;
 	this.horizontal = false;
 };
+$hxClasses["rg.svg.chart.BarChart"] = rg.svg.chart.BarChart;
 rg.svg.chart.BarChart.__name__ = ["rg","svg","chart","BarChart"];
 rg.svg.chart.BarChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -10652,12 +15931,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,padding: null
 	,displayGradient: null
 	,gradientLightness: null
+	,dps: null
 	,defs: null
 	,chart: null
 	,stacked: null
 	,__class__: rg.svg.chart.BarChart
 });
-rg.svg.chart.ColorScaleMode = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
+rg.svg.chart.ColorScaleMode = $hxClasses["rg.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
 rg.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
@@ -10665,6 +15945,7 @@ rg.svg.chart.ColorScaleMode.Sequence = function(colors) { var $x = ["Sequence",3
 rg.svg.chart.ColorScaleMode.Fixed = function(color) { var $x = ["Fixed",4,color]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Fun = function(f) { var $x = ["Fun",5,f]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleModes = function() { }
+$hxClasses["rg.svg.chart.ColorScaleModes"] = rg.svg.chart.ColorScaleModes;
 rg.svg.chart.ColorScaleModes.__name__ = ["rg","svg","chart","ColorScaleModes"];
 rg.svg.chart.ColorScaleModes.canParse = function(v) {
 	try {
@@ -10702,6 +15983,7 @@ rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 	}
 }
 rg.svg.chart.Coords = function() { }
+$hxClasses["rg.svg.chart.Coords"] = rg.svg.chart.Coords;
 rg.svg.chart.Coords.__name__ = ["rg","svg","chart","Coords"];
 rg.svg.chart.Coords.fromTransform = function(s) {
 	if(!rg.svg.chart.Coords.retransform.match(s)) return [0.0,0]; else {
@@ -10720,6 +16002,7 @@ rg.svg.chart.FunnelChart = function(panel) {
 	this.labelDataPoint = $bind(this,this.defaultLabelDataPoint);
 	this.labelDataPointOver = $bind(this,this.defaultLabelDataPointOver);
 };
+$hxClasses["rg.svg.chart.FunnelChart"] = rg.svg.chart.FunnelChart;
 rg.svg.chart.FunnelChart.__name__ = ["rg","svg","chart","FunnelChart"];
 rg.svg.chart.FunnelChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -10900,6 +16183,7 @@ rg.svg.chart.Geo = function(panel) {
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 	this.resize();
 };
+$hxClasses["rg.svg.chart.Geo"] = rg.svg.chart.Geo;
 rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11025,6 +16309,9 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		}
 		if(this.queue.length == 0) this.ready.dispatch();
 	}
+	,dpvalue: function(dp) {
+		return Reflect.field(dp,this.variableDependent.type);
+	}
 	,resize: function() {
 		rg.svg.chart.Chart.prototype.resize.call(this);
 		if(null != this.mapcontainer) this.mapcontainer.attr("transform").string("translate(" + this.width / 2 + "," + this.height / 2 + ")");
@@ -11042,13 +16329,15 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,colorMode: null
 	,mapcontainer: null
 	,__class__: rg.svg.chart.Geo
+	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.svg.chart.GradientEffect = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.svg.chart.GradientEffect = $hxClasses["rg.svg.chart.GradientEffect"] = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
 rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.GradientEffect.NoEffect.toString = $estr;
 rg.svg.chart.GradientEffect.NoEffect.__enum__ = rg.svg.chart.GradientEffect;
 rg.svg.chart.GradientEffect.Gradient = function(lightness) { var $x = ["Gradient",1,lightness]; $x.__enum__ = rg.svg.chart.GradientEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.GradientEffects = function() { }
+$hxClasses["rg.svg.chart.GradientEffects"] = rg.svg.chart.GradientEffects;
 rg.svg.chart.GradientEffects.__name__ = ["rg","svg","chart","GradientEffects"];
 rg.svg.chart.GradientEffects.canParse = function(s) {
 	var parts = s.toLowerCase().split(":");
@@ -11080,6 +16369,7 @@ rg.svg.chart.HeatGrid = function(panel) {
 	this.useContour = false;
 	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
 };
+$hxClasses["rg.svg.chart.HeatGrid"] = rg.svg.chart.HeatGrid;
 rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11177,6 +16467,19 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		rg.util.RGColors.storeColorForSelection(rect);
 	}
 	,currentNode: null
+	,createGridMap: function(grid) {
+		var map = new Hash();
+		var _g1 = 0, _g = this.rows;
+		while(_g1 < _g) {
+			var r = _g1++;
+			var _g3 = 0, _g2 = this.cols;
+			while(_g3 < _g2) {
+				var c = _g3++;
+				if(grid(c,r)) map.set(r + "-" + c,[r,c]);
+			}
+		}
+		return map;
+	}
 	,drawContour: function() {
 	}
 	,redraw: function() {
@@ -11204,6 +16507,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,cols: null
 	,yrange: null
 	,xrange: null
+	,scale: function(v) {
+		return this.variableDependent.axis.scale(this.variableDependent.min(),this.variableDependent.max(),v);
+	}
+	,value: function(dp) {
+		var v = Reflect.field(dp,this.variableDependent.type);
+		return this.scale(v);
+	}
 	,data: function(dps) {
 		this.dps = dps;
 		this.redraw();
@@ -11226,6 +16536,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,colorMode: null
 	,useContour: null
 	,__class__: rg.svg.chart.HeatGrid
+	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
 rg.svg.chart.LineChart = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
@@ -11233,6 +16544,7 @@ rg.svg.chart.LineChart = function(panel) {
 	this.chart = this.g.append("svg:g");
 	this.sensibleRadius = 100;
 };
+$hxClasses["rg.svg.chart.LineChart"] = rg.svg.chart.LineChart;
 rg.svg.chart.LineChart.__name__ = ["rg","svg","chart","LineChart"];
 rg.svg.chart.LineChart.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -11463,6 +16775,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	}
 	,stats: null
 	,segment: null
+	,dps: null
 	,chart: null
 	,linePathShape: null
 	,sensibleRadius: null
@@ -11473,13 +16786,14 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,symbol: null
 	,__class__: rg.svg.chart.LineChart
 });
-rg.svg.chart.LineEffect = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.svg.chart.LineEffect = $hxClasses["rg.svg.chart.LineEffect"] = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
 rg.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.LineEffect.NoEffect.toString = $estr;
 rg.svg.chart.LineEffect.NoEffect.__enum__ = rg.svg.chart.LineEffect;
 rg.svg.chart.LineEffect.Gradient = function(lightness,levels) { var $x = ["Gradient",1,lightness,levels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.LineEffect.DropShadow = function(ox,oy,evels) { var $x = ["DropShadow",2,ox,oy,evels]; $x.__enum__ = rg.svg.chart.LineEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.LineEffects = function() { }
+$hxClasses["rg.svg.chart.LineEffects"] = rg.svg.chart.LineEffects;
 rg.svg.chart.LineEffects.__name__ = ["rg","svg","chart","LineEffects"];
 rg.svg.chart.LineEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
@@ -11522,6 +16836,7 @@ rg.svg.chart.PieChart = function(panel) {
 	this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
 	this.labelDontFlip = true;
 };
+$hxClasses["rg.svg.chart.PieChart"] = rg.svg.chart.PieChart;
 rg.svg.chart.PieChart.__name__ = ["rg","svg","chart","PieChart"];
 rg.svg.chart.PieChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -11714,6 +17029,7 @@ rg.svg.chart.Sankey = function(panel) {
 	this.stackbackedges = true;
 	this.thinbackedges = true;
 };
+$hxClasses["rg.svg.chart.Sankey"] = rg.svg.chart.Sankey;
 rg.svg.chart.Sankey.__name__ = ["rg","svg","chart","Sankey"];
 rg.svg.chart.Sankey.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
@@ -12363,6 +17679,7 @@ rg.svg.chart.ScatterGraph = function(panel) {
 	this.addClass("scatter-graph");
 	this.chart = this.g.append("svg:g");
 };
+$hxClasses["rg.svg.chart.ScatterGraph"] = rg.svg.chart.ScatterGraph;
 rg.svg.chart.ScatterGraph.__name__ = ["rg","svg","chart","ScatterGraph"];
 rg.svg.chart.ScatterGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -12473,13 +17790,14 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 	,symbol: null
 	,__class__: rg.svg.chart.ScatterGraph
 });
-rg.svg.chart.StreamEffect = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
+rg.svg.chart.StreamEffect = $hxClasses["rg.svg.chart.StreamEffect"] = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
 rg.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
 rg.svg.chart.StreamEffect.GradientHorizontal = function(lightness) { var $x = ["GradientHorizontal",1,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffect.GradientVertical = function(lightness) { var $x = ["GradientVertical",2,lightness]; $x.__enum__ = rg.svg.chart.StreamEffect; $x.toString = $estr; return $x; }
 rg.svg.chart.StreamEffects = function() { }
+$hxClasses["rg.svg.chart.StreamEffects"] = rg.svg.chart.StreamEffects;
 rg.svg.chart.StreamEffects.__name__ = ["rg","svg","chart","StreamEffects"];
 rg.svg.chart.StreamEffects.getLightness = function(p,alt) {
 	if(null == p) return alt; else return Std.parseFloat(p);
@@ -12501,6 +17819,7 @@ rg.svg.chart.StreamGraph = function(panel) {
 	this.gradientLightness = 0.75;
 	this.gradientStyle = 1;
 };
+$hxClasses["rg.svg.chart.StreamGraph"] = rg.svg.chart.StreamGraph;
 rg.svg.chart.StreamGraph.__name__ = ["rg","svg","chart","StreamGraph"];
 rg.svg.chart.StreamGraph.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
@@ -12648,6 +17967,7 @@ rg.svg.layer.RulesOrtho = function(panel,orientation) {
 	this.displayAnchorLine = true;
 	this.g.classed().add("tickmarks");
 };
+$hxClasses["rg.svg.layer.RulesOrtho"] = rg.svg.layer.RulesOrtho;
 rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
 rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -12683,6 +18003,9 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,translateHorizontal: function(d,i) {
 		return "translate(" + 0 + "," + (this.height - d.getDelta() * this.height) + ")";
+	}
+	,t: function(x,y) {
+		return "translate(" + x + "," + y + ")";
 	}
 	,init: function() {
 		this.initf();
@@ -12765,6 +18088,8 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,max: null
 	,min: null
 	,axis: null
+	,y: null
+	,x: null
 	,y2: null
 	,x2: null
 	,y1: null
@@ -12790,6 +18115,7 @@ rg.svg.layer.TickmarksOrtho = function(panel,anchor) {
 	this.paddingLabel = 10;
 	this.g.classed().add("tickmarks");
 };
+$hxClasses["rg.svg.layer.TickmarksOrtho"] = rg.svg.layer.TickmarksOrtho;
 rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
 rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -12855,6 +18181,9 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,translateTop: function(d,i) {
 		return "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
+	}
+	,t: function(x,y) {
+		return "translate(" + x + "," + y + ")";
 	}
 	,init: function() {
 		this.initf();
@@ -13074,6 +18403,8 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,max: null
 	,min: null
 	,axis: null
+	,y: null
+	,x: null
 	,y2: null
 	,x2: null
 	,y1: null
@@ -13111,6 +18442,7 @@ rg.svg.layer.Title = function(panel,text,anchor,padding,className,shadow,outline
 	this.setText(text);
 	this.resize();
 };
+$hxClasses["rg.svg.layer.Title"] = rg.svg.layer.Title;
 rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
 rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
@@ -13195,12 +18527,14 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,anchor: null
 	,text: null
 	,__class__: rg.svg.layer.Title
+	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_text:"setText",get_text:"getText",set_anchor:"setAnchor",set_padding:"setPadding"})
 });
 rg.svg.panel.Panel = function(frame) {
 	this.frame = frame;
 	frame.change = $bind(this,this.reframe);
 	this._layers = [];
 };
+$hxClasses["rg.svg.panel.Panel"] = rg.svg.panel.Panel;
 rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
 rg.svg.panel.Panel.prototype = {
 	reframe: function() {
@@ -13229,6 +18563,9 @@ rg.svg.panel.Panel.prototype = {
 		HxOverrides.remove(this._layers,layer);
 		this._layers.push(layer);
 	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this)).split(".").pop();
+	}
 	,_layers: null
 	,parent: null
 	,g: null
@@ -13240,6 +18577,7 @@ rg.svg.panel.Container = function(frame,orientation) {
 	this.stack = new rg.frame.Stack(frame.width,frame.height,orientation);
 	this.panels = [];
 };
+$hxClasses["rg.svg.panel.Container"] = rg.svg.panel.Container;
 rg.svg.panel.Container.__name__ = ["rg","svg","panel","Container"];
 rg.svg.panel.Container.__super__ = rg.svg.panel.Panel;
 rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
@@ -13308,7 +18646,17 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 	,__class__: rg.svg.panel.Container
 });
 rg.svg.panel.Panels = function() { }
+$hxClasses["rg.svg.panel.Panels"] = rg.svg.panel.Panels;
 rg.svg.panel.Panels.__name__ = ["rg","svg","panel","Panels"];
+rg.svg.panel.Panels.rootSize = function(panel) {
+	var p = panel.parent;
+	while(p != null) {
+		var t = p;
+		p = panel.parent;
+		panel = t;
+	}
+	return { width : panel.frame.width, height : panel.frame.height};
+}
 rg.svg.panel.Panels.absolutePos = function(panel) {
 	var p = panel, x = 0, y = 0;
 	while(null != p) {
@@ -13331,12 +18679,33 @@ rg.svg.panel.Panels.htmlContainer = function(panel) {
 	var svg = rg.svg.panel.Panels.svgContainer(panel);
 	if(null == svg) return null; else return svg.parentNode;
 }
+rg.svg.panel.Panels.boundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		p = p.parent;
+	}
+	return { x : x, y : y, width : panel.frame.width, height : panel.frame.height};
+}
+rg.svg.panel.Panels.ancestorBoundingBox = function(panel,ancestor) {
+	var p = panel, x = 0, y = 0, w = 0, h = 0;
+	while(ancestor != p) {
+		x += p.frame.x;
+		y += p.frame.y;
+		w = p.frame.width;
+		h = p.frame.height;
+		p = p.parent;
+	}
+	return { x : -x, y : -y, width : w, height : h};
+}
 rg.svg.panel.Space = function(width,height,domcontainer) {
 	this.panel = new rg.frame.StackItem(rg.frame.FrameLayout.Fill(0,0));
 	rg.svg.panel.Container.call(this,this.panel,rg.frame.Orientation.Vertical);
 	this.init(this.svg = domcontainer.append("svg:svg").attr("xmlns").string("http://www.w3.org/2000/svg"));
 	this.resize(width,height);
 };
+$hxClasses["rg.svg.panel.Space"] = rg.svg.panel.Space;
 rg.svg.panel.Space.__name__ = ["rg","svg","panel","Space"];
 rg.svg.panel.Space.__super__ = rg.svg.panel.Container;
 rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
@@ -13352,7 +18721,16 @@ rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
 });
 rg.svg.util = {}
 rg.svg.util.RGCss = function() { }
+$hxClasses["rg.svg.util.RGCss"] = rg.svg.util.RGCss;
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
+rg.svg.util.RGCss.cache = null;
+rg.svg.util.RGCss.cssSources = function() {
+	var sources = [];
+	dhx.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
+		sources.push(n.href);
+	});
+	return sources;
+}
 rg.svg.util.RGCss.colorsInCss = function() {
 	if(null != rg.svg.util.RGCss.cache) return rg.svg.util.RGCss.cache;
 	var container = dhx.Dom.select("body").append("svg:svg").attr("class").string("rg"), first = rg.svg.util.RGCss.createBlock(container,0).style("fill").get();
@@ -13376,9 +18754,14 @@ rg.svg.util.SymbolCache = function() {
 	this.c = new Hash();
 	this.r = 0;
 };
+$hxClasses["rg.svg.util.SymbolCache"] = rg.svg.util.SymbolCache;
 rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
+rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
-	get: function(type,size) {
+	stats: function() {
+		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
+	}
+	,get: function(type,size) {
 		if(size == null) size = 100;
 		var k = type + ":" + size, s = this.c.get(k);
 		if(null == s) {
@@ -13424,6 +18807,7 @@ rg.svg.widget.Balloon = function(container,bindOnTop) {
 	this.setLineHeight(temp.getSize().height);
 	temp.destroy();
 };
+$hxClasses["rg.svg.widget.Balloon"] = rg.svg.widget.Balloon;
 rg.svg.widget.Balloon.__name__ = ["rg","svg","widget","Balloon"];
 rg.svg.widget.Balloon.prototype = {
 	redraw: function() {
@@ -13450,6 +18834,24 @@ rg.svg.widget.Balloon.prototype = {
 		if(Math.isNaN(sw)) sw = 0;
 		this.labelsContainer.attr("transform").string("translate(" + this.boxWidth / 2 + "," + (sw + this.paddingVertical) + ")");
 		bg.transition().ease(this.ease).delay(null,this.duration);
+	}
+	,hide: function(animate) {
+		if(animate == null) animate = false;
+		var _g = this;
+		if(!this.visible) return;
+		this.visible = false;
+		if(animate) this.balloon.transition().attr("opacity")["float"](0).endNode(function(_,_1) {
+			_g.balloon.style("display").string("none");
+		}); else {
+			this.balloon.attr("opacity")["float"](0);
+			this.balloon.style("display").string("none");
+		}
+	}
+	,show: function(animate) {
+		if(this.visible) return;
+		this.visible = true;
+		this.balloon.style("display").string("block");
+		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
 	}
 	,_moveTo: function(x,y) {
 		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
@@ -13714,6 +19116,11 @@ rg.svg.widget.Balloon.prototype = {
 		this.redraw();
 		return v;
 	}
+	,setPadding: function(h,v) {
+		this.paddingHorizontal = h;
+		this.paddingVertical = v;
+		this.redraw();
+	}
 	,setLineHeight: function(v) {
 		this.lineHeight = v;
 		this.redraw();
@@ -13751,6 +19158,12 @@ rg.svg.widget.Balloon.prototype = {
 		label.place(0,i * this.lineHeight,90);
 		return label;
 	}
+	,removeClass: function(name) {
+		this.frame.select("path.bg").classed().remove(name);
+	}
+	,addClass: function(name) {
+		this.frame.select("path.bg").classed().add(name);
+	}
 	,boundingBox: null
 	,connectorShapeH: null
 	,connectorShapeV: null
@@ -13775,8 +19188,10 @@ rg.svg.widget.Balloon.prototype = {
 	,x: null
 	,text: null
 	,__class__: rg.svg.widget.Balloon
+	,__properties__: {set_text:"setText",set_lineHeight:"setLineHeight",set_roundedCorner:"setRoundedCorner",set_preferredSide:"setPreferredSide",set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox"}
 }
 rg.svg.widget.BalloonShape = function() { }
+$hxClasses["rg.svg.widget.BalloonShape"] = rg.svg.widget.BalloonShape;
 rg.svg.widget.BalloonShape.__name__ = ["rg","svg","widget","BalloonShape"];
 rg.svg.widget.BalloonShape.shape = function(width,height,rc,rp,side,offset) {
 	var w = width - rc * 2, h = height - rc * 2;
@@ -13820,6 +19235,7 @@ rg.svg.widget.DiagonalArea = function(container,classarea,classborder) {
 	this.before = this.g.append("svg:path").attr("class").string("diagonal-stroke before" + (null == classborder?"":" " + classborder));
 	this.after = this.g.append("svg:path").attr("class").string("diagonal-stroke after" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.DiagonalArea"] = rg.svg.widget.DiagonalArea;
 rg.svg.widget.DiagonalArea.__name__ = ["rg","svg","widget","DiagonalArea"];
 rg.svg.widget.DiagonalArea.prototype = {
 	update: function(x1,y1,x2,y2,sw,ew) {
@@ -13845,6 +19261,7 @@ rg.svg.widget.ElbowArea = function(container,classarea,classborder) {
 	this.outer = this.g.append("svg:path").attr("class").string("elbow-stroke outer" + (null == classborder?"":" " + classborder));
 	this.inner = this.g.append("svg:path").attr("class").string("elbow-stroke inner" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.ElbowArea"] = rg.svg.widget.ElbowArea;
 rg.svg.widget.ElbowArea.__name__ = ["rg","svg","widget","ElbowArea"];
 rg.svg.widget.ElbowArea.prototype = {
 	update: function(orientation,weight,x,y,minradius,maxradius,before,after) {
@@ -13889,7 +19306,7 @@ rg.svg.widget.ElbowArea.prototype = {
 	,g: null
 	,__class__: rg.svg.widget.ElbowArea
 }
-rg.svg.widget.Orientation = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.svg.widget.Orientation = $hxClasses["rg.svg.widget.Orientation"] = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
 rg.svg.widget.Orientation.RightBottom = ["RightBottom",0];
 rg.svg.widget.Orientation.RightBottom.toString = $estr;
 rg.svg.widget.Orientation.RightBottom.__enum__ = rg.svg.widget.Orientation;
@@ -13914,7 +19331,7 @@ rg.svg.widget.Orientation.TopRight.__enum__ = rg.svg.widget.Orientation;
 rg.svg.widget.Orientation.TopLeft = ["TopLeft",7];
 rg.svg.widget.Orientation.TopLeft.toString = $estr;
 rg.svg.widget.Orientation.TopLeft.__enum__ = rg.svg.widget.Orientation;
-rg.svg.widget.GridAnchor = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.svg.widget.GridAnchor = $hxClasses["rg.svg.widget.GridAnchor"] = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
 rg.svg.widget.GridAnchor.TopLeft.__enum__ = rg.svg.widget.GridAnchor;
@@ -13943,6 +19360,7 @@ rg.svg.widget.GridAnchor.BottomRight = ["BottomRight",8];
 rg.svg.widget.GridAnchor.BottomRight.toString = $estr;
 rg.svg.widget.GridAnchor.BottomRight.__enum__ = rg.svg.widget.GridAnchor;
 rg.svg.widget.GridAnchors = function() { }
+$hxClasses["rg.svg.widget.GridAnchors"] = rg.svg.widget.GridAnchors;
 rg.svg.widget.GridAnchors.__name__ = ["rg","svg","widget","GridAnchors"];
 rg.svg.widget.GridAnchors.parse = function(s) {
 	return (function($this) {
@@ -13985,6 +19403,7 @@ rg.svg.widget.HookConnector = function(container,classborder) {
 	this.g = container.append("svg:g").attr("class").string("hook");
 	this.line = this.g.append("svg:path").attr("class").string("hook-stroke line" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.HookConnector"] = rg.svg.widget.HookConnector;
 rg.svg.widget.HookConnector.__name__ = ["rg","svg","widget","HookConnector"];
 rg.svg.widget.HookConnector.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -13993,7 +19412,30 @@ rg.svg.widget.HookConnector.quarterTo = function(x,y,r) {
 	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
 }
 rg.svg.widget.HookConnector.prototype = {
-	createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
+	createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
+	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
 		var path = "M" + x1 + "," + y1;
 		path += rg.svg.widget.HookConnector.lineTo(x1 + before - r1,y1);
 		path += rg.svg.widget.HookConnector.quarterTo(x1 + before,y1 + r2,r1);
@@ -14023,6 +19465,7 @@ rg.svg.widget.HookConnectorArea = function(container,classarea,classborder) {
 	this.upper = this.g.append("svg:path").attr("class").string("hook-area-stroke upper" + (null == classborder?"":" " + classborder));
 	this.lower = this.g.append("svg:path").attr("class").string("hook-area-stroke lower" + (null == classborder?"":" " + classborder));
 };
+$hxClasses["rg.svg.widget.HookConnectorArea"] = rg.svg.widget.HookConnectorArea;
 rg.svg.widget.HookConnectorArea.__name__ = ["rg","svg","widget","HookConnectorArea"];
 rg.svg.widget.HookConnectorArea.lineTo = function(x,y) {
 	return "L" + x + "," + y;
@@ -14031,7 +19474,30 @@ rg.svg.widget.HookConnectorArea.quarterTo = function(x,y,r) {
 	return "A" + Math.abs(r) + "," + Math.abs(r) + " 0 0," + (r < 0?0:1) + " " + x + "," + y;
 }
 rg.svg.widget.HookConnectorArea.prototype = {
-	createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
+	createPath2: function(x1,y1,sr,x2,y2,yreference) {
+		var path = "M" + x1 + "," + y1;
+		if(yreference > y1) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x1 + sr) + "," + (y1 + sr);
+			path += "L" + (sr + x1) + "," + (yreference - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x1 + "," + yreference;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x1 + sr) + "," + (y1 - sr);
+			path += "L" + (sr + x1) + "," + (yreference + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x1 + "," + yreference;
+		}
+		path += "L" + x2 + "," + yreference;
+		if(yreference > y2) {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + (x2 - sr) + "," + (yreference - sr);
+			path += "L" + (x2 - sr) + "," + (y2 + sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,1 " + x2 + "," + y2;
+		} else {
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + (x2 - sr) + "," + (yreference + sr);
+			path += "L" + (x2 - sr) + "," + (y2 - sr);
+			path += "A" + Math.abs(sr) + "," + Math.abs(sr) + " 0 0,0 " + x2 + "," + y2;
+		}
+		return path;
+	}
+	,createPath: function(x1,y1,x2,y2,yref,before,after,r1,r2) {
 		var path = "M" + x1 + "," + y1;
 		path += rg.svg.widget.HookConnectorArea.lineTo(x1 + before - r1,y1);
 		path += rg.svg.widget.HookConnectorArea.quarterTo(x1 + before,y1 + r2,r1);
@@ -14082,6 +19548,7 @@ rg.svg.widget.Label = function(container,dontflip,shadow,outline) {
 	this.setAnchor(rg.svg.widget.GridAnchor.Center);
 	this.visible = true;
 };
+$hxClasses["rg.svg.widget.Label"] = rg.svg.widget.Label;
 rg.svg.widget.Label.__name__ = ["rg","svg","widget","Label"];
 rg.svg.widget.Label.prototype = {
 	destroy: function() {
@@ -14277,6 +19744,9 @@ rg.svg.widget.Label.prototype = {
 			return { width : 0.0, height : 0.0};
 		}
 	}
+	,removeClass: function(name) {
+		this.g.classed().remove(name);
+	}
 	,addClass: function(name) {
 		this.g.classed().add(name);
 	}
@@ -14313,8 +19783,9 @@ rg.svg.widget.Label.prototype = {
 	,orientation: null
 	,text: null
 	,__class__: rg.svg.widget.Label
+	,__properties__: {set_text:"setText",set_orientation:"setOrientation",set_anchor:"setAnchor"}
 }
-rg.svg.widget.LabelOrientation = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
+rg.svg.widget.LabelOrientation = $hxClasses["rg.svg.widget.LabelOrientation"] = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
 rg.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
 rg.svg.widget.LabelOrientation.Aligned.toString = $estr;
@@ -14323,6 +19794,7 @@ rg.svg.widget.LabelOrientation.Orthogonal = ["Orthogonal",2];
 rg.svg.widget.LabelOrientation.Orthogonal.toString = $estr;
 rg.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.svg.widget.LabelOrientation;
 rg.svg.widget.LabelOrientations = function() { }
+$hxClasses["rg.svg.widget.LabelOrientations"] = rg.svg.widget.LabelOrientations;
 rg.svg.widget.LabelOrientations.__name__ = ["rg","svg","widget","LabelOrientations"];
 rg.svg.widget.LabelOrientations.parse = function(s) {
 	return (function($this) {
@@ -14348,6 +19820,7 @@ rg.svg.widget.Map = function(container,projection) {
 		_g.ready = true;
 	});
 };
+$hxClasses["rg.svg.widget.Map"] = rg.svg.widget.Map;
 rg.svg.widget.Map.__name__ = ["rg","svg","widget","Map"];
 rg.svg.widget.Map.loadJsonp = function(url,handler) {
 	rg.util.Jsonp.get(url,handler,null,null,null);
@@ -14445,8 +19918,10 @@ rg.svg.widget.Map.prototype = {
 	,map: null
 	,className: null
 	,__class__: rg.svg.widget.Map
+	,__properties__: {set_className:"setClassName"}
 }
 rg.svg.widget.Sensible = function() { }
+$hxClasses["rg.svg.widget.Sensible"] = rg.svg.widget.Sensible;
 rg.svg.widget.Sensible.__name__ = ["rg","svg","widget","Sensible"];
 rg.svg.widget.Sensible.sensibleZone = function(container,panel,click,datapointover,radius) {
 	if(null == click && null == datapointover) return;
@@ -14491,27 +19966,36 @@ rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
 }
 rg.util = {}
 rg.util.Auth = function(authCode) {
-	this.test = rg.util.Decrypt.decrypt(authCode);
+	try {
+		this.tests = rg.util.Decrypt.decrypt(authCode).split(",");
+	} catch( e ) {
+	}
 };
+$hxClasses["rg.util.Auth"] = rg.util.Auth;
 rg.util.Auth.__name__ = ["rg","util","Auth"];
 rg.util.Auth.prototype = {
 	authorizeMany: function(hosts) {
-		var auth = false;
 		var _g = 0;
 		while(_g < hosts.length) {
 			var host = hosts[_g];
 			++_g;
-			if(this.authorize(host)) {
-				auth = true;
-				break;
-			}
+			if(this.authorize(host)) return true;
 		}
-		return auth;
+		return false;
+	}
+	,authorizeOne: function(host,test) {
+		if(host.substring(0,2) == "*.") return StringTools.endsWith("." + test,host.substring(1)); else return test == host;
 	}
 	,authorize: function(host) {
-		return this.test == host;
+		var _g = 0, _g1 = this.tests;
+		while(_g < _g1.length) {
+			var test = _g1[_g];
+			++_g;
+			if(this.authorizeOne(host,test)) return true;
+		}
+		return false;
 	}
-	,test: null
+	,tests: null
 	,__class__: rg.util.Auth
 }
 rg.util.ChainedExecutor = function(handler) {
@@ -14520,6 +20004,7 @@ rg.util.ChainedExecutor = function(handler) {
 	this.pos = 0;
 	this.executor = $bind(this,this.execute);
 };
+$hxClasses["rg.util.ChainedExecutor"] = rg.util.ChainedExecutor;
 rg.util.ChainedExecutor.__name__ = ["rg","util","ChainedExecutor"];
 rg.util.ChainedExecutor.prototype = {
 	executor: null
@@ -14538,6 +20023,7 @@ rg.util.ChainedExecutor.prototype = {
 	,__class__: rg.util.ChainedExecutor
 }
 rg.util.DataPoints = function() { }
+$hxClasses["rg.util.DataPoints"] = rg.util.DataPoints;
 rg.util.DataPoints.__name__ = ["rg","util","DataPoints"];
 rg.util.DataPoints.partition = function(dps,property,def) {
 	if(def == null) def = "default";
@@ -14590,6 +20076,9 @@ rg.util.DataPoints.filterByDependents = function(dps,variables) {
 	}
 	return dps;
 }
+rg.util.DataPoints.value = function(dp,property) {
+	return Reflect.field(dp,property);
+}
 rg.util.DataPoints.valueAlt = function(dp,property,alt) {
 	var v;
 	return null == (v = Reflect.field(dp,property))?alt:v;
@@ -14612,6 +20101,7 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 	return haxe.Md5.encode(Dynamics.string(cdp));
 }
 rg.util.Decrypt = function() { }
+$hxClasses["rg.util.Decrypt"] = rg.util.Decrypt;
 rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
 rg.util.Decrypt.decrypt = function(s) {
 	var r = new chx.crypt.RSAEncrypt(rg.util.Decrypt.modulus,rg.util.Decrypt.publicExponent), d = chx.formats.Base64.decode(s);
@@ -14622,6 +20112,7 @@ rg.util.Decrypt.decrypt = function(s) {
 	}
 }
 rg.util.Js = function() { }
+$hxClasses["rg.util.Js"] = rg.util.Js;
 rg.util.Js.__name__ = ["rg","util","Js"];
 rg.util.Js.findScript = function(fragment) {
 	var scripts = js.Lib.document.getElementsByTagName("SCRIPT");
@@ -14642,11 +20133,24 @@ rg.util.Js.findScript = function(fragment) {
 	}
 	return null;
 }
+rg.util.Js.findPosition = function(el) {
+	var x = 0, y = 0, obj = el;
+	do {
+		x += obj.offsetLeft;
+		y += obj.offsetTop;
+	} while(null != (obj = obj.offsetParent));
+	return { x : x, y : y};
+}
 rg.util.Jsonp = function() { }
+$hxClasses["rg.util.Jsonp"] = rg.util.Jsonp;
 rg.util.Jsonp.__name__ = ["rg","util","Jsonp"];
 rg.util.Jsonp.get = function(path,success,failure,query,headers) {
 	var api = rg.util.Jsonp.get_api;
 	api(path,{ success : success, failure : failure},query,headers);
+}
+rg.util.Jsonp.post = function(path,content,success,failure,query,headers) {
+	var api = rg.util.Jsonp.post_api;
+	api(path,content,{ success : success, failure : failure},query,headers);
 }
 rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) {
 	if(null == query) query = { };
@@ -14677,8 +20181,16 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 rg.util.Jsonp.get_api = function(path,actions,query,headers) {
 	rg.util.Jsonp.request_api("GET",path,null,actions,query,headers);
 }
+rg.util.Jsonp.post_api = function(path,content,actions,query,headers) {
+	rg.util.Jsonp.request_api("POST",path,content,actions,query,headers);
+}
 rg.util.Periodicity = function() { }
+$hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
+rg.util.Periodicity.defaultPeriodicity = function(span) {
+	if(null == span || 0 == span) return "eternity";
+	if(span <= 21600000) return "minute"; else if(span <= 172800000) return "hour"; else if(span <= 5184000 * 1000) return "day"; else if(span <= 62208000 * 1000) return "month"; else return "year";
+}
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
 		var $r;
@@ -14704,6 +20216,15 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 		}
 		return $r;
 	}(this));
+}
+rg.util.Periodicity.isValid = function(v) {
+	return Arrays.exists(rg.util.Periodicity.validPeriods,v);
+}
+rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	if(disc == null) disc = 2;
+	if(null == a || null == b) return "eternity";
+	var delta = Math.abs(b.getTime() - a.getTime());
+	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
 }
 rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 	return (function($this) {
@@ -14800,6 +20321,136 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		return result;
 	}
 	return Floats.range(start,end + step,step);
+}
+rg.util.Periodicity.next = function(periodicity,date,step) {
+	if(step == null) step = 1;
+	if(null == date) date = new Date().getTime();
+	if(0 == step) return date;
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":case "single":
+			$r = date;
+			break;
+		case "minute":
+			$r = date + 60000 * step;
+			break;
+		case "hour":
+			$r = date + 3600000 * step;
+			break;
+		case "day":
+			$r = date + 86400000 * step;
+			break;
+		case "week":
+			$r = date + 604800000 * step;
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(date);
+					$r = d1;
+					return $r;
+				}($this)), y = d.getFullYear(), m = d.getMonth() + step;
+				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(date);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMin(arr,function(d) {
+		return Arrays.floatMin(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMax(arr,function(d) {
+		return Arrays.floatMax(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.formatf = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = function(_) {
+				return "all time";
+			};
+			break;
+		case "single":
+			$r = function(_) {
+				return "period";
+			};
+			break;
+		case "minute":case "hour":
+			$r = function(v) {
+				return thx.culture.FormatDate.timeShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "day":case "week":
+			$r = function(v) {
+				return thx.culture.FormatDate.dateShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "month":
+			$r = function(v) {
+				return thx.culture.FormatDate.yearMonth((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "year":
+			$r = function(v) {
+				return thx.culture.FormatDate.year((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		}
+		return $r;
+	}(this));
 }
 rg.util.Periodicity.format = function(periodicity,v) {
 	switch(periodicity) {
@@ -14976,8 +20627,55 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 		return $r;
 	}(this));
 }
+rg.util.Periodicity.nextPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "day";
+			break;
+		case "day":case "week":
+			$r = "month";
+			break;
+		case "month":
+			$r = "year";
+			break;
+		default:
+			$r = "year";
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.prevPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "minute";
+			break;
+		case "day":
+			$r = "hour";
+			break;
+		case "week":case "month":
+			$r = "day";
+			break;
+		default:
+			$r = "minute";
+		}
+		return $r;
+	}(this));
+}
 rg.util.Periodicity.parsePair = function(start,end) {
 	return [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
+}
+rg.util.Periodicity.timezoneOffset = function(d) {
+	return d.getTimezoneOffset();
 }
 rg.util.Periodicity.dateUtc = function(v) {
 	var d = (function($this) {
@@ -15000,9 +20698,19 @@ rg.util.Periodicity.isValidGroupBy = function(value) {
 	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
 }
 rg.util.Properties = function() { }
+$hxClasses["rg.util.Properties"] = rg.util.Properties;
 rg.util.Properties.__name__ = ["rg","util","Properties"];
+rg.util.Properties.isTime = function(s) {
+	return s.indexOf("time:") >= 0;
+}
 rg.util.Properties.periodicity = function(s) {
 	return HxOverrides.substr(s,s.indexOf("time:") + "time:".length,null);
+}
+rg.util.Properties.timeProperty = function(periodicity) {
+	return "." + "time:" + periodicity;
+}
+rg.util.Properties.humanize = function(s) {
+	return rg.util.RGStrings.humanize(s);
 }
 rg.util.Properties.formatValue = function(type,dp) {
 	var value = Reflect.field(dp,type);
@@ -15014,6 +20722,7 @@ rg.util.Properties.formatValue = function(type,dp) {
 	return rg.util.RGStrings.humanize(value);
 }
 rg.util.RG = function() { }
+$hxClasses["rg.util.RG"] = rg.util.RG;
 rg.util.RG.__name__ = ["rg","util","RG"];
 rg.util.RG.getTokenId = function() {
 	try {
@@ -15023,6 +20732,7 @@ rg.util.RG.getTokenId = function() {
 	}
 }
 rg.util.RGColors = function() { }
+$hxClasses["rg.util.RGColors"] = rg.util.RGColors;
 rg.util.RGColors.__name__ = ["rg","util","RGColors"];
 rg.util.RGColors.parse = function(s,alt) {
 	try {
@@ -15050,6 +20760,7 @@ rg.util.RGColors.storeColorForSelection = function(n,style,color) {
 	});
 }
 rg.util.RGStrings = function() { }
+$hxClasses["rg.util.RGStrings"] = rg.util.RGStrings;
 rg.util.RGStrings.__name__ = ["rg","util","RGStrings"];
 rg.util.RGStrings.humanize = function(d) {
 	if(js.Boot.__instanceof(d,Int)) return Ints.format(d);
@@ -15066,6 +20777,7 @@ rg.util.RGStrings.hstring = function(s) {
 	return Strings.ucwords(Strings.humanize(s));
 }
 rg.util.Urls = function() { }
+$hxClasses["rg.util.Urls"] = rg.util.Urls;
 rg.util.Urls.__name__ = ["rg","util","Urls"];
 rg.util.Urls.addQueryParameters = function(url,query) {
 	var suffix = url.indexOf("?") < 0?"?":"&", queries = [];
@@ -15095,9 +20807,13 @@ rg.visualization = {}
 rg.visualization.Visualization = function(container) {
 	this.container = container;
 };
+$hxClasses["rg.visualization.Visualization"] = rg.visualization.Visualization;
 rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
 rg.visualization.Visualization.prototype = {
-	addReady: function(handler) {
+	removeReady: function(handler) {
+		this.ready.remove(handler);
+	}
+	,addReady: function(handler) {
 		this.ready.add(handler);
 		if(this.hasRendered) handler();
 	}
@@ -15136,6 +20852,7 @@ rg.visualization.VisualizationSvg = function(layout) {
 	rg.visualization.Visualization.call(this,layout.container);
 	this.layout = layout;
 };
+$hxClasses["rg.visualization.VisualizationSvg"] = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationSvg.__name__ = ["rg","visualization","VisualizationSvg"];
 rg.visualization.VisualizationSvg.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualization.prototype,{
@@ -15146,6 +20863,7 @@ rg.visualization.VisualizationSvg.prototype = $extend(rg.visualization.Visualiza
 rg.visualization.VisualizationCartesian = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationCartesian"] = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationCartesian.__name__ = ["rg","visualization","VisualizationCartesian"];
 rg.visualization.VisualizationCartesian.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15305,6 +21023,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 rg.visualization.VisualizationBarChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationBarChart"] = rg.visualization.VisualizationBarChart;
 rg.visualization.VisualizationBarChart.__name__ = ["rg","visualization","VisualizationBarChart"];
 rg.visualization.VisualizationBarChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15428,6 +21147,7 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 rg.visualization.VisualizationFunnelChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationFunnelChart"] = rg.visualization.VisualizationFunnelChart;
 rg.visualization.VisualizationFunnelChart.__name__ = ["rg","visualization","VisualizationFunnelChart"];
 rg.visualization.VisualizationFunnelChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15490,6 +21210,7 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 rg.visualization.VisualizationGeo = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationGeo"] = rg.visualization.VisualizationGeo;
 rg.visualization.VisualizationGeo.__name__ = ["rg","visualization","VisualizationGeo"];
 rg.visualization.VisualizationGeo.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15551,6 +21272,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 rg.visualization.VisualizationHeatGrid = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationHeatGrid"] = rg.visualization.VisualizationHeatGrid;
 rg.visualization.VisualizationHeatGrid.__name__ = ["rg","visualization","VisualizationHeatGrid"];
 rg.visualization.VisualizationHeatGrid.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15584,6 +21306,7 @@ rg.visualization.VisualizationHtml = function(container) {
 	rg.visualization.Visualization.call(this,container);
 	container.classed().add("rg");
 };
+$hxClasses["rg.visualization.VisualizationHtml"] = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationHtml.__name__ = ["rg","visualization","VisualizationHtml"];
 rg.visualization.VisualizationHtml.__super__ = rg.visualization.Visualization;
 rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualization.prototype,{
@@ -15592,6 +21315,7 @@ rg.visualization.VisualizationHtml.prototype = $extend(rg.visualization.Visualiz
 rg.visualization.VisualizationLeaderboard = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
+$hxClasses["rg.visualization.VisualizationLeaderboard"] = rg.visualization.VisualizationLeaderboard;
 rg.visualization.VisualizationLeaderboard.__name__ = ["rg","visualization","VisualizationLeaderboard"];
 rg.visualization.VisualizationLeaderboard.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
@@ -15627,6 +21351,7 @@ rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.V
 rg.visualization.VisualizationLineChart = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationLineChart"] = rg.visualization.VisualizationLineChart;
 rg.visualization.VisualizationLineChart.__name__ = ["rg","visualization","VisualizationLineChart"];
 rg.visualization.VisualizationLineChart.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -15667,6 +21392,7 @@ rg.visualization.VisualizationLineChart.prototype = $extend(rg.visualization.Vis
 rg.visualization.VisualizationPieChart = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationPieChart"] = rg.visualization.VisualizationPieChart;
 rg.visualization.VisualizationPieChart.__name__ = ["rg","visualization","VisualizationPieChart"];
 rg.visualization.VisualizationPieChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
@@ -15734,6 +21460,7 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 rg.visualization.VisualizationPivotTable = function(container) {
 	rg.visualization.VisualizationHtml.call(this,container);
 };
+$hxClasses["rg.visualization.VisualizationPivotTable"] = rg.visualization.VisualizationPivotTable;
 rg.visualization.VisualizationPivotTable.__name__ = ["rg","visualization","VisualizationPivotTable"];
 rg.visualization.VisualizationPivotTable.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
@@ -15776,6 +21503,7 @@ rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.Vi
 rg.visualization.VisualizationSankey = function(layout) {
 	rg.visualization.VisualizationSvg.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationSankey"] = rg.visualization.VisualizationSankey;
 rg.visualization.VisualizationSankey.__name__ = ["rg","visualization","VisualizationSankey"];
 rg.visualization.VisualizationSankey.defaultIdf = function(idf) {
 	if(idf == null) return function(data) {
@@ -16007,6 +21735,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 rg.visualization.VisualizationScatterGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationScatterGraph"] = rg.visualization.VisualizationScatterGraph;
 rg.visualization.VisualizationScatterGraph.__name__ = ["rg","visualization","VisualizationScatterGraph"];
 rg.visualization.VisualizationScatterGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16044,6 +21773,7 @@ rg.visualization.VisualizationScatterGraph.prototype = $extend(rg.visualization.
 rg.visualization.VisualizationStreamGraph = function(layout) {
 	rg.visualization.VisualizationCartesian.call(this,layout);
 };
+$hxClasses["rg.visualization.VisualizationStreamGraph"] = rg.visualization.VisualizationStreamGraph;
 rg.visualization.VisualizationStreamGraph.__name__ = ["rg","visualization","VisualizationStreamGraph"];
 rg.visualization.VisualizationStreamGraph.__super__ = rg.visualization.VisualizationCartesian;
 rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.VisualizationCartesian.prototype,{
@@ -16087,7 +21817,11 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 	,__class__: rg.visualization.VisualizationStreamGraph
 });
 rg.visualization.Visualizations = function() { }
+$hxClasses["rg.visualization.Visualizations"] = rg.visualization.Visualizations;
 rg.visualization.Visualizations.__name__ = ["rg","visualization","Visualizations"];
+rg.visualization.Visualizations.layoutDefault = null;
+rg.visualization.Visualizations.layoutType = null;
+rg.visualization.Visualizations.layoutArgs = null;
 rg.visualization.Visualizations.instantiateLayout = function(name,width,height,container) {
 	return Type.createInstance(rg.visualization.Visualizations.layoutType.get(name),[width,height,container]);
 }
@@ -16097,10 +21831,25 @@ thx.collection.HashList = function() {
 	this.__keys = [];
 	this.__hash = new Hash();
 };
+$hxClasses["thx.collection.HashList"] = thx.collection.HashList;
 thx.collection.HashList.__name__ = ["thx","collection","HashList"];
 thx.collection.HashList.prototype = {
 	__hash: null
 	,__keys: null
+	,toString: function() {
+		var s = new StringBuf();
+		s.b += Std.string("{");
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b += Std.string(i);
+			s.b += Std.string(" => ");
+			s.b += Std.string(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += Std.string(", ");
+		}
+		s.b += Std.string("}");
+		return s.b;
+	}
 	,array: function() {
 		var values = [];
 		var _g = 0, _g1 = this.__keys;
@@ -16111,8 +21860,64 @@ thx.collection.HashList.prototype = {
 		}
 		return values;
 	}
+	,clear: function() {
+		this.__hash = new Hash();
+		this.__keys = [];
+		this.length = 0;
+	}
+	,iterator: function() {
+		return HxOverrides.iter(this.array());
+	}
+	,keys: function() {
+		return HxOverrides.iter(this.__keys);
+	}
+	,keyAt: function(index) {
+		return this.__keys[index];
+	}
+	,removeAt: function(index) {
+		var key = this.__keys[index];
+		if(key == null) return null;
+		var item = this.__hash.get(key);
+		this.__hash.remove(key);
+		HxOverrides.remove(this.__keys,key);
+		this.length--;
+		return item;
+	}
+	,remove: function(key) {
+		var item = this.__hash.get(key);
+		if(item == null) return null;
+		this.__hash.remove(key);
+		HxOverrides.remove(this.__keys,key);
+		this.length--;
+		return item;
+	}
+	,exists: function(key) {
+		return this.__hash.exists(key);
+	}
+	,indexOf: function(key) {
+		if(!this.__hash.exists(key)) return -1;
+		var _g1 = 0, _g = this.__keys.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.__keys[i] == key) return i;
+		}
+		return (function($this) {
+			var $r;
+			throw "this should never happen";
+			return $r;
+		}(this));
+	}
+	,getAt: function(index) {
+		return this.__hash.get(this.__keys[index]);
+	}
 	,get: function(key) {
 		return this.__hash.get(key);
+	}
+	,setAt: function(index,key,value) {
+		this.remove(key);
+		this.__keys.splice(index,0,key);
+		this.__hash.set(key,value);
+		this.length++;
 	}
 	,set: function(key,value) {
 		if(!this.__hash.exists(key)) {
@@ -16128,10 +21933,41 @@ thx.collection.Set = function() {
 	this._v = [];
 	this.length = 0;
 };
+$hxClasses["thx.collection.Set"] = thx.collection.Set;
 thx.collection.Set.__name__ = ["thx","collection","Set"];
+thx.collection.Set.ofArray = function(arr) {
+	var set = new thx.collection.Set();
+	var _g = 0;
+	while(_g < arr.length) {
+		var item = arr[_g];
+		++_g;
+		set.add(item);
+	}
+	return set;
+}
 thx.collection.Set.prototype = {
-	iterator: function() {
+	toString: function() {
+		return "{" + this._v.join(", ") + "}";
+	}
+	,array: function() {
+		return this._v.slice();
+	}
+	,iterator: function() {
 		return HxOverrides.iter(this._v);
+	}
+	,exists: function(v) {
+		var _g = 0, _g1 = this._v;
+		while(_g < _g1.length) {
+			var t = _g1[_g];
+			++_g;
+			if(t == v) return true;
+		}
+		return false;
+	}
+	,remove: function(v) {
+		var t = HxOverrides.remove(this._v,v);
+		this.length = this._v.length;
+		return t;
 	}
 	,add: function(v) {
 		HxOverrides.remove(this._v,v);
@@ -16149,17 +21985,58 @@ thx.color.Cmyk = function(cyan,magenta,yellow,black) {
 	this.yellow = Floats.normalize(yellow);
 	this.black = Floats.normalize(black);
 };
+$hxClasses["thx.color.Cmyk"] = thx.color.Cmyk;
 thx.color.Cmyk.__name__ = ["thx","color","Cmyk"];
+thx.color.Cmyk.toCmyk = function(rgb) {
+	var c = 0.0, y = 0.0, m = 0.0, k;
+	if(rgb.red + rgb.blue + rgb.green == 0) k = 1.0; else {
+		c = 1 - rgb.red / 255;
+		m = 1 - rgb.green / 255;
+		y = 1 - rgb.blue / 255;
+		k = Floats.min(c < m?c:m,y);
+		c = (c - k) / (1 - k);
+		m = (m - k) / (1 - k);
+		y = (y - k) / (1 - k);
+	}
+	return new thx.color.Cmyk(c,m,y,k);
+}
+thx.color.Cmyk.equals = function(a,b) {
+	return a.black == b.black && a.cyan == b.cyan && a.magenta == b.magenta && a.yellow == b.yellow;
+}
+thx.color.Cmyk.darker = function(color,t,equation) {
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,0,equation));
+}
+thx.color.Cmyk.lighter = function(color,t,equation) {
+	return new thx.color.Cmyk(color.cyan,color.magenta,color.yellow,Floats.interpolate(t,color.black,1,equation));
+}
+thx.color.Cmyk.interpolate = function(a,b,t,equation) {
+	return new thx.color.Cmyk(Floats.interpolate(t,a.cyan,b.cyan,equation),Floats.interpolate(t,a.magenta,b.magenta,equation),Floats.interpolate(t,a.yellow,b.yellow,equation),Floats.interpolate(t,a.black,b.black,equation));
+}
 thx.color.Cmyk.__super__ = thx.color.Rgb;
 thx.color.Cmyk.prototype = $extend(thx.color.Rgb.prototype,{
-	yellow: null
+	toCmykString: function() {
+		return "cmyk(" + this.cyan + "," + this.magenta + "," + this.yellow + "," + this.black + ")";
+	}
+	,yellow: null
 	,magenta: null
 	,cyan: null
 	,black: null
 	,__class__: thx.color.Cmyk
 });
 thx.color.Colors = function() { }
+$hxClasses["thx.color.Colors"] = thx.color.Colors;
 thx.color.Colors.__name__ = ["thx","color","Colors"];
+thx.color.Colors.interpolatef = function(a,b,equation) {
+	var ca = thx.color.Colors.parse(a);
+	var cb = thx.color.Colors.parse(b);
+	var f = thx.color.Rgb.interpolatef(ca,cb,equation);
+	return function(v) {
+		return f(v).toString();
+	};
+}
+thx.color.Colors.interpolate = function(v,a,b,equation) {
+	return (thx.color.Colors.interpolatef(a,b,equation))(v);
+}
 thx.color.Colors.parse = function(s) {
 	if(!thx.color.Colors._reParse.match(s = StringTools.trim(s.toLowerCase()))) {
 		var v = thx.color.NamedColors.byName.get(s);
@@ -16202,6 +22079,7 @@ thx.color.Grey = function(value) {
 	var c = Ints.interpolate(this.grey,0,255,null);
 	thx.color.Rgb.call(this,c,c,c);
 };
+$hxClasses["thx.color.Grey"] = thx.color.Grey;
 thx.color.Grey.__name__ = ["thx","color","Grey"];
 thx.color.Grey.toGrey = function(rgb,luminance) {
 	if(null == luminance) luminance = thx.color.PerceivedLuminance.Perceived;
@@ -16214,12 +22092,24 @@ thx.color.Grey.toGrey = function(rgb,luminance) {
 		return new thx.color.Grey(Math.sqrt(0.241 * Math.pow(rgb.red / 255,2) + 0.691 * Math.pow(rgb.green / 255,2) + 0.068 * Math.pow(rgb.blue / 255,2)));
 	}
 }
+thx.color.Grey.equals = function(a,b) {
+	return a.grey == b.grey;
+}
+thx.color.Grey.darker = function(color,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,0,equation));
+}
+thx.color.Grey.lighter = function(color,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,color.grey,1,equation));
+}
+thx.color.Grey.interpolate = function(a,b,t,equation) {
+	return new thx.color.Grey(Floats.interpolate(t,a.grey,b.grey,equation));
+}
 thx.color.Grey.__super__ = thx.color.Rgb;
 thx.color.Grey.prototype = $extend(thx.color.Rgb.prototype,{
 	grey: null
 	,__class__: thx.color.Grey
 });
-thx.color.PerceivedLuminance = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
+thx.color.PerceivedLuminance = $hxClasses["thx.color.PerceivedLuminance"] = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
 thx.color.PerceivedLuminance.Standard = ["Standard",0];
 thx.color.PerceivedLuminance.Standard.toString = $estr;
 thx.color.PerceivedLuminance.Standard.__enum__ = thx.color.PerceivedLuminance;
@@ -16230,12 +22120,165 @@ thx.color.PerceivedLuminance.PerceivedAccurate = ["PerceivedAccurate",2];
 thx.color.PerceivedLuminance.PerceivedAccurate.toString = $estr;
 thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLuminance;
 thx.color.NamedColors = function() { }
+$hxClasses["thx.color.NamedColors"] = thx.color.NamedColors;
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
+thx.color.NamedColors.aliceblue = null;
+thx.color.NamedColors.antiquewhite = null;
+thx.color.NamedColors.aqua = null;
+thx.color.NamedColors.aquamarine = null;
+thx.color.NamedColors.azure = null;
+thx.color.NamedColors.beige = null;
+thx.color.NamedColors.bisque = null;
+thx.color.NamedColors.black = null;
+thx.color.NamedColors.blanchedalmond = null;
+thx.color.NamedColors.blue = null;
+thx.color.NamedColors.blueviolet = null;
+thx.color.NamedColors.brown = null;
+thx.color.NamedColors.burlywood = null;
+thx.color.NamedColors.cadetblue = null;
+thx.color.NamedColors.chartreuse = null;
+thx.color.NamedColors.chocolate = null;
+thx.color.NamedColors.coral = null;
+thx.color.NamedColors.cornflowerblue = null;
+thx.color.NamedColors.cornsilk = null;
+thx.color.NamedColors.crimson = null;
+thx.color.NamedColors.cyan = null;
+thx.color.NamedColors.darkblue = null;
+thx.color.NamedColors.darkcyan = null;
+thx.color.NamedColors.darkgoldenrod = null;
+thx.color.NamedColors.darkgray = null;
+thx.color.NamedColors.darkgreen = null;
+thx.color.NamedColors.darkgrey = null;
+thx.color.NamedColors.darkkhaki = null;
+thx.color.NamedColors.darkmagenta = null;
+thx.color.NamedColors.darkolivegreen = null;
+thx.color.NamedColors.darkorange = null;
+thx.color.NamedColors.darkorchid = null;
+thx.color.NamedColors.darkred = null;
+thx.color.NamedColors.darksalmon = null;
+thx.color.NamedColors.darkseagreen = null;
+thx.color.NamedColors.darkslateblue = null;
+thx.color.NamedColors.darkslategray = null;
+thx.color.NamedColors.darkslategrey = null;
+thx.color.NamedColors.darkturquoise = null;
+thx.color.NamedColors.darkviolet = null;
+thx.color.NamedColors.deeppink = null;
+thx.color.NamedColors.deepskyblue = null;
+thx.color.NamedColors.dimgray = null;
+thx.color.NamedColors.dimgrey = null;
+thx.color.NamedColors.dodgerblue = null;
+thx.color.NamedColors.firebrick = null;
+thx.color.NamedColors.floralwhite = null;
+thx.color.NamedColors.forestgreen = null;
+thx.color.NamedColors.fuchsia = null;
+thx.color.NamedColors.gainsboro = null;
+thx.color.NamedColors.ghostwhite = null;
+thx.color.NamedColors.gold = null;
+thx.color.NamedColors.goldenrod = null;
+thx.color.NamedColors.gray = null;
+thx.color.NamedColors.green = null;
+thx.color.NamedColors.greenyellow = null;
+thx.color.NamedColors.grey = null;
+thx.color.NamedColors.honeydew = null;
+thx.color.NamedColors.hotpink = null;
+thx.color.NamedColors.indianred = null;
+thx.color.NamedColors.indigo = null;
+thx.color.NamedColors.ivory = null;
+thx.color.NamedColors.khaki = null;
+thx.color.NamedColors.lavender = null;
+thx.color.NamedColors.lavenderblush = null;
+thx.color.NamedColors.lawngreen = null;
+thx.color.NamedColors.lemonchiffon = null;
+thx.color.NamedColors.lightblue = null;
+thx.color.NamedColors.lightcoral = null;
+thx.color.NamedColors.lightcyan = null;
+thx.color.NamedColors.lightgoldenrodyellow = null;
+thx.color.NamedColors.lightgray = null;
+thx.color.NamedColors.lightgreen = null;
+thx.color.NamedColors.lightgrey = null;
+thx.color.NamedColors.lightpink = null;
+thx.color.NamedColors.lightsalmon = null;
+thx.color.NamedColors.lightseagreen = null;
+thx.color.NamedColors.lightskyblue = null;
+thx.color.NamedColors.lightslategray = null;
+thx.color.NamedColors.lightslategrey = null;
+thx.color.NamedColors.lightsteelblue = null;
+thx.color.NamedColors.lightyellow = null;
+thx.color.NamedColors.lime = null;
+thx.color.NamedColors.limegreen = null;
+thx.color.NamedColors.linen = null;
+thx.color.NamedColors.magenta = null;
+thx.color.NamedColors.maroon = null;
+thx.color.NamedColors.mediumaquamarine = null;
+thx.color.NamedColors.mediumblue = null;
+thx.color.NamedColors.mediumorchid = null;
+thx.color.NamedColors.mediumpurple = null;
+thx.color.NamedColors.mediumseagreen = null;
+thx.color.NamedColors.mediumslateblue = null;
+thx.color.NamedColors.mediumspringgreen = null;
+thx.color.NamedColors.mediumturquoise = null;
+thx.color.NamedColors.mediumvioletred = null;
+thx.color.NamedColors.midnightblue = null;
+thx.color.NamedColors.mintcream = null;
+thx.color.NamedColors.mistyrose = null;
+thx.color.NamedColors.moccasin = null;
+thx.color.NamedColors.navajowhite = null;
+thx.color.NamedColors.navy = null;
+thx.color.NamedColors.oldlace = null;
+thx.color.NamedColors.olive = null;
+thx.color.NamedColors.olivedrab = null;
+thx.color.NamedColors.orange = null;
+thx.color.NamedColors.orangered = null;
+thx.color.NamedColors.orchid = null;
+thx.color.NamedColors.palegoldenrod = null;
+thx.color.NamedColors.palegreen = null;
+thx.color.NamedColors.paleturquoise = null;
+thx.color.NamedColors.palevioletred = null;
+thx.color.NamedColors.papayawhip = null;
+thx.color.NamedColors.peachpuff = null;
+thx.color.NamedColors.peru = null;
+thx.color.NamedColors.pink = null;
+thx.color.NamedColors.plum = null;
+thx.color.NamedColors.powderblue = null;
+thx.color.NamedColors.purple = null;
+thx.color.NamedColors.red = null;
+thx.color.NamedColors.rosybrown = null;
+thx.color.NamedColors.royalblue = null;
+thx.color.NamedColors.saddlebrown = null;
+thx.color.NamedColors.salmon = null;
+thx.color.NamedColors.sandybrown = null;
+thx.color.NamedColors.seagreen = null;
+thx.color.NamedColors.seashell = null;
+thx.color.NamedColors.sienna = null;
+thx.color.NamedColors.silver = null;
+thx.color.NamedColors.skyblue = null;
+thx.color.NamedColors.slateblue = null;
+thx.color.NamedColors.slategray = null;
+thx.color.NamedColors.slategrey = null;
+thx.color.NamedColors.snow = null;
+thx.color.NamedColors.springgreen = null;
+thx.color.NamedColors.steelblue = null;
+thx.color.NamedColors.tan = null;
+thx.color.NamedColors.teal = null;
+thx.color.NamedColors.thistle = null;
+thx.color.NamedColors.tomato = null;
+thx.color.NamedColors.turquoise = null;
+thx.color.NamedColors.violet = null;
+thx.color.NamedColors.wheat = null;
+thx.color.NamedColors.white = null;
+thx.color.NamedColors.whitesmoke = null;
+thx.color.NamedColors.yellow = null;
+thx.color.NamedColors.yellowgreen = null;
+thx.color.NamedColors.byName = null;
 thx.culture = {}
 thx.culture.Info = function() { }
+$hxClasses["thx.culture.Info"] = thx.culture.Info;
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
-	pluralRule: null
+	toString: function() {
+		return this["native"] + " (" + this.english + ")";
+	}
+	,pluralRule: null
 	,iso3: null
 	,iso2: null
 	,english: null
@@ -16244,11 +22287,25 @@ thx.culture.Info.prototype = {
 	,__class__: thx.culture.Info
 }
 thx.culture.Culture = function() { }
+$hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
+thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
+thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
+thx.culture.Culture.get = function(name) {
+	return thx.culture.Culture.getCultures().get(name.toLowerCase());
+}
+thx.culture.Culture.names = function() {
+	return thx.culture.Culture.getCultures().keys();
+}
+thx.culture.Culture.exists = function(culture) {
+	return thx.culture.Culture.getCultures().exists(culture.toLowerCase());
+}
+thx.culture.Culture._defaultCulture = null;
+thx.culture.Culture.defaultCulture = null;
 thx.culture.Culture.getDefaultCulture = function() {
 	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
 }
@@ -16259,6 +22316,8 @@ thx.culture.Culture.add = function(culture) {
 	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
 	var name = culture.name.toLowerCase();
 	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
+}
+thx.culture.Culture.loadAll = function() {
 }
 thx.culture.Culture.__super__ = thx.culture.Info;
 thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
@@ -16285,18 +22344,19 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,__class__: thx.culture.Culture
 });
 thx.culture.FormatDate = function() { }
+$hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
 	var pos = 0;
 	var len = pattern.length;
-	var buf = new String();
+	var buf = new StringBuf();
 	var info = culture.date;
 	while(pos < len) {
 		var c = pattern.charAt(pos);
 		if(c != "%") {
-			buf += c;
+			buf.b += Std.string(c);
 			pos++;
 			continue;
 		}
@@ -16304,34 +22364,34 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 		c = pattern.charAt(pos);
 		switch(c) {
 		case "a":
-			buf += info.abbrDays[date.getDay()];
+			buf.b += Std.string(info.abbrDays[date.getDay()]);
 			break;
 		case "A":
-			buf += info.days[date.getDay()];
+			buf.b += Std.string(info.days[date.getDay()]);
 			break;
 		case "b":case "h":
-			buf += info.abbrMonths[date.getMonth()];
+			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
 			break;
 		case "B":
-			buf += info.months[date.getMonth()];
+			buf.b += Std.string(info.months[date.getMonth()]);
 			break;
 		case "c":
-			buf += thx.culture.FormatDate.dateTime(date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.dateTime(date,culture));
 			break;
 		case "C":
-			buf += thx.culture.FormatNumber.digits("" + Math.floor(date.getFullYear() / 100),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + Math.floor(date.getFullYear() / 100),culture));
 			break;
 		case "d":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getDate(),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getDate(),"0",2),culture));
 			break;
 		case "D":
-			buf += thx.culture.FormatDate.format("%m/%d/%y",date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.format("%m/%d/%y",date,culture));
 			break;
 		case "e":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getDate()," ",2):"" + date.getDate(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getDate()," ",2):"" + date.getDate(),culture));
 			break;
 		case "f":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + (date.getMonth() + 1)," ",2):"" + (date.getMonth() + 1),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + (date.getMonth() + 1)," ",2):"" + (date.getMonth() + 1),culture));
 			break;
 		case "G":
 			throw "Not Implemented Yet";
@@ -16340,62 +22400,62 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			throw "Not Implemented Yet";
 			break;
 		case "H":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getHours(),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getHours(),"0",2),culture));
 			break;
 		case "i":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getMinutes()," ",2):"" + date.getMinutes(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getMinutes()," ",2):"" + date.getMinutes(),culture));
 			break;
 		case "I":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + thx.culture.FormatDate.getMHours(date),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + thx.culture.FormatDate.getMHours(date),"0",2),culture));
 			break;
 		case "j":
 			throw "Not Implemented Yet";
 			break;
 		case "k":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getHours()," ",2):"" + date.getHours(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getHours()," ",2):"" + date.getHours(),culture));
 			break;
 		case "l":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + thx.culture.FormatDate.getMHours(date)," ",2):"" + thx.culture.FormatDate.getMHours(date),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + thx.culture.FormatDate.getMHours(date)," ",2):"" + thx.culture.FormatDate.getMHours(date),culture));
 			break;
 		case "m":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + (date.getMonth() + 1),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + (date.getMonth() + 1),"0",2),culture));
 			break;
 		case "M":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
 			break;
 		case "n":
-			buf += "\n";
+			buf.b += Std.string("\n");
 			break;
 		case "p":
-			buf += date.getHours() > 11?info.pm:info.am;
+			buf.b += Std.string(date.getHours() > 11?info.pm:info.am);
 			break;
 		case "P":
-			buf += (date.getHours() > 11?info.pm:info.am).toLowerCase();
+			buf.b += Std.string((date.getHours() > 11?info.pm:info.am).toLowerCase());
 			break;
 		case "q":
-			buf += thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getSeconds()," ",2):"" + date.getSeconds(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(leadingspace?StringTools.lpad("" + date.getSeconds()," ",2):"" + date.getSeconds(),culture));
 			break;
 		case "r":
-			buf += thx.culture.FormatDate.format("%I:%M:%S %p",date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.format("%I:%M:%S %p",date,culture));
 			break;
 		case "R":
-			buf += thx.culture.FormatDate.format("%H:%M",date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M",date,culture));
 			break;
 		case "s":
-			buf += "" + (date.getTime() / 1000 | 0);
+			buf.b += Std.string("" + (date.getTime() / 1000 | 0));
 			break;
 		case "S":
-			buf += thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
 			break;
 		case "t":
-			buf += "\t";
+			buf.b += Std.string("\t");
 			break;
 		case "T":
-			buf += thx.culture.FormatDate.format("%H:%M:%S",date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
 			break;
 		case "u":
 			var d = date.getDay();
-			buf += thx.culture.FormatNumber.digits(d == 0?"7":"" + d,culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(d == 0?"7":"" + d,culture));
 			break;
 		case "U":
 			throw "Not Implemented Yet";
@@ -16404,38 +22464,38 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			throw "Not Implemented Yet";
 			break;
 		case "w":
-			buf += thx.culture.FormatNumber.digits("" + date.getDay(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getDay(),culture));
 			break;
 		case "W":
 			throw "Not Implemented Yet";
 			break;
 		case "x":
-			buf += thx.culture.FormatDate.date(date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.date(date,culture));
 			break;
 		case "X":
-			buf += thx.culture.FormatDate.time(date,culture);
+			buf.b += Std.string(thx.culture.FormatDate.time(date,culture));
 			break;
 		case "y":
-			buf += thx.culture.FormatNumber.digits(HxOverrides.substr("" + date.getFullYear(),-2,null),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits(HxOverrides.substr("" + date.getFullYear(),-2,null),culture));
 			break;
 		case "Y":
-			buf += thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
+			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
 			break;
 		case "z":
-			buf += "+0000";
+			buf.b += Std.string("+0000");
 			break;
 		case "Z":
-			buf += "GMT";
+			buf.b += Std.string("GMT");
 			break;
 		case "%":
-			buf += "%";
+			buf.b += Std.string("%");
 			break;
 		default:
-			buf += "%" + c;
+			buf.b += Std.string("%" + c);
 		}
 		pos++;
 	}
-	return buf;
+	return buf.b;
 }
 thx.culture.FormatDate.getMHours = function(date) {
 	var v = date.getHours();
@@ -16514,6 +22574,7 @@ thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
 	return culture.date.days[date.getDay()];
 }
 thx.culture.FormatNumber = function() { }
+$hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
 	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
@@ -16589,6 +22650,7 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	} else return intpart;
 }
 thx.culture.FormatParams = function() { }
+$hxClasses["thx.culture.FormatParams"] = thx.culture.FormatParams;
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
 	if(p.length <= 1) return p;
@@ -16607,10 +22669,19 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 	return ps;
 }
 thx.culture.Language = function() { }
+$hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
+thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
+thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
+}
+thx.culture.Language.get = function(name) {
+	return thx.culture.Language.getLanguages().get(name.toLowerCase());
+}
+thx.culture.Language.names = function() {
+	return thx.culture.Language.getLanguages().keys();
 }
 thx.culture.Language.add = function(language) {
 	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
@@ -16642,6 +22713,7 @@ thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDa
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
 };
+$hxClasses["thx.culture.core.DateTimeInfo"] = thx.culture.core.DateTimeInfo;
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
 	patternTimeShort: null
@@ -16674,6 +22746,7 @@ thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsS
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
 };
+$hxClasses["thx.culture.core.NumberInfo"] = thx.culture.core.NumberInfo;
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
 	patternPositive: null
@@ -16694,7 +22767,10 @@ thx.languages.En = function() {
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
 };
+$hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
+thx.languages.En.__properties__ = {get_language:"getLanguage"}
+thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
@@ -16732,7 +22808,10 @@ thx.cultures.EnUS = function() {
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
 };
+$hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
+thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
+thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
@@ -16743,6 +22822,7 @@ thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 });
 thx.data = {}
 thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
 	comment: null
@@ -16767,6 +22847,7 @@ thx.data.IDataHandler.prototype = {
 thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
+$hxClasses["thx.data.ValueEncoder"] = thx.data.ValueEncoder;
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
 	encodeArray: function(a) {
@@ -16859,6 +22940,7 @@ thx.data.ValueEncoder.prototype = {
 }
 thx.data.ValueHandler = function() {
 };
+$hxClasses["thx.data.ValueHandler"] = thx.data.ValueHandler;
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
@@ -16921,6 +23003,7 @@ thx.data.ValueHandler.prototype = {
 }
 thx.date = {}
 thx.date.DateParser = function() { }
+$hxClasses["thx.date.DateParser"] = thx.date.DateParser;
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
@@ -17152,9 +23235,18 @@ thx.util.Message = function(message,params,param) {
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
 };
+$hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
-	toString: function() {
+	translate: function(translator,domain) {
+		if(null == domain) domain = translator.getDomain();
+		var culture = thx.culture.Culture.get(domain);
+		if(this.params.length == 1 && js.Boot.__instanceof(this.params[0],Int)) return Strings.format(translator.plural(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator.singular(this.message,domain),this.params,null,culture);
+	}
+	,translatef: function(translator) {
+		return Strings.format(translator(this.message),this.params);
+	}
+	,toString: function() {
 		return Strings.format(this.message,this.params);
 	}
 	,params: null
@@ -17166,6 +23258,7 @@ thx.error.Error = function(message,params,param,pos) {
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
 };
+$hxClasses["thx.error.Error"] = thx.error.Error;
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
@@ -17177,12 +23270,22 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 			return "";
 		}
 	}
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
+	}
+	,inner: null
 	,pos: null
 	,__class__: thx.error.Error
 });
 thx.error.AbstractMethod = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() is abstract",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "AbstractMethod.hx", lineNumber : 14, className : "thx.error.AbstractMethod", methodName : "new"});
 };
+$hxClasses["thx.error.AbstractMethod"] = thx.error.AbstractMethod;
 thx.error.AbstractMethod.__name__ = ["thx","error","AbstractMethod"];
 thx.error.AbstractMethod.__super__ = thx.error.Error;
 thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
@@ -17191,6 +23294,7 @@ thx.error.AbstractMethod.prototype = $extend(thx.error.Error.prototype,{
 thx.error.NotImplemented = function(posInfo) {
 	thx.error.Error.call(this,"method {0}.{1}() needs to be implemented",[posInfo.className,posInfo.methodName],posInfo,{ fileName : "NotImplemented.hx", lineNumber : 13, className : "thx.error.NotImplemented", methodName : "new"});
 };
+$hxClasses["thx.error.NotImplemented"] = thx.error.NotImplemented;
 thx.error.NotImplemented.__name__ = ["thx","error","NotImplemented"];
 thx.error.NotImplemented.__super__ = thx.error.Error;
 thx.error.NotImplemented.prototype = $extend(thx.error.Error.prototype,{
@@ -17200,6 +23304,7 @@ thx.error.NullArgument = function(argumentName,message,posInfo) {
 	if(null == message) message = "invalid null or empty argument '{0}' for method {1}.{2}()";
 	thx.error.Error.call(this,message,[argumentName,posInfo.className,posInfo.methodName],posInfo,{ fileName : "NullArgument.hx", lineNumber : 16, className : "thx.error.NullArgument", methodName : "new"});
 };
+$hxClasses["thx.error.NullArgument"] = thx.error.NullArgument;
 thx.error.NullArgument.__name__ = ["thx","error","NullArgument"];
 thx.error.NullArgument.__super__ = thx.error.Error;
 thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
@@ -17207,6 +23312,7 @@ thx.error.NullArgument.prototype = $extend(thx.error.Error.prototype,{
 });
 thx.geo = {}
 thx.geo.IProjection = function() { }
+$hxClasses["thx.geo.IProjection"] = thx.geo.IProjection;
 thx.geo.IProjection.__name__ = ["thx","geo","IProjection"];
 thx.geo.IProjection.prototype = {
 	invert: null
@@ -17220,6 +23326,7 @@ thx.geo.Albers = function() {
 	this._translate = [480.0,250];
 	this.reload();
 };
+$hxClasses["thx.geo.Albers"] = thx.geo.Albers;
 thx.geo.Albers.__name__ = ["thx","geo","Albers"];
 thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Albers.prototype = {
@@ -17281,6 +23388,7 @@ thx.geo.Albers.prototype = {
 	,parallels: null
 	,origin: null
 	,__class__: thx.geo.Albers
+	,__properties__: {set_origin:"setOrigin",get_origin:"getOrigin",set_parallels:"setParallels",get_parallels:"getParallels",set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
 thx.geo.AlbersUsa = function() {
 	this.lower48 = new thx.geo.Albers();
@@ -17295,6 +23403,7 @@ thx.geo.AlbersUsa = function() {
 	this.puertoRico.setParallels([8.0,18]);
 	this.setScale(this.lower48.getScale());
 };
+$hxClasses["thx.geo.AlbersUsa"] = thx.geo.AlbersUsa;
 thx.geo.AlbersUsa.__name__ = ["thx","geo","AlbersUsa"];
 thx.geo.AlbersUsa.__interfaces__ = [thx.geo.IProjection];
 thx.geo.AlbersUsa.prototype = {
@@ -17331,6 +23440,7 @@ thx.geo.AlbersUsa.prototype = {
 		var lon = coords[0], lat = coords[1];
 		return (lat > 50?this.alaska:lon < -140?this.hawaii:lat < 21?this.puertoRico:this.lower48).project(coords);
 	}
+	,last: null
 	,puertoRico: null
 	,hawaii: null
 	,alaska: null
@@ -17338,6 +23448,7 @@ thx.geo.AlbersUsa.prototype = {
 	,scale: null
 	,translate: null
 	,__class__: thx.geo.AlbersUsa
+	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
 }
 thx.geo.Azimuthal = function() {
 	this.setMode(thx.geo.ProjectionMode.Orthographic);
@@ -17345,6 +23456,7 @@ thx.geo.Azimuthal = function() {
 	this.setTranslate([480.0,250]);
 	this.setOrigin([0.0,0]);
 };
+$hxClasses["thx.geo.Azimuthal"] = thx.geo.Azimuthal;
 thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
 thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Azimuthal.prototype = {
@@ -17417,8 +23529,9 @@ thx.geo.Azimuthal.prototype = {
 	,origin: null
 	,mode: null
 	,__class__: thx.geo.Azimuthal
+	,__properties__: {set_mode:"setMode",get_mode:"getMode",set_origin:"setOrigin",get_origin:"getOrigin",set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
-thx.geo.ProjectionMode = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
+thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
 thx.geo.ProjectionMode.Orthographic.toString = $estr;
 thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
@@ -17429,6 +23542,7 @@ thx.geo.Mercator = function() {
 	this.setScale(500);
 	this.setTranslate([480.0,250]);
 };
+$hxClasses["thx.geo.Mercator"] = thx.geo.Mercator;
 thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
 thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Mercator.prototype = {
@@ -17456,14 +23570,91 @@ thx.geo.Mercator.prototype = {
 	,translate: null
 	,scale: null
 	,__class__: thx.geo.Mercator
+	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
 thx.geom = {}
+thx.geom.Contour = function() { }
+$hxClasses["thx.geom.Contour"] = thx.geom.Contour;
+thx.geom.Contour.__name__ = ["thx","geom","Contour"];
+thx.geom.Contour.contourStart = function(grid) {
+	var x = 0, y = 0;
+	while(true) {
+		if(grid(x,y)) return [x,y];
+		if(x == 0) {
+			x = y + 1;
+			y = 0;
+		} else {
+			x = x - 1;
+			y = y + 1;
+		}
+	}
+	return null;
+}
+thx.geom.Contour.contour = function(grid,start) {
+	var s = null == start?thx.geom.Contour.contourStart(grid):start, c = [], x = s[0], y = s[1], dx = 0, dy = 0, pdx = null, pdy = null, i = 0;
+	do {
+		i = 0;
+		if(grid(x - 1,y - 1)) i += 1;
+		if(grid(x,y - 1)) i += 2;
+		if(grid(x - 1,y)) i += 4;
+		if(grid(x,y)) i += 8;
+		if(i == 6) {
+			dx = pdy == -1?-1:1;
+			dy = 0;
+		} else if(i == 9) {
+			dx = 0;
+			dy = pdx == 1?-1:1;
+		} else {
+			dx = thx.geom.Contour.contourDx[i];
+			dy = thx.geom.Contour.contourDy[i];
+		}
+		if(dx != pdx && dy != pdy) {
+			c.push([x,y]);
+			pdx = dx;
+			pdy = dy;
+		}
+		x += dx;
+		y += dy;
+	} while(s[0] != x || s[1] != y);
+	return c;
+}
 thx.geom.Polygon = function(coordinates) {
 	this.coordinates = coordinates;
 };
+$hxClasses["thx.geom.Polygon"] = thx.geom.Polygon;
 thx.geom.Polygon.__name__ = ["thx","geom","Polygon"];
+thx.geom.Polygon.polygonInside = function(p,a,b) {
+	return (b[0] - a[0]) * (p[1] - a[1]) < (b[1] - a[1]) * (p[0] - a[0]);
+}
+thx.geom.Polygon.polygonIntersect = function(c,d,a,b) {
+	var x1 = c[0], x2 = d[0], x3 = a[0], x4 = b[0], y1 = c[1], y2 = d[1], y3 = a[1], y4 = b[1], x13 = x1 - x3, x21 = x2 - x1, x43 = x4 - x3, y13 = y1 - y3, y21 = y2 - y1, y43 = y4 - y3, ua = (x43 * y13 - y43 * x13) / (y43 * x21 - x43 * y21);
+	return [x1 + ua * x21,y1 + ua * y21];
+}
 thx.geom.Polygon.prototype = {
-	centroid: function(k) {
+	clip: function(subject) {
+		var input, a = Arrays.last(this.coordinates), b, c, d, m;
+		var _g1 = 0, _g = this.coordinates.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			input = subject.slice();
+			subject = [];
+			b = this.coordinates[i];
+			c = input[(m = input.length) - 1];
+			var _g2 = 0;
+			while(_g2 < m) {
+				var j = _g2++;
+				d = input[j];
+				if(thx.geom.Polygon.polygonInside(d,a,b)) {
+					if(!thx.geom.Polygon.polygonInside(c,a,b)) subject.push(thx.geom.Polygon.polygonIntersect(c,d,a,b));
+					subject.push(d);
+				} else if(thx.geom.Polygon.polygonInside(c,a,b)) subject.push(thx.geom.Polygon.polygonIntersect(c,d,a,b));
+				c = d;
+			}
+			a = b;
+		}
+		return subject;
+	}
+	,centroid: function(k) {
 		var a, b, c, x = 0.0, y = 0.0;
 		if(null == k) k = 1 / (6 * this.area());
 		var _g1 = 0, _g = this.coordinates.length - 1;
@@ -17503,9 +23694,48 @@ thx.geom.layout.Pie = function() {
 		return Number(d);
 	};
 };
+$hxClasses["thx.geom.layout.Pie"] = thx.geom.layout.Pie;
 thx.geom.layout.Pie.__name__ = ["thx","geom","layout","Pie"];
 thx.geom.layout.Pie.prototype = {
-	pie: function(data,i) {
+	valuef: function(v) {
+		this._value = v;
+		return this;
+	}
+	,getValue: function() {
+		return this._value;
+	}
+	,sort: function(v) {
+		this._sort = v;
+		return this;
+	}
+	,getSort: function() {
+		return this._sort;
+	}
+	,endAnglef: function(v) {
+		this._endAngle = v;
+		return this;
+	}
+	,endAngle: function(v) {
+		return this.endAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,getEndAngle: function() {
+		return this._endAngle;
+	}
+	,startAnglef: function(v) {
+		this._startAngle = v;
+		return this;
+	}
+	,startAngle: function(v) {
+		return this.startAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,getStartAngle: function() {
+		return this._startAngle;
+	}
+	,pie: function(data,i) {
 		var a = this._startAngle(data,i), k = this._endAngle(data,i) - a;
 		var index = Ints.range(data.length);
 		if(this._sort != null) {
@@ -17538,6 +23768,7 @@ thx.geom.layout.Stack = function() {
 	this._order = thx.geom.layout.StackOrder.DefaultOrder;
 	this._offset = thx.geom.layout.StackOffset.ZeroOffset;
 };
+$hxClasses["thx.geom.layout.Stack"] = thx.geom.layout.Stack;
 thx.geom.layout.Stack.__name__ = ["thx","geom","layout","Stack"];
 thx.geom.layout.Stack.getStackOrder = function(order,data) {
 	switch( (order)[1] ) {
@@ -17659,9 +23890,15 @@ thx.geom.layout.Stack.prototype = {
 		this._offset = x;
 		return this;
 	}
+	,getOffset: function() {
+		return this._offset;
+	}
 	,order: function(x) {
 		this._order = x;
 		return this;
+	}
+	,getOrder: function() {
+		return this._order;
 	}
 	,stack: function(data) {
 		var n = data.length, m = data[0].length, i, j, y0, result = [];
@@ -17695,7 +23932,7 @@ thx.geom.layout.Stack.prototype = {
 	,_order: null
 	,__class__: thx.geom.layout.Stack
 }
-thx.geom.layout.StackOrder = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
+thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
 thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
 thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
 thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
@@ -17705,7 +23942,7 @@ thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
 thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
 thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
 thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOffset = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
+thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
 thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
 thx.geom.layout.StackOffset.Silhouette.toString = $estr;
 thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
@@ -17718,6 +23955,7 @@ thx.geom.layout.StackOffset.ZeroOffset.__enum__ = thx.geom.layout.StackOffset;
 thx.graph = {}
 thx.graph.EdgeSplitter = function() {
 };
+$hxClasses["thx.graph.EdgeSplitter"] = thx.graph.EdgeSplitter;
 thx.graph.EdgeSplitter.__name__ = ["thx","graph","EdgeSplitter"];
 thx.graph.EdgeSplitter.prototype = {
 	split: function(layout,splitted,dataf,edgef) {
@@ -17753,9 +23991,16 @@ thx.graph.GraphElement = function(graph,id,data) {
 	this.data = data;
 	this.graph = graph;
 };
+$hxClasses["thx.graph.GraphElement"] = thx.graph.GraphElement;
 thx.graph.GraphElement.__name__ = ["thx","graph","GraphElement"];
+thx.graph.GraphElement.friendDestroy = function(item) {
+	return item;
+}
 thx.graph.GraphElement.prototype = {
-	destroy: function() {
+	destroyed: function() {
+		return null == this.graph;
+	}
+	,destroy: function() {
 		this.graph = null;
 		this.id = -1;
 	}
@@ -17770,16 +24015,30 @@ thx.graph.GEdge = function(graph,id,tail,head,weight,data) {
 	this.head = head;
 	this.weight = weight;
 };
+$hxClasses["thx.graph.GEdge"] = thx.graph.GEdge;
 thx.graph.GEdge.__name__ = ["thx","graph","GEdge"];
 thx.graph.GEdge.create = function(graph,id,tail,head,weight,data) {
 	return new thx.graph.GEdge(graph,id,tail,head,weight,data);
 }
 thx.graph.GEdge.__super__ = thx.graph.GraphElement;
 thx.graph.GEdge.prototype = $extend(thx.graph.GraphElement.prototype,{
-	invert: function() {
+	toString: function() {
+		return null == this.graph?"Edge Destroyed":"Edge (n." + this.id + ", tail: n." + this.tail.id + ", head: n." + this.head.id + ", weight : " + this.weight + (null == this.data?"":", data: " + Std.string(this.data)) + ")";
+	}
+	,friendRemove: function() {
+		return this.graph.edges;
+	}
+	,remove: function() {
+		this.graph.edges._remove(this);
+	}
+	,invert: function() {
 		var inverted = this.graph.edges.create(this.head,this.tail,this.weight,this.data);
 		this.graph.edges._remove(this);
 		return inverted;
+	}
+	,other: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("node is part of the edge graph",null,null,{ fileName : "GEdge.hx", lineNumber : 61, className : "thx.graph.GEdge", methodName : "other"});
+		if(this.tail == node) return this.head; else if(this.head == node) return this.tail; else throw new thx.error.Error("node is not part of the edge",null,null,{ fileName : "GEdge.hx", lineNumber : 67, className : "thx.graph.GEdge", methodName : "other"});
 	}
 	,split: function(times,dataf,edgef) {
 		if(times == null) times = 1;
@@ -17818,22 +24077,66 @@ thx.graph.GEdge.prototype = $extend(thx.graph.GraphElement.prototype,{
 thx.graph.GNode = function(graph,id,data) {
 	thx.graph.GraphElement.call(this,graph,id,data);
 };
+$hxClasses["thx.graph.GNode"] = thx.graph.GNode;
 thx.graph.GNode.__name__ = ["thx","graph","GNode"];
 thx.graph.GNode.create = function(graph,id,data) {
 	return new thx.graph.GNode(graph,id,data);
 }
 thx.graph.GNode.__super__ = thx.graph.GraphElement;
 thx.graph.GNode.prototype = $extend(thx.graph.GraphElement.prototype,{
-	negatives: function() {
+	toString: function() {
+		return null == this.graph?"Node Destroyed":"Node (n." + this.id + ", positives " + this.graph.edges.positiveCount(this) + ", negatives: " + this.graph.edges.negativeCount(this) + (null == this.data?"":", data: " + Std.string(this.data)) + ")";
+	}
+	,friendEdges: function() {
+		return this.graph.edges;
+	}
+	,friendRemove: function() {
+		return this.graph.nodes;
+	}
+	,remove: function() {
+		this.graph.nodes._remove(this);
+	}
+	,negativeCount: function() {
+		return this.graph.edges.negativeCount(this);
+	}
+	,positiveCount: function() {
+		return this.graph.edges.positiveCount(this);
+	}
+	,edgeCount: function() {
+		return this.graph.edges.edgeCount(this);
+	}
+	,sortNegatives: function(sortf) {
+		this.graph.edges.sortNegatives(this,sortf);
+	}
+	,sortPositives: function(sortf) {
+		this.graph.edges.sortPositives(this,sortf);
+	}
+	,negatives: function() {
 		return this.graph.edges.negatives(this);
 	}
 	,positives: function() {
 		return this.graph.edges.positives(this);
 	}
+	,edges: function() {
+		return this.graph.edges.edges(this);
+	}
 	,predecessorBy: function(successor) {
 		return Iterators.firstf(this.graph.edges.positives(this),function(edge) {
 			return edge.head.id == successor.id;
 		});
+	}
+	,successorBy: function(predecessor) {
+		return Iterators.firstf(this.graph.edges.negatives(this),function(edge) {
+			return edge.tail.id == predecessor.id;
+		});
+	}
+	,isPredecessorOf: function(successor) {
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == successor.id;
+		});
+	}
+	,isSuccessorOf: function(predecessor) {
+		return predecessor.isPredecessorOf(this);
 	}
 	,isIsolated: function() {
 		return !this.graph.edges.edges(this).hasNext();
@@ -17868,6 +24171,14 @@ thx.graph.GNode.prototype = $extend(thx.graph.GraphElement.prototype,{
 			return edge1.tail.id == other.id;
 		});
 	}
+	,isConnectedTo: function(other) {
+		if(other.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GNode.hx", lineNumber : 30, className : "thx.graph.GNode", methodName : "isConnectedTo"});
+		return Iterators.contains(this.graph.edges.positives(this),null,function(edge) {
+			return edge.head.id == other.id;
+		}) || Iterators.contains(this.graph.edges.negatives(this),null,function(edge) {
+			return edge.tail.id == other.id;
+		});
+	}
 	,destroy: function() {
 		thx.graph.GraphElement.prototype.destroy.call(this);
 	}
@@ -17877,15 +24188,115 @@ thx.graph.Graph = function(nodeidf,edgeidf) {
 	this.nodes = thx.graph.GraphNodes.newInstance(this,nodeidf);
 	this.edges = thx.graph.GraphEdges.newInstance(this,edgeidf);
 };
+$hxClasses["thx.graph.Graph"] = thx.graph.Graph;
 thx.graph.Graph.__name__ = ["thx","graph","Graph"];
+thx.graph.Graph.friendNodes = function(friend) {
+	return friend;
+}
+thx.graph.Graph.friendEdges = function(friend) {
+	return friend;
+}
 thx.graph.Graph.prototype = {
-	findIsolateds: function() {
+	toString: function() {
+		return "Graph (nodes: " + IntHashes.count(this.nodes.collection) + ", edges: " + IntHashes.count(this.edges.collection) + ")";
+	}
+	,pickPath: function(paths,weighted) {
+		if(paths.length == 0) return null;
+		if(weighted) return Arrays.min(paths,function(arr) {
+			return arr.reduce(function(acc,edge,_) {
+				return acc + edge.weight;
+			},0);
+		}); else return Arrays.min(paths,function(arr) {
+			return arr.length;
+		});
+	}
+	,directedPath: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.directedPaths(a,b),weighted);
+	}
+	,directedPaths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse1 = null;
+			traverse1 = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.positives(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.head;
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,n1) {
+						return function() {
+							return f(a1,n1);
+						};
+					})(traverse1,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse1;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,path: function(a,b,weighted) {
+		if(weighted == null) weighted = false;
+		return this.pickPath(this.paths(a,b),weighted);
+	}
+	,paths: function(a,b) {
+		var traveled = new thx.collection.Set(), paths = [], other, r;
+		var traverse = (function($this) {
+			var $r;
+			var traverse1 = null;
+			traverse1 = function(path,n) {
+				var totraverse = [];
+				var $it0 = n.graph.edges.edges(n);
+				while( $it0.hasNext() ) {
+					var edge = $it0.next();
+					other = edge.other(n);
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,n1) {
+						return function() {
+							return f(a1,n1);
+						};
+					})(traverse1,path.concat([edge]),other));
+					traveled.add(edge.id);
+				}
+				var _g = 0;
+				while(_g < totraverse.length) {
+					var t = totraverse[_g];
+					++_g;
+					t();
+				}
+			};
+			$r = traverse1;
+			return $r;
+		}(this));
+		traverse([],a);
+		return paths;
+	}
+	,findIsolated: function() {
+		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isIsolated();
+		});
+	}
+	,findIsolateds: function() {
 		return Iterators.filter(this.nodes.iterator(),function(n) {
 			return n.isIsolated();
 		});
 	}
 	,findSource: function() {
 		return Iterators.firstf(this.nodes.iterator(),function(n) {
+			return n.isSource();
+		});
+	}
+	,findSources: function() {
+		return Iterators.filter(this.nodes.iterator(),function(n) {
 			return n.isSource();
 		});
 	}
@@ -17904,6 +24315,13 @@ thx.graph.Graph.prototype = {
 		g.nodes = this.nodes.copyTo(g);
 		g.edges = this.edges.copyTo(g);
 		return g;
+	}
+	,clear: function() {
+		this.edges.clear();
+		this.nodes.clear();
+	}
+	,empty: function() {
+		return Iterators.count(this.nodes.iterator()) == 0;
 	}
 	,edges: null
 	,nodes: null
@@ -17931,6 +24349,7 @@ thx.graph.GraphCollection = function(graph,idf) {
 	this.onRemove = new hxevents.Dispatcher();
 	this.onCreate = new hxevents.Dispatcher();
 };
+$hxClasses["thx.graph.GraphCollection"] = thx.graph.GraphCollection;
 thx.graph.GraphCollection.__name__ = ["thx","graph","GraphCollection"];
 thx.graph.GraphCollection.prototype = {
 	toString: function() {
@@ -17949,6 +24368,12 @@ thx.graph.GraphCollection.prototype = {
 		this.onCreate.dispatch(item);
 		this.collection.set(item.id,item);
 	}
+	,get_length: function() {
+		return IntHashes.count(this.collection);
+	}
+	,has: function(item) {
+		return item.graph == this.graph && this.collection.exists(item.id);
+	}
 	,get: function(id) {
 		return this.collection.get(id);
 	}
@@ -17964,12 +24389,14 @@ thx.graph.GraphCollection.prototype = {
 	,onCreate: null
 	,onRemove: null
 	,__class__: thx.graph.GraphCollection
+	,__properties__: {get_length:"get_length"}
 }
 thx.graph.GraphEdges = function(graph,edgeidf) {
 	thx.graph.GraphCollection.call(this,graph,edgeidf);
 	this.edgesp = new IntHash();
 	this.edgesn = new IntHash();
 };
+$hxClasses["thx.graph.GraphEdges"] = thx.graph.GraphEdges;
 thx.graph.GraphEdges.__name__ = ["thx","graph","GraphEdges"];
 thx.graph.GraphEdges.newInstance = function(graph,edgeidf) {
 	return new thx.graph.GraphEdges(graph,edgeidf);
@@ -17990,6 +24417,15 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 		if(null == c) connections.set(id,c = []);
 		return c;
 	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).slice();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
 	,_unlink: function(node,connections) {
 		var ids = connections.get(node.id);
 		if(null == ids) return;
@@ -18003,6 +24439,14 @@ thx.graph.GraphEdges.prototype = $extend(thx.graph.GraphCollection.prototype,{
 			this._remove(edge);
 		}
 		connections.remove(node.id);
+	}
+	,unlinkNegatives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkeNegatives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 150, className : "thx.graph.GraphEdges", methodName : "unlinkNegatives"});
+		this._unlink(node,this.edgesn);
+	}
+	,unlinkPositives: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("unlinkePositives: the node is not part of this graph",null,null,{ fileName : "GraphEdges.hx", lineNumber : 143, className : "thx.graph.GraphEdges", methodName : "unlinkPositives"});
+		this._unlink(node,this.edgesp);
 	}
 	,_edges: function(id,collection) {
 		var _g = this;
@@ -18101,6 +24545,7 @@ thx.graph.GraphLayout = function(graph,layers) {
 	this.length = this._layers.length;
 	graph.nodes.onRemove.add($bind(this,this._nodeRemove));
 };
+$hxClasses["thx.graph.GraphLayout"] = thx.graph.GraphLayout;
 thx.graph.GraphLayout.__name__ = ["thx","graph","GraphLayout"];
 thx.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 	var map = new IntHash(), c = 0;
@@ -18135,11 +24580,19 @@ thx.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
 	return c;
 }
 thx.graph.GraphLayout.prototype = {
-	_nodeRemove: function(node) {
+	toString: function() {
+		return "GraphLayout (" + Std.string(this.graph) + ", layers: " + this._layers.length + ", crossings : " + this.crossings() + ")";
+	}
+	,_nodeRemove: function(node) {
 		var c = this.cell(node);
 		this._layers[c.layer].splice(c.position,1);
 		if(this._layers[c.layer].length == 0) this._layers.splice(c.layer,1);
 		this._updateMap();
+	}
+	,maxCells: function() {
+		return Arrays.floatMax(this._layers,function(arr) {
+			return arr.length;
+		}) | 0;
 	}
 	,crossings: function() {
 		var tot = 0;
@@ -18221,9 +24674,13 @@ thx.graph.LayoutCell = function(layer,position,layers,positions) {
 	this.position = position;
 	this.positions = positions;
 };
+$hxClasses["thx.graph.LayoutCell"] = thx.graph.LayoutCell;
 thx.graph.LayoutCell.__name__ = ["thx","graph","LayoutCell"];
 thx.graph.LayoutCell.prototype = {
-	update: function(layer,position,layers,positions) {
+	toString: function() {
+		return "LayoutCell, layer " + this.layer + " (" + this.layers + "), position " + this.position + " (" + this.positions + ")";
+	}
+	,update: function(layer,position,layers,positions) {
 		this.layer = layer;
 		this.layers = layers;
 		this.position = position;
@@ -18238,6 +24695,7 @@ thx.graph.LayoutCell.prototype = {
 thx.graph.GraphNodes = function(graph,nodeidf) {
 	thx.graph.GraphCollection.call(this,graph,nodeidf);
 };
+$hxClasses["thx.graph.GraphNodes"] = thx.graph.GraphNodes;
 thx.graph.GraphNodes.__name__ = ["thx","graph","GraphNodes"];
 thx.graph.GraphNodes.newInstance = function(graph,nodeidf) {
 	return new thx.graph.GraphNodes(graph,nodeidf);
@@ -18247,10 +24705,23 @@ thx.graph.GraphNodes.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	toString: function() {
 		return "GraphNodes (" + IntHashes.count(this.collection) + "): " + thx.graph.GraphCollection.prototype.toString.call(this);
 	}
+	,clear: function() {
+		var items = Iterators.array(this.collection.iterator()).slice();
+		var _g = 0;
+		while(_g < items.length) {
+			var item = items[_g];
+			++_g;
+			this.remove(item);
+		}
+	}
 	,_remove: function(node) {
 		this.graph.edges.unlink(node);
 		this.collectionRemove(node);
 		node.destroy();
+	}
+	,remove: function(node) {
+		if(node.graph != this.graph) throw new thx.error.Error("the node is not part of this graph",null,null,{ fileName : "GraphNodes.hx", lineNumber : 39, className : "thx.graph.GraphNodes", methodName : "remove"});
+		this._remove(node);
 	}
 	,_create: function(id,data) {
 		var n = thx.graph.GNode.create(this.graph,id,data);
@@ -18273,7 +24744,96 @@ thx.graph.GraphNodes.prototype = $extend(thx.graph.GraphCollection.prototype,{
 	,__class__: thx.graph.GraphNodes
 });
 thx.graph.Graphs = function() { }
+$hxClasses["thx.graph.Graphs"] = thx.graph.Graphs;
 thx.graph.Graphs.__name__ = ["thx","graph","Graphs"];
+thx.graph.Graphs.crossings = function(a,b) {
+	var map = new Hash(), c = 0;
+	var _g1 = 0, _g = b.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		map.set(b[i].vertex,i);
+	}
+	if(a.length <= 1 || b.length <= 1) return c;
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var n1 = a[i];
+		var _g2 = 0, _g3 = n1.edgesp;
+		while(_g2 < _g3.length) {
+			var dst1 = _g3[_g2];
+			++_g2;
+			var p1 = map.get(dst1);
+			if(null == p1) continue;
+			var _g5 = i + 1, _g4 = a.length;
+			while(_g5 < _g4) {
+				var j = _g5++;
+				var n2 = a[j];
+				var _g6 = 0, _g7 = n2.edgesp;
+				while(_g6 < _g7.length) {
+					var dst2 = _g7[_g6];
+					++_g6;
+					var p2 = map.get(dst2);
+					if(p2 < p1) c++;
+				}
+			}
+		}
+	}
+	return c;
+}
+thx.graph.Graphs.layoutCrossings = function(a) {
+	var tot = 0;
+	var _g1 = 0, _g = a.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		tot += thx.graph.Graphs.crossings(a[i],a[i + 1]);
+	}
+	return tot;
+}
+thx.graph.Graphs.toMap = function(layout) {
+	var map = new Hash();
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			map.set(layout[i][j].vertex,layout[i][j]);
+		}
+	}
+	return map;
+}
+thx.graph.Graphs.toVertices = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			result.push(layout[i][j].vertex);
+		}
+	}
+	return result;
+}
+thx.graph.Graphs.toEdges = function(layout) {
+	var result = [];
+	var _g1 = 0, _g = layout.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g3 = 0, _g2 = layout[i].length;
+		while(_g3 < _g2) {
+			var j = _g3++;
+			var v = layout[i][j].vertex;
+			var _g4 = 0, _g5 = layout[i][j].edgesp;
+			while(_g4 < _g5.length) {
+				var c = _g5[_g4];
+				++_g4;
+				result.push({ a : v, b : c});
+			}
+		}
+	}
+	return result;
+}
 thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
 	var $it0 = graph.iterator();
@@ -18287,8 +24847,132 @@ thx.graph.Graphs.findMaxPositiveOverNegative = function(graph) {
 	}
 	return n;
 }
+thx.graph.Graphs.isSink = function(node) {
+	return node.edgesp.length == 0 && node.edgesn.length > 0;
+}
+thx.graph.Graphs.isSource = function(node) {
+	return node.edgesn.length == 0 && node.edgesp.length == 0;
+}
+thx.graph.Graphs.findSink = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesp.length == 0 && node.edgesn.length > 0) return node;
+	}
+	return null;
+}
+thx.graph.Graphs.findSource = function(graph) {
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length > 0) return node;
+	}
+	return null;
+}
+thx.graph.Graphs.findAllIsolated = function(graph) {
+	var isolated = [];
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		if(node.edgesn.length == 0 && node.edgesp.length == 0) isolated.push(node);
+	}
+	return isolated;
+}
+thx.graph.Graphs.addConnection = function(graph,a,b) {
+	var path = thx.graph.Graphs.findPath(graph,b,a);
+	if(null != path && path.every(function(v,i) {
+		return i == 0 || i == path.length - 1 || thx.graph.Graphs.isDummy(v);
+	})) {
+		path.reverse();
+		thx.graph.Graphs.addConnections(graph,path);
+	} else thx.graph.Graphs.addConnections(graph,[a,b]);
+}
+thx.graph.Graphs.addConnections = function(graph,arr) {
+	var _g1 = 0, _g = arr.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a = arr[i], b = arr[i + 1];
+		graph.get(a).edgesp.push(b);
+		graph.get(b).edgesp.push(a);
+	}
+}
+thx.graph.Graphs.reverseConnection = function(graph,a,b) {
+	var path = thx.graph.Graphs.findPath(graph,a,b);
+	if(null == path) return false;
+	var _g1 = 0, _g = path.length - 1;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var a1 = path[i], b1 = path[i + 1], na = graph.get(a1), nb = graph.get(b1);
+		HxOverrides.remove(na.edgesp,b1);
+		na.edgesn.push(b1);
+		HxOverrides.remove(nb.edgesn,a1);
+		nb.edgesp.push(a1);
+	}
+	return true;
+}
+thx.graph.Graphs.findPath = function(graph,a,b) {
+	var traveled = new thx.collection.Set(), paths = [], t, r;
+	var traverse = (function($this) {
+		var $r;
+		var traverse1 = null;
+		traverse1 = function(path,n) {
+			var totraverse = [];
+			var _g = 0, _g1 = n.edgesn;
+			while(_g < _g1.length) {
+				var parent = _g1[_g];
+				++_g;
+				if(parent == a) return path.concat([a]); else if(thx.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,n1) {
+					return function() {
+						return f(a1,n1);
+					};
+				})(traverse1,path.concat([parent]),t));
+			}
+			var _g = 0;
+			while(_g < totraverse.length) {
+				var t1 = totraverse[_g];
+				++_g;
+				if(null != (r = t1())) return r;
+			}
+			return null;
+		};
+		$r = traverse1;
+		return $r;
+	}(this));
+	var p = traverse([b],graph.get(b));
+	if(null == p) return null;
+	p.reverse();
+	return p;
+}
+thx.graph.Graphs.isDummy = function(v) {
+	return HxOverrides.substr(v,0,1) == "#";
+}
+thx.graph.Graphs.createDummy = function(a,b,lvl) {
+	return "#" + ++thx.graph.Graphs.id;
+}
+thx.graph.Graphs.removeNode = function(graph,node) {
+	graph.remove(node.vertex);
+}
+thx.graph.Graphs.addNode = function(graph,node) {
+	graph.set(node.vertex,node);
+}
+thx.graph.Graphs.clone = function(graph) {
+	var o = new Hash();
+	var $it0 = graph.iterator();
+	while( $it0.hasNext() ) {
+		var node = $it0.next();
+		thx.graph.Graphs.addNode(o,{ vertex : node.vertex, edgesn : node.edgesn.slice(), edgesp : node.edgesp.slice()});
+	}
+	return o;
+}
+thx.graph.Graphs.empty = function(graph) {
+	return Hashes.count(graph) == 0;
+}
+thx.graph.Graphs.count = function(graph) {
+	return Hashes.count(graph);
+}
 thx.graph.GreedyCyclePartitioner = function() {
 };
+$hxClasses["thx.graph.GreedyCyclePartitioner"] = thx.graph.GreedyCyclePartitioner;
 thx.graph.GreedyCyclePartitioner.__name__ = ["thx","graph","GreedyCyclePartitioner"];
 thx.graph.GreedyCyclePartitioner.findMaxPositiveOverNegative = function(graph) {
 	var n = null, l = 0;
@@ -18354,6 +25038,7 @@ thx.graph.GreedyCyclePartitioner.prototype = {
 }
 thx.graph.GreedySwitchDecrosser = function() {
 };
+$hxClasses["thx.graph.GreedySwitchDecrosser"] = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitchDecrosser.__name__ = ["thx","graph","GreedySwitchDecrosser"];
 thx.graph.GreedySwitchDecrosser.combined = function() {
 	var decross = function(layout) {
@@ -18416,6 +25101,7 @@ thx.graph.GreedySwitchDecrosser.prototype = {
 thx.graph.GreedySwitch2Decrosser = function() {
 	thx.graph.GreedySwitchDecrosser.call(this);
 };
+$hxClasses["thx.graph.GreedySwitch2Decrosser"] = thx.graph.GreedySwitch2Decrosser;
 thx.graph.GreedySwitch2Decrosser.__name__ = ["thx","graph","GreedySwitch2Decrosser"];
 thx.graph.GreedySwitch2Decrosser.__super__ = thx.graph.GreedySwitchDecrosser;
 thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecrosser.prototype,{
@@ -18460,6 +25146,7 @@ thx.graph.GreedySwitch2Decrosser.prototype = $extend(thx.graph.GreedySwitchDecro
 });
 thx.graph.HeaviestNodeLayer = function() {
 };
+$hxClasses["thx.graph.HeaviestNodeLayer"] = thx.graph.HeaviestNodeLayer;
 thx.graph.HeaviestNodeLayer.__name__ = ["thx","graph","HeaviestNodeLayer"];
 thx.graph.HeaviestNodeLayer.prototype = {
 	lay: function(graph) {
@@ -18502,6 +25189,7 @@ thx.graph.HeaviestNodeLayer.prototype = {
 }
 thx.graph.LongestPathLayer = function() {
 };
+$hxClasses["thx.graph.LongestPathLayer"] = thx.graph.LongestPathLayer;
 thx.graph.LongestPathLayer.__name__ = ["thx","graph","LongestPathLayer"];
 thx.graph.LongestPathLayer.distanceToASink = function(graph,node) {
 	var traverse = (function($this) {
@@ -18546,6 +25234,7 @@ thx.graph.LongestPathLayer.prototype = {
 }
 thx.graph.OneCycleRemover = function() {
 };
+$hxClasses["thx.graph.OneCycleRemover"] = thx.graph.OneCycleRemover;
 thx.graph.OneCycleRemover.__name__ = ["thx","graph","OneCycleRemover"];
 thx.graph.OneCycleRemover.prototype = {
 	remove: function(graph) {
@@ -18569,6 +25258,7 @@ thx.graph.SugiyamaMethod = function(partitioner,layer,splitter,decrosser) {
 	this.splitter = null == splitter?new thx.graph.EdgeSplitter():splitter;
 	this.decrosser = null == decrosser?thx.graph.GreedySwitchDecrosser.best():decrosser;
 };
+$hxClasses["thx.graph.SugiyamaMethod"] = thx.graph.SugiyamaMethod;
 thx.graph.SugiyamaMethod.__name__ = ["thx","graph","SugiyamaMethod"];
 thx.graph.SugiyamaMethod.prototype = {
 	resolve: function(graph,nodef,edgef) {
@@ -18615,6 +25305,7 @@ thx.graph.SugiyamaMethod.prototype = {
 }
 thx.graph.TwoCycleRemover = function() {
 };
+$hxClasses["thx.graph.TwoCycleRemover"] = thx.graph.TwoCycleRemover;
 thx.graph.TwoCycleRemover.__name__ = ["thx","graph","TwoCycleRemover"];
 thx.graph.TwoCycleRemover.prototype = {
 	remove: function(graph) {
@@ -18637,7 +25328,10 @@ thx.graph.TwoCycleRemover.prototype = {
 }
 thx.json = {}
 thx.json.Json = function() { }
+$hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
+thx.json.Json.nativeEncoder = null;
+thx.json.Json.nativeDecoder = null;
 thx.json.Json.encode = function(value) {
 	if(null != thx.json.Json.nativeEncoder) return thx.json.Json.nativeEncoder(value);
 	var handler = new thx.json.JsonEncoder();
@@ -18655,6 +25349,7 @@ thx.json.JsonDecoder = function(handler,tabsize) {
 	this.handler = handler;
 	this.tabsize = tabsize;
 };
+$hxClasses["thx.json.JsonDecoder"] = thx.json.JsonDecoder;
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	error: function(msg) {
@@ -18915,12 +25610,13 @@ thx.json.JsonDecoder.prototype = {
 	,__class__: thx.json.JsonDecoder
 }
 thx.json._JsonDecoder = {}
-thx.json._JsonDecoder.StreamError = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
+thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
 thx.json.JsonEncoder = function() {
 };
+$hxClasses["thx.json.JsonEncoder"] = thx.json.JsonEncoder;
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
@@ -18933,57 +25629,57 @@ thx.json.JsonEncoder.prototype = {
 	,comment: function(s) {
 	}
 	,valueBool: function(b) {
-		this.buf += b?"true":"false";
+		this.buf.b += Std.string(b?"true":"false");
 	}
 	,valueNull: function() {
-		this.buf += "null";
+		this.buf.b += Std.string("null");
 	}
 	,valueFloat: function(f) {
-		this.buf += f;
+		this.buf.b += Std.string(f);
 	}
 	,valueInt: function(i) {
-		this.buf += i;
+		this.buf.b += Std.string(i);
 	}
 	,valueString: function(s) {
-		this.buf += this.quote(s);
+		this.buf.b += Std.string(this.quote(s));
 	}
 	,valueDate: function(d) {
-		this.buf += d.getTime();
+		this.buf.b += Std.string(d.getTime());
 	}
 	,arrayEnd: function() {
-		this.buf += "]";
+		this.buf.b += Std.string("]");
 		this.count.pop();
 	}
 	,arrayItemEnd: function() {
 	}
 	,arrayItemStart: function() {
-		if(this.count[this.count.length - 1]++ > 0) this.buf += ",";
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
 	}
 	,arrayStart: function() {
-		this.buf += "[";
+		this.buf.b += Std.string("[");
 		this.count.push(0);
 	}
 	,objectEnd: function() {
-		this.buf += "}";
+		this.buf.b += Std.string("}");
 		this.count.pop();
 	}
 	,objectFieldEnd: function() {
 	}
 	,objectFieldStart: function(name) {
-		if(this.count[this.count.length - 1]++ > 0) this.buf += ",";
-		this.buf += this.quote(name) + ":";
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		this.buf.b += Std.string(this.quote(name) + ":");
 	}
 	,objectStart: function() {
-		this.buf += "{";
+		this.buf.b += Std.string("{");
 		this.count.push(0);
 	}
 	,end: function() {
-		this.encodedString = this.buf;
+		this.encodedString = this.buf.b;
 		this.buf = null;
 	}
 	,start: function() {
 		this.lvl = 0;
-		this.buf = new String();
+		this.buf = new StringBuf();
 		this.encodedString = null;
 		this.count = [];
 	}
@@ -18994,8 +25690,10 @@ thx.json.JsonEncoder.prototype = {
 	,__class__: thx.json.JsonEncoder
 }
 thx.math.Const = function() { }
+$hxClasses["thx.math.Const"] = thx.math.Const;
 thx.math.Const.__name__ = ["thx","math","Const"];
 thx.math.Ease = function() { }
+$hxClasses["thx.math.Ease"] = thx.math.Ease;
 thx.math.Ease.__name__ = ["thx","math","Ease"];
 thx.math.Ease.mode = function(easemode,f) {
 	if(null == f) f = thx.math.Equations.cubic;
@@ -19015,7 +25713,7 @@ thx.math.Ease.mode = function(easemode,f) {
 		return thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
 	}
 }
-thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
+thx.math.EaseMode = $hxClasses["thx.math.EaseMode"] = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
 thx.math.EaseMode.EaseIn.__enum__ = thx.math.EaseMode;
@@ -19032,13 +25730,21 @@ thx.math.Random = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
 };
+$hxClasses["thx.math.Random"] = thx.math.Random;
 thx.math.Random.__name__ = ["thx","math","Random"];
 thx.math.Random.prototype = {
-	seed: null
+	'float': function() {
+		return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}
+	,'int': function() {
+		return (this.seed = this.seed * 16807 % 2147483647) & 1073741823;
+	}
+	,seed: null
 	,__class__: thx.math.Random
 }
 thx.math.scale = {}
 thx.math.scale.IScale = function() { }
+$hxClasses["thx.math.scale.IScale"] = thx.math.scale.IScale;
 thx.math.scale.IScale.__name__ = ["thx","math","scale","IScale"];
 thx.math.scale.IScale.prototype = {
 	getRange: null
@@ -19046,11 +25752,49 @@ thx.math.scale.IScale.prototype = {
 	,scale: null
 	,__class__: thx.math.scale.IScale
 }
-thx.math.scale.NumericScale = function() { }
+thx.math.scale.NumericScale = function() {
+	this._domain = [0.0,1.0];
+	this._range = [0.0,1.0];
+	this.f = Floats.interpolatef;
+	this._clamp = false;
+	this.rescale();
+};
+$hxClasses["thx.math.scale.NumericScale"] = thx.math.scale.NumericScale;
 thx.math.scale.NumericScale.__name__ = ["thx","math","scale","NumericScale"];
 thx.math.scale.NumericScale.__interfaces__ = [thx.math.scale.IScale];
+thx.math.scale.NumericScale.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.NumericScale.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
 thx.math.scale.NumericScale.prototype = {
-	tickFormat: function(v,i) {
+	_this: function() {
+		return this;
+	}
+	,transform: function(scale,t,a,b) {
+		var range = this.getRange().map(function(v,_) {
+			return (v - t) / scale;
+		});
+		this.domain([a,b]);
+		var r = range.map($bind(this,this.invert));
+		this.domain(r);
+		return this;
+	}
+	,tickFormat: function(v,i) {
 		return (function($this) {
 			var $r;
 			throw new thx.error.AbstractMethod({ fileName : "NumericScale.hx", lineNumber : 91, className : "thx.math.scale.NumericScale", methodName : "tickFormat"});
@@ -19064,21 +25808,64 @@ thx.math.scale.NumericScale.prototype = {
 			return $r;
 		}(this));
 	}
+	,clamp: function(v) {
+		this._clamp = v;
+		return this.rescale();
+	}
+	,getClamp: function() {
+		return this._clamp;
+	}
+	,interpolatef: function(x) {
+		this.f = x;
+		return this.rescale();
+	}
+	,getInterpolate: function() {
+		return this.f;
+	}
+	,rangeRound: function(r) {
+		this.range(r);
+		this.interpolatef(Ints.interpolatef);
+		return this;
+	}
+	,range: function(r) {
+		this._range = r;
+		return this.rescale();
+	}
 	,getRange: function() {
 		return this._range;
+	}
+	,domain: function(d) {
+		this._domain = d;
+		return this.rescale();
 	}
 	,getDomain: function() {
 		return this._domain;
 	}
+	,invert: function(y,_) {
+		return this._input(y);
+	}
 	,scale: function(x,_) {
 		return this._output(x);
 	}
+	,rescale: function() {
+		var linear = this._domain.length == 2?thx.math.scale.NumericScale.scaleBilinear:thx.math.scale.NumericScale.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+		this._output = linear(this._domain,this._range,uninterpolate,this.f);
+		this._input = linear(this._range,this._domain,uninterpolate,Floats.interpolatef);
+		return this;
+	}
+	,_input: null
 	,_output: null
+	,_clamp: null
+	,f: null
 	,_range: null
 	,_domain: null
 	,__class__: thx.math.scale.NumericScale
 }
-thx.math.scale.Linear = function() { }
+thx.math.scale.Linear = function() {
+	thx.math.scale.NumericScale.call(this);
+	this.m = 10;
+};
+$hxClasses["thx.math.scale.Linear"] = thx.math.scale.Linear;
 thx.math.scale.Linear.__name__ = ["thx","math","scale","Linear"];
 thx.math.scale.Linear.__super__ = thx.math.scale.NumericScale;
 thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,{
@@ -19095,15 +25882,88 @@ thx.math.scale.Linear.prototype = $extend(thx.math.scale.NumericScale.prototype,
 		if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= .75) step *= 2;
 		return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
 	}
+	,modulo: function(m) {
+		this.m = m;
+		return this;
+	}
+	,getModulo: function() {
+		return this.m;
+	}
 	,m: null
 	,__class__: thx.math.scale.Linear
 });
-thx.math.scale.LinearT = function() { }
+thx.math.scale.LinearT = function() {
+	this._domain = [0.0,1.0];
+	this._range = null;
+	this.f = thx.math.scale.LinearT._f;
+	this._clamp = false;
+	this.rescale();
+};
+$hxClasses["thx.math.scale.LinearT"] = thx.math.scale.LinearT;
 thx.math.scale.LinearT.__name__ = ["thx","math","scale","LinearT"];
 thx.math.scale.LinearT.__interfaces__ = [thx.math.scale.IScale];
+thx.math.scale.LinearT._f = function(_,_1,_2) {
+	return function(_3) {
+		return null;
+	};
+}
+thx.math.scale.LinearT.scaleBilinear = function(domain,range,uninterpolate,interpolate) {
+	var u = uninterpolate(domain[0],domain[1]), i = interpolate(range[0],range[1],null);
+	return function(x) {
+		return i(u(x));
+	};
+}
+thx.math.scale.LinearT.scalePolylinear = function(domain,range,uninterpolate,interpolate) {
+	var u = [], i = [];
+	var _g1 = 1, _g = domain.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		u.push(uninterpolate(domain[j - 1],domain[j]));
+		i.push(interpolate(range[j - 1],range[j],null));
+	}
+	return function(x) {
+		var j = Arrays.bisectRight(domain,x,1,domain.length - 1) - 1;
+		return i[j](u[j](x));
+	};
+}
 thx.math.scale.LinearT.prototype = {
-	getRange: function() {
+	tickFormat: function(m) {
+		var n = Math.max(0,-Math.floor(Math.log(this.tickRange(m).step) / 2.302585092994046 + .01));
+		return Floats.formatf("D:" + n);
+	}
+	,ticks: function(m) {
+		var range = this.tickRange(m);
+		return Floats.range(range.start,range.stop,range.step);
+	}
+	,tickRange: function(m) {
+		var start = Math.min(this._domain[0],this._domain[1]), stop = Math.max(this._domain[0],this._domain[1]), span = stop - start, step = Math.pow(10,Math.floor(Math.log(span / m) / 2.302585092994046)), err = m / (span / step);
+		if(err <= .15) step *= 10; else if(err <= .35) step *= 5; else if(err <= -75) step *= 2;
+		return { start : Math.ceil(start / step) * step, stop : Math.floor(stop / step) * step + step * .5, step : step};
+	}
+	,clamp: function(v) {
+		this._clamp = v;
+		return this.rescale();
+	}
+	,getClamp: function() {
+		return this._clamp;
+	}
+	,interpolatef: function(x) {
+		this.f = x;
+		return this.rescale();
+	}
+	,getInterpolate: function() {
+		return this.f;
+	}
+	,range: function(r) {
+		this._range = r;
+		return this.rescale();
+	}
+	,getRange: function() {
 		return this._range;
+	}
+	,domain: function(d) {
+		this._domain = d;
+		return this.rescale();
 	}
 	,getDomain: function() {
 		return this._domain;
@@ -19111,10 +25971,52 @@ thx.math.scale.LinearT.prototype = {
 	,scale: function(x,_) {
 		return this._output(x);
 	}
+	,rescale: function() {
+		if(null == this._range) return this;
+		var linear = this._domain.length == 2?thx.math.scale.LinearT.scaleBilinear:thx.math.scale.LinearT.scalePolylinear, uninterpolate = this._clamp?Floats.uninterpolateClampf:Floats.uninterpolatef;
+		this._output = linear(this._domain,this._range,uninterpolate,this.f);
+		return this;
+	}
 	,_output: null
+	,_clamp: null
+	,f: null
 	,_range: null
 	,_domain: null
 	,__class__: thx.math.scale.LinearT
+}
+thx.math.scale.Linears = function() { }
+$hxClasses["thx.math.scale.Linears"] = thx.math.scale.Linears;
+thx.math.scale.Linears.__name__ = ["thx","math","scale","Linears"];
+thx.math.scale.Linears.forString = function() {
+	return new thx.math.scale.LinearT().interpolatef(Strings.interpolatef);
+}
+thx.math.scale.Linears.forHsl = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Hsl.interpolatef);
+}
+thx.math.scale.Linears.forHslString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Hsl.toHsl(thx.color.Colors.parse(a)), cb = thx.color.Hsl.toHsl(thx.color.Colors.parse(b)), i = thx.color.Hsl.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toHslString();
+		};
+	});
+}
+thx.math.scale.Linears.forRgb = function() {
+	return new thx.math.scale.LinearT().interpolatef(thx.color.Rgb.interpolatef);
+}
+thx.math.scale.Linears.forRgbString = function() {
+	return new thx.math.scale.LinearT().interpolatef(function(a,b,f) {
+		if(Strings.empty(a) || Strings.empty(b)) return function(_) {
+			return "";
+		};
+		var ca = thx.color.Colors.parse(a), cb = thx.color.Colors.parse(b), i = thx.color.Rgb.interpolatef(ca,cb,f);
+		return function(t) {
+			return i(t).toRgbString();
+		};
+	});
 }
 thx.svg = {}
 thx.svg.Arc = function() {
@@ -19131,7 +26033,19 @@ thx.svg.Arc = function() {
 		return Math.PI;
 	};
 };
+$hxClasses["thx.svg.Arc"] = thx.svg.Arc;
 thx.svg.Arc.__name__ = ["thx","svg","Arc"];
+thx.svg.Arc.fromObject = function() {
+	return new thx.svg.Arc().innerRadiusf(function(d,_) {
+		return d.innerRadius;
+	}).outerRadiusf(function(d,_) {
+		return d.outerRadius;
+	}).startAnglef(function(d,_) {
+		return d.startAngle;
+	}).endAnglef(function(d,_) {
+		return d.endAngle;
+	});
+}
 thx.svg.Arc.fromAngleObject = function() {
 	return new thx.svg.Arc().startAnglef(function(d,_) {
 		return d.startAngle;
@@ -19140,7 +26054,11 @@ thx.svg.Arc.fromAngleObject = function() {
 	});
 }
 thx.svg.Arc.prototype = {
-	shape: function(d,i) {
+	centroid: function(d,i) {
+		var r = (this._r0(d,i) + this._r1(d,i)) / 2, a = (this._a0(d,i) + this._a1(d,i)) / 2 + thx.svg.LineInternals.arcOffset;
+		return [Math.cos(a) * r,Math.sin(a) * r];
+	}
+	,shape: function(d,i) {
 		var a0 = this._a0(d,i) + thx.svg.LineInternals.arcOffset, a1 = this._a1(d,i) + thx.svg.LineInternals.arcOffset, da = a1 - a0, df = da < Math.PI?"0":"1", c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1), r0 = this._r0(d,i), r1 = this._r1(d,i);
 		return da >= thx.svg.LineInternals.arcMax?r0 != 0?"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "M0," + r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + -r0 + "A" + r0 + "," + r0 + " 0 1,1 0," + r0 + "Z":"M0," + r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + -r1 + "A" + r1 + "," + r1 + " 0 1,1 0," + r1 + "Z":r0 != 0?"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L" + r0 * c1 + "," + r0 * s1 + "A" + r0 + "," + r0 + " 0 " + df + ",0 " + r0 * c0 + "," + r0 * s0 + "Z":"M" + r1 * c0 + "," + r1 * s0 + "A" + r1 + "," + r1 + " 0 " + df + ",1 " + r1 * c1 + "," + r1 * s1 + "L0,0" + "Z";
 	}
@@ -19148,9 +26066,25 @@ thx.svg.Arc.prototype = {
 		this._a1 = v;
 		return this;
 	}
+	,endAngle: function(v) {
+		return this.endAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,getEndAngle: function() {
+		return this._a1;
+	}
 	,startAnglef: function(v) {
 		this._a0 = v;
 		return this;
+	}
+	,startAngle: function(v) {
+		return this.startAnglef(function(_,_1) {
+			return v;
+		});
+	}
+	,getStartAngle: function() {
+		return this._a0;
 	}
 	,outerRadiusf: function(v) {
 		this._r1 = v;
@@ -19161,6 +26095,9 @@ thx.svg.Arc.prototype = {
 			return v;
 		});
 	}
+	,getOuterRadius: function() {
+		return this._r1;
+	}
 	,innerRadiusf: function(v) {
 		this._r0 = v;
 		return this;
@@ -19169,6 +26106,9 @@ thx.svg.Arc.prototype = {
 		return this.innerRadiusf(function(_,_1) {
 			return v;
 		});
+	}
+	,getInnerRadius: function() {
+		return this._r0;
 	}
 	,_a1: null
 	,_a0: null
@@ -19182,23 +26122,72 @@ thx.svg.Area = function(x,y0,y1,interpolator) {
 	this._y1 = y1;
 	this._interpolator = interpolator;
 };
+$hxClasses["thx.svg.Area"] = thx.svg.Area;
 thx.svg.Area.__name__ = ["thx","svg","Area"];
+thx.svg.Area.pointArray = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d[0];
+	},function(d,_) {
+		return d[1];
+	},function(d,_) {
+		return d[2];
+	},interpolator);
+}
+thx.svg.Area.pointObject = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d.x;
+	},function(d,_) {
+		return d.y0;
+	},function(d,_) {
+		return d.y1;
+	},interpolator);
+}
+thx.svg.Area.pointArray2 = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d[0];
+	},function(_,_1) {
+		return 0.0;
+	},function(d,_) {
+		return d[1];
+	},interpolator);
+}
+thx.svg.Area.pointObjectXY = function(interpolator) {
+	return new thx.svg.Area(function(d,_) {
+		return d.x;
+	},function(_,_1) {
+		return 0.0;
+	},function(d,_) {
+		return d.y;
+	},interpolator);
+}
 thx.svg.Area.prototype = {
 	y1: function(v) {
 		this._y1 = v;
 		return this;
 	}
+	,getY1: function() {
+		return this._y1;
+	}
 	,y0: function(v) {
 		this._y0 = v;
 		return this;
+	}
+	,getY0: function() {
+		return this._y0;
 	}
 	,x: function(v) {
 		this._x = v;
 		return this;
 	}
+	,getX: function() {
+		return this._x;
+	}
 	,interpolator: function(type) {
 		this._interpolator = type;
 		return this;
+	}
+	,getInterpolator: function() {
+		return this._interpolator;
 	}
 	,shape: function(data,i) {
 		var second = thx.svg.LineInternals.linePoints(data,this._x,this._y0);
@@ -19214,6 +26203,7 @@ thx.svg.Area.prototype = {
 thx.svg.Diagonal = function() {
 	this._projection = thx.svg.Diagonal.diagonalProjection;
 };
+$hxClasses["thx.svg.Diagonal"] = thx.svg.Diagonal;
 thx.svg.Diagonal.__name__ = ["thx","svg","Diagonal"];
 thx.svg.Diagonal.diagonalProjection = function(d,_) {
 	return d;
@@ -19237,13 +26227,22 @@ thx.svg.Diagonal.prototype = {
 		this._projection = x;
 		return this;
 	}
+	,getProjection: function() {
+		return this._projection;
+	}
 	,targetf: function(x) {
 		this._target = x;
 		return this;
 	}
+	,getTarget: function() {
+		return this._target;
+	}
 	,sourcef: function(x) {
 		this._source = x;
 		return this;
+	}
+	,getSource: function() {
+		return this._source;
 	}
 	,diagonal: function(d,i) {
 		var p0 = this._source(d,i), p3 = this._target(d,i), m = (p0[1] + p3[1]) / 2, p = [p0,[p0[0],m],[p3[0],m],p3];
@@ -19260,11 +26259,43 @@ thx.svg.Line = function(x,y,interpolator) {
 	this._y = y;
 	this._interpolator = interpolator;
 };
+$hxClasses["thx.svg.Line"] = thx.svg.Line;
 thx.svg.Line.__name__ = ["thx","svg","Line"];
+thx.svg.Line.pointArray = function(interpolator) {
+	return new thx.svg.Line(function(d,_) {
+		return d[0];
+	},function(d,_) {
+		return d[1];
+	},interpolator);
+}
+thx.svg.Line.pointObject = function(interpolator) {
+	return new thx.svg.Line(function(d,_) {
+		return d.x;
+	},function(d,_) {
+		return d.y;
+	},interpolator);
+}
 thx.svg.Line.prototype = {
-	interpolator: function(type) {
+	y: function(v) {
+		this._y = v;
+		return this;
+	}
+	,getY: function() {
+		return this._y;
+	}
+	,x: function(v) {
+		this._x = v;
+		return this;
+	}
+	,getX: function() {
+		return this._x;
+	}
+	,interpolator: function(type) {
 		this._interpolator = type;
 		return this;
+	}
+	,getInterpolator: function() {
+		return this._interpolator;
 	}
 	,shape: function(data,i) {
 		return data.length < 1?null:"M" + thx.svg.LineInternals.interpolatePoints(thx.svg.LineInternals.linePoints(data,this._x,this._y),this._interpolator);
@@ -19275,6 +26306,7 @@ thx.svg.Line.prototype = {
 	,__class__: thx.svg.Line
 }
 thx.svg.LineInternals = function() { }
+$hxClasses["thx.svg.LineInternals"] = thx.svg.LineInternals;
 thx.svg.LineInternals.__name__ = ["thx","svg","LineInternals"];
 thx.svg.LineInternals.linePoints = function(data,x,y) {
 	var points = [], value;
@@ -19398,7 +26430,7 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		if(null == tension) tension = .7;
 		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
 	case 10:
-		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):Std.string(points[0]) + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
+		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
 	}
 	return path.join("");
 }
@@ -19478,7 +26510,7 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 	tangents.push([a * (p2[0] - p0[0]),a * (p2[1] - p0[1])]);
 	return tangents;
 }
-thx.svg.LineInterpolator = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
+thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
 thx.svg.LineInterpolator.Linear.__enum__ = thx.svg.LineInterpolator;
@@ -19507,6 +26539,7 @@ thx.svg.LineInterpolator.Monotone = ["Monotone",10];
 thx.svg.LineInterpolator.Monotone.toString = $estr;
 thx.svg.LineInterpolator.Monotone.__enum__ = thx.svg.LineInterpolator;
 thx.svg.LineInterpolators = function() { }
+$hxClasses["thx.svg.LineInterpolators"] = thx.svg.LineInterpolators;
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
 	if(sep == null) sep = "-";
@@ -19561,9 +26594,87 @@ thx.svg.PathGeoJson = function() {
 	this.centroidTypes = new thx.svg.CentroidTypes(this);
 	this.areaTypes = new thx.svg.AreaTypes(this);
 };
+$hxClasses["thx.svg.PathGeoJson"] = thx.svg.PathGeoJson;
 thx.svg.PathGeoJson.__name__ = ["thx","svg","PathGeoJson"];
 thx.svg.PathGeoJson.circle = function(r) {
 	return "m0," + r + "a" + r + "," + r + " 0 1,1 0," + -2 * r + "a" + r + "," + r + " 0 1,1 0," + 2 * r + "z";
+}
+thx.svg.PathGeoJson.bounds = function(d) {
+	var left = Math.POSITIVE_INFINITY, bottom = Math.POSITIVE_INFINITY, right = Math.NEGATIVE_INFINITY, top = Math.NEGATIVE_INFINITY;
+	thx.svg.PathGeoJson.applyBounds(d,function(x,y) {
+		if(x < left) left = x;
+		if(x > right) right = x;
+		if(y < bottom) bottom = y;
+		if(y > top) top = y;
+	});
+	return [[left,bottom],[right,top]];
+}
+thx.svg.PathGeoJson.applyBounds = function(d,f) {
+	switch(d.type) {
+	case "Feature":
+		thx.svg.PathGeoJson.applyBounds(d.geometry,f);
+		break;
+	case "FeatureCollection":
+		var _g = 0, _g1 = d.features;
+		while(_g < _g1.length) {
+			var feature = _g1[_g];
+			++_g;
+			thx.svg.PathGeoJson.applyBounds(feature.geometry,f);
+		}
+		break;
+	case "LineString":case "MultiPoint":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			f(coords[0],coords[1]);
+		}
+		break;
+	case "MultiLineString":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			var _g1 = 0;
+			while(_g1 < coords.length) {
+				var scoords = coords[_g1];
+				++_g1;
+				f(scoords[0],scoords[1]);
+			}
+		}
+		break;
+	case "MultiPolygon":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			var _g1 = 0, _g2 = coords[0];
+			while(_g1 < _g2.length) {
+				var scoords = _g2[_g1];
+				++_g1;
+				f(scoords[0],scoords[1]);
+			}
+		}
+		break;
+	case "Point":
+		var coordinates = d.coordinates;
+		f(coordinates[0],coordinates[1]);
+		break;
+	case "Polygon":
+		var coordinates = d.coordinates;
+		var _g = 0, _g1 = coordinates[0];
+		while(_g < _g1.length) {
+			var coords = _g1[_g];
+			++_g;
+			f(coords[0],coords[1]);
+		}
+		break;
+	default:
+		throw new thx.error.Error("invalid geomtry type '{0}'",null,d.type,{ fileName : "PathGeoJson.hx", lineNumber : 113, className : "thx.svg.PathGeoJson", methodName : "applyBounds"});
+	}
 }
 thx.svg.PathGeoJson.prototype = {
 	setProjection: function(projection) {
@@ -19573,6 +26684,9 @@ thx.svg.PathGeoJson.prototype = {
 		this.pointRadius = r;
 		this.pathCircle = thx.svg.PathGeoJson.circle(r);
 		return r;
+	}
+	,area: function(d,_) {
+		return this.areaTypes.area(d);
 	}
 	,centroid: function(d,_) {
 		return this.centroidTypes.centroid(d);
@@ -19587,10 +26701,12 @@ thx.svg.PathGeoJson.prototype = {
 	,projection: null
 	,pointRadius: null
 	,__class__: thx.svg.PathGeoJson
+	,__properties__: {set_pointRadius:"setPointRadius",set_projection:"setProjection"}
 }
 thx.svg.PathTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.PathTypes"] = thx.svg.PathTypes;
 thx.svg.PathTypes.__name__ = ["thx","svg","PathTypes"];
 thx.svg.PathTypes.prototype = {
 	project: function(coords) {
@@ -19707,6 +26823,7 @@ thx.svg.PathTypes.prototype = {
 thx.svg.AreaTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.AreaTypes"] = thx.svg.AreaTypes;
 thx.svg.AreaTypes.__name__ = ["thx","svg","AreaTypes"];
 thx.svg.AreaTypes.prototype = {
 	project: function(d,_) {
@@ -19783,6 +26900,7 @@ thx.svg.AreaTypes.prototype = {
 thx.svg.CentroidTypes = function(geo) {
 	this.geo = geo;
 };
+$hxClasses["thx.svg.CentroidTypes"] = thx.svg.CentroidTypes;
 thx.svg.CentroidTypes.__name__ = ["thx","svg","CentroidTypes"];
 thx.svg.CentroidTypes.prototype = {
 	project: function(d,_) {
@@ -19833,6 +26951,7 @@ thx.svg.CentroidTypes.prototype = {
 	,__class__: thx.svg.CentroidTypes
 }
 thx.svg.Symbol = function() { }
+$hxClasses["thx.svg.Symbol"] = thx.svg.Symbol;
 thx.svg.Symbol.__name__ = ["thx","svg","Symbol"];
 thx.svg.Symbol.triangleDown = function(size) {
 	var rx = Math.sqrt(size / thx.svg.Symbol.sqrt3), ry = rx * thx.svg.Symbol.sqrt3 / 2;
@@ -19884,17 +27003,26 @@ thx.svg.Symbol.star = function(size) {
 }
 thx.translation = {}
 thx.translation.ITranslation = function() { }
+$hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
 thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	plural: null
 	,singular: null
 	,domain: null
 	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 thx.util.MacroVersion = function() { }
+$hxClasses["thx.util.MacroVersion"] = thx.util.MacroVersion;
 thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
+thx.util.Result = $hxClasses["thx.util.Result"] = { __ename__ : ["thx","util","Result"], __constructs__ : ["Ok","Failure"] }
+thx.util.Result.Ok = ["Ok",0];
+thx.util.Result.Ok.toString = $estr;
+thx.util.Result.Ok.__enum__ = thx.util.Result;
+thx.util.Result.Failure = function(messages) { var $x = ["Failure",1,messages]; $x.__enum__ = thx.util.Result; $x.toString = $estr; return $x; }
 thx.validation = {}
 thx.validation.IValidator = function() { }
+$hxClasses["thx.validation.IValidator"] = thx.validation.IValidator;
 thx.validation.IValidator.__name__ = ["thx","validation","IValidator"];
 thx.validation.IValidator.prototype = {
 	isValid: null
@@ -19971,26 +27099,28 @@ Math.__name__ = ["Math"];
 Math.NaN = Number.NaN;
 Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+$hxClasses.Math = Math;
 Math.isFinite = function(i) {
 	return isFinite(i);
 };
 Math.isNaN = function(i) {
 	return isNaN(i);
 };
-String.prototype.__class__ = String;
+String.prototype.__class__ = $hxClasses.String = String;
 String.__name__ = ["String"];
-Array.prototype.__class__ = Array;
+Array.prototype.__class__ = $hxClasses.Array = Array;
 Array.__name__ = ["Array"];
-Date.prototype.__class__ = Date;
+Date.prototype.__class__ = $hxClasses.Date = Date;
 Date.__name__ = ["Date"];
-var Int = { __name__ : ["Int"]};
-var Dynamic = { __name__ : ["Dynamic"]};
-var Float = Number;
+var Int = $hxClasses.Int = { __name__ : ["Int"]};
+var Dynamic = $hxClasses.Dynamic = { __name__ : ["Dynamic"]};
+var Float = $hxClasses.Float = Number;
 Float.__name__ = ["Float"];
-var Bool = Boolean;
+var Bool = $hxClasses.Bool = Boolean;
 Bool.__ename__ = ["Bool"];
-var Class = { __name__ : ["Class"]};
+var Class = $hxClasses.Class = { __name__ : ["Class"]};
 var Enum = { };
+var Void = $hxClasses.Void = { __ename__ : ["Void"]};
 var useragent = dhx.ClientHost.userAgent(), hasnavigator = dhx.ClientHost.hasNavigator(), pattern;
 dhx.ClientHost.host = !hasnavigator?dhx.HostType.UnknownServer:typeof module !== 'undefined' && module.exports?dhx.HostType.NodeJs:(pattern = new EReg("MSIE(?:/| )(\\S*);","")).match(useragent)?dhx.HostType.IE(pattern.matched(1)):(pattern = new EReg("Firefox(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Firefox(pattern.matched(1)):(pattern = new EReg("Chrome(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Chrome(pattern.matched(1)):(pattern = new EReg("Version(?:/| )(\\S*) Safari(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Safari(pattern.matched(1)):(pattern = new EReg("Opera(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Opera(pattern.matched(1)):dhx.HostType.Unknown(useragent);
 dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Windows NT\\s+(\\d+\\.\\d+)","")).match(useragent)?(function($this) {
@@ -20414,17 +27544,55 @@ if(null != (j = window.JSON)) {
 	thx.json.Json.nativeDecoder = j.parse;
 	thx.json.Json.nativeEncoder = j.stringify;
 }
+Constants.DIGITS_BASE10 = "0123456789";
+Constants.DIGITS_HEXU = "0123456789ABCDEF";
+Constants.DIGITS_HEXL = "0123456789abcdef";
+Constants.DIGITS_OCTAL = "01234567";
+Constants.DIGITS_BN = "0123456789abcdefghijklmnopqrstuvwxyz";
+Constants.DIGITS_BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+Constants.PROTO_HTTP = "http://";
+Constants.PROTO_HTTPS = "http://";
+Constants.PROTO_FILE = "file://";
+Constants.PROTO_FTP = "ftp://";
+Constants.PROTO_RTMP = "rtmp://";
+DateTools.WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+DateTools.WEEKDAYS_ABBREV = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+DateTools.MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+DateTools.MONTHS_ABBREV = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
 Floats._reparse = new EReg("^[+\\-]?(?:0|[1-9]\\d*)(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?","");
+I32.ZERO = 0;
+I32.ONE = 1;
+I32.BYTE_MASK = 255;
 Ints._reparse = new EReg("^([+-])?\\d+$","");
+Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
+Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
+Strings._reReduceWS = new EReg("\\s+","");
+Strings._reStripTags = new EReg("(<[a-z]+[^>/]*/?>|</[a-z]+>)","i");
 Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
 Strings._reCollapse = new EReg("\\s+","g");
 Strings.__ucwordsPattern = new EReg("[^a-zA-Z]([a-z])","");
+Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
+Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
+Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
+chx.text.Sprintf.kPAD_ZEROES = 1;
+chx.text.Sprintf.kLEFT_ALIGN = 2;
+chx.text.Sprintf.kSHOW_SIGN = 4;
+chx.text.Sprintf.kPAD_POS = 8;
+chx.text.Sprintf.kALT_FORM = 16;
+chx.text.Sprintf.kLONG_VALUE = 32;
+chx.text.Sprintf.kUSE_SEPARATOR = 64;
+chx.text.Sprintf.DEBUG = false;
+chx.text.Sprintf.TRACE = false;
+dhx.Access.FIELD_DATA = "__dhx_data__";
+dhx.Access.FIELD_EVENT = "__dhx_on__";
+dhx.Access.FIELD_TRANSITION = "__dhx_transition__";
 dhx.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 dhx.AccessClassed._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 dhx.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
+js.Lib.onerror = null;
 dhx.Dom.doc = (function() {
 	var g = new dhx.Group([js.Lib.document]), gs = dhx.Selection.create([g]);
 	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
@@ -20448,10 +27616,15 @@ dhx.Namespace.prefix = (function() {
 })();
 dhx.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 dhx.Timer.timeout = 0;
+dhx.Timer.queue = null;
 dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
 dhx.BaseTransition._id = 0;
 dhx.BaseTransition._inheritid = 0;
+math.BigInteger.MAX_RADIX = 36;
+math.BigInteger.MIN_RADIX = 2;
+math.IEEE754.bias = 1024;
+math.IEEE754.cnst = 2102;
 rg.RGConst.BASE_URL_GEOJSON = "https://api.reportgrid.com/geo/json/";
 rg.RGConst.SERVICE_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/up.json";
 rg.RGConst.LEGACY_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
@@ -20459,12 +27632,20 @@ rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;
 rg.app.charts.App.chartsLoaded = 0;
 rg.axis.AxisTime.snapping = { minute : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 30, s : 5},{ to : 60, s : 10},{ to : 120, s : 30},{ to : 240, s : 60},{ to : 960, s : 240}], minutetop : 480, hour : [{ to : 12, s : 1},{ to : 24, s : 6},{ to : 60, s : 12},{ to : 240, s : 24},{ to : 480, s : 48},{ to : 960, s : 120}], hourtop : 240, month : [{ to : 13, s : 1},{ to : 25, s : 2},{ to : 49, s : 4},{ to : 73, s : 6}], monthtop : 12, year : [{ to : 10, s : 1},{ to : 20, s : 2},{ to : 50, s : 5}], yeartop : 10};
+rg.factory.FactoryLayout.LIMIT_WIDTH = 10;
+rg.factory.FactoryLayout.LIMIT_HEIGHT = 10;
+rg.factory.FactoryLayout.DEFAULT_WIDTH = 400;
+rg.factory.FactoryLayout.DEFAULT_HEIGHT = 300;
 rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
 rg.html.widget.Logo.registry = new Hash();
 rg.html.widget.Logo._id = 0;
+rg.html.widget.Logo.LOGO_WIDTH = 194;
+rg.html.widget.Logo.LOGO_HEIGHT = 29;
+rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
+rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
 rg.info.Info.warner = window.console && window.console.warn?function(m) {
 	console.warn("" + Std.string(m));
 }:function(m) {
@@ -20494,15 +27675,19 @@ rg.layout.LayoutX.ALT_TOP = 8;
 rg.layout.LayoutX.ALT_BOTTOM = 8;
 rg.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.svg.chart.StreamGraph.vid = 0;
+rg.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
+rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+rg.util.Properties.TIME_TOKEN = "time:";
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
 rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
 rg.visualization.Visualizations.svg = ["barchart","geo","funnelchart","heatgrid","linechart","piechart","scattergraph","streamgraph","sankey"];
 rg.visualization.Visualizations.visualizations = rg.visualization.Visualizations.svg.concat(rg.visualization.Visualizations.html);
 rg.visualization.Visualizations.layouts = ["simple","cartesian","x"];
 thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
+thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
 thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
@@ -20532,7 +27717,19 @@ thx.date.DateParser.period = "minute|minutes|hour|hours|day|days|week|weeks|mont
 thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.sfullmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.sshortmonths + ")\\s+" + thx.date.DateParser.day + "(?:\\s*,?\\s*(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sfullmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "\\s+(" + thx.date.DateParser.sshortmonths + ")(?:\\s+(\\d{2,4}))?\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(?:" + thx.date.DateParser.day + "\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\s+(\\d{2,4})\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.month + ")/" + thx.date.DateParser.day + "(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b" + thx.date.DateParser.day + "/(" + thx.date.DateParser.month + ")(?:/(\\d{2,4}))?\\b" + ")|(?:" + "\\b(\\d{2,4})-(" + thx.date.DateParser.month + ")-" + thx.date.DateParser.day + "\\b" + ")|(?:" + "^\\s*" + thx.date.DateParser.day + "\\s*$" + "))","i");
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
-thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "(?:\\b|T)(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
+thx.geom.Contour.contourDx = [1,0,1,1,-1,0,-1,1,0,0,0,0,-1,0,-1,null];
+thx.geom.Contour.contourDy = [0,-1,0,0,0,-1,0,0,1,-1,1,1,0,-1,0,null];
+thx.graph.Graphs.id = 0;
+thx.math.Const.TWO_PI = 6.283185307179586477;
+thx.math.Const.PI = 3.141592653589793238;
+thx.math.Const.HALF_PI = 1.570796326794896619;
+thx.math.Const.TO_DEGREE = 57.29577951308232088;
+thx.math.Const.TO_RADIAN = 0.01745329251994329577;
+thx.math.Const.LN10 = 2.302585092994046;
+thx.math.Const.E = 2.71828182845904523536;
+thx.math.scale.Linears._default_color = new thx.color.Hsl(0,0,0);
 thx.svg.LineInternals.arcOffset = -Math.PI / 2;
 thx.svg.LineInternals.arcMax = 2 * Math.PI - 1e-6;
 thx.svg.LineInternals._lineBasisBezier1 = [0,2 / 3,1 / 3,0];
