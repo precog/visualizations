@@ -316,12 +316,12 @@ Arrays.interpolatef = function(a,b,equation) {
 		i++;
 	}
 	while(i < b.length) {
-		var v = [b[i]];
-		functions.push((function(v) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
 			return function(_) {
-				return v[0];
+				return v1[0];
 			};
-		})(v));
+		})(v1));
 		i++;
 	}
 	return function(t) {
@@ -347,12 +347,12 @@ Arrays.interpolateStringsf = function(a,b,equation) {
 		i++;
 	}
 	while(i < b.length) {
-		var v = [b[i]];
-		functions.push((function(v) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
 			return function(_) {
-				return v[0];
+				return v1[0];
 			};
-		})(v));
+		})(v1));
 		i++;
 	}
 	return function(t) {
@@ -378,12 +378,12 @@ Arrays.interpolateIntsf = function(a,b,equation) {
 		i++;
 	}
 	while(i < b.length) {
-		var v = [b[i]];
-		functions.push((function(v) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
 			return function(_) {
-				return v[0];
+				return v1[0];
 			};
-		})(v));
+		})(v1));
 		i++;
 	}
 	return function(t) {
@@ -3337,7 +3337,7 @@ Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
 Std.random = function(x) {
-	return Math.floor(Math.random() * x);
+	return x <= 0?0:Math.floor(Math.random() * x);
 }
 var StringBuf = function() {
 	this.b = "";
@@ -3537,10 +3537,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			return function(f,i) {
+			return function(f0,i1) {
 				return (function() {
 					return function(v) {
-						return f(i,v);
+						return f0(i1,v);
 					};
 				})();
 			};
@@ -3574,16 +3574,16 @@ Strings.formatOnef = function(param,params,culture) {
 		var ellipsis = params.length < 2?"...":params[1];
 		return Strings.ellipsisf(len,ellipsis);
 	case "PR":
-		var len = params.length < 1?10:Std.parseInt(params[0]);
+		var len1 = params.length < 1?10:Std.parseInt(params[0]);
 		var pad = params.length < 2?" ":params[1];
 		return function(v) {
-			return StringTools.rpad(v,pad,len);
+			return StringTools.rpad(v,pad,len1);
 		};
 	case "PL":
-		var len = params.length < 1?10:Std.parseInt(params[0]);
-		var pad = params.length < 2?" ":params[1];
+		var len2 = params.length < 1?10:Std.parseInt(params[0]);
+		var pad1 = params.length < 2?" ":params[1];
 		return function(v) {
-			return StringTools.lpad(v,pad,len);
+			return StringTools.lpad(v,pad1,len2);
 		};
 	default:
 		return (function($this) {
@@ -3753,28 +3753,28 @@ Strings.interpolatef = function(a,b,equation) {
 		if(sa[i] != sb[i]) break;
 		if(null == sa[i]) {
 			if(fa[i] == fb[i]) {
-				var s = ["" + fa[i]];
-				functions.push((function(s) {
+				var s1 = ["" + fa[i]];
+				functions.push((function(s1) {
 					return function(_) {
-						return s[0];
+						return s1[0];
 					};
-				})(s));
+				})(s1));
 			} else {
-				var f = [Floats.interpolatef(fa[i],fb[i],equation)];
+				var f1 = [Floats.interpolatef(fa[i],fb[i],equation)];
 				var dec = [Math.pow(10,Ints.max(decimals(fa[i]),decimals(fb[i])))];
-				functions.push((function(dec,f) {
+				functions.push((function(dec,f1) {
 					return function(t) {
-						return "" + Math.round(f[0](t) * dec[0]) / dec[0];
+						return "" + Math.round(f1[0](t) * dec[0]) / dec[0];
 					};
-				})(dec,f));
+				})(dec,f1));
 			}
 		} else {
-			var s = [sa[i]];
-			functions.push((function(s) {
+			var s2 = [sa[i]];
+			functions.push((function(s2) {
 				return function(_) {
-					return s[0];
+					return s2[0];
 				};
-			})(s));
+			})(s2));
 		}
 		i++;
 	}
@@ -3786,9 +3786,9 @@ Strings.interpolatef = function(a,b,equation) {
 	if("" != rest) functions.push(function(_) {
 		return rest;
 	});
-	return function(t) {
+	return function(t1) {
 		return functions.map(function(f,_) {
-			return f(t);
+			return f(t1);
 		}).join("");
 	};
 }
@@ -5559,9 +5559,9 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 		}
 	}
 	,add: function(name) {
-		this.selection.eachNode((function(f,a1) {
+		this.selection.eachNode((function(f0,a1) {
 			return function(a2,i) {
-				return f(a1,a2,i);
+				return f0(a1,a2,i);
 			};
 		})($bind(this,this._add),name));
 		return this.selection;
@@ -5578,9 +5578,9 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 		if(clsb) cls.baseVal = clsv; else node.className = clsv;
 	}
 	,remove: function(name) {
-		this.selection.eachNode((function(f,a1) {
+		this.selection.eachNode((function(f0,a1) {
 			return function(a2,i) {
-				return f(a1,a2,i);
+				return f0(a1,a2,i);
 			};
 		})($bind(this,this._remove),name));
 		return this.selection;
@@ -6029,10 +6029,10 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 				d.setAttribute(name,"" + f(t));
 			};
 		};
-		var attrTweenNS = function(d,i) {
-			var f = tween(d,i,Std.parseFloat(d.getAttributeNS(name.space,name.local)));
+		var attrTweenNS = function(d1,i) {
+			var f1 = tween(d1,i,Std.parseFloat(d1.getAttributeNS(name.space,name.local)));
 			return function(t) {
-				d.setAttributeNS(name.space,name.local,"" + f(t));
+				d1.setAttributeNS(name.space,name.local,"" + f1(t));
 			};
 		};
 		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
@@ -6052,10 +6052,10 @@ dhx.AccessTweenAttribute.prototype = $extend(dhx.AccessTween.prototype,{
 				d.setAttribute(name,f(t));
 			};
 		};
-		var attrTweenNS = function(d,i) {
-			var f = tween(d,i,d.getAttributeNS(name.space,name.local));
+		var attrTweenNS = function(d1,i) {
+			var f1 = tween(d1,i,d1.getAttributeNS(name.space,name.local));
 			return function(t) {
-				d.setAttributeNS(name.space,name.local,f(t));
+				d1.setAttributeNS(name.space,name.local,f1(t));
 			};
 		};
 		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
@@ -6086,10 +6086,10 @@ dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.protot
 				n.setAttribute(name,"" + f(t));
 			};
 		};
-		var attrTweenNS = function(n,i) {
-			var f = tween(Reflect.field(n,"__dhx_data__"),i,Std.parseFloat(n.getAttributeNS(name.space,name.local)));
+		var attrTweenNS = function(n1,i) {
+			var f1 = tween(Reflect.field(n1,"__dhx_data__"),i,Std.parseFloat(n1.getAttributeNS(name.space,name.local)));
 			return function(t) {
-				n.setAttributeNS(name.space,name.local,"" + f(t));
+				n1.setAttributeNS(name.space,name.local,"" + f1(t));
 			};
 		};
 		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
@@ -6103,10 +6103,10 @@ dhx.AccessDataTweenAttribute.prototype = $extend(dhx.AccessTweenAttribute.protot
 				n.setAttribute(name,f(t));
 			};
 		};
-		var attrTweenNS = function(n,i) {
-			var f = tween(Reflect.field(n,"__dhx_data__"),i,n.getAttributeNS(name.space,name.local));
+		var attrTweenNS = function(n1,i) {
+			var f1 = tween(Reflect.field(n1,"__dhx_data__"),i,n1.getAttributeNS(name.space,name.local));
 			return function(t) {
-				n.setAttributeNS(name.space,name.local,f(t));
+				n1.setAttributeNS(name.space,name.local,f1(t));
 			};
 		};
 		this.tweens.set("attr." + name,null == this.qname?attrTween:attrTweenNS);
@@ -6668,19 +6668,19 @@ dhx.BaseSelection.prototype = {
 		if(capture == null) capture = false;
 		var i = type.indexOf("."), typo = i < 0?type:HxOverrides.substr(type,0,i);
 		if((typo == "mouseenter" || typo == "mouseleave") && !dhx.ClientHost.isIE()) {
-			listener = (function(f,f1) {
+			listener = (function(f0,f) {
 				return function(a1,i1) {
-					return f(f1,a1,i1);
+					return f0(f,a1,i1);
 				};
 			})(dhx.BaseSelection.listenerEnterLeave,listener);
 			if(typo == "mouseenter") typo = "mouseover"; else typo = "mouseout";
 		}
-		return this.eachNode(function(n,i1) {
+		return this.eachNode(function(n,i2) {
 			var l = function(e) {
 				var o = dhx.Dom.event;
 				dhx.Dom.event = e;
 				try {
-					listener(n,i1);
+					listener(n,i2);
 				} catch( e1 ) {
 				}
 				dhx.Dom.event = o;
@@ -10649,7 +10649,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.46.8713"};
+	r.info.charts = { version : "1.4.47.8714"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -10763,46 +10763,46 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 		}
 		handler1(params);
 	});
-	chain.addAction(function(params,handler1) {
-		if(null == params.options.label) switch(params.options.visualization) {
+	chain.addAction(function(params1,handler1) {
+		if(null == params1.options.label) switch(params1.options.visualization) {
 		case "linechart":case "barchart":case "streamgraph":
-			var type = params.axes[0].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				return (null != params.options.segmenton?rg.util.Properties.formatValue(params.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			var type = params1.axes[0].type;
+			params1.options.label = { datapointover : function(dp,stats) {
+				return (null != params1.options.segmenton?rg.util.Properties.formatValue(params1.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "scattergraph":case "heatgrid":
-			var type = params.axes[0].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			var type1 = params1.axes[0].type;
+			params1.options.label = { datapointover : function(dp,stats) {
+				return rg.util.Properties.formatValue(type1,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "geo":
-			var type = params.axes[0].type, maps = params.options.map;
+			var type2 = params1.axes[0].type, maps = params1.options.map;
 			maps[maps.length - 1].label = { datapointover : function(dp,stats) {
-				var v = rg.util.Properties.formatValue(type,dp);
+				var v = rg.util.Properties.formatValue(type2,dp);
 				if(null == v) return null;
 				return v + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			}};
 			break;
 		case "piechart":
-			params.options.label = { datapoint : function(dp,stats) {
+			params1.options.label = { datapoint : function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
-				return params.axes.length > 1?rg.util.Properties.formatValue(params.axes[0].type,dp):stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
+				return params1.axes.length > 1?rg.util.Properties.formatValue(params1.axes[0].type,dp):stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
 			}, datapointover : function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
-				return rg.util.RGStrings.humanize(stats.type) + ": " + rg.util.RGStrings.humanize(v) + (params.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
+				return rg.util.RGStrings.humanize(stats.type) + ": " + rg.util.RGStrings.humanize(v) + (params1.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
 			}};
 			break;
 		case "sankey":
-			var axes = params.axes, type = axes[axes.length - 1].type;
-			params.options.label = { datapointover : function(dp,stats) {
-				var v = Reflect.field(dp,type);
-				return rg.util.RGStrings.humanize(type) + ": " + rg.util.Properties.formatValue(type,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
+			var axes = params1.axes, type3 = axes[axes.length - 1].type;
+			params1.options.label = { datapointover : function(dp,stats) {
+				var v = Reflect.field(dp,type3);
+				return rg.util.RGStrings.humanize(type3) + ": " + rg.util.Properties.formatValue(type3,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
 			}, node : function(dp,stats) {
 				return null != dp?dp.id:"";
 			}, datapoint : function(dp,stats) {
-				return rg.util.Properties.formatValue(type,dp) + "\n" + rg.util.RGStrings.humanize(type);
+				return rg.util.Properties.formatValue(type3,dp) + "\n" + rg.util.RGStrings.humanize(type3);
 			}, edge : function(dp,stats) {
 				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
 			}, edgeover : function(dp,stats) {
@@ -10810,7 +10810,7 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 			}};
 			break;
 		}
-		handler1(params);
+		handler1(params1);
 	});
 	chain.execute(parameters);
 }
@@ -12459,19 +12459,19 @@ rg.html.chart.PivotTable.prototype = {
 		var _g1 = 0, _g = columns.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var column = [columns[i]], ccalc = new rg.axis.StatsNumeric(null);
-			column[0].stats = ccalc;
-			var _g2 = 0, _g3 = Arrays.filter(dps,(function(column) {
+			var column1 = [columns[i]], ccalc = new rg.axis.StatsNumeric(null);
+			column1[0].stats = ccalc;
+			var _g2 = 0, _g3 = Arrays.filter(dps,(function(column1) {
 				return function(dp) {
 					var _g31 = 0, _g21 = headers.length;
 					while(_g31 < _g21) {
 						var j = _g31++;
 						name = headers[j];
-						if(name.indexOf("time:") >= 0 && Dates.snap(Reflect.field(dp,name),HxOverrides.substr(name,name.indexOf("time:") + "time:".length,null)) == column[0].values[j] || Reflect.field(dp,name) == column[0].values[j]) return true;
+						if(name.indexOf("time:") >= 0 && Dates.snap(Reflect.field(dp,name),HxOverrides.substr(name,name.indexOf("time:") + "time:".length,null)) == column1[0].values[j] || Reflect.field(dp,name) == column1[0].values[j]) return true;
 					}
 					return false;
 				};
-			})(column));
+			})(column1));
 			while(_g2 < _g3.length) {
 				var dp = _g3[_g2];
 				++_g2;
@@ -12518,62 +12518,62 @@ rg.html.chart.PivotTable.prototype = {
 		var _g1 = 0, _g = rows.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var row = [rows[i]];
-			row[0].stats = new rg.axis.StatsNumeric(null);
-			row[0].cells = [];
+			var row1 = [rows[i]];
+			row1[0].stats = new rg.axis.StatsNumeric(null);
+			row1[0].cells = [];
 			var rdps;
-			rdps = Arrays.filter(dps,(function(row) {
+			rdps = Arrays.filter(dps,(function(row1) {
 				return function(d) {
 					var _g3 = 0, _g2 = headers1.length;
 					while(_g3 < _g2) {
 						var j = _g3++;
 						name1 = headers1[j];
-						if(name1.indexOf("time:") >= 0 && Dates.snap(Reflect.field(d,name1),HxOverrides.substr(name1,name1.indexOf("time:") + "time:".length,null)) != row[0].values[j] || Reflect.field(d,name1) != row[0].values[j]) return false;
+						if(name1.indexOf("time:") >= 0 && Dates.snap(Reflect.field(d,name1),HxOverrides.substr(name1,name1.indexOf("time:") + "time:".length,null)) != row1[0].values[j] || Reflect.field(d,name1) != row1[0].values[j]) return false;
 					}
 					return true;
 				};
-			})(row));
+			})(row1));
 			var _g3 = 0, _g2 = columns.length;
 			while(_g3 < _g2) {
 				var k = _g3++;
-				var column = [columns[k]];
-				if(column[0].type.indexOf("time:") >= 0) {
-					var periodicity = [rg.util.Properties.periodicity(column[0].type)];
-					var dp = Arrays.firstf(rdps,(function(periodicity,column) {
+				var column2 = [columns[k]];
+				if(column2[0].type.indexOf("time:") >= 0) {
+					var periodicity = [rg.util.Properties.periodicity(column2[0].type)];
+					var dp = Arrays.firstf(rdps,(function(periodicity,column2) {
 						return function(dp1) {
-							var _g5 = 0, _g4 = column[0].values.length;
+							var _g5 = 0, _g4 = column2[0].values.length;
 							while(_g5 < _g4) {
 								var i1 = _g5++;
-								if(Dates.snap(Reflect.field(dp1,column_headers[i1]),periodicity[0]) != column[0].values[i1]) return false;
+								if(Dates.snap(Reflect.field(dp1,column_headers[i1]),periodicity[0]) != column2[0].values[i1]) return false;
 							}
 							return true;
 						};
-					})(periodicity,column));
+					})(periodicity,column2));
 					var v = Reflect.field(dp,this.cellVariable.type);
 					if(null == v) {
-						row[0].cells.push({ });
+						row1[0].cells.push({ });
 						continue;
 					}
-					row[0].cells.push(dp);
-					row[0].stats.add(v);
+					row1[0].cells.push(dp);
+					row1[0].stats.add(v);
 				} else {
-					var dp = Arrays.firstf(rdps,(function(column) {
+					var dp = Arrays.firstf(rdps,(function(column2) {
 						return function(dp1) {
-							var _g5 = 0, _g4 = column[0].values.length;
+							var _g5 = 0, _g4 = column2[0].values.length;
 							while(_g5 < _g4) {
 								var i1 = _g5++;
-								if(Reflect.field(dp1,column_headers[i1]) != column[0].values[i1]) return false;
+								if(Reflect.field(dp1,column_headers[i1]) != column2[0].values[i1]) return false;
 							}
 							return true;
 						};
-					})(column));
+					})(column2));
 					var v = Reflect.field(dp,this.cellVariable.type);
 					if(null == v) {
-						row[0].cells.push({ });
+						row1[0].cells.push({ });
 						continue;
 					}
-					row[0].cells.push(dp);
-					row[0].stats.add(v);
+					row1[0].cells.push(dp);
+					row1[0].stats.add(v);
 				}
 			}
 		}
@@ -12717,9 +12717,9 @@ rg.html.chart.PivotTable.prototype = {
 				var cell = _g3[_g2];
 				++_g2;
 				var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
-				if(null != this.click) td.onNode("click",(function(f,dp) {
+				if(null != this.click) td.onNode("click",(function(f0,dp) {
 					return function(_,_1) {
-						return f(dp,_,_1);
+						return f0(dp,_,_1);
 					};
 				})($bind(this,this.onClick),cell));
 				if(this.displayHeatMap && !Math.isNaN(v = Reflect.field(cell,this.cellVariable.type) / d.stats.max)) {
@@ -14041,10 +14041,10 @@ rg.info.filter.FilterDescription.toDataFunctionFromArray = function(name,maps) {
 rg.info.filter.FilterDescription.toLoaderFunction = function(name,maps) {
 	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
 		return rg.info.filter.TransformResult.Success(value);
-	},function(vin,msg) {
-		var field = Reflect.field(vin,"execute");
+	},function(vin1,msg) {
+		var field = Reflect.field(vin1,"execute");
 		if(null != field && Reflect.isFunction(field)) return rg.info.filter.TransformResult.Success(function(handler) {
-			field.apply(vin,[handler]);
+			field.apply(vin1,[handler]);
 		}); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter must be an array of values"));
 	}));
 }
@@ -14407,9 +14407,9 @@ rg.interactive.RGDownloader.prototype = {
 		if(null != error) http.onError = error; else http.onError = function(e) {
 			null;
 		};
-		http.onData = (function(f,a1,a2) {
+		http.onData = (function(f0,a1,a2) {
 			return function(a3) {
-				return f(a1,a2,a3);
+				return f0(a1,a2,a3);
 			};
 		})($bind(this,this.complete),success,error);
 		http.setParameter("html",this.html());
@@ -15258,9 +15258,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f1,i1) {
+				f(data[i],(function(f0,i1) {
 					return function(r) {
-						return f1(i1,r);
+						return f0(i1,r);
 					};
 				})(complete,i));
 			}
@@ -15276,9 +15276,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f1,i1) {
+				f(data[i],(function(f0,i1) {
 					return function(r) {
-						return f1(i1,r);
+						return f0(i1,r);
 					};
 				})(complete,i));
 			}
@@ -15529,9 +15529,9 @@ rg.query.Transformers.setFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
+		if(!Reflect.isFunction(f)) fs.push((function(f0,v) {
 			return function(a1) {
-				return f1(v,a1);
+				return f0(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -15558,9 +15558,9 @@ rg.query.Transformers.mapFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
+		if(!Reflect.isFunction(f)) fs.push((function(f0,v) {
 			return function(a1) {
-				return f1(v,a1);
+				return f0(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -15816,13 +15816,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var _g3 = 0, _g2 = valuedps.length;
 			while(_g3 < _g2) {
 				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f0,a1) {
 					return function(n,i1) {
-						return f(a1,n,i1);
+						return f0(a1,n,i1);
 					};
-				})($bind(this,this.onmouseover),stats), click = (function(f,a1) {
+				})($bind(this,this.onmouseover),stats), click = (function(f01,a11) {
 					return function(dp,_,i1) {
-						return f(a1,dp,_,i1);
+						return f01(a11,dp,_,i1);
 					};
 				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
@@ -15831,9 +15831,9 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 					if(Math.isNaN(h)) h = 0;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f,dp1) {
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f02,dp1) {
 						return function(_,i1) {
-							return f(dp1,_,i1);
+							return f02(dp1,_,i1);
 						};
 					})(click,dp));
 					bar.node().__dhx_data__ = dp;
@@ -15862,13 +15862,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var _g3 = 0, _g2 = valuedps.length;
 			while(_g3 < _g2) {
 				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f0,a1) {
 					return function(n,i1) {
-						return f(a1,n,i1);
+						return f0(a1,n,i1);
 					};
-				})($bind(this,this.onmouseover),stats), click = (function(f,a1) {
+				})($bind(this,this.onmouseover),stats), click = (function(f01,a11) {
 					return function(dp,_,i1) {
-						return f(a1,dp,_,i1);
+						return f01(a11,dp,_,i1);
 					};
 				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
@@ -15876,9 +15876,9 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				while(_g5 < _g4) {
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f,dp1) {
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f02,dp1) {
 						return function(_,i1) {
-							return f(dp1,_,i1);
+							return f02(dp1,_,i1);
 						};
 					})(click,dp));
 					bar.node().__dhx_data__ = dp;
@@ -16188,9 +16188,9 @@ rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	addMap: function(map,field) {
-		if(null != field) map.onReady.add((function(f,a1,a2) {
+		if(null != field) map.onReady.add((function(f0,a1,a2) {
 			return function() {
-				return f(a1,a2);
+				return f0(a1,a2);
 			};
 		})($bind(this,this.drawmap),map,field));
 	}
@@ -16216,22 +16216,22 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			})));
 			break;
 		case 1:
-			var g = $e[2];
-			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
+			var g1 = $e[2];
+			if(null == g1) g1 = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g1 * t);
 				svg.attr("class").string("fill-" + index);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 3:
 			var c = $e[2];
-			var colors = c.map(function(d,_) {
+			var colors1 = c.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.style("fill").string(colors[index]);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors1.length * t);
+				svg.style("fill").string(colors1[index]);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
@@ -16283,9 +16283,9 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,drawmap: function(map,field) {
 		if(null == this.dps || 0 == this.dps.length) {
-			this.queue.push((function(f,a1,a2) {
+			this.queue.push((function(f0,a1,a2) {
 				return function() {
-					return f(a1,a2);
+					return f0(a1,a2);
 				};
 			})($bind(this,this.drawmap),map,field));
 			return;
@@ -16389,21 +16389,21 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			})));
 			break;
 		case 1:
-			var g = $e[2];
-			if(null == g) g = rg.svg.util.RGCss.numberOfColorsInCss();
+			var g1 = $e[2];
+			if(null == g1) g1 = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g * t);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g1 * t);
 				svg.attr("class").string("fill-" + index);
 			};
 			break;
 		case 3:
 			var c = $e[2];
-			var colors = c.map(function(d,_) {
+			var colors1 = c.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors.length * t);
-				svg.style("fill").string(colors[index]);
+				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors1.length * t);
+				svg.style("fill").string(colors1[index]);
 			};
 			break;
 		case 2:
@@ -16598,15 +16598,15 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 		this.stats = [];
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
-			var i = [_g1++];
-			this.segments = dps[i[0]];
-			var gi = this.chart.select("g.group-" + i[0]);
-			this.stats[i[0]] = new rg.axis.Stats(this.yVariables[i[0]].type);
-			this.stats[i[0]].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i[0]].type));
+			var i2 = [_g1++];
+			this.segments = dps[i2[0]];
+			var gi = this.chart.select("g.group-" + i2[0]);
+			this.stats[i2[0]] = new rg.axis.Stats(this.yVariables[i2[0]].type);
+			this.stats[i2[0]].addMany(rg.util.DataPoints.values(Arrays.flatten(this.segments),this.yVariables[i2[0]].type));
 			if(null != this.y0property) {
-				var area = new thx.svg.Area($bind(this,this.x),this.getY0(i[0]),this.getY1(i[0]));
+				var area = new thx.svg.Area($bind(this,this.x),this.getY0(i2[0]),this.getY1(i2[0]));
 				if(null != this.lineInterpolator) area.interpolator(this.lineInterpolator);
-				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i[0],"area area-" + i[0])).attr("d").stringf($bind(area,area.shape));
+				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i2[0],"area area-" + i2[0])).attr("d").stringf($bind(area,area.shape));
 			}
 			var segmentgroup = gi.selectAll("path.main").data(this.segments);
 			var $e = (this.lineEffect);
@@ -16616,20 +16616,20 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				var levels1 = [levels];
 				var lightness1 = [lightness];
 				var fs = [[]];
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i[0],"line")).eachNode((function(fs,lightness1) {
-					return function(n,i1) {
+				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i2[0],"line")).eachNode((function(fs,lightness1) {
+					return function(n,i) {
 						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(dhx.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
-						fs[0][i1] = thx.color.Hsl.interpolatef(end,start);
+						fs[0][i] = thx.color.Hsl.interpolatef(end,start);
 					};
 				})(fs,lightness1)).remove();
 				var _g21 = 0;
 				while(_g21 < levels1[0]) {
 					var j = [_g21++];
 					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
-						return function(_,i1) {
-							return fs[0][i1](j[0] / levels1[0]).hex("#");
+						return function(_,i) {
+							return fs[0][i](j[0] / levels1[0]).hex("#");
 						};
-					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i[0]]);
+					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i2[0]]);
 				}
 				break;
 			case 2:
@@ -16637,12 +16637,12 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				var _g21 = 0;
 				while(_g21 < levels) {
 					var j = _g21++;
-					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i[0]]);
+					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i2[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i2[0]]);
 				}
 				break;
 			default:
 			}
-			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i[0],"line")).attr("d").stringf(this.linePathShape[i[0]]);
+			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i2[0],"line")).attr("d").stringf(this.linePathShape[i2[0]]);
 			switch( (this.lineEffect)[1] ) {
 			case 1:
 				path.classed().add("gradient");
@@ -16654,49 +16654,49 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				path.classed().add("noeffect");
 				break;
 			}
-			segmentgroup.update().attr("d").stringf(this.linePathShape[i[0]]);
+			segmentgroup.update().attr("d").stringf(this.linePathShape[i2[0]]);
 			segmentgroup.exit().remove();
 			var gsymbols = gi.selectAll("g.symbols").data(this.segments), vars = this.yVariables;
-			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i[0],"symbols"));
+			var enter = gsymbols.enter().append("svg:g").attr("class").stringf(this.classsf(i2[0],"symbols"));
 			var gsymbol = enter.selectAll("g.symbol").dataf((function() {
-				return function(d,i1) {
+				return function(d,i) {
 					return d;
 				};
-			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i[0]));
+			})()).enter().append("svg:g").attr("transform").stringf(this.getTranslatePointf(i2[0]));
 			var circle = gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
 			if(null != this.labelDataPointOver) circle.classed().add("rgdata");
 			rg.util.RGColors.storeColorForSelection(circle,"stroke");
 			if(null != this.symbol) {
 				var sp = [this.symbol];
-				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,i) {
+				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,i2) {
 					return function(dp,_) {
-						return sp[0](dp,_g2.stats[i[0]]);
+						return sp[0](dp,_g2.stats[i2[0]]);
 					};
-				})(sp,i));
+				})(sp,i2));
 				rg.util.RGColors.storeColorForSelection(spath,"stroke");
 				if(null != this.symbolStyle) {
 					var ss = [this.symbolStyle];
-					spath.attr("style").stringf((function(ss,i) {
+					spath.attr("style").stringf((function(ss,i2) {
 						return function(dp,_) {
-							return ss[0](dp,_g2.stats[i[0]]);
+							return ss[0](dp,_g2.stats[i2[0]]);
 						};
-					})(ss,i));
+					})(ss,i2));
 				}
 			}
 			if(null != this.labelDataPoint) {
 				var f = [this.labelDataPoint];
-				gsymbol.eachNode((function(f,i) {
+				gsymbol.eachNode((function(f,i2) {
 					return function(n,_) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,false,false);
-						label.setText(f[0](dp,_g2.stats[i[0]]));
+						label.setText(f[0](dp,_g2.stats[i2[0]]));
 					};
-				})(f,i));
+				})(f,i2));
 			}
 			gsymbols.update().selectAll("g.symbol").dataf((function() {
-				return function(d,i1) {
+				return function(d,i) {
 					return d;
 				};
-			})()).update().attr("transform").stringf(this.getTranslatePointf(i[0]));
+			})()).update().attr("transform").stringf(this.getTranslatePointf(i2[0]));
 			gsymbols.exit().remove();
 		}
 		rg.svg.widget.Sensible.sensibleZone(this.g,this.panel,null == this.click?null:$bind(this,this.onclick),null == this.labelDataPointOver?null:$bind(this,this.onmouseover),this.sensibleRadius);
@@ -16715,9 +16715,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,segments: null
 	,getY0: function(pos) {
 		var _g = this;
-		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+		var v = this.yVariables[pos], scale = (function(f0,a1,a2) {
 			return function(v1) {
-				return f(a1,a2,v1);
+				return f0(a1,a2,v1);
 			};
 		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		return function(d,i) {
@@ -16726,9 +16726,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	}
 	,getY1: function(pos) {
 		var _g = this;
-		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
+		var v = this.yVariables[pos], scale = (function(f0,a1,a2) {
 			return function(v1) {
-				return f(a1,a2,v1);
+				return f0(a1,a2,v1);
 			};
 		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		if(null != this.y0property) {
@@ -17371,22 +17371,22 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(cellhead.layer > celltail.layer) return;
 				var weight = _g2.nheight(edge.weight), before = 5 + _g2.cafter(edge.id,edge.tail.positives()) * (_g2.backEdgeSpacing + 1), after = 5 + _g2.cafter(edge.id,edge.head.negatives()) * (_g2.backEdgeSpacing + 1), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
 				var g = edgescontainer.append("svg:g");
-				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f,x,y,a1) {
+				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f0,x,y,a1) {
 					return function(el,i) {
-						return f(x,y,a1,el,i);
+						return f0(x,y,a1,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
-				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f,x,y,a1) {
+				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f01,x3,y3,a11) {
 					return function(el,i) {
-						return f(x,y,a1,el,i);
+						return f01(x3,y3,a11,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
 				var hook = new rg.svg.widget.HookConnector(g,"stroke stroke-" + _g2.styleEdgeBackward);
 				_g2.addToMap(edge.id,"edge",g);
 				hook.update(x1 + blockwidth,y1 + weight / 2,x2 - blockwidth,y2 + weight / 2,backedgesy,before,after);
-				hook.g.onNode("mouseover",(function(f,x,y,a1) {
+				hook.g.onNode("mouseover",(function(f02,x4,y4,a12) {
 					return function(el,i) {
-						return f(x,y,a1,el,i);
+						return f02(x4,y4,a12,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
 				if(null != _g2.edgeClass) {
@@ -17394,9 +17394,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					if(null != cls) hook.addClass(cls);
 				}
 				rg.util.RGColors.storeColorForSelection(hook.g,"stroke",hook.line.style("stroke").get());
-				if(null != _g2.clickEdge) hook.g.onNode("click",(function(f,a1) {
+				if(null != _g2.clickEdge) hook.g.onNode("click",(function(f03,a13) {
 					return function(el,i) {
-						return f(a1,el,i);
+						return f03(a13,el,i);
 					};
 				})($bind(_g2,_g2.edgeClickWithEdge),edge));
 				if(_g2.stackbackedges) backedgesy += 1 + _g2.backEdgeSpacing;
@@ -17408,9 +17408,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var weight = _g2.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + _g2.styleEdgeBackward,"stroke stroke-" + _g2.styleEdgeBackward), before = _g2.hafter(edge.id,edge.tail.positives()) + Math.min(_g2.extraWidth,_g2.nheight(edge.tail.data.exit)), after = _g2.hafter(edge.id,edge.head.negatives()), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
 			_g2.addToMap(edge.id,"edge",hook.g);
 			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
-			hook.g.onNode("mouseover",(function(f,x,y,a1) {
+			hook.g.onNode("mouseover",(function(f04,x5,y5,a14) {
 				return function(el,i) {
-					return f(x,y,a1,el,i);
+					return f04(x5,y5,a14,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy + weight / 2,edge));
 			if(null != _g2.edgeClass) {
@@ -17418,9 +17418,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) hook.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(hook.g,"fill",hook.area.style("fill").get());
-			if(null != _g2.clickEdge) hook.g.onNode("click",(function(f,a1) {
+			if(null != _g2.clickEdge) hook.g.onNode("click",(function(f05,a15) {
 				return function(el,i) {
-					return f(a1,el,i);
+					return f05(a15,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithEdge),edge));
 			if(_g2.stackbackedges) backedgesy += weight + _g2.backEdgeSpacing;
@@ -17436,15 +17436,15 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) diagonal.addClass(cls);
 			}
 			_g2.addToMap(edge.id,"edge",diagonal.g);
-			diagonal.g.onNode("mouseover",(function(f,x,y,a1) {
+			diagonal.g.onNode("mouseover",(function(f06,x6,y6,a16) {
 				return function(el,i) {
-					return f(x,y,a1,el,i);
+					return f06(x6,y6,a16,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
 			rg.util.RGColors.storeColorForSelection(diagonal.g,"fill",diagonal.area.style("fill").get());
-			if(null != _g2.clickEdge) diagonal.g.onNode("click",(function(f,a1) {
+			if(null != _g2.clickEdge) diagonal.g.onNode("click",(function(f07,a17) {
 				return function(el,i) {
-					return f(a1,el,i);
+					return f07(a17,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithEdge),edge));
 		});
@@ -17464,9 +17464,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f,x1,y1,a1) {
+			elbow.g.onNode("mouseover",(function(f08,x7,y7,a18) {
 				return function(el,i) {
-					return f(x1,y1,a1,el,i);
+					return f08(x7,y7,a18,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoverexit),x + minr + (-minr + Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) + _g2.hnode(node) + minr + _g2.extraHeight,node));
 			if(null != _g2.edgeClass) {
@@ -17474,9 +17474,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f09,a19,a2) {
 				return function(el,i) {
-					return f(a1,a2,el,i);
+					return f09(a19,a2,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithNode),node,true));
 			_g2.addToMap(node.id,"exit",elbow.g);
@@ -17494,9 +17494,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f,x1,y,a1) {
+			elbow.g.onNode("mouseover",(function(f010,x8,y8,a110) {
 				return function(el,i) {
-					return f(x1,y,a1,el,i);
+					return f010(x8,y8,a110,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoverentry),x - minr + (minr - Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) - minr - _g2.extraHeight,node));
 			if(null != _g2.edgeClass) {
@@ -17504,9 +17504,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f,a1,a2) {
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f011,a111,a21) {
 				return function(el,i) {
-					return f(a1,a2,el,i);
+					return f011(a111,a21,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithNode),node,false));
 			_g2.addToMap(node.id,"entry",elbow.g);
@@ -17597,14 +17597,14 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		});
 		cont.each(function(n,i) {
 			var node = dhx.Dom.selectNode(dhx.Group.current);
-			node.onNode("mouseover",(function(f,a1) {
+			node.onNode("mouseover",(function(f012,a112) {
 				return function(el,i1) {
-					return f(a1,el,i1);
+					return f012(a112,el,i1);
 				};
 			})($bind(_g2,_g2.onmouseovernode),n));
-			if(null != _g2.click) node.onNode("click",(function(f,a1) {
+			if(null != _g2.click) node.onNode("click",(function(f013,a113) {
 				return function(el,i1) {
-					return f(a1,el,i1);
+					return f013(a113,el,i1);
 				};
 			})($bind(_g2,_g2.nodeclick),n));
 		});
@@ -17713,18 +17713,18 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 			var i = _g1++;
 			var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [this.yVariables[i].stats];
 			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
-				return function(f,a1) {
+				return function(f0,a1) {
 					return (function() {
 						return function(dp,i1) {
-							return f(a1,dp,i1);
+							return f0(a1,dp,i1);
 						};
 					})();
 				};
 			})())($bind(this,this.onclick),stats[0]), onmouseover = ((function() {
-				return function(f,a1) {
+				return function(f01,a11) {
 					return (function() {
 						return function(n,i1) {
-							return f(a1,n,i1);
+							return f01(a11,n,i1);
 						};
 					})();
 				};
@@ -17853,15 +17853,15 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	,prepareData: function() {
 		var _g = this;
 		this.defs.selectAll("linearGradient.h").remove();
-		var xscale = (function(f,a1,a2) {
+		var xscale = (function(f0,a1,a2) {
 			return function(v) {
-				return f(a1,a2,v);
+				return f0(a1,a2,v);
 			};
 		})(($_=this.xVariable.axis,$bind($_,$_.scale)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
 			return xscale(Reflect.field(d,xtype));
-		}, yscale = (function(f,a1,a2) {
+		}, yscale = (function(f01,a11,a21) {
 			return function(v) {
-				return f(a1,a2,v);
+				return f01(a11,a21,v);
 			};
 		})(($_=this.yVariables[0].axis,$bind($_,$_.scale)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
 			return yscale(Reflect.field(d,ytype));
@@ -17876,17 +17876,17 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 			}
 			return null;
 		};
-		var coords = this.dps.map(function(d,j) {
+		var coords = this.dps.map(function(d1,j) {
 			return Ints.range(0,m).map(function(_,i) {
-				var dp = d[i];
+				var dp = d1[i];
 				if(null == dp) return { x : x(altDp(i)), y : .0};
 				return { x : x(dp), y : Math.max(0,y(dp))};
 			});
 		});
 		var data = new thx.geom.layout.Stack().offset(thx.geom.layout.StackOffset.Silhouette).order(thx.geom.layout.StackOrder.DefaultOrder).stack(coords);
-		this.transformedData = data.map(function(d,i) {
+		this.transformedData = data.map(function(d,i1) {
 			return d.map(function(d1,j) {
-				return { coord : d1, dp : _g.dps[i][j]};
+				return { coord : d1, dp : _g.dps[i1][j]};
 			});
 		});
 		this.stats = this.yVariables[0].stats;
@@ -19091,9 +19091,9 @@ rg.svg.widget.Balloon.prototype = {
 				_g._moveTo(ix(t / _g.duration),iy(t / _g.duration));
 				return false;
 			},0);
-		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,x1,y1) {
+		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f0,x1,y1) {
 			return function() {
-				return f(x1,y1);
+				return f0(x1,y1);
 			};
 		})($bind(this,this._moveTo),x,y),15); else this._moveTo(x,y);
 	}
@@ -19868,14 +19868,14 @@ rg.svg.widget.Map.prototype = {
 				dp.$centroid = centroid;
 				dp.$data = feature.properties;
 				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
-				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,dp1) {
+				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f0,dp1) {
 					return function(n,i1) {
-						return f(dp1,n,i1);
+						return f0(dp1,n,i1);
 					};
 				})($bind(this,this.onMouseOver),dp));
-				if(null != this.click) p.onNode("click",(function(f,dp1) {
+				if(null != this.click) p.onNode("click",(function(f01,dp2) {
 					return function(_,i1) {
-						return f(dp1,_,i1);
+						return f01(dp2,_,i1);
 					};
 				})($bind(this,this.onClick),dp));
 			}
@@ -21051,18 +21051,18 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 		} else {
 			var _g = 0;
 			while(_g < values.length) {
-				var value = [values[_g]];
+				var value1 = [values[_g]];
 				++_g;
 				var axisresults = [];
 				var _g2 = 0, _g1 = this.dependentVariables.length;
 				while(_g2 < _g1) {
 					var i = _g2++;
 					var dps1 = rg.util.DataPoints.filterByDependents(dps,[this.dependentVariables[i]]);
-					axisresults.push(Arrays.filter(dps1,(function(value) {
+					axisresults.push(Arrays.filter(dps1,(function(value1) {
 						return function(d) {
-							return Reflect.field(d,variable.type) == value[0];
+							return Reflect.field(d,variable.type) == value1[0];
 						};
-					})(value)));
+					})(value1)));
 				}
 				results.push(axisresults);
 			}
@@ -23749,12 +23749,12 @@ thx.geom.layout.Pie.prototype = {
 			return p + d;
 		},0.0);
 		if(!Math.isFinite(k)) k = 0;
-		var d;
+		var d1;
 		var arcs = index.map(function(_,i1) {
-			d = values[i1];
-			return { value : d, startAngle : a, endAngle : a += d * k};
+			d1 = values[i1];
+			return { value : d1, startAngle : a, endAngle : a += d1 * k};
 		});
-		return data.map(function(d1,i1) {
+		return data.map(function(d,i1) {
 			return arcs[index[i1]];
 		});
 	}
@@ -24225,9 +24225,9 @@ thx.graph.Graph.prototype = {
 				while( $it0.hasNext() ) {
 					var edge = $it0.next();
 					other = edge.head;
-					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,n1) {
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f0,a1,n1) {
 						return function() {
-							return f(a1,n1);
+							return f0(a1,n1);
 						};
 					})(traverse1,path.concat([edge]),other));
 					traveled.add(edge.id);
@@ -24260,9 +24260,9 @@ thx.graph.Graph.prototype = {
 				while( $it0.hasNext() ) {
 					var edge = $it0.next();
 					other = edge.other(n);
-					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,n1) {
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f0,a1,n1) {
 						return function() {
-							return f(a1,n1);
+							return f0(a1,n1);
 						};
 					})(traverse1,path.concat([edge]),other));
 					traveled.add(edge.id);
@@ -24921,9 +24921,9 @@ thx.graph.Graphs.findPath = function(graph,a,b) {
 			while(_g < _g1.length) {
 				var parent = _g1[_g];
 				++_g;
-				if(parent == a) return path.concat([a]); else if(thx.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,n1) {
+				if(parent == a) return path.concat([a]); else if(thx.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f0,a1,n1) {
 					return function() {
-						return f(a1,n1);
+						return f0(a1,n1);
 					};
 				})(traverse1,path.concat([parent]),t));
 			}
