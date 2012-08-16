@@ -11,7 +11,7 @@ class ConfigObjects
 	public static function createDefault() : ConfigObject
 	{
 		return {
-			cacheExpires			: 30 * 60 * 24 * 1000.0,
+			cacheExpires			: 2 * 24 * 60 * 60 * 1000.0,
 			duration				: null,
 #if release
 			allowedFormats			: ['pdf', 'png', 'jpg', 'svg'],

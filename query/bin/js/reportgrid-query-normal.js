@@ -1555,7 +1555,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.13.1641"};
+	r.info.query = { version : "1.3.13.1678"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -2134,6 +2134,7 @@ rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
 	if(null == params.start) return options;
 	options.start = params.start;
 	options.end = params.end;
+	if(null != params.tzoffset) options.tzoffset = params.tzoffset;
 	return options;
 }
 rg.query.ReportGridBaseQuery._defaultSeriesOptions = function(params,options) {
@@ -2185,7 +2186,7 @@ rg.query.ReportGridBaseQuery._where = function(event,where) {
 	return ob;
 }
 rg.query.ReportGridBaseQuery._error = function(s) {
-	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 510, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
+	throw new thx.error.Error(s,null,null,{ fileName : "ReportGridQuery.hx", lineNumber : 512, className : "rg.query.ReportGridBaseQuery", methodName : "_error"});
 }
 rg.query.ReportGridBaseQuery._complete = function(transformer,params,keep,handler) {
 	return function(data) {
@@ -2773,15 +2774,15 @@ rg.query.ReportGridTransformers._injectTime = function(o,value,periodicity,timez
 		o[periodicity] = Reflect.field(value,periodicity);
 		o.groupby = groupby;
 	} else if(null != timezone) {
-		o["time:" + periodicity] = rg.query.ReportGridTransformers._parseTimeTZ(value.datetime);
+		if(timezone == 0) o["time:" + periodicity] = value.timestamp; else o["time:" + periodicity] = rg.query.ReportGridTransformers._parseTimeTZ(value.datetime);
 		o.timezone = timezone;
 	} else o["time:" + periodicity] = value.timestamp;
 }
 rg.query.ReportGridTransformers._parseTimeTZ = function(s) {
-	var sign = 1, pos = s.indexOf("+");
+	var sign = 1, pos = s.lastIndexOf("+");
 	if(pos < 0) {
 		sign = -1;
-		pos = s.indexOf("-");
+		pos = s.lastIndexOf("-");
 	}
 	var d = HxOverrides.strDate(StringTools.replace(StringTools.replace(HxOverrides.substr(s,0,pos),"T"," "),".000","")), t = thx.date.DateParser.parseTime(HxOverrides.substr(s,pos + 1,null));
 	return d.getTime() + sign * (t.hour * 60 * 60 * 1000 + t.minute * 60 * 1000 + t.second * 1000 + t.millis);
@@ -3396,7 +3397,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
 			break;
 		case "n":
-			buf.b += Std.string("\n");
+			buf.b += "\n";
 			break;
 		case "p":
 			buf.b += Std.string(date.getHours() > 11?info.pm:info.am);
@@ -3420,7 +3421,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
 			break;
 		case "t":
-			buf.b += Std.string("\t");
+			buf.b += "\t";
 			break;
 		case "T":
 			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
@@ -3454,13 +3455,13 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
 			break;
 		case "z":
-			buf.b += Std.string("+0000");
+			buf.b += "+0000";
 			break;
 		case "Z":
-			buf.b += Std.string("GMT");
+			buf.b += "GMT";
 			break;
 		case "%":
-			buf.b += Std.string("%");
+			buf.b += "%";
 			break;
 		default:
 			buf.b += Std.string("%" + c);
@@ -4320,10 +4321,10 @@ thx.json.JsonDecoder.prototype = {
 						buf += "/";
 						break;
 					case "b":
-						buf += String.fromCharCode(8);
+						buf += "";
 						break;
 					case "f":
-						buf += String.fromCharCode(12);
+						buf += "";
 						break;
 					case "n":
 						buf += "\n";
@@ -4500,7 +4501,7 @@ thx.json.JsonEncoder.prototype = {
 		this.buf.b += Std.string(b?"true":"false");
 	}
 	,valueNull: function() {
-		this.buf.b += Std.string("null");
+		this.buf.b += "null";
 	}
 	,valueFloat: function(f) {
 		this.buf.b += Std.string(f);
@@ -4515,30 +4516,30 @@ thx.json.JsonEncoder.prototype = {
 		this.buf.b += Std.string(d.getTime());
 	}
 	,arrayEnd: function() {
-		this.buf.b += Std.string("]");
+		this.buf.b += "]";
 		this.count.pop();
 	}
 	,arrayItemEnd: function() {
 	}
 	,arrayItemStart: function() {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += ",";
 	}
 	,arrayStart: function() {
-		this.buf.b += Std.string("[");
+		this.buf.b += "[";
 		this.count.push(0);
 	}
 	,objectEnd: function() {
-		this.buf.b += Std.string("}");
+		this.buf.b += "}";
 		this.count.pop();
 	}
 	,objectFieldEnd: function() {
 	}
 	,objectFieldStart: function(name) {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += ",";
 		this.buf.b += Std.string(this.quote(name) + ":");
 	}
 	,objectStart: function() {
-		this.buf.b += Std.string("{");
+		this.buf.b += "{";
 		this.count.push(0);
 	}
 	,end: function() {
@@ -4717,3 +4718,5 @@ thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "(?:\\b|T)(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 rg.app.query.JSBridge.main();
 })();
+
+//@ sourceMappingURL=reportgrid-query.js.map

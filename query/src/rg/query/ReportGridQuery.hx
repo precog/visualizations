@@ -71,10 +71,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
+	public function values(?p : { ?path : String, ?event : String, ?property : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?tag : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?where : Dynamic, ?disablecache : Bool }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			if(null != params.where)
@@ -87,10 +87,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function count(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?disablecache : Bool, ?tag : String }, ?keep : Array<String>)
+	public function count(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?where : Dynamic, ?disablecache : Bool, ?tag : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?where : Dynamic, ?disablecache : Bool, ?start : Dynamic, ?end : Dynamic, ?tag : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?where : Dynamic, ?disablecache : Bool, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String }, handler) {
 // TODO tag?
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params);
@@ -127,10 +127,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?start : Dynamic, ?end : Dynamic }, ?keep : Array<String>)
+	public function summary(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?start : Dynamic, ?end : Dynamic }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float }, handler) {
 // TODO tag?
 // TODO time range?
 			if(null == params.type)
@@ -170,7 +170,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	public function summarySeries(?p : { ?path : String, ?event : String, ?property : String, ?type : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?type : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
 // TODO tag?
 // TODO groupBy
 			if(null == params.type)
@@ -210,10 +210,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 	}
 
 // TODO tag?
-	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
+	public function intersect(?p : { ?path : String, ?event : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
 
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { periodicity : "eternity" }),
@@ -253,10 +253,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 // TODO tag?
 // TODO groupBy?
-	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
+	public function intersectSeries(?p : { ?path : String, ?event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, properties : Array<{ property : String, ?top : Int, ?bottom : Int }>, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
 			_ensureTimeParams(params);
 			var options = _defaultSeriesOptions(params),
 				properties = [];
@@ -297,10 +297,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 
 // TODO timerange?
 // TODO tag?
-	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
+	public function histogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
 			if(null != params.top)
@@ -322,10 +322,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?disablecache : Bool }, ?keep : Array<String>)
+	public function propertiesHistogram(?p : { ?path : String, ?event : String, ?property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, property : String, ?top : Int, ?bottom : Int, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?disablecache : Bool }, handler) {
 		// TODO tag?
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { property : params.event + _prefixProperty(params.property) });
@@ -337,10 +337,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function series(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
+	public function series(?p : { ?path : String, ?event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?timezone : Dynamic, ?groupby : String }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?property : String, ?value : Dynamic, ?periodicity : String, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?where : Dynamic, ?disablecache : Bool, ?tag : String, ?timezone : Dynamic, ?groupby : String }, handler) {
 			_ensureTimeParams(params);
 			var options : Dynamic = _defaultSeriesOptions(params);
 			if(null != params.where)
@@ -385,10 +385,10 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	public function rawEvents(?p : { ?path : String, ?event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
+	public function rawEvents(?p : { ?path : String, ?event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, ?keep : Array<String>)
 	{
 		keep = _normalizeKeep(keep);
-		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
+		return _crossp(p).asyncEach(function(params : { path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tzoffset : Float, ?tag : String, ?where : Dynamic, ?disablecache : Bool }, handler) {
 			_ensureOptionalTimeParams(params);
 			var options : Dynamic = _defaultOptions(params, { event : params.event });
 			if(null != params.properties)
@@ -415,7 +415,7 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 		});
 	}
 
-	static function _defaultOptions(params : { ?start : Dynamic, ?end : Dynamic, ?tag : String, ?disablecache : Bool }, ?options : Dynamic) : Dynamic
+	static function _defaultOptions(params : { ?start : Dynamic, ?end : Dynamic, ?tag : String, ?tzoffset : Float, ?disablecache : Bool }, ?options : Dynamic) : Dynamic
 	{
 		if(null == options)
 			options = {};
@@ -432,10 +432,12 @@ class ReportGridBaseQuery<This : ReportGridBaseQuery<Dynamic>> extends BaseQuery
 			return options;
 		options.start = params.start;
 		options.end   = params.end;
+		if(null != params.tzoffset)
+			options.tzoffset = params.tzoffset;
 		return options;
 	}
 
-	static function _defaultSeriesOptions(params : { start : Dynamic, end : Dynamic, periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?disablecache : Bool }, ?options : Dynamic) : Dynamic
+	static function _defaultSeriesOptions(params : { start : Dynamic, end : Dynamic, ?tzoffset : Float, periodicity : String, ?tag : String, ?timezone : Dynamic, ?groupby : String, ?disablecache : Bool }, ?options : Dynamic) : Dynamic
 	{
 		options = _defaultOptions(params, options);
 		options.periodicity = params.periodicity;

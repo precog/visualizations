@@ -9,4 +9,4 @@
 --dead-code-elimination
 -D js_shims
 #--times
-#-debug
+-debug

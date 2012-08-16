@@ -463,7 +463,7 @@ class ReportGridTransformers
 		}
 	}
 
-	static function _injectTime(o : Dynamic, value : Dynamic, periodicity : String, timezone : String, groupby : String)
+	static function _injectTime(o : Dynamic, value : Dynamic, periodicity : String, timezone : Dynamic, groupby : String)
 	{
 		if(null != groupby)
 		{
@@ -471,7 +471,12 @@ class ReportGridTransformers
 			Reflect.setField(o, "groupby", groupby);
 		} else if(null != timezone)
 		{
-			Reflect.setField(o, "time:" + periodicity, _parseTimeTZ(value.datetime));
+			if(timezone == 0)
+			{
+				Reflect.setField(o, "time:" + periodicity, value.timestamp);
+			} else {
+				Reflect.setField(o, "time:" + periodicity, _parseTimeTZ(value.datetime));
+			}
 			Reflect.setField(o, "timezone", timezone);
 		} else {
 			Reflect.setField(o, "time:" + periodicity, value.timestamp);
@@ -481,11 +486,11 @@ class ReportGridTransformers
 	static function _parseTimeTZ(s : String)
 	{
 		var sign = 1,
-			pos = s.indexOf("+");
+			pos = s.lastIndexOf("+");
 		if(pos < 0)
 		{
 			sign = -1;
-			pos = s.indexOf("-");
+			pos = s.lastIndexOf("-");
 		}
 		var d = Date.fromString(StringTools.replace(StringTools.replace(s.substr(0, pos), "T", " "), ".000", "")),
 			t = DateParser.parseTime(s.substr(pos+1));

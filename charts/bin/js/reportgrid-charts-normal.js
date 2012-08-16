@@ -2031,16 +2031,16 @@ Hash.__name__ = ["Hash"];
 Hash.prototype = {
 	toString: function() {
 		var s = new StringBuf();
-		s.b += Std.string("{");
+		s.b += "{";
 		var it = this.keys();
 		while( it.hasNext() ) {
 			var i = it.next();
 			s.b += Std.string(i);
-			s.b += Std.string(" => ");
+			s.b += " => ";
 			s.b += Std.string(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += Std.string(", ");
+			if(it.hasNext()) s.b += ", ";
 		}
-		s.b += Std.string("}");
+		s.b += "}";
 		return s.b;
 	}
 	,iterator: function() {
@@ -2446,16 +2446,16 @@ IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
 	toString: function() {
 		var s = new StringBuf();
-		s.b += Std.string("{");
+		s.b += "{";
 		var it = this.keys();
 		while( it.hasNext() ) {
 			var i = it.next();
 			s.b += Std.string(i);
-			s.b += Std.string(" => ");
+			s.b += " => ";
 			s.b += Std.string(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += Std.string(", ");
+			if(it.hasNext()) s.b += ", ";
 		}
-		s.b += Std.string("}");
+		s.b += "}";
 		return s.b;
 	}
 	,iterator: function() {
@@ -2958,13 +2958,13 @@ List.prototype = {
 		var s = new StringBuf();
 		var first = true;
 		var l = this.h;
-		s.b += Std.string("{");
+		s.b += "{";
 		while(l != null) {
-			if(first) first = false; else s.b += Std.string(", ");
+			if(first) first = false; else s.b += ", ";
 			s.b += Std.string(Std.string(l[0]));
 			l = l[1];
 		}
-		s.b += Std.string("}");
+		s.b += "}";
 		return s.b;
 	}
 	,iterator: function() {
@@ -3537,10 +3537,10 @@ Strings.formatf = function(pattern,nullstring,culture) {
 		})(left));
 		var df = [Dynamics.formatf(format,params,nullstring,culture)];
 		buf.push(((function() {
-			return function(f0,i1) {
+			return function(f,i1) {
 				return (function() {
 					return function(v) {
-						return f0(i1,v);
+						return f(i1,v);
 					};
 				})();
 			};
@@ -4262,7 +4262,7 @@ chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
 chx.crypt.RSAEncrypt.prototype = {
 	toString: function() {
 		var sb = new StringBuf();
-		sb.b += Std.string("Public:\n");
+		sb.b += "Public:\n";
 		sb.b += Std.string("N:\t" + this.n.toHex() + "\n");
 		sb.b += Std.string("E:\t" + math.BigInteger.ofInt(this.e).toHex() + "\n");
 		return sb.b;
@@ -4409,7 +4409,7 @@ chx.crypt.RSA.prototype = $extend(chx.crypt.RSAEncrypt.prototype,{
 	toString: function() {
 		var sb = new StringBuf();
 		sb.b += Std.string(chx.crypt.RSAEncrypt.prototype.toString.call(this));
-		sb.b += Std.string("Private:\n");
+		sb.b += "Private:\n";
 		sb.b += Std.string("D:\t" + this.d.toHex() + "\n");
 		if(this.p != null) sb.b += Std.string("P:\t" + this.p.toHex() + "\n");
 		if(this.q != null) sb.b += Std.string("Q:\t" + this.q.toHex() + "\n");
@@ -5212,7 +5212,7 @@ chx.text.Sprintf.format = function(format,args) {
 			}
 			if(fieldOutcome != true) {
 				if(chx.text.Sprintf.DEBUG) destString += Std.string(fieldOutcome);
-				if(chx.text.Sprintf.TRACE) null;
+				if(chx.text.Sprintf.TRACE) haxe.Log.trace(fieldOutcome,{ fileName : "Sprintf.hx", lineNumber : 243, className : "chx.text.Sprintf", methodName : "format"});
 			}
 		}
 	}
@@ -5559,9 +5559,9 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 		}
 	}
 	,add: function(name) {
-		this.selection.eachNode((function(f0,a1) {
+		this.selection.eachNode((function(f,a1) {
 			return function(a2,i) {
-				return f0(a1,a2,i);
+				return f(a1,a2,i);
 			};
 		})($bind(this,this._add),name));
 		return this.selection;
@@ -5578,9 +5578,9 @@ dhx.AccessClassed.prototype = $extend(dhx.Access.prototype,{
 		if(clsb) cls.baseVal = clsv; else node.className = clsv;
 	}
 	,remove: function(name) {
-		this.selection.eachNode((function(f0,a1) {
+		this.selection.eachNode((function(f,a1) {
 			return function(a2,i) {
-				return f0(a1,a2,i);
+				return f(a1,a2,i);
 			};
 		})($bind(this,this._remove),name));
 		return this.selection;
@@ -6668,9 +6668,9 @@ dhx.BaseSelection.prototype = {
 		if(capture == null) capture = false;
 		var i = type.indexOf("."), typo = i < 0?type:HxOverrides.substr(type,0,i);
 		if((typo == "mouseenter" || typo == "mouseleave") && !dhx.ClientHost.isIE()) {
-			listener = (function(f0,f) {
+			listener = (function(f1,f) {
 				return function(a1,i1) {
-					return f0(f,a1,i1);
+					return f1(f,a1,i1);
 				};
 			})(dhx.BaseSelection.listenerEnterLeave,listener);
 			if(typo == "mouseenter") typo = "mouseover"; else typo = "mouseout";
@@ -7700,6 +7700,36 @@ haxe.BaseCode.prototype = {
 	,nbits: null
 	,base: null
 	,__class__: haxe.BaseCode
+}
+haxe.Firebug = function() { }
+$hxClasses["haxe.Firebug"] = haxe.Firebug;
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.onerror = haxe.Firebug.onError;
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Http = function(url) {
 	this.url = url;
@@ -10556,6 +10586,7 @@ rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
 	return rv;
 }
 rg.app.charts.JSBridge.main = function() {
+	if(haxe.Firebug.detect()) haxe.Log.trace = haxe.Firebug.trace;
 	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid;
 	var globalNotifier = new hxevents.Notifier();
 	var globalReady = false;
@@ -10570,17 +10601,7 @@ rg.app.charts.JSBridge.main = function() {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
-			try {
-				app.visualization(rg.app.charts.JSBridge.select(el),opt);
-			} catch( $e0 ) {
-				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
-					var e = $e0;
-					rg.app.charts.JSBridge.log(e.toString());
-				} else {
-				var e = $e0;
-				rg.app.charts.JSBridge.log(Std.string(e));
-				}
-			}
+			app.visualization(rg.app.charts.JSBridge.select(el),opt);
 		});
 	};
 	r.barChart = function(el,options) {
@@ -10649,7 +10670,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.47.8714"};
+	r.info.charts = { version : "1.4.47.8721"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -12717,9 +12738,9 @@ rg.html.chart.PivotTable.prototype = {
 				var cell = _g3[_g2];
 				++_g2;
 				var td = tr.append("td").text().string(this.formatDataPoint(cell)).attr("title").string(this.formatDataPointOver(cell));
-				if(null != this.click) td.onNode("click",(function(f0,dp) {
+				if(null != this.click) td.onNode("click",(function(f,dp) {
 					return function(_,_1) {
-						return f0(dp,_,_1);
+						return f(dp,_,_1);
 					};
 				})($bind(this,this.onClick),cell));
 				if(this.displayHeatMap && !Math.isNaN(v = Reflect.field(cell,this.cellVariable.type) / d.stats.max)) {
@@ -13180,6 +13201,9 @@ rg.info.Info.feed = function(info,ob) {
 }
 rg.info.Info.warn = function(name,message) {
 	rg.info.Info.warner("the parameter " + name + " has not been applied because: " + Std.string(message));
+}
+rg.info.Info.warner = function(m) {
+	haxe.Log.trace("WARN: " + Std.string(m),{ fileName : "Info.hx", lineNumber : 49, className : "rg.info.Info"});
 }
 rg.info.InfoAnimation = function() {
 	this.animated = false;
@@ -14405,11 +14429,11 @@ rg.interactive.RGDownloader.prototype = {
 		var http = new haxe.Http(this.url(format));
 		http.setHeader("Accept","application/json");
 		if(null != error) http.onError = error; else http.onError = function(e) {
-			null;
+			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 41, className : "rg.interactive.RGDownloader", methodName : "download"});
 		};
-		http.onData = (function(f0,a1,a2) {
+		http.onData = (function(f,a1,a2) {
 			return function(a3) {
-				return f0(a1,a2,a3);
+				return f(a1,a2,a3);
 			};
 		})($bind(this,this.complete),success,error);
 		http.setParameter("html",this.html());
@@ -15258,9 +15282,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f0,i1) {
+				f(data[i],(function(f1,i1) {
 					return function(r) {
-						return f0(i1,r);
+						return f1(i1,r);
 					};
 				})(complete,i));
 			}
@@ -15276,9 +15300,9 @@ rg.query.BaseQuery.prototype = {
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
-				f(data[i],(function(f0,i1) {
+				f(data[i],(function(f1,i1) {
 					return function(r) {
-						return f0(i1,r);
+						return f1(i1,r);
 					};
 				})(complete,i));
 			}
@@ -15529,9 +15553,9 @@ rg.query.Transformers.setFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f0,v) {
+		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
 			return function(a1) {
-				return f0(v,a1);
+				return f1(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -15558,9 +15582,9 @@ rg.query.Transformers.mapFields = function(o) {
 		var field = fields[_g];
 		++_g;
 		var f = Reflect.field(o,field);
-		if(!Reflect.isFunction(f)) fs.push((function(f0,v) {
+		if(!Reflect.isFunction(f)) fs.push((function(f1,v) {
 			return function(a1) {
-				return f0(v,a1);
+				return f1(v,a1);
 			};
 		})(function(v,obj) {
 			return v;
@@ -15816,13 +15840,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var _g3 = 0, _g2 = valuedps.length;
 			while(_g3 < _g2) {
 				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f0,a1) {
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.yVariables[j].stats, over = (function(f,a1) {
 					return function(n,i1) {
-						return f0(a1,n,i1);
+						return f(a1,n,i1);
 					};
-				})($bind(this,this.onmouseover),stats), click = (function(f01,a11) {
+				})($bind(this,this.onmouseover),stats), click = (function(f1,a11) {
 					return function(dp,_,i1) {
-						return f01(a11,dp,_,i1);
+						return f1(a11,dp,_,i1);
 					};
 				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
@@ -15831,9 +15855,9 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 					if(Math.isNaN(h)) h = 0;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f02,dp1) {
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
-							return f02(dp1,_,i1);
+							return f2(dp1,_,i1);
 						};
 					})(click,dp));
 					bar.node().__dhx_data__ = dp;
@@ -15862,13 +15886,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			var _g3 = 0, _g2 = valuedps.length;
 			while(_g3 < _g2) {
 				var j = _g3++;
-				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f0,a1) {
+				var axisdps = valuedps[j], axisg = getGroup("group-" + j,this.chart), xtype = this.xVariable.type, xaxis = this.xVariable.axis, xmin = this.xVariable.min(), xmax = this.xVariable.max(), ytype = this.yVariables[j].type, yaxis = this.yVariables[j].axis, ymin = this.yVariables[j].min(), ymax = this.yVariables[j].max(), pad = Math.max(1,(dist - this.paddingDataPoint * (axisdps.length - 1)) / axisdps.length), offset = -span / 2 + j * (dist + this.paddingAxis), stats = this.xVariable.stats, over = (function(f,a1) {
 					return function(n,i1) {
-						return f0(a1,n,i1);
+						return f(a1,n,i1);
 					};
-				})($bind(this,this.onmouseover),stats), click = (function(f01,a11) {
+				})($bind(this,this.onmouseover),stats), click = (function(f1,a11) {
 					return function(dp,_,i1) {
-						return f01(a11,dp,_,i1);
+						return f1(a11,dp,_,i1);
 					};
 				})($bind(this,this.onclick),stats);
 				var prev = 0.0;
@@ -15876,9 +15900,9 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				while(_g5 < _g4) {
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f02,dp1) {
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
-							return f02(dp1,_,i1);
+							return f2(dp1,_,i1);
 						};
 					})(click,dp));
 					bar.node().__dhx_data__ = dp;
@@ -16188,9 +16212,9 @@ rg.svg.chart.Geo.__name__ = ["rg","svg","chart","Geo"];
 rg.svg.chart.Geo.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	addMap: function(map,field) {
-		if(null != field) map.onReady.add((function(f0,a1,a2) {
+		if(null != field) map.onReady.add((function(f,a1,a2) {
 			return function() {
-				return f0(a1,a2);
+				return f(a1,a2);
 			};
 		})($bind(this,this.drawmap),map,field));
 	}
@@ -16283,9 +16307,9 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,drawmap: function(map,field) {
 		if(null == this.dps || 0 == this.dps.length) {
-			this.queue.push((function(f0,a1,a2) {
+			this.queue.push((function(f,a1,a2) {
 				return function() {
-					return f0(a1,a2);
+					return f(a1,a2);
 				};
 			})($bind(this,this.drawmap),map,field));
 			return;
@@ -16715,9 +16739,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,segments: null
 	,getY0: function(pos) {
 		var _g = this;
-		var v = this.yVariables[pos], scale = (function(f0,a1,a2) {
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
 			return function(v1) {
-				return f0(a1,a2,v1);
+				return f(a1,a2,v1);
 			};
 		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		return function(d,i) {
@@ -16726,9 +16750,9 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	}
 	,getY1: function(pos) {
 		var _g = this;
-		var v = this.yVariables[pos], scale = (function(f0,a1,a2) {
+		var v = this.yVariables[pos], scale = (function(f,a1,a2) {
 			return function(v1) {
-				return f0(a1,a2,v1);
+				return f(a1,a2,v1);
 			};
 		})(($_=v.axis,$bind($_,$_.scale)),v.min(),v.max());
 		if(null != this.y0property) {
@@ -17371,22 +17395,22 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(cellhead.layer > celltail.layer) return;
 				var weight = _g2.nheight(edge.weight), before = 5 + _g2.cafter(edge.id,edge.tail.positives()) * (_g2.backEdgeSpacing + 1), after = 5 + _g2.cafter(edge.id,edge.head.negatives()) * (_g2.backEdgeSpacing + 1), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
 				var g = edgescontainer.append("svg:g");
-				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f0,x,y,a1) {
+				var chunkf = g.append("svg:rect").attr("x")["float"](x1).attr("y")["float"](y1).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f,x,y,a1) {
 					return function(el,i) {
-						return f0(x,y,a1,el,i);
+						return f(x,y,a1,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
-				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f01,x3,y3,a11) {
+				var chunkf1 = g.append("svg:rect").attr("x")["float"](x2 - blockwidth).attr("y")["float"](y2).attr("width")["float"](blockwidth).attr("height")["float"](weight).attr("class").string("edge fill fill-" + _g2.styleEdgeBackward + " stroke stroke-" + _g2.styleEdgeBackward).onNode("mouseover",(function(f1,x3,y3,a11) {
 					return function(el,i) {
-						return f01(x3,y3,a11,el,i);
+						return f1(x3,y3,a11,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
 				var hook = new rg.svg.widget.HookConnector(g,"stroke stroke-" + _g2.styleEdgeBackward);
 				_g2.addToMap(edge.id,"edge",g);
 				hook.update(x1 + blockwidth,y1 + weight / 2,x2 - blockwidth,y2 + weight / 2,backedgesy,before,after);
-				hook.g.onNode("mouseover",(function(f02,x4,y4,a12) {
+				hook.g.onNode("mouseover",(function(f2,x4,y4,a12) {
 					return function(el,i) {
-						return f02(x4,y4,a12,el,i);
+						return f2(x4,y4,a12,el,i);
 					};
 				})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy,edge));
 				if(null != _g2.edgeClass) {
@@ -17394,9 +17418,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					if(null != cls) hook.addClass(cls);
 				}
 				rg.util.RGColors.storeColorForSelection(hook.g,"stroke",hook.line.style("stroke").get());
-				if(null != _g2.clickEdge) hook.g.onNode("click",(function(f03,a13) {
+				if(null != _g2.clickEdge) hook.g.onNode("click",(function(f3,a13) {
 					return function(el,i) {
-						return f03(a13,el,i);
+						return f3(a13,el,i);
 					};
 				})($bind(_g2,_g2.edgeClickWithEdge),edge));
 				if(_g2.stackbackedges) backedgesy += 1 + _g2.backEdgeSpacing;
@@ -17408,9 +17432,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			var weight = _g2.nheight(edge.weight), hook = new rg.svg.widget.HookConnectorArea(edgescontainer,"fill fill-" + _g2.styleEdgeBackward,"stroke stroke-" + _g2.styleEdgeBackward), before = _g2.hafter(edge.id,edge.tail.positives()) + Math.min(_g2.extraWidth,_g2.nheight(edge.tail.data.exit)), after = _g2.hafter(edge.id,edge.head.negatives()), x1 = _g2.layerWidth / 2 + _g2.xlayer(celltail.layer), x2 = -_g2.layerWidth / 2 + _g2.xlayer(cellhead.layer), y1 = _g2.ynode(edge.tail) + _g2.ydiagonal(edge.id,edge.tail.positives()), y2 = _g2.nheight(edge.head.data.entry) + _g2.ynode(edge.head) + _g2.ydiagonal(edge.id,edge.head.negatives());
 			_g2.addToMap(edge.id,"edge",hook.g);
 			hook.update(x1,y1,x2,y2,weight,backedgesy,before,after);
-			hook.g.onNode("mouseover",(function(f04,x5,y5,a14) {
+			hook.g.onNode("mouseover",(function(f4,x5,y5,a14) {
 				return function(el,i) {
-					return f04(x5,y5,a14,el,i);
+					return f4(x5,y5,a14,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,backedgesy + weight / 2,edge));
 			if(null != _g2.edgeClass) {
@@ -17418,9 +17442,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) hook.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(hook.g,"fill",hook.area.style("fill").get());
-			if(null != _g2.clickEdge) hook.g.onNode("click",(function(f05,a15) {
+			if(null != _g2.clickEdge) hook.g.onNode("click",(function(f5,a15) {
 				return function(el,i) {
-					return f05(a15,el,i);
+					return f5(a15,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithEdge),edge));
 			if(_g2.stackbackedges) backedgesy += weight + _g2.backEdgeSpacing;
@@ -17436,15 +17460,15 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) diagonal.addClass(cls);
 			}
 			_g2.addToMap(edge.id,"edge",diagonal.g);
-			diagonal.g.onNode("mouseover",(function(f06,x6,y6,a16) {
+			diagonal.g.onNode("mouseover",(function(f6,x6,y6,a16) {
 				return function(el,i) {
-					return f06(x6,y6,a16,el,i);
+					return f6(x6,y6,a16,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoveredge),(x1 + x2) / 2,(y1 + y2 + weight) / 2,edge));
 			rg.util.RGColors.storeColorForSelection(diagonal.g,"fill",diagonal.area.style("fill").get());
-			if(null != _g2.clickEdge) diagonal.g.onNode("click",(function(f07,a17) {
+			if(null != _g2.clickEdge) diagonal.g.onNode("click",(function(f7,a17) {
 				return function(el,i) {
-					return f07(a17,el,i);
+					return f7(a17,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithEdge),edge));
 		});
@@ -17464,9 +17488,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f08,x7,y7,a18) {
+			elbow.g.onNode("mouseover",(function(f8,x7,y7,a18) {
 				return function(el,i) {
-					return f08(x7,y7,a18,el,i);
+					return f8(x7,y7,a18,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoverexit),x + minr + (-minr + Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) + _g2.hnode(node) + minr + _g2.extraHeight,node));
 			if(null != _g2.edgeClass) {
@@ -17474,9 +17498,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f09,a19,a2) {
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f9,a19,a2) {
 				return function(el,i) {
-					return f09(a19,a2,el,i);
+					return f9(a19,a2,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithNode),node,true));
 			_g2.addToMap(node.id,"exit",elbow.g);
@@ -17494,9 +17518,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label.setText(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
-			elbow.g.onNode("mouseover",(function(f010,x8,y8,a110) {
+			elbow.g.onNode("mouseover",(function(f10,x8,y8,a110) {
 				return function(el,i) {
-					return f010(x8,y8,a110,el,i);
+					return f10(x8,y8,a110,el,i);
 				};
 			})($bind(_g2,_g2.onmouseoverentry),x - minr + (minr - Math.min(_g2.extraWidth,extra)) / 2,_g2.ynode(node) - minr - _g2.extraHeight,node));
 			if(null != _g2.edgeClass) {
@@ -17504,9 +17528,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				if(null != cls) elbow.addClass(cls);
 			}
 			rg.util.RGColors.storeColorForSelection(elbow.g,"fill",elbow.area.style("fill").get());
-			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f011,a111,a21) {
+			if(null != _g2.clickEdge) elbow.g.onNode("click",(function(f11,a111,a21) {
 				return function(el,i) {
-					return f011(a111,a21,el,i);
+					return f11(a111,a21,el,i);
 				};
 			})($bind(_g2,_g2.edgeClickWithNode),node,false));
 			_g2.addToMap(node.id,"entry",elbow.g);
@@ -17597,14 +17621,14 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		});
 		cont.each(function(n,i) {
 			var node = dhx.Dom.selectNode(dhx.Group.current);
-			node.onNode("mouseover",(function(f012,a112) {
+			node.onNode("mouseover",(function(f12,a112) {
 				return function(el,i1) {
-					return f012(a112,el,i1);
+					return f12(a112,el,i1);
 				};
 			})($bind(_g2,_g2.onmouseovernode),n));
-			if(null != _g2.click) node.onNode("click",(function(f013,a113) {
+			if(null != _g2.click) node.onNode("click",(function(f13,a113) {
 				return function(el,i1) {
-					return f013(a113,el,i1);
+					return f13(a113,el,i1);
 				};
 			})($bind(_g2,_g2.nodeclick),n));
 		});
@@ -17713,18 +17737,18 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 			var i = _g1++;
 			var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [this.yVariables[i].stats];
 			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
-				return function(f0,a1) {
+				return function(f,a1) {
 					return (function() {
 						return function(dp,i1) {
-							return f0(a1,dp,i1);
+							return f(a1,dp,i1);
 						};
 					})();
 				};
 			})())($bind(this,this.onclick),stats[0]), onmouseover = ((function() {
-				return function(f01,a11) {
+				return function(f1,a11) {
 					return (function() {
 						return function(n,i1) {
-							return f01(a11,n,i1);
+							return f1(a11,n,i1);
 						};
 					})();
 				};
@@ -17743,13 +17767,13 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 				};
 			})(stats));
 			if(null != this.labelDataPoint) {
-				var f = [this.labelDataPoint];
-				enter.eachNode((function(f,stats) {
+				var f2 = [this.labelDataPoint];
+				enter.eachNode((function(f2,stats) {
 					return function(n,i1) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,true,true);
-						label.setText(f[0](dp,stats[0]));
+						label.setText(f2[0](dp,stats[0]));
 					};
-				})(f,stats));
+				})(f2,stats));
 			}
 			gsymbol.update().selectAll("g.symbol").dataf((function() {
 				return function(d,i1) {
@@ -17853,15 +17877,15 @@ rg.svg.chart.StreamGraph.prototype = $extend(rg.svg.chart.CartesianChart.prototy
 	,prepareData: function() {
 		var _g = this;
 		this.defs.selectAll("linearGradient.h").remove();
-		var xscale = (function(f0,a1,a2) {
+		var xscale = (function(f,a1,a2) {
 			return function(v) {
-				return f0(a1,a2,v);
+				return f(a1,a2,v);
 			};
 		})(($_=this.xVariable.axis,$bind($_,$_.scale)),this.xVariable.min(),this.xVariable.max()), xtype = this.xVariable.type, x = function(d) {
 			return xscale(Reflect.field(d,xtype));
-		}, yscale = (function(f01,a11,a21) {
+		}, yscale = (function(f1,a11,a21) {
 			return function(v) {
-				return f01(a11,a21,v);
+				return f1(a11,a21,v);
 			};
 		})(($_=this.yVariables[0].axis,$bind($_,$_.scale)),this.yVariables[0].min(),this.yVariables[0].max()), ytype = this.yVariables[0].type, y = function(d) {
 			return yscale(Reflect.field(d,ytype));
@@ -18538,7 +18562,7 @@ $hxClasses["rg.svg.panel.Panel"] = rg.svg.panel.Panel;
 rg.svg.panel.Panel.__name__ = ["rg","svg","panel","Panel"];
 rg.svg.panel.Panel.prototype = {
 	reframe: function() {
-		this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+		this.g.attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")").select("rect.panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
 		var layer;
 		var _g1 = 0, _g = this._layers.length;
 		while(_g1 < _g) {
@@ -18549,6 +18573,7 @@ rg.svg.panel.Panel.prototype = {
 	}
 	,init: function(container) {
 		this.g = container.append("svg:g").attr("class").string("panel").attr("transform").string("translate(" + this.frame.x + "," + this.frame.y + ")");
+		this.g.append("svg:rect").attr("class").string("panel-frame").attr("width")["float"](this.frame.width).attr("height")["float"](this.frame.height);
 	}
 	,setParent: function(container) {
 		if(null != this.g) this.g.remove();
@@ -18759,10 +18784,11 @@ rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
 rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
 	stats: function() {
-		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
+		return { cachedSymbols : Iterators.array(this.c.iterator()).length, requests : this.r};
 	}
 	,get: function(type,size) {
 		if(size == null) size = 100;
+		this.r++;
 		var k = type + ":" + size, s = this.c.get(k);
 		if(null == s) {
 			s = (Reflect.field(thx.svg.Symbol,type))(size);
@@ -19091,9 +19117,9 @@ rg.svg.widget.Balloon.prototype = {
 				_g._moveTo(ix(t / _g.duration),iy(t / _g.duration));
 				return false;
 			},0);
-		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f0,x1,y1) {
+		} else if(0 == this.boxWidth) haxe.Timer.delay((function(f,x1,y1) {
 			return function() {
-				return f0(x1,y1);
+				return f(x1,y1);
 			};
 		})($bind(this,this._moveTo),x,y),15); else this._moveTo(x,y);
 	}
@@ -19868,14 +19894,14 @@ rg.svg.widget.Map.prototype = {
 				dp.$centroid = centroid;
 				dp.$data = feature.properties;
 				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
-				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f0,dp1) {
+				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,dp1) {
 					return function(n,i1) {
-						return f0(dp1,n,i1);
+						return f(dp1,n,i1);
 					};
 				})($bind(this,this.onMouseOver),dp));
-				if(null != this.click) p.onNode("click",(function(f01,dp2) {
+				if(null != this.click) p.onNode("click",(function(f1,dp2) {
 					return function(_,i1) {
-						return f01(dp2,_,i1);
+						return f1(dp2,_,i1);
 					};
 				})($bind(this,this.onClick),dp));
 			}
@@ -20824,7 +20850,7 @@ rg.visualization.Visualization.prototype = {
 	,destroy: function() {
 	}
 	,feedData: function(data) {
-		null;
+		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 48, className : "rg.visualization.Visualization", methodName : "feedData"});
 	}
 	,init: function() {
 		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 43, className : "rg.visualization.Visualization", methodName : "init"});
@@ -21838,16 +21864,16 @@ thx.collection.HashList.prototype = {
 	,__keys: null
 	,toString: function() {
 		var s = new StringBuf();
-		s.b += Std.string("{");
+		s.b += "{";
 		var it = this.keys();
 		while( it.hasNext() ) {
 			var i = it.next();
 			s.b += Std.string(i);
-			s.b += Std.string(" => ");
+			s.b += " => ";
 			s.b += Std.string(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += Std.string(", ");
+			if(it.hasNext()) s.b += ", ";
 		}
-		s.b += Std.string("}");
+		s.b += "}";
 		return s.b;
 	}
 	,array: function() {
@@ -22424,7 +22450,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getMinutes(),"0",2),culture));
 			break;
 		case "n":
-			buf.b += Std.string("\n");
+			buf.b += "\n";
 			break;
 		case "p":
 			buf.b += Std.string(date.getHours() > 11?info.pm:info.am);
@@ -22448,7 +22474,7 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits(StringTools.lpad("" + date.getSeconds(),"0",2),culture));
 			break;
 		case "t":
-			buf.b += Std.string("\t");
+			buf.b += "\t";
 			break;
 		case "T":
 			buf.b += Std.string(thx.culture.FormatDate.format("%H:%M:%S",date,culture));
@@ -22482,13 +22508,13 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 			buf.b += Std.string(thx.culture.FormatNumber.digits("" + date.getFullYear(),culture));
 			break;
 		case "z":
-			buf.b += Std.string("+0000");
+			buf.b += "+0000";
 			break;
 		case "Z":
-			buf.b += Std.string("GMT");
+			buf.b += "GMT";
 			break;
 		case "%":
-			buf.b += Std.string("%");
+			buf.b += "%";
 			break;
 		default:
 			buf.b += Std.string("%" + c);
@@ -23267,6 +23293,7 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 			return Strings.format(this.message,this.params);
 		} catch( e ) {
 			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
 			return "";
 		}
 	}
@@ -23591,7 +23618,7 @@ thx.geom.Contour.contourStart = function(grid) {
 	return null;
 }
 thx.geom.Contour.contour = function(grid,start) {
-	var s = null == start?thx.geom.Contour.contourStart(grid):start, c = [], x = s[0], y = s[1], dx = 0, dy = 0, pdx = null, pdy = null, i = 0;
+	var s = null == start?thx.geom.Contour.contourStart(grid):start, c = [], x = s[0], y = s[1], dx = 0, dy = 0, pdx = 666, pdy = 666, i = 0;
 	do {
 		i = 0;
 		if(grid(x - 1,y - 1)) i += 1;
@@ -24225,9 +24252,9 @@ thx.graph.Graph.prototype = {
 				while( $it0.hasNext() ) {
 					var edge = $it0.next();
 					other = edge.head;
-					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f0,a1,n1) {
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSink() && !other.isSource()) totraverse.push((function(f,a1,n1) {
 						return function() {
-							return f0(a1,n1);
+							return f(a1,n1);
 						};
 					})(traverse1,path.concat([edge]),other));
 					traveled.add(edge.id);
@@ -24260,9 +24287,9 @@ thx.graph.Graph.prototype = {
 				while( $it0.hasNext() ) {
 					var edge = $it0.next();
 					other = edge.other(n);
-					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f0,a1,n1) {
+					if(traveled.exists(edge.id)) continue; else if(other == b) paths.push(path.concat([edge])); else if(!other.isSource()) totraverse.push((function(f,a1,n1) {
 						return function() {
-							return f0(a1,n1);
+							return f(a1,n1);
 						};
 					})(traverse1,path.concat([edge]),other));
 					traveled.add(edge.id);
@@ -24622,8 +24649,8 @@ thx.graph.GraphLayout.prototype = {
 	,nodeAt: function(layer,position) {
 		var arr = this._layers[layer];
 		if(null == arr) return null;
+		if(position >= arr.length) return null;
 		var id = arr[position];
-		if(null == id) return null;
 		return this.graph.nodes.get(id);
 	}
 	,cell: function(node) {
@@ -24898,6 +24925,8 @@ thx.graph.Graphs.addConnections = function(graph,arr) {
 }
 thx.graph.Graphs.reverseConnection = function(graph,a,b) {
 	var path = thx.graph.Graphs.findPath(graph,a,b);
+	haxe.Log.trace("REVERSING " + a + ", " + b,{ fileName : "Graphs.hx", lineNumber : 168, className : "thx.graph.Graphs", methodName : "reverseConnection"});
+	haxe.Log.trace(path,{ fileName : "Graphs.hx", lineNumber : 169, className : "thx.graph.Graphs", methodName : "reverseConnection"});
 	if(null == path) return false;
 	var _g1 = 0, _g = path.length - 1;
 	while(_g1 < _g) {
@@ -24921,9 +24950,9 @@ thx.graph.Graphs.findPath = function(graph,a,b) {
 			while(_g < _g1.length) {
 				var parent = _g1[_g];
 				++_g;
-				if(parent == a) return path.concat([a]); else if(thx.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f0,a1,n1) {
+				if(parent == a) return path.concat([a]); else if(thx.graph.Graphs.isSource(t = graph.get(parent))) continue; else totraverse.push((function(f,a1,n1) {
 					return function() {
-						return f0(a1,n1);
+						return f(a1,n1);
 					};
 				})(traverse1,path.concat([parent]),t));
 			}
@@ -25449,10 +25478,10 @@ thx.json.JsonDecoder.prototype = {
 						buf += "/";
 						break;
 					case "b":
-						buf += String.fromCharCode(8);
+						buf += "";
 						break;
 					case "f":
-						buf += String.fromCharCode(12);
+						buf += "";
 						break;
 					case "n":
 						buf += "\n";
@@ -25632,7 +25661,7 @@ thx.json.JsonEncoder.prototype = {
 		this.buf.b += Std.string(b?"true":"false");
 	}
 	,valueNull: function() {
-		this.buf.b += Std.string("null");
+		this.buf.b += "null";
 	}
 	,valueFloat: function(f) {
 		this.buf.b += Std.string(f);
@@ -25647,30 +25676,30 @@ thx.json.JsonEncoder.prototype = {
 		this.buf.b += Std.string(d.getTime());
 	}
 	,arrayEnd: function() {
-		this.buf.b += Std.string("]");
+		this.buf.b += "]";
 		this.count.pop();
 	}
 	,arrayItemEnd: function() {
 	}
 	,arrayItemStart: function() {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += ",";
 	}
 	,arrayStart: function() {
-		this.buf.b += Std.string("[");
+		this.buf.b += "[";
 		this.count.push(0);
 	}
 	,objectEnd: function() {
-		this.buf.b += Std.string("}");
+		this.buf.b += "}";
 		this.count.pop();
 	}
 	,objectFieldEnd: function() {
 	}
 	,objectFieldStart: function(name) {
-		if(this.count[this.count.length - 1]++ > 0) this.buf.b += Std.string(",");
+		if(this.count[this.count.length - 1]++ > 0) this.buf.b += ",";
 		this.buf.b += Std.string(this.quote(name) + ":");
 	}
 	,objectStart: function() {
-		this.buf.b += Std.string("{");
+		this.buf.b += "{";
 		this.count.push(0);
 	}
 	,end: function() {
@@ -25841,10 +25870,10 @@ thx.math.scale.NumericScale.prototype = {
 	,getDomain: function() {
 		return this._domain;
 	}
-	,invert: function(y,_) {
+	,invert: function(y,i) {
 		return this._input(y);
 	}
-	,scale: function(x,_) {
+	,scale: function(x,i) {
 		return this._output(x);
 	}
 	,rescale: function() {
@@ -27216,6 +27245,1406 @@ if(typeof window != "undefined") {
 		return f(msg,[url + ":" + line]);
 	};
 }
+/*!
+ * Sizzle CSS Selector Engine
+ *  Copyright 2011, The Dojo Foundation
+ *  Released under the MIT, BSD, and GPL Licenses.
+ *  More information: http://sizzlejs.com/
+ */
+(function(){
+
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
+	done = 0,
+	toString = Object.prototype.toString,
+	hasDuplicate = false,
+	baseHasDuplicate = true,
+	rBackslash = /\\/g,
+	rNonWord = /\W/;
+
+// Here we check if the JavaScript engine is using some sort of
+// optimization where it does not always call our comparision
+// function. If that is the case, discard the hasDuplicate value.
+//   Thus far that includes Google Chrome.
+[0, 0].sort(function() {
+	baseHasDuplicate = false;
+	return 0;
+});
+
+var Sizzle = function( selector, context, results, seed ) {
+	results = results || [];
+	context = context || document;
+
+	var origContext = context;
+
+	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
+		return [];
+	}
+	
+	if ( !selector || typeof selector !== "string" ) {
+		return results;
+	}
+
+	var m, set, checkSet, extra, ret, cur, pop, i,
+		prune = true,
+		contextXML = Sizzle.isXML( context ),
+		parts = [],
+		soFar = selector;
+	
+	// Reset the position of the chunker regexp (start from head)
+	do {
+		chunker.exec( "" );
+		m = chunker.exec( soFar );
+
+		if ( m ) {
+			soFar = m[3];
+		
+			parts.push( m[1] );
+		
+			if ( m[2] ) {
+				extra = m[3];
+				break;
+			}
+		}
+	} while ( m );
+
+	if ( parts.length > 1 && origPOS.exec( selector ) ) {
+
+		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
+			set = posProcess( parts[0] + parts[1], context );
+
+		} else {
+			set = Expr.relative[ parts[0] ] ?
+				[ context ] :
+				Sizzle( parts.shift(), context );
+
+			while ( parts.length ) {
+				selector = parts.shift();
+
+				if ( Expr.relative[ selector ] ) {
+					selector += parts.shift();
+				}
+				
+				set = posProcess( selector, set );
+			}
+		}
+
+	} else {
+		// Take a shortcut and set the context if the root selector is an ID
+		// (but not if it'll be faster if the inner selector is an ID)
+		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
+				Expr.match.ID.test(parts[0]) && !Expr.match.ID.test(parts[parts.length - 1]) ) {
+
+			ret = Sizzle.find( parts.shift(), context, contextXML );
+			context = ret.expr ?
+				Sizzle.filter( ret.expr, ret.set )[0] :
+				ret.set[0];
+		}
+
+		if ( context ) {
+			ret = seed ?
+				{ expr: parts.pop(), set: makeArray(seed) } :
+				Sizzle.find( parts.pop(), parts.length === 1 && (parts[0] === "~" || parts[0] === "+") && context.parentNode ? context.parentNode : context, contextXML );
+
+			set = ret.expr ?
+				Sizzle.filter( ret.expr, ret.set ) :
+				ret.set;
+
+			if ( parts.length > 0 ) {
+				checkSet = makeArray( set );
+
+			} else {
+				prune = false;
+			}
+
+			while ( parts.length ) {
+				cur = parts.pop();
+				pop = cur;
+
+				if ( !Expr.relative[ cur ] ) {
+					cur = "";
+				} else {
+					pop = parts.pop();
+				}
+
+				if ( pop == null ) {
+					pop = context;
+				}
+
+				Expr.relative[ cur ]( checkSet, pop, contextXML );
+			}
+
+		} else {
+			checkSet = parts = [];
+		}
+	}
+
+	if ( !checkSet ) {
+		checkSet = set;
+	}
+
+	if ( !checkSet ) {
+		Sizzle.error( cur || selector );
+	}
+
+	if ( toString.call(checkSet) === "[object Array]" ) {
+		if ( !prune ) {
+			results.push.apply( results, checkSet );
+
+		} else if ( context && context.nodeType === 1 ) {
+			for ( i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && Sizzle.contains(context, checkSet[i])) ) {
+					results.push( set[i] );
+				}
+			}
+
+		} else {
+			for ( i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
+					results.push( set[i] );
+				}
+			}
+		}
+
+	} else {
+		makeArray( checkSet, results );
+	}
+
+	if ( extra ) {
+		Sizzle( extra, origContext, results, seed );
+		Sizzle.uniqueSort( results );
+	}
+
+	return results;
+};
+
+Sizzle.uniqueSort = function( results ) {
+	if ( sortOrder ) {
+		hasDuplicate = baseHasDuplicate;
+		results.sort( sortOrder );
+
+		if ( hasDuplicate ) {
+			for ( var i = 1; i < results.length; i++ ) {
+				if ( results[i] === results[ i - 1 ] ) {
+					results.splice( i--, 1 );
+				}
+			}
+		}
+	}
+
+	return results;
+};
+
+Sizzle.matches = function( expr, set ) {
+	return Sizzle( expr, null, null, set );
+};
+
+Sizzle.matchesSelector = function( node, expr ) {
+	return Sizzle( expr, null, null, [node] ).length > 0;
+};
+
+Sizzle.find = function( expr, context, isXML ) {
+	var set;
+
+	if ( !expr ) {
+		return [];
+	}
+
+	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
+		var match,
+			type = Expr.order[i];
+		
+		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
+			var left = match[1];
+			match.splice( 1, 1 );
+
+			if ( left.substr( left.length - 1 ) !== "\\" ) {
+				match[1] = (match[1] || "").replace( rBackslash, "" );
+				set = Expr.find[ type ]( match, context, isXML );
+
+				if ( set != null ) {
+					expr = expr.replace( Expr.match[ type ], "" );
+					break;
+				}
+			}
+		}
+	}
+
+	if ( !set ) {
+		set = typeof context.getElementsByTagName !== "undefined" ?
+			context.getElementsByTagName( "*" ) :
+			[];
+	}
+
+	return { set: set, expr: expr };
+};
+
+Sizzle.filter = function( expr, set, inplace, not ) {
+	var match, anyFound,
+		old = expr,
+		result = [],
+		curLoop = set,
+		isXMLFilter = set && set[0] && Sizzle.isXML( set[0] );
+
+	while ( expr && set.length ) {
+		for ( var type in Expr.filter ) {
+			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
+				var found, item,
+					filter = Expr.filter[ type ],
+					left = match[1];
+
+				anyFound = false;
+
+				match.splice(1,1);
+
+				if ( left.substr( left.length - 1 ) === "\\" ) {
+					continue;
+				}
+
+				if ( curLoop === result ) {
+					result = [];
+				}
+
+				if ( Expr.preFilter[ type ] ) {
+					match = Expr.preFilter[ type ]( match, curLoop, inplace, result, not, isXMLFilter );
+
+					if ( !match ) {
+						anyFound = found = true;
+
+					} else if ( match === true ) {
+						continue;
+					}
+				}
+
+				if ( match ) {
+					for ( var i = 0; (item = curLoop[i]) != null; i++ ) {
+						if ( item ) {
+							found = filter( item, match, i, curLoop );
+							var pass = not ^ !!found;
+
+							if ( inplace && found != null ) {
+								if ( pass ) {
+									anyFound = true;
+
+								} else {
+									curLoop[i] = false;
+								}
+
+							} else if ( pass ) {
+								result.push( item );
+								anyFound = true;
+							}
+						}
+					}
+				}
+
+				if ( found !== undefined ) {
+					if ( !inplace ) {
+						curLoop = result;
+					}
+
+					expr = expr.replace( Expr.match[ type ], "" );
+
+					if ( !anyFound ) {
+						return [];
+					}
+
+					break;
+				}
+			}
+		}
+
+		// Improper expression
+		if ( expr === old ) {
+			if ( anyFound == null ) {
+				Sizzle.error( expr );
+
+			} else {
+				break;
+			}
+		}
+
+		old = expr;
+	}
+
+	return curLoop;
+};
+
+Sizzle.error = function( msg ) {
+	throw "Syntax error, unrecognized expression: " + msg;
+};
+
+var Expr = Sizzle.selectors = {
+	order: [ "ID", "NAME", "TAG" ],
+
+	match: {
+		ID: /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
+		CLASS: /\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
+		NAME: /\[name=['"]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)['"]*\]/,
+		ATTR: /\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*(?:(['"])(.*?)\3|(#?(?:[\w\u00c0-\uFFFF\-]|\\.)*)|)|)\s*\]/,
+		TAG: /^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,
+		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
+		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
+		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
+	},
+
+	leftMatch: {},
+
+	attrMap: {
+		"class": "className",
+		"for": "htmlFor"
+	},
+
+	attrHandle: {
+		href: function( elem ) {
+			return elem.getAttribute( "href" );
+		},
+		type: function( elem ) {
+			return elem.getAttribute( "type" );
+		}
+	},
+
+	relative: {
+		"+": function(checkSet, part){
+			var isPartStr = typeof part === "string",
+				isTag = isPartStr && !rNonWord.test( part ),
+				isPartStrNotTag = isPartStr && !isTag;
+
+			if ( isTag ) {
+				part = part.toLowerCase();
+			}
+
+			for ( var i = 0, l = checkSet.length, elem; i < l; i++ ) {
+				if ( (elem = checkSet[i]) ) {
+					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
+
+					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
+						elem || false :
+						elem === part;
+				}
+			}
+
+			if ( isPartStrNotTag ) {
+				Sizzle.filter( part, checkSet, true );
+			}
+		},
+
+		">": function( checkSet, part ) {
+			var elem,
+				isPartStr = typeof part === "string",
+				i = 0,
+				l = checkSet.length;
+
+			if ( isPartStr && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+
+				for ( ; i < l; i++ ) {
+					elem = checkSet[i];
+
+					if ( elem ) {
+						var parent = elem.parentNode;
+						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
+					}
+				}
+
+			} else {
+				for ( ; i < l; i++ ) {
+					elem = checkSet[i];
+
+					if ( elem ) {
+						checkSet[i] = isPartStr ?
+							elem.parentNode :
+							elem.parentNode === part;
+					}
+				}
+
+				if ( isPartStr ) {
+					Sizzle.filter( part, checkSet, true );
+				}
+			}
+		},
+
+		"": function(checkSet, part, isXML){
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
+
+			if ( typeof part === "string" && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+				nodeCheck = part;
+				checkFn = dirNodeCheck;
+			}
+
+			checkFn( "parentNode", part, doneName, checkSet, nodeCheck, isXML );
+		},
+
+		"~": function( checkSet, part, isXML ) {
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
+
+			if ( typeof part === "string" && !rNonWord.test( part ) ) {
+				part = part.toLowerCase();
+				nodeCheck = part;
+				checkFn = dirNodeCheck;
+			}
+
+			checkFn( "previousSibling", part, doneName, checkSet, nodeCheck, isXML );
+		}
+	},
+
+	find: {
+		ID: function( match, context, isXML ) {
+			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+				var m = context.getElementById(match[1]);
+				// Check parentNode to catch when Blackberry 4.6 returns
+				// nodes that are no longer in the document #6963
+				return m && m.parentNode ? [m] : [];
+			}
+		},
+
+		NAME: function( match, context ) {
+			if ( typeof context.getElementsByName !== "undefined" ) {
+				var ret = [],
+					results = context.getElementsByName( match[1] );
+
+				for ( var i = 0, l = results.length; i < l; i++ ) {
+					if ( results[i].getAttribute("name") === match[1] ) {
+						ret.push( results[i] );
+					}
+				}
+
+				return ret.length === 0 ? null : ret;
+			}
+		},
+
+		TAG: function( match, context ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
+				return context.getElementsByTagName( match[1] );
+			}
+		}
+	},
+	preFilter: {
+		CLASS: function( match, curLoop, inplace, result, not, isXML ) {
+			match = " " + match[1].replace( rBackslash, "" ) + " ";
+
+			if ( isXML ) {
+				return match;
+			}
+
+			for ( var i = 0, elem; (elem = curLoop[i]) != null; i++ ) {
+				if ( elem ) {
+					if ( not ^ (elem.className && (" " + elem.className + " ").replace(/[\t\n\r]/g, " ").indexOf(match) >= 0) ) {
+						if ( !inplace ) {
+							result.push( elem );
+						}
+
+					} else if ( inplace ) {
+						curLoop[i] = false;
+					}
+				}
+			}
+
+			return false;
+		},
+
+		ID: function( match ) {
+			return match[1].replace( rBackslash, "" );
+		},
+
+		TAG: function( match, curLoop ) {
+			return match[1].replace( rBackslash, "" ).toLowerCase();
+		},
+
+		CHILD: function( match ) {
+			if ( match[1] === "nth" ) {
+				if ( !match[2] ) {
+					Sizzle.error( match[0] );
+				}
+
+				match[2] = match[2].replace(/^\+|\s*/g, '');
+
+				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
+				var test = /(-?)(\d*)(?:n([+\-]?\d*))?/.exec(
+					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
+					!/\D/.test( match[2] ) && "0n+" + match[2] || match[2]);
+
+				// calculate the numbers (first)n+(last) including if they are negative
+				match[2] = (test[1] + (test[2] || 1)) - 0;
+				match[3] = test[3] - 0;
+			}
+			else if ( match[2] ) {
+				Sizzle.error( match[0] );
+			}
+
+			// TODO: Move to normal caching system
+			match[0] = done++;
+
+			return match;
+		},
+
+		ATTR: function( match, curLoop, inplace, result, not, isXML ) {
+			var name = match[1] = match[1].replace( rBackslash, "" );
+			
+			if ( !isXML && Expr.attrMap[name] ) {
+				match[1] = Expr.attrMap[name];
+			}
+
+			// Handle if an un-quoted value was used
+			match[4] = ( match[4] || match[5] || "" ).replace( rBackslash, "" );
+
+			if ( match[2] === "~=" ) {
+				match[4] = " " + match[4] + " ";
+			}
+
+			return match;
+		},
+
+		PSEUDO: function( match, curLoop, inplace, result, not ) {
+			if ( match[1] === "not" ) {
+				// If we're dealing with a complex expression, or a simple one
+				if ( ( chunker.exec(match[3]) || "" ).length > 1 || /^\w/.test(match[3]) ) {
+					match[3] = Sizzle(match[3], null, null, curLoop);
+
+				} else {
+					var ret = Sizzle.filter(match[3], curLoop, inplace, true ^ not);
+
+					if ( !inplace ) {
+						result.push.apply( result, ret );
+					}
+
+					return false;
+				}
+
+			} else if ( Expr.match.POS.test( match[0] ) || Expr.match.CHILD.test( match[0] ) ) {
+				return true;
+			}
+			
+			return match;
+		},
+
+		POS: function( match ) {
+			match.unshift( true );
+
+			return match;
+		}
+	},
+	
+	filters: {
+		enabled: function( elem ) {
+			return elem.disabled === false && elem.type !== "hidden";
+		},
+
+		disabled: function( elem ) {
+			return elem.disabled === true;
+		},
+
+		checked: function( elem ) {
+			return elem.checked === true;
+		},
+		
+		selected: function( elem ) {
+			// Accessing this property makes selected-by-default
+			// options in Safari work properly
+			if ( elem.parentNode ) {
+				elem.parentNode.selectedIndex;
+			}
+			
+			return elem.selected === true;
+		},
+
+		parent: function( elem ) {
+			return !!elem.firstChild;
+		},
+
+		empty: function( elem ) {
+			return !elem.firstChild;
+		},
+
+		has: function( elem, i, match ) {
+			return !!Sizzle( match[3], elem ).length;
+		},
+
+		header: function( elem ) {
+			return (/h\d/i).test( elem.nodeName );
+		},
+
+		text: function( elem ) {
+			var attr = elem.getAttribute( "type" ), type = elem.type;
+			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
+			// use getAttribute instead to test this case
+			return "text" === type && ( attr === type || attr === null );
+		},
+
+		radio: function( elem ) {
+			return "radio" === elem.type;
+		},
+
+		checkbox: function( elem ) {
+			return "checkbox" === elem.type;
+		},
+
+		file: function( elem ) {
+			return "file" === elem.type;
+		},
+		password: function( elem ) {
+			return "password" === elem.type;
+		},
+
+		submit: function( elem ) {
+			return "submit" === elem.type;
+		},
+
+		image: function( elem ) {
+			return "image" === elem.type;
+		},
+
+		reset: function( elem ) {
+			return "reset" === elem.type;
+		},
+
+		button: function( elem ) {
+			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
+		},
+
+		input: function( elem ) {
+			return (/input|select|textarea|button/i).test( elem.nodeName );
+		}
+	},
+	setFilters: {
+		first: function( elem, i ) {
+			return i === 0;
+		},
+
+		last: function( elem, i, match, array ) {
+			return i === array.length - 1;
+		},
+
+		even: function( elem, i ) {
+			return i % 2 === 0;
+		},
+
+		odd: function( elem, i ) {
+			return i % 2 === 1;
+		},
+
+		lt: function( elem, i, match ) {
+			return i < match[3] - 0;
+		},
+
+		gt: function( elem, i, match ) {
+			return i > match[3] - 0;
+		},
+
+		nth: function( elem, i, match ) {
+			return match[3] - 0 === i;
+		},
+
+		eq: function( elem, i, match ) {
+			return match[3] - 0 === i;
+		}
+	},
+	filter: {
+		PSEUDO: function( elem, match, i, array ) {
+			var name = match[1],
+				filter = Expr.filters[ name ];
+
+			if ( filter ) {
+				return filter( elem, i, match, array );
+
+			} else if ( name === "contains" ) {
+				return (elem.textContent || elem.innerText || Sizzle.getText([ elem ]) || "").indexOf(match[3]) >= 0;
+
+			} else if ( name === "not" ) {
+				var not = match[3];
+
+				for ( var j = 0, l = not.length; j < l; j++ ) {
+					if ( not[j] === elem ) {
+						return false;
+					}
+				}
+
+				return true;
+
+			} else {
+				Sizzle.error( name );
+			}
+		},
+
+		CHILD: function( elem, match ) {
+			var type = match[1],
+				node = elem;
+
+			switch ( type ) {
+				case "only":
+				case "first":
+					while ( (node = node.previousSibling) )	 {
+						if ( node.nodeType === 1 ) {
+							return false;
+						}
+					}
+
+					if ( type === "first" ) {
+						return true;
+					}
+
+					node = elem;
+
+				case "last":
+					while ( (node = node.nextSibling) )	 {
+						if ( node.nodeType === 1 ) {
+							return false;
+						}
+					}
+
+					return true;
+
+				case "nth":
+					var first = match[2],
+						last = match[3];
+
+					if ( first === 1 && last === 0 ) {
+						return true;
+					}
+					
+					var doneName = match[0],
+						parent = elem.parentNode;
+	
+					if ( parent && (parent.sizcache !== doneName || !elem.nodeIndex) ) {
+						var count = 0;
+						
+						for ( node = parent.firstChild; node; node = node.nextSibling ) {
+							if ( node.nodeType === 1 ) {
+								node.nodeIndex = ++count;
+							}
+						}
+
+						parent.sizcache = doneName;
+					}
+					
+					var diff = elem.nodeIndex - last;
+
+					if ( first === 0 ) {
+						return diff === 0;
+
+					} else {
+						return ( diff % first === 0 && diff / first >= 0 );
+					}
+			}
+		},
+
+		ID: function( elem, match ) {
+			return elem.nodeType === 1 && elem.getAttribute("id") === match;
+		},
+
+		TAG: function( elem, match ) {
+			return (match === "*" && elem.nodeType === 1) || elem.nodeName.toLowerCase() === match;
+		},
+		
+		CLASS: function( elem, match ) {
+			return (" " + (elem.className || elem.getAttribute("class")) + " ")
+				.indexOf( match ) > -1;
+		},
+
+		ATTR: function( elem, match ) {
+			var name = match[1],
+				result = Expr.attrHandle[ name ] ?
+					Expr.attrHandle[ name ]( elem ) :
+					elem[ name ] != null ?
+						elem[ name ] :
+						elem.getAttribute( name ),
+				value = result + "",
+				type = match[2],
+				check = match[4];
+
+			return result == null ?
+				type === "!=" :
+				type === "=" ?
+				value === check :
+				type === "*=" ?
+				value.indexOf(check) >= 0 :
+				type === "~=" ?
+				(" " + value + " ").indexOf(check) >= 0 :
+				!check ?
+				value && result !== false :
+				type === "!=" ?
+				value !== check :
+				type === "^=" ?
+				value.indexOf(check) === 0 :
+				type === "$=" ?
+				value.substr(value.length - check.length) === check :
+				type === "|=" ?
+				value === check || value.substr(0, check.length + 1) === check + "-" :
+				false;
+		},
+
+		POS: function( elem, match, i, array ) {
+			var name = match[2],
+				filter = Expr.setFilters[ name ];
+
+			if ( filter ) {
+				return filter( elem, i, match, array );
+			}
+		}
+	}
+};
+
+var origPOS = Expr.match.POS,
+	fescape = function(all, num){
+		return "\\" + (num - 0 + 1);
+	};
+
+for ( var type in Expr.match ) {
+	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
+	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
+}
+
+var makeArray = function( array, results ) {
+	array = Array.prototype.slice.call( array, 0 );
+
+	if ( results ) {
+		results.push.apply( results, array );
+		return results;
+	}
+	
+	return array;
+};
+
+// Perform a simple check to determine if the browser is capable of
+// converting a NodeList to an array using builtin methods.
+// Also verifies that the returned array holds DOM nodes
+// (which is not the case in the Blackberry browser)
+try {
+	Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
+
+// Provide a fallback method if it does not work
+} catch( e ) {
+	makeArray = function( array, results ) {
+		var i = 0,
+			ret = results || [];
+
+		if ( toString.call(array) === "[object Array]" ) {
+			Array.prototype.push.apply( ret, array );
+
+		} else {
+			if ( typeof array.length === "number" ) {
+				for ( var l = array.length; i < l; i++ ) {
+					ret.push( array[i] );
+				}
+
+			} else {
+				for ( ; array[i]; i++ ) {
+					ret.push( array[i] );
+				}
+			}
+		}
+
+		return ret;
+	};
+}
+
+var sortOrder, siblingCheck;
+
+if ( document.documentElement.compareDocumentPosition ) {
+	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
+		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
+			return a.compareDocumentPosition ? -1 : 1;
+		}
+
+		return a.compareDocumentPosition(b) & 4 ? -1 : 1;
+	};
+
+} else {
+	sortOrder = function( a, b ) {
+		var al, bl,
+			ap = [],
+			bp = [],
+			aup = a.parentNode,
+			bup = b.parentNode,
+			cur = aup;
+
+		// The nodes are identical, we can exit early
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+
+		// If the nodes are siblings (or identical) we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+
+		// If no parents were found then the nodes are disconnected
+		} else if ( !aup ) {
+			return -1;
+
+		} else if ( !bup ) {
+			return 1;
+		}
+
+		// Otherwise they're somewhere else in the tree so we need
+		// to build up a full list of the parentNodes for comparison
+		while ( cur ) {
+			ap.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		cur = bup;
+
+		while ( cur ) {
+			bp.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		al = ap.length;
+		bl = bp.length;
+
+		// Start walking down the tree looking for a discrepancy
+		for ( var i = 0; i < al && i < bl; i++ ) {
+			if ( ap[i] !== bp[i] ) {
+				return siblingCheck( ap[i], bp[i] );
+			}
+		}
+
+		// We ended someplace up the tree so do a sibling check
+		return i === al ?
+			siblingCheck( a, bp[i], -1 ) :
+			siblingCheck( ap[i], b, 1 );
+	};
+
+	siblingCheck = function( a, b, ret ) {
+		if ( a === b ) {
+			return ret;
+		}
+
+		var cur = a.nextSibling;
+
+		while ( cur ) {
+			if ( cur === b ) {
+				return -1;
+			}
+
+			cur = cur.nextSibling;
+		}
+
+		return 1;
+	};
+}
+
+// Utility function for retreiving the text value of an array of DOM nodes
+Sizzle.getText = function( elems ) {
+	var ret = "", elem;
+
+	for ( var i = 0; elems[i]; i++ ) {
+		elem = elems[i];
+
+		// Get the text from text nodes and CDATA nodes
+		if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
+			ret += elem.nodeValue;
+
+		// Traverse everything else, except comment nodes
+		} else if ( elem.nodeType !== 8 ) {
+			ret += Sizzle.getText( elem.childNodes );
+		}
+	}
+
+	return ret;
+};
+
+// Check to see if the browser returns elements by name when
+// querying by getElementById (and provide a workaround)
+(function(){
+	// We're going to inject a fake input element with a specified name
+	var form = document.createElement("div"),
+		id = "script" + (new Date()).getTime(),
+		root = document.documentElement;
+
+	form.innerHTML = "<a name='" + id + "'/>";
+
+	// Inject it into the root element, check its status, and remove it quickly
+	root.insertBefore( form, root.firstChild );
+
+	// The workaround has to do additional checks after a getElementById
+	// Which slows things down for other browsers (hence the branching)
+	if ( document.getElementById( id ) ) {
+		Expr.find.ID = function( match, context, isXML ) {
+			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+				var m = context.getElementById(match[1]);
+
+				return m ?
+					m.id === match[1] || typeof m.getAttributeNode !== "undefined" && m.getAttributeNode("id").nodeValue === match[1] ?
+						[m] :
+						undefined :
+					[];
+			}
+		};
+
+		Expr.filter.ID = function( elem, match ) {
+			var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+
+			return elem.nodeType === 1 && node && node.nodeValue === match;
+		};
+	}
+
+	root.removeChild( form );
+
+	// release memory in IE
+	root = form = null;
+})();
+
+(function(){
+	// Check to see if the browser returns only elements
+	// when doing getElementsByTagName("*")
+
+	// Create a fake element
+	var div = document.createElement("div");
+	div.appendChild( document.createComment("") );
+
+	// Make sure no comments are found
+	if ( div.getElementsByTagName("*").length > 0 ) {
+		Expr.find.TAG = function( match, context ) {
+			var results = context.getElementsByTagName( match[1] );
+
+			// Filter out possible comments
+			if ( match[1] === "*" ) {
+				var tmp = [];
+
+				for ( var i = 0; results[i]; i++ ) {
+					if ( results[i].nodeType === 1 ) {
+						tmp.push( results[i] );
+					}
+				}
+
+				results = tmp;
+			}
+
+			return results;
+		};
+	}
+
+	// Check to see if an attribute returns normalized href attributes
+	div.innerHTML = "<a href='#'></a>";
+
+	if ( div.firstChild && typeof div.firstChild.getAttribute !== "undefined" &&
+			div.firstChild.getAttribute("href") !== "#" ) {
+
+		Expr.attrHandle.href = function( elem ) {
+			return elem.getAttribute( "href", 2 );
+		};
+	}
+
+	// release memory in IE
+	div = null;
+})();
+
+if ( document.querySelectorAll ) {
+	(function(){
+		var oldSizzle = Sizzle,
+			div = document.createElement("div"),
+			id = "__sizzle__";
+
+		div.innerHTML = "<p class='TEST'></p>";
+
+		// Safari can't handle uppercase or unicode characters when
+		// in quirks mode.
+		if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
+			return;
+		}
+	
+		Sizzle = function( query, context, extra, seed ) {
+			context = context || document;
+
+			// Only use querySelectorAll on non-XML documents
+			// (ID selectors don't work in non-HTML documents)
+			if ( !seed && !Sizzle.isXML(context) ) {
+				// See if we find a selector to speed up
+				var match = /^(\w+$)|^\.([\w\-]+$)|^#([\w\-]+$)/.exec( query );
+				
+				if ( match && (context.nodeType === 1 || context.nodeType === 9) ) {
+					// Speed-up: Sizzle("TAG")
+					if ( match[1] ) {
+						return makeArray( context.getElementsByTagName( query ), extra );
+					
+					// Speed-up: Sizzle(".CLASS")
+					} else if ( match[2] && Expr.find.CLASS && context.getElementsByClassName ) {
+						return makeArray( context.getElementsByClassName( match[2] ), extra );
+					}
+				}
+				
+				if ( context.nodeType === 9 ) {
+					// Speed-up: Sizzle("body")
+					// The body element only exists once, optimize finding it
+					if ( query === "body" && context.body ) {
+						return makeArray( [ context.body ], extra );
+						
+					// Speed-up: Sizzle("#ID")
+					} else if ( match && match[3] ) {
+						var elem = context.getElementById( match[3] );
+
+						// Check parentNode to catch when Blackberry 4.6 returns
+						// nodes that are no longer in the document #6963
+						if ( elem && elem.parentNode ) {
+							// Handle the case where IE and Opera return items
+							// by name instead of ID
+							if ( elem.id === match[3] ) {
+								return makeArray( [ elem ], extra );
+							}
+							
+						} else {
+							return makeArray( [], extra );
+						}
+					}
+					
+					try {
+						return makeArray( context.querySelectorAll(query), extra );
+					} catch(qsaError) {}
+
+				// qSA works strangely on Element-rooted queries
+				// We can work around this by specifying an extra ID on the root
+				// and working up from there (Thanks to Andrew Dupont for the technique)
+				// IE 8 doesn't work on object elements
+				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
+					var oldContext = context,
+						old = context.getAttribute( "id" ),
+						nid = old || id,
+						hasParent = context.parentNode,
+						relativeHierarchySelector = /^\s*[+~]/.test( query );
+
+					if ( !old ) {
+						context.setAttribute( "id", nid );
+					} else {
+						nid = nid.replace( /'/g, "\\$&" );
+					}
+					if ( relativeHierarchySelector && hasParent ) {
+						context = context.parentNode;
+					}
+
+					try {
+						if ( !relativeHierarchySelector || hasParent ) {
+							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
+						}
+
+					} catch(pseudoError) {
+					} finally {
+						if ( !old ) {
+							oldContext.removeAttribute( "id" );
+						}
+					}
+				}
+			}
+		
+			return oldSizzle(query, context, extra, seed);
+		};
+
+		for ( var prop in oldSizzle ) {
+			Sizzle[ prop ] = oldSizzle[ prop ];
+		}
+
+		// release memory in IE
+		div = null;
+	})();
+}
+
+(function(){
+	var html = document.documentElement,
+		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msMatchesSelector;
+
+	if ( matches ) {
+		// Check to see if it's possible to do matchesSelector
+		// on a disconnected node (IE 9 fails this)
+		var disconnectedMatch = !matches.call( document.createElement( "div" ), "div" ),
+			pseudoWorks = false;
+
+		try {
+			// This should fail with an exception
+			// Gecko does not error, returns false instead
+			matches.call( document.documentElement, "[test!='']:sizzle" );
+	
+		} catch( pseudoError ) {
+			pseudoWorks = true;
+		}
+
+		Sizzle.matchesSelector = function( node, expr ) {
+			// Make sure that attribute selectors are quoted
+			expr = expr.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
+
+			if ( !Sizzle.isXML( node ) ) {
+				try {
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
+						var ret = matches.call( node, expr );
+
+						// IE 9's matchesSelector returns false on disconnected nodes
+						if ( ret || !disconnectedMatch ||
+								// As well, disconnected nodes are said to be in a document
+								// fragment in IE 9, so check for that
+								node.document && node.document.nodeType !== 11 ) {
+							return ret;
+						}
+					}
+				} catch(e) {}
+			}
+
+			return Sizzle(expr, null, null, [node]).length > 0;
+		};
+	}
+})();
+
+(function(){
+	var div = document.createElement("div");
+
+	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+
+	// Opera can't find a second classname (in 9.6)
+	// Also, make sure that getElementsByClassName actually exists
+	if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
+		return;
+	}
+
+	// Safari caches class attributes, doesn't catch changes (in 3.2)
+	div.lastChild.className = "e";
+
+	if ( div.getElementsByClassName("e").length === 1 ) {
+		return;
+	}
+	
+	Expr.order.splice(1, 0, "CLASS");
+	Expr.find.CLASS = function( match, context, isXML ) {
+		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
+			return context.getElementsByClassName(match[1]);
+		}
+	};
+
+	// release memory in IE
+	div = null;
+})();
+
+function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+
+		if ( elem ) {
+			var match = false;
+
+			elem = elem[dir];
+
+			while ( elem ) {
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
+					break;
+				}
+
+				if ( elem.nodeType === 1 && !isXML ){
+					elem.sizcache = doneName;
+					elem.sizset = i;
+				}
+
+				if ( elem.nodeName.toLowerCase() === cur ) {
+					match = elem;
+					break;
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
+}
+
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+
+		if ( elem ) {
+			var match = false;
+			
+			elem = elem[dir];
+
+			while ( elem ) {
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
+					break;
+				}
+
+				if ( elem.nodeType === 1 ) {
+					if ( !isXML ) {
+						elem.sizcache = doneName;
+						elem.sizset = i;
+					}
+
+					if ( typeof cur !== "string" ) {
+						if ( elem === cur ) {
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+						match = elem;
+						break;
+					}
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
+}
+
+if ( document.documentElement.contains ) {
+	Sizzle.contains = function( a, b ) {
+		return a !== b && (a.contains ? a.contains(b) : true);
+	};
+
+} else if ( document.documentElement.compareDocumentPosition ) {
+	Sizzle.contains = function( a, b ) {
+		return !!(a.compareDocumentPosition(b) & 16);
+	};
+
+} else {
+	Sizzle.contains = function() {
+		return false;
+	};
+}
+
+Sizzle.isXML = function( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
+
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
+var posProcess = function( selector, context ) {
+	var match,
+		tmpSet = [],
+		later = "",
+		root = context.nodeType ? [context] : context;
+
+	// Position selectors must be done after the filter
+	// And so must :not(positional) so we move all PSEUDOs to the end
+	while ( (match = Expr.match.PSEUDO.exec( selector )) ) {
+		later += match[0];
+		selector = selector.replace( Expr.match.PSEUDO, "" );
+	}
+
+	selector = Expr.relative[selector] ? selector + "*" : selector;
+
+	for ( var i = 0, l = root.length; i < l; i++ ) {
+		Sizzle( selector, root[i], tmpSet );
+	}
+
+	return Sizzle.filter( later, tmpSet );
+};
+
+// EXPOSE
+
+window.Sizzle = Sizzle;
+
+})();;
 var s = dhx.SizzleEngine.getSizzle();
 dhx.Sizzle = s;
 dhx.Sizzle.select = s;
@@ -27625,9 +29054,10 @@ math.BigInteger.MAX_RADIX = 36;
 math.BigInteger.MIN_RADIX = 2;
 math.IEEE754.bias = 1024;
 math.IEEE754.cnst = 2102;
-rg.RGConst.BASE_URL_GEOJSON = "https://api.reportgrid.com/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/up.json";
-rg.RGConst.LEGACY_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
+rg.RGConst.HOST = "" == js.Lib.window.location.host?"localhost":js.Lib.window.location.host;
+rg.RGConst.BASE_URL_GEOJSON = "http://" + rg.RGConst.HOST + "/rg/charts/geo/json/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "http://" + rg.RGConst.HOST + "/rg/services/viz/charts/up.json";
+rg.RGConst.LEGACY_RENDERING_STATIC = "http://" + rg.RGConst.HOST + "/rg/services/viz/charts/upandsee.{ext}";
 rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;
 rg.app.charts.App.chartsLoaded = 0;
@@ -27646,10 +29076,6 @@ rg.html.widget.Logo.LOGO_WIDTH = 194;
 rg.html.widget.Logo.LOGO_HEIGHT = 29;
 rg.html.widget.Tooltip.DEFAULT_DISTANCE = 0;
 rg.html.widget.Tooltip.DEFAULT_ANCHOR = "bottomright";
-rg.info.Info.warner = window.console && window.console.warn?function(m) {
-	console.warn("" + Std.string(m));
-}:function(m) {
-};
 rg.info.InfoPivotTable.defaultStartColor = new thx.color.Hsl(210,1,1);
 rg.info.InfoPivotTable.defaultEndColor = new thx.color.Hsl(210,1,0.5);
 rg.info.filter.TransformerArray.instance = new rg.info.filter.TransformerArray();
@@ -27739,3 +29165,5 @@ thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
 rg.app.charts.JSBridge.main();
 })();
+
+//@ sourceMappingURL=reportgrid-charts.js.map
