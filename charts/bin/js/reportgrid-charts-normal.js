@@ -10649,7 +10649,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.48.8722"};
+	r.info.charts = { version : "1.4.49.8724"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -26780,13 +26780,13 @@ thx.svg.PathTypes.prototype = {
 		return p.join("");
 	}
 	,lineString: function(o) {
-		var p = ["M"], coordinates = o.coordinates;
+		var p = [], coordinates = o.coordinates;
 		var _g1 = 0, _g = coordinates.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			p.push(this.project(coordinates[i]));
 		}
-		return p.join("L");
+		return "M" + p.join("L");
 	}
 	,multiPoint: function(o) {
 		var p = [], coordinates = o.coordinates;
