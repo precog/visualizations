@@ -4,6 +4,18 @@ body, html
 	padding: 0;
 }
 
+div
+{
+	width : 480px;
+	height : 320px;
+	margin: 0 auto;
+}
+
+iframe
+{
+	border: 0;
+}
+
 .wide
 {
 	width : 640px;
@@ -21,12 +33,3 @@ body, html
 	width : 780px;
 	height : 500px;
 }
-
-/*
-#chart
-{
-	width : 480px;
-	height : 320px;
-	margin: 0 auto;
-}
-*/
