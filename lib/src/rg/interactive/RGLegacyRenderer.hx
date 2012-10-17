@@ -43,14 +43,22 @@ document.VIZ.submit();
 </form>';
 		haxe.Timer.delay(function() writeToIframe(cast iframe.node(), content), 100);
 
-		var inode : js.Dom.Frame = cast iframe.node();
-		var doc = getIframeDoc(inode);
-		untyped inode.attachEvent("onload", function() {
-			var doc = getIframeDoc(inode);
-			doc.body.scroll = "no";
-			doc.body.style.overflow = "hidden";
-
-		});
+		if(isIE7orBelow()) {
+			var inode : js.Dom.Frame = cast iframe.node();
+			untyped inode.attachEvent("onload", function() {
+				var doc = getIframeDoc(inode);
+				doc.body.scroll = "no";
+				doc.body.style.overflow = "hidden";
+				/*
+				doc.body.frameBorder = "0";
+				doc.vspace = "0";
+				doc.body.hspace = "0";
+				*/
+				doc.body.style.border = 0;
+				doc.body.style.margin = 0;
+				doc.body.style.padding = 0;
+			});
+		}
 	}
 
 

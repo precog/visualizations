@@ -10651,7 +10651,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.245.8930"};
+	r.info.charts = { version : "1.4.249.8934"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -14533,13 +14533,17 @@ rg.interactive.RGLegacyRenderer.prototype = {
 		haxe.Timer.delay(function() {
 			_g.writeToIframe(iframe.node(),content);
 		},100);
-		var inode = iframe.node();
-		var doc = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
-		inode.attachEvent("onload",function() {
-			var doc1 = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
-			doc1.body.scroll = "no";
-			doc1.body.style.overflow = "hidden";
-		});
+		if(rg.interactive.RGLegacyRenderer.isIE7orBelow()) {
+			var inode = iframe.node();
+			inode.attachEvent("onload",function() {
+				var doc = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
+				doc.body.scroll = "no";
+				doc.body.style.overflow = "hidden";
+				doc.body.style.border = 0;
+				doc.body.style.margin = 0;
+				doc.body.style.padding = 0;
+			});
+		}
 	}
 	,url: function() {
 		return StringTools.replace(this.serviceUrl,"{ext}",rg.interactive.RGLegacyRenderer.FORMAT);
