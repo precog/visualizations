@@ -2,7 +2,6 @@ package rg.svg.chart;
 import rg.svg.panel.Panel;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.data.DataPoint;
 import thx.color.NamedColors;
 import dhx.Selection;
 import rg.svg.widget.Label;
@@ -38,17 +37,17 @@ class Sankey extends Chart
 	public var stackbackedges : Bool;
 	public var thinbackedges : Bool;
 
-	public var labelEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
-	public var labelEdgeOver : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
-	public var labelNode : DataPoint -> Stats<Dynamic> -> String;
+	public var labelEdge : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
+	public var labelEdgeOver : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> String;
+	public var labelNode : Dynamic -> Stats<Dynamic> -> String;
 
-	public var imagePath : DataPoint -> String;
-	public var clickEdge : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
+	public var imagePath : Dynamic -> String;
+	public var clickEdge : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float } -> Stats<Dynamic> -> Void;
 
-	public var nodeClass : DataPoint -> Stats<Dynamic> -> String;
-	public var edgeClass : DataPoint -> Stats<Dynamic> -> String;
-	public var displayEntry : DataPoint -> Stats<Dynamic> -> Bool;
-	public var displayExit : DataPoint -> Stats<Dynamic> -> Bool;
+	public var nodeClass : Dynamic -> Stats<Dynamic> -> String;
+	public var edgeClass : Dynamic -> Stats<Dynamic> -> String;
+	public var displayEntry : Dynamic -> Stats<Dynamic> -> Bool;
+	public var displayExit : Dynamic -> Stats<Dynamic> -> Bool;
 
 	var layout : GraphLayout<NodeData, Dynamic>;
 	var maxweight : Float;
@@ -94,7 +93,7 @@ class Sankey extends Chart
 		thinbackedges = true;
 	}
 
-	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Dynamic>)
 	{
 		dependentVariable = variableDependents[0];
 	}
@@ -865,7 +864,7 @@ class Sankey extends Chart
 		click(node.data.dp, dependentVariable.stats);
 	}
 
-	function edgeclick(data : { head : DataPoint, tail : DataPoint, edgeweight : Float, nodeweight : Float }, el : js.Dom.HtmlDom, i : Int)
+	function edgeclick(data : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float }, el : js.Dom.HtmlDom, i : Int)
 	{
 		clickEdge(data, dependentVariable.stats);
 	}
@@ -1067,7 +1066,7 @@ class Sankey extends Chart
 
 typedef NodeData =
 {
-	dp       : DataPoint,
+	dp       : Dynamic,
 	id       : String,
 	weight   : Float,
 	entry    : Float,

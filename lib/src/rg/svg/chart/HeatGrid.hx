@@ -9,7 +9,6 @@ import rg.data.VariableDependent;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.svg.panel.Panel;
-import rg.data.DataPoint;
 import rg.util.RGColors;
 import thx.color.Rgb;
 import thx.color.Colors;
@@ -29,11 +28,11 @@ import rg.svg.chart.ColorScaleMode;
 import rg.svg.util.RGCss;
 using Arrays;
 
-class HeatGrid extends CartesianChart<Array<DataPoint>>
+class HeatGrid extends CartesianChart<Array<Dynamic>>
 {
 	public var useContour : Bool;
 	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
-	var dps : Array<DataPoint>;
+	var dps : Array<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
 
 	public function new(panel : Panel)
@@ -43,7 +42,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		colorMode = FromCss();
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Dynamic>)
 	{
 		xVariable = cast variableIndependents[0];
 		yVariables = cast [variableIndependents[1]];
@@ -62,7 +61,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		redraw();
 	}
 
-	override function data(dps : Array<DataPoint>)
+	override function data(dps : Array<Dynamic>)
 	{
 		this.dps = dps;
 		redraw();
@@ -198,7 +197,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		RGColors.storeColorForSelection(cast rect);
 	}
 
-	function onmouseover(dp : DataPoint, i : Int)
+	function onmouseover(dp : Dynamic, i : Int)
 	{
 		if (null == labelDataPointOver)
 			return;
@@ -211,7 +210,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		}
 	}
 
-	function onclick(dp : DataPoint, i : Int)
+	function onclick(dp : Dynamic, i : Int)
 	{
 		if (null == click)
 			return;
@@ -227,7 +226,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 		return tickmarks.map(function(d, i) return d.value);
 	}
 
-	dynamic function stylefeature(svg : Selection, dp : DataPoint) {}
+	dynamic function stylefeature(svg : Selection, dp : Dynamic) {}
 
 	function getColorMode() return colorMode
 	function setColorMode(v : ColorScaleMode)
@@ -250,7 +249,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(g * t);
@@ -258,7 +257,7 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				}
 			case Sequence(c):
 				var colors = Arrays.map(c, function(d, _) return d.toCss());
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(colors.length * t);
@@ -266,19 +265,19 @@ class HeatGrid extends CartesianChart<Array<DataPoint>>
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
 					svg.style("fill").string(interpolator(t).toCss());
 				}
 			case Fixed(c):
 				var color = c.toCss();
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(color);
 				}
 			case Fun(f):
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(f(dp, variableDependent.stats));
 				}

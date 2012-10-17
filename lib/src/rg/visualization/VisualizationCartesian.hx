@@ -5,7 +5,6 @@
 
 package rg.visualization;
 import rg.info.InfoCartesianChart;
-import rg.data.DataPoint;
 import rg.data.Variable;
 import rg.util.DataPoints;
 import rg.svg.layer.RulesOrtho;
@@ -111,7 +110,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
 	}
 
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 		if (0 == data.length)
 			return;
@@ -158,7 +157,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		chart.data(transformed);
 	}
 
-	function transformData(dps : Array<DataPoint>) : T
+	function transformData(dps : Array<Dynamic>) : T
 	{
 		return throw new AbstractMethod();
 	}
@@ -212,7 +211,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			if (null != s)
 			{
 				tickmarks.labelOrientation = LabelOrientations.parse(s);
-				
+
 			}
 			var a;
 			if(null != (a = info.labelAngle(type)))

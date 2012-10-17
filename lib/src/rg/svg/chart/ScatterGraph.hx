@@ -8,7 +8,6 @@ import dhx.Dom;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.svg.panel.Panel;
-import rg.data.DataPoint;
 import thx.color.Colors;
 import thx.color.Hsl;
 import dhx.Selection;
@@ -26,13 +25,13 @@ using Arrays;
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
 
-class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
+class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 {
-	public var symbol : DataPoint -> Stats<Dynamic> -> String;
-	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
+	public var symbol : Dynamic -> Stats<Dynamic> -> String;
+	public var symbolStyle : Dynamic -> Stats<Dynamic> -> String;
 
 	var chart : Selection;
-	var dps : Array<Array<DataPoint>>;
+	var dps : Array<Array<Dynamic>>;
 
 	public function new(panel : Panel)
 	{
@@ -42,7 +41,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		chart = g.append("svg:g");
 	}
 
-	function x(d : DataPoint, ?i)
+	function x(d : Dynamic, ?i)
 	{
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
@@ -54,7 +53,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 	{
 		var h = height,
 			v = yVariables[pos];
-		return function(d : DataPoint, i : Int)
+		return function(d : Dynamic, i : Int)
 		{
 			var value   = DataPoints.value(d, v.type),
 				scaled  = v.axis.scale(v.min(), v.max(), value),
@@ -68,7 +67,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		return function(_, i : Int) return cls + " stroke-" + pos + " fill-" + pos;
 	}
 
-	override function data(dps : Array<Array<DataPoint>>)
+	override function data(dps : Array<Array<Dynamic>>)
 	{
 		this.dps = dps;
 		redraw();
@@ -134,7 +133,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 				.selectAll("g.symbol")
 				.dataf(function(d, i) return d)
 				.update()
-				.attr("transform").stringf(getTranslatePointf(i))
+				.attr("transform").stringf(cast getTranslatePointf(i))
 			;
 
 			gsymbol.exit().remove();
@@ -167,7 +166,7 @@ class ScatterGraph extends CartesianChart<Array<Array<DataPoint>>>
 		}
 	}
 
-	function onclick(stats : Stats<Dynamic>, dp : DataPoint, i : Int)
+	function onclick(stats : Stats<Dynamic>, dp : Dynamic, i : Int)
 	{
 		click(dp, stats);
 	}

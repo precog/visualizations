@@ -4,7 +4,6 @@
  */
 
 package rg.info;
-import rg.data.DataPoint;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
 import rg.svg.widget.LabelOrientation;
@@ -25,10 +24,10 @@ using Arrays;
 	public var animation : InfoAnimation;
 	public var label : InfoLabel;
 	public var effect : GradientEffect;
-	public var sortDataPoint : DataPoint -> DataPoint -> Int;
+	public var sortDataPoint : Dynamic -> Dynamic -> Int;
 	public var dontfliplabel : Bool;
 
-	public var click : DataPoint -> Void;
+	public var click : Dynamic -> Void;
 
 	public function new()
 	{
@@ -94,73 +93,4 @@ using Arrays;
 			)
 		];
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "labelradius",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "dontfliplabel",
-			validator : function(v) return Std.is(v, Bool),
-			filter : null
-		}, {
-			field : "labelorientation",
-			validator : function(v) return Std.is(v, String) && validateOrientation(v),
-			filter : function(v) return [{
-				field : "labelorientation",
-				value : filterOrientation(v)
-			}]
-		}, {
-			field : "innerradius",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "outerradius",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "overradius",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "tooltipradius",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "animation",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "animation",
-				value : new InfoAnimation().feed(v)
-			}]
-		}, {
-			field : "label",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "label",
-				value : new InfoLabel().feed(v)
-			}]
-		}, {
-			field : "sort",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : function(v) return [ {
-				field : "sortDataPoint",
-				value : v
-			}]
-		}, {
-			field : "click",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "effect",
-			validator : GradientEffects.canParse,
-			filter : function(v) return [ {
-				field : "effect",
-				value : GradientEffects.parse(v)
-			}]
-		}];
-	}
-*/
 }

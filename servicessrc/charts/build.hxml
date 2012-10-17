@@ -4,7 +4,7 @@
 -lib ufront
 -cp /User/francoponticelli/ufront/src
 -lib erazor
--lib hscript
+-lib hscript:1.6
 -D erazor
 -D haxe_209
 #-lib thx

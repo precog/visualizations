@@ -8,7 +8,6 @@ package rg.svg.chart;
 import rg.axis.ScaleDistribution;
 import rg.util.RGColors;
 import dhx.Selection;
-import rg.data.DataPoint;
 import rg.util.DataPoints;
 import dhx.Access;
 import rg.svg.panel.Panel;
@@ -25,13 +24,13 @@ import rg.data.Variable;
 import rg.axis.IAxis;
 using Arrays;
 
-class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
+class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 {
 	public var stacked : Bool;
 
 	var chart : Selection;
 	var defs : Selection;
-	var dps : Array<Array<Array<DataPoint>>>;
+	var dps : Array<Array<Array<Dynamic>>>;
 	public var gradientLightness : Float;
 	public var displayGradient : Bool;
 	public var padding : Float;
@@ -54,7 +53,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		horizontal = false;
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<Dynamic>>>)
 	{
 		if(horizontal)
 		{
@@ -90,7 +89,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	}
 
 
-	override function data(dps : Array<Array<Array<DataPoint>>>)
+	override function data(dps : Array<Array<Array<Dynamic>>>)
 	{
 		if(horizontal)
 			datah(dps);
@@ -98,7 +97,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 			datav(dps);
 	}
 
-	function datah(dps : Array<Array<Array<DataPoint>>>)
+	function datah(dps : Array<Array<Array<Dynamic>>>)
 	{
 		var axisgs = new Hash(),
 			span = (height - (padding * (dps.length - 1))) / dps.length;
@@ -170,7 +169,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		ready.dispatch();
 	}
 
-	function datav(dps : Array<Array<Array<DataPoint>>>)
+	function datav(dps : Array<Array<Array<Dynamic>>>)
 	{
 		var axisgs = new Hash(),
 			span = (width - (padding * (dps.length - 1))) / dps.length;
@@ -244,7 +243,7 @@ class BarChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		ready.dispatch();
 	}
 
-	function onclick(stats : Stats<Dynamic>, dp : DataPoint, _, i : Int)
+	function onclick(stats : Stats<Dynamic>, dp : Dynamic, _, i : Int)
 	{
 		click(dp, stats);
 	}

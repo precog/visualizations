@@ -6,7 +6,6 @@
 package rg.visualization;
 import rg.info.InfoAnimation;
 import rg.info.InfoPieChart;
-import rg.data.DataPoint;
 import rg.svg.panel.Panel;
 import rg.svg.chart.PieChart;
 import rg.layout.PanelContext;
@@ -71,7 +70,7 @@ class VisualizationPieChart extends VisualizationSvg
 	}
 
 	// TODO move sort to axis
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
 		if (null != title)

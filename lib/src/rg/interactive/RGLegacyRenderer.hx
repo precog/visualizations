@@ -24,26 +24,24 @@ class RGLegacyRenderer
 
 	public function display(params : Dynamic)
 	{
-		normalizeParams(params);
+		var size   = normalizeParams(params);
 		// create iframe
 		var id     = container.attr("id").get(),
-			width  = params.options.width,
-			height = params.options.height,
-			iframe = createIframe(width, height);
+			iframe = createIframe(size.width, size.height);
 		if(null == id)
 			id = "rgchart";
 		var u = url();
-		var h = html(id, params);
-		var c = config(width, height);
-		var content = 
+		var h = html(id, params, size);
+		var c = config(size);
+		var content =
 		'<form method="post" action="'
-		+ u + '" name="VIZ"><textarea name="html">'
-		+ h + '</textarea><textarea name="config">'
+		+ u + '" name="VIZ"><textarea name="html" style="width:40em;height:50%">'
+		+ h + '</textarea><textarea name="config" style="width:40em;height:50%">'
 		+ c + '</textarea><script type="text/javascript">
-  document.VIZ.submit();
+document.VIZ.submit();
 </script>
 </form>';
-		writeToIframe(cast iframe.node(), content);
+		haxe.Timer.delay(function() writeToIframe(cast iframe.node(), content), 100);
 
 		var inode : js.Dom.Frame = cast iframe.node();
 		var doc = getIframeDoc(inode);
@@ -72,13 +70,11 @@ class RGLegacyRenderer
 			.attr("hspace").string("0")
 			.attr("vspace").string("0")
 			.attr("style").string("width:100%; border:0; height:100%; overflow:auto;")
-//			.style("overflow").string("hidden")
-//			.style("border").string("0")
-//			.style("margin").string("0")
-//			.style("padding").string("0")
-
-//hspace="0" vspace="0" marginheight="0" marginwidth="0"
-			.attr("src").string("about:blank")
+			.attr("src").string(
+				isIE7orBelow()
+					? "javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\\'<script>document.domain=\\\\\""+js.Lib.document.domain+"\\\\\";<\\\\\\\\/script>\\\');document.close();};<\\/script>'"
+					: "about:blank"
+			)
 		;
 	}
 
@@ -88,7 +84,7 @@ class RGLegacyRenderer
 		if (null != iframeDoc)
 		{
 			iframeDoc.open();
-			iframeDoc.write('<html><head><title></title></head><body style="display:none;border:none" scroll="no">'+content+'</body></html>');
+			iframeDoc.write('<html><head><title></title></head><body style="visibility:hidden;border:none" scroll="no">'+content+'</body></html>');
 			iframeDoc.close();
 		}
 	}
@@ -125,6 +121,12 @@ class RGLegacyRenderer
 		Reflect.deleteField(params, "load");
 		Reflect.deleteField(params.options, "download");
 		params.options.forcelegacy = false;
+
+		return size;
+	}
+
+	static function isIE7orBelow() : Bool {
+		return untyped (document.all && !document.querySelector);
 	}
 
 	static function removeFunctions(o : Dynamic)
@@ -177,7 +179,7 @@ class RGLegacyRenderer
 		});
 	}
 
-	function html(id : String, params : Dynamic)
+	function html(id : String, params : Dynamic, size : { width : Int, height : Int })
 	{
 		var p       = thx.json.Json.encode(params),
 			scripts = findJsSources(),
@@ -209,30 +211,15 @@ ReportGrid.chart("#'+id+'", '+p+');
 </script>
 </head>
 <body onload="__RG__render()">
-<div id="'+id+'" class="'+classes+'" style="margin:0"></div>
+<div id="'+id+'" class="'+classes+'" style="margin:0;width:'+size.width+'px;height:'+size.height+'px;"></div>
 </body>
 </html>';
 		return h;
 	}
 
-	function config(width : Int, height : Int)
+	function config(size : { width : Int, height : Int })
 	{
-		var c = '"cache":"1d","duration":"1d","width":'+width+',"height":'+height+',"formats":["'+FORMAT+'"]';
+		var c = '"cache":"1d","duration":"1d","width":'+size.width+',"height":'+size.height+',"formats":["'+FORMAT+'"]';
 		return '{'+c+'}';
 	}
-/*
-	static function getClassName(container : Selection)
-	{
-		var name = container.attr("class").get();
-		name = StringTools.trim((~/\s+/g).replace((~/(^rg$|^rg\s+|\s+rg\s+|\s+rg$)/g).replace(name, " "), " "));
-		return ("" == name) ? null : name;
-	}
-*/
-/*
-	static function appendArgument(url : String, name : String, value : String)
-	{
-		var sep = url.indexOf("?") >= 0 ? '&' : '?';
-		return url + sep + name + '=' + StringTools.urlEncode(value);
-	}
-*/
 }

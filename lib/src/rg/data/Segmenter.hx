@@ -10,10 +10,10 @@ using Arrays;
 class Segmenter
 {
 	var on : String;
-	var transform : Array<DataPoint> -> Array<DataPoint>;
-	var scale : Array<DataPoint> -> Array<DataPoint>;
+	var transform : Array<Dynamic> -> Array<Dynamic>;
+	var scale : Array<Dynamic> -> Array<Dynamic>;
 	var values : Array<String>;
-	public function new(on : String, transform : Array<DataPoint> -> Array<DataPoint>, scale : Array<DataPoint> -> Array<DataPoint>, values : Array<String>)
+	public function new(on : String, transform : Array<Dynamic> -> Array<Dynamic>, scale : Array<Dynamic> -> Array<Dynamic>, values : Array<String>)
 	{
 		this.on = on;
 		this.transform = transform;
@@ -21,7 +21,7 @@ class Segmenter
 		this.values = values;
 	}
 
-	public function segment(data : Array<DataPoint>) : Array<Array<DataPoint>>
+	public function segment(data : Array<Dynamic>) : Array<Array<Dynamic>>
 	{
 		var segmented;
 		if (null == on) {

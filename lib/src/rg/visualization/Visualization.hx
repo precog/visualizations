@@ -7,7 +7,6 @@ package rg.visualization;
 import thx.error.AbstractMethod;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.data.DataPoint;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import hxevents.Notifier;
@@ -43,7 +42,7 @@ class Visualization
 		throw new AbstractMethod();
 	}
 
-	public function feedData(data : Array<DataPoint>)
+	public function feedData(data : Array<Dynamic>)
 	{
 		trace("DATA FEED " + Dynamics.string(data));
 	}

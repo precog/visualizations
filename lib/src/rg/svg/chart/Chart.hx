@@ -6,7 +6,6 @@
 package rg.svg.chart;
 import rg.svg.panel.Panel;
 import rg.svg.panel.Layer;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.html.widget.Tooltip;
 import thx.math.Equations;
@@ -18,9 +17,9 @@ class Chart extends Layer
 	public var animated : Bool;
 	public var animationDuration : Int;
 	public var animationEase : Float -> Float;
-	public var click : DataPoint -> Stats<Dynamic> -> Void;
-	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
-	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
+	public var click : Dynamic -> Stats<Dynamic> -> Void;
+	public var labelDataPoint : Dynamic -> Stats<Dynamic> -> String;
+	public var labelDataPointOver : Dynamic -> Stats<Dynamic> -> String;
 	public var ready(default, null) : Notifier;
 
 	var panelx : Float;

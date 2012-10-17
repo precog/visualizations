@@ -10,7 +10,6 @@ import rg.data.VariableIndependent;
 import rg.util.Properties;
 import thx.culture.FormatNumber;
 import dhx.Selection;
-import rg.data.DataPoint;
 import rg.util.DataPoints;
 import thx.math.Equations;
 import dhx.Dom;
@@ -27,8 +26,8 @@ class Leadeboard
 	public var animationDuration : Int;
 	public var animationDelay : Int;
 	public var animationEase : Float -> Float;
-	public var click : DataPoint -> Void;
-	public var sortDataPoint : DataPoint -> DataPoint -> Int;
+	public var click : Dynamic -> Void;
+	public var sortDataPoint : Dynamic -> Dynamic -> Int;
 	public var displayGradient : Bool;
 	public var useMax : Bool;
 	public var colorScale : Bool;
@@ -55,22 +54,22 @@ class Leadeboard
 		colorScale = false;
 	}
 
-	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
+	public dynamic function labelDataPoint(dp : Dynamic, stats : StatsNumeric)
 	{
 		return Properties.humanize(DataPoints.value(dp, variableIndependent.type));
 	}
 
-	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
+	public dynamic function labelDataPointOver(dp : Dynamic, stats : StatsNumeric)
 	{
 		return Floats.format(100*DataPoints.value(dp, stats.type)/(useMax ? stats.max : stats.tot), "P:1");
 	}
 
-	public dynamic function labelRank(dp : DataPoint, i : Int, stats : StatsNumeric)
+	public dynamic function labelRank(dp : Dynamic, i : Int, stats : StatsNumeric)
 	{
 		return "" + (i+1);
 	}
 
-	public dynamic function labelValue(dp : DataPoint, stats : StatsNumeric)
+	public dynamic function labelValue(dp : Dynamic, stats : StatsNumeric)
 	{
 		return Properties.formatValue(stats.type, dp);
 	}
@@ -95,7 +94,7 @@ class Leadeboard
 		return (100 * DataPoints.value(dp, variableDependent.type) / (useMax ? stats.max : stats.tot)) + "%";
 	}
 
-	public function data(dps : Array<DataPoint>)
+	public function data(dps : Array<Dynamic>)
 	{
 		var name = variableDependent.type;
 		if (null != sortDataPoint)
@@ -184,7 +183,7 @@ class Leadeboard
 		ready.dispatch();
 	}
 
-	function onClick(dp : DataPoint, ?_)
+	function onClick(dp : Dynamic, ?_)
 	{
 		click(dp);
 	}
@@ -222,5 +221,5 @@ class Leadeboard
 		return labelDataPointOver(dp, stats);
 	}
 
-	function id(dp : DataPoint, ?_) return DataPoints.id(dp, [variableDependent.type])
+	function id(dp : Dynamic, ?_) return DataPoints.id(dp, [variableDependent.type])
 }

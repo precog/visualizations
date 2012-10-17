@@ -9,7 +9,6 @@ import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.svg.panel.Panel;
 import thx.error.AbstractMethod;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import thx.math.Equations;
 import rg.svg.panel.Panels;

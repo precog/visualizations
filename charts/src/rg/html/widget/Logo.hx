@@ -1,9 +1,9 @@
 package rg.html.widget;
 
 import haxe.Timer;
+import js.Dom;
 import dhx.Dom;
 import dhx.Selection;
-import js.Dom;
 
 class Logo
 {

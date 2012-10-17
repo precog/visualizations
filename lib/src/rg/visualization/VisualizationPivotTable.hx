@@ -8,7 +8,6 @@ import rg.info.InfoPivotTable;
 import rg.html.chart.PivotTable;
 import thx.error.NotImplemented;
 import dhx.Selection;
-import rg.data.DataPoint;
 
 // TODO wire color paramaters
 // TODO wire label functions
@@ -65,7 +64,7 @@ class VisualizationPivotTable extends VisualizationHtml
 		chart.init();
 	}
 
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
 		chart.data(data);

@@ -6,7 +6,6 @@
 package rg.visualization;
 import rg.info.InfoScatterGraph;
 import rg.svg.chart.ScatterGraph;
-import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
 using Arrays;
@@ -14,7 +13,7 @@ import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.axis.ScaleDistribution;
 
-class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataPoint>>>
+class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<Dynamic>>>
 {
 	public var infoScatter : InfoScatterGraph;
 
@@ -39,7 +38,7 @@ class VisualizationScatterGraph extends VisualizationCartesian<Array<Array<DataP
 		this.chart = chart;
 	}
 
-	override function transformData(dps : Array<DataPoint>) : Array<Array<DataPoint>>
+	override function transformData(dps : Array<Dynamic>) : Array<Array<Dynamic>>
 	{
 		var results = [],
 			segmenter = new Segmenter(infoScatter.segment.on, infoScatter.segment.transform, infoScatter.segment.scale, infoScatter.segment.values);

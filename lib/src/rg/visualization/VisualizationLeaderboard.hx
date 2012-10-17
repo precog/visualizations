@@ -7,7 +7,6 @@ package rg.visualization;
 import rg.info.InfoLeaderboard;
 import rg.html.chart.Leadeboard;
 import dhx.Selection;
-import rg.data.DataPoint;
 
 class VisualizationLeaderboard extends VisualizationHtml
 {
@@ -48,7 +47,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 		chart.init();
 	}
 
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 
 		chart.setVariables(independentVariables, dependentVariables);

@@ -6,7 +6,6 @@
 package rg.visualization;
 import rg.info.InfoBarChart;
 import rg.svg.chart.BarChart;
-import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
 import rg.util.Properties;
@@ -15,7 +14,7 @@ import rg.axis.IAxis;
 import thx.collection.Set;
 using Arrays;
 
-class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
+class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dynamic>>>>
 {
 	public var infoBar : InfoBarChart;
 
@@ -55,7 +54,7 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dat
 		this.chart = chart;
 	}
 
-	override function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
+	override function transformData(dps : Array<Dynamic>) : Array<Array<Array<Dynamic>>>
 	{
 		var results = [],
 			variable = independentVariables[0],

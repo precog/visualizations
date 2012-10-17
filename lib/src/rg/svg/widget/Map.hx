@@ -19,7 +19,6 @@ import thx.json.GeoJson;
 import thx.svg.PathGeoJson;
 import thx.json.Json;
 import rg.info.InfoMap;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import js.Dom;
 using Arrays;
@@ -27,13 +26,13 @@ using Arrays;
 class Map
 {
 	public var className(null, setClassName) : String;
-	public var map(default, null) : Hash<{ svg : Selection, dp : DataPoint }>;
+	public var map(default, null) : Hash<{ svg : Selection, dp : Dynamic }>;
 	public var onReady(default, null) : Notifier;
 
-	public var click : DataPoint -> Stats<Dynamic> -> Void;
-	public var labelDataPoint : DataPoint -> Stats<Dynamic> -> String;
-	public var labelDataPointOver : DataPoint -> Stats<Dynamic> -> String;
-	public var radius : DataPoint -> Stats<Dynamic> -> Float;
+	public var click : Dynamic -> Stats<Dynamic> -> Void;
+	public var labelDataPoint : Dynamic -> Stats<Dynamic> -> String;
+	public var labelDataPointOver : Dynamic -> Stats<Dynamic> -> String;
+	public var radius : Dynamic -> Stats<Dynamic> -> Float;
 	public var colorMode : ColorScaleMode;
 	public var ready(default, null) : Bool;
 	public var mapping : Dynamic;
@@ -73,12 +72,6 @@ class Map
 				load(geourl, draw);
 			});
 		}
-		/*
-		if (usejsonp)
-			loadGeoJsonJsonp(path, mappingurl);
-		else
-			loadGeoJsonAjax(path, mappingurl);
-		*/
 	}
 
 	static function loadJsonp<T>(url : String, handler : T -> Void)
@@ -97,32 +90,7 @@ class Map
 		http.onError = function(err) throw new Error("unable to load JSON file '{0}': {1}", [url, err]);
 		http.request(false);
 	}
-/*
-	function loadGeoJsonJsonp(path : String, mappingurl : String)
-	{
 
-
-		if(null == mappingurl)
-			loadJsonp(path, draw);
-	}
-
-	function loadGeoJsonAjax(path : String, mappingurl : String)
-	{
-		function loadmap()
-		{
-			var http = new Http(path);
-			http.onData = function(data)
-			{
-				var json = Json.decode(data);
-				draw(json);
-			}
-			http.onError = function(err) throw new Error("unable to load GeoJSON file '{0}': {1}", [path, err]);
-			http.request(false);
-		}
-		if(null == mappingurl)
-			loadmap();
-	}
-*/
 	function draw(json : GeoJson)
 	{
 		var id = null != mapping
@@ -172,15 +140,15 @@ class Map
 		onReady.dispatch();
 	}
 //	var currentNode : js.Dom.HtmlDom;
-	function onMouseOver(dp : DataPoint, n, i : Int)
+	function onMouseOver(dp : Dynamic, n, i : Int)
 	{
 //		currentNode = n;
 		handlerDataPointOver(n, dp, labelDataPointOver);
 	}
-	function onClick(dp : DataPoint, _, i) handlerClick(dp, click)
+	function onClick(dp : Dynamic, _, i) handlerClick(dp, click)
 
-	public var handlerDataPointOver : HtmlDom -> DataPoint -> (DataPoint -> Stats<Dynamic> -> String) -> Void;
-	public var handlerClick : DataPoint -> (DataPoint -> Stats<Dynamic> -> Void) -> Void;
+	public var handlerDataPointOver : HtmlDom -> Dynamic -> (Dynamic -> Stats<Dynamic> -> String) -> Void;
+	public var handlerClick : Dynamic -> (Dynamic -> Stats<Dynamic> -> Void) -> Void;
 
 	function setClassName(cls : String)
 	{

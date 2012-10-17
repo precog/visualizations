@@ -14,7 +14,7 @@ class VariableProcessor
 {
 	public var source(default, null) : IDataSource;
 
-	public var onData(default, null) : Dispatcher<Array<DataPoint>>;
+	public var onData(default, null) : Dispatcher<Array<Dynamic>>;
 	public var independentVariables : Array<VariableIndependent<Dynamic>>;
 	public var dependentVariables : Array<VariableDependent<Dynamic>>;
 
@@ -25,89 +25,21 @@ class VariableProcessor
 		source.onLoad.add(process);
 		onData = new Dispatcher();
 	}
-/*
-	public dynamic function transform(s : Array<Array<DataPoint>>) : Array<DataPoint>
-	{
-		return s.flatten();
-	}
 
-	public dynamic function scale(s : Array<Array<DataPoint>>) : Array<Array<DataPoint>>
-	{
-		return s;
-	}
-*/
 	public function load()
 	{
 		source.load();
 	}
-/*
-	function filterSubset(subset : Array<DataPoint>, variables : Array<Dynamic>)
-	{
-		return subset.filter(callback(filterDatapoint, variables));
-	}
 
-	function filterDatapoint(variables : Array<Dynamic>, dp : DataPoint)
-	{
-		for (i in 0...independentVariables.length)
-		{
-			if (Reflect.field(dp, independentVariables[i].type) != variables[i])
-				return false;
-		}
-		return true;
-	}
-*/
-	function process(data : Array<DataPoint>)
+	function process(data : Array<Dynamic>)
 	{
 		trace(data);
 		fillIndependentVariables(data);
 		fillDependentVariables(data);
 		onData.dispatch(data);
 	}
-/*
-	function preprocess()
-	{
 
-	}
-*/
-/*
-	function process(data : Array<Array<DataPoint>>)
-	{
-		if (null == data || data.length == 0 || data[0].length == 0)
-		{
-			onData.dispatch([]);
-			return;
-		}
-		data = scale(data);
-
-		var dataPoints = transform(data);
-		fillIndependentVariables(dataPoints);
-
-//		var dataPoints : Array<DataPoint> = [];
-//		var variablesset = getVariableIndependentValues();
-//		for (values in variablesset)
-//		{
-//			var subsets = [];
-//			for (d in data)
-//			{
-//				// generalize this and possibly integrate with rescale()
-//				var subset = filterSubset(d, values);
-//				if(subset.length > 0)
-//					subsets.push(subset);
-//			}
-//			if (subsets.length == 0 || subsets[0].length == 0)
-//				continue;
-//			var transformed = transform(subsets);
-//			dataPoints = dataPoints.concat(transformed);
-//		}
-//		fillDependentVariables(dataPoints);
-
-
-		fillDependentVariables(dataPoints);
-
-		onData.dispatch(dataPoints);
-	}
-*/
-	function fillDependentVariables(data : Array<DataPoint>)
+	function fillDependentVariables(data : Array<Dynamic>)
 	{
 		for (variable in dependentVariables)
 		{
@@ -134,7 +66,7 @@ class VariableProcessor
 		}
 	}
 
-	function fillIndependentVariables(flatten : Array<DataPoint>)
+	function fillIndependentVariables(flatten : Array<Dynamic>)
 	{
 		for (variable in independentVariables)
 		{
@@ -147,9 +79,4 @@ class VariableProcessor
 			}
 		}
 	}
-
-//	function getVariableIndependentValues()
-//	{
-//		return independentVariables.map(function(variable, i) return variable.axis.range(variable.min(), //variable.max())).product();
-//	}
 }

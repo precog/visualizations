@@ -6,7 +6,6 @@
 package rg.svg.chart;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.widget.Map;
 import rg.svg.panel.Panel;
@@ -31,8 +30,10 @@ class Geo extends Chart
 {
 	public var mapcontainer(default, null) : Selection;
 	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
+	public var labelOutline : Bool = false;
+	public var labelShadow : Bool = false;
 	var variableDependent : VariableDependent<Dynamic>;
-	var dps : Array<DataPoint>;
+	var dps : Array<Dynamic>;
 	var queue : Array<Void->Void>;
 
 	public function new(panel : Panel)
@@ -45,12 +46,12 @@ class Geo extends Chart
 		resize();
 	}
 
-	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<DataPoint>)
+	public function setVariables(variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Dynamic>)
 	{
 		variableDependent = variableDependents[0];
 	}
 
-	public function data(dps : Array<DataPoint>)
+	public function data(dps : Array<Dynamic>)
 	{
 		this.dps = dps;
 		redraw();
@@ -63,7 +64,7 @@ class Geo extends Chart
 			mapcontainer.attr("transform").string("translate(" + (width / 2) + "," + (height / 2) + ")");
 	}
 
-	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
+	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type)
 
 	function drawmap(map : Map, field : String)
 	{
@@ -86,7 +87,7 @@ class Geo extends Chart
 			if (null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp, variableDependent.stats)))
 			{
 				var c = Reflect.field(feature.dp, "$centroid");
-				var label = new Label(mapcontainer, true, false, false);
+				var label = new Label(mapcontainer, true, labelShadow, labelOutline);
 				label.text = text;
 				label.place(c[0], c[1], 0);
 			}
@@ -97,7 +98,7 @@ class Geo extends Chart
 		}
 	}
 
-	public function handlerDataPointOver(n : HtmlDom, dp : DataPoint, f)
+	public function handlerDataPointOver(n : HtmlDom, dp : Dynamic, f)
 	{
 		var text = f(dp, variableDependent.stats);
 		if (null == text)
@@ -110,12 +111,12 @@ class Geo extends Chart
 		}
 	}
 
-	public function handlerClick(dp : DataPoint, f)
+	public function handlerClick(dp : Dynamic, f)
 	{
 		f(dp, variableDependent.stats);
 	}
 
-	dynamic function stylefeature(svg : Selection, dp : DataPoint)
+	dynamic function stylefeature(svg : Selection, dp : Dynamic)
 	{
 
 	}
@@ -147,7 +148,7 @@ class Geo extends Chart
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(g * t);
@@ -156,7 +157,7 @@ class Geo extends Chart
 				}
 			case Sequence(c):
 				var colors = Arrays.map(c, function(d, _) return d.toCss());
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type)),
 						index = Math.floor(colors.length * t);
@@ -165,7 +166,7 @@ class Geo extends Chart
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					var t = variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), DataPoints.value(dp, variableDependent.type));
 					svg.style("fill").string(interpolator(t).toCss());
@@ -173,13 +174,13 @@ class Geo extends Chart
 				}
 			case Fixed(c):
 				var color = c.toCss();
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(color);
 					RGColors.storeColorForSelection(svg);
 				}
 			case Fun(f):
-				stylefeature = function(svg : Selection, dp : DataPoint)
+				stylefeature = function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(f(dp, variableDependent.stats));
 					RGColors.storeColorForSelection(svg);
@@ -201,7 +202,7 @@ class Geo extends Chart
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.colorsInCss();
-				return function(svg : Selection, dp : DataPoint)
+				return function(svg : Selection, dp : Dynamic)
 				{
 					var t = variable.axis.scale(variable.min(), variable.max(), DataPoints.value(dp, variable.type)),
 						index = Math.floor(g * t);
@@ -209,7 +210,7 @@ class Geo extends Chart
 				}
 			case Sequence(c):
 				var colors = Arrays.map(c, function(d, _) return d.toCss());
-				return function(svg : Selection, dp : DataPoint)
+				return function(svg : Selection, dp : Dynamic)
 				{
 					var t = variable.axis.scale(variable.min(), variable.max(), DataPoints.value(dp, variable.type)),
 						index = Math.floor(colors.length * t);
@@ -217,19 +218,19 @@ class Geo extends Chart
 				}
 			case Interpolation(colors):
 				var interpolator = Rgb.interpolateStepsf(colors);
-				return function(svg : Selection, dp : DataPoint)
+				return function(svg : Selection, dp : Dynamic)
 				{
 					var t = variable.axis.scale(variable.min(), variable.max(), DataPoints.value(dp, variable.type));
 					svg.style("fill").string(interpolator(t).toCss());
 				}
 			case Fixed(c):
 				var color = c.toCss();
-				return function(svg : Selection, dp : DataPoint)
+				return function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(color);
 				}
 			case Fun(f):
-				return function(svg : Selection, dp : DataPoint)
+				return function(svg : Selection, dp : Dynamic)
 				{
 					svg.style("fill").string(f(dp, variable.stats));
 				}

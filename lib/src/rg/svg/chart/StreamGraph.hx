@@ -4,7 +4,6 @@
  */
 
 package rg.svg.chart;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.util.DataPoints;
 import rg.svg.panel.Panel;
@@ -26,7 +25,7 @@ import rg.util.RGColors;
 using Arrays;
 
 
-class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
+class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 {
 	public function new(panel : Panel)
 	{
@@ -40,7 +39,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 	public var gradientLightness : Float;
 	public var gradientStyle : Int; // 0: none, 1: vertical, 2: horizontal
 
-	var dps : Array<Array<DataPoint>>;
+	var dps : Array<Array<Dynamic>>;
 	var area : Area<TransformedData>;
 	var transformedData : Array<Array<TransformedData>>;
 	var stats : Stats<Dynamic>;
@@ -54,12 +53,12 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 		g.classed().add("stream-chart");
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<DataPoint>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Dynamic>>)
 	{
 		super.setVariables(variables, variableIndependents, variableDependents, data);
 	}
 
-	override public function data(dps : Array<Array<DataPoint>>)
+	override public function data(dps : Array<Array<Dynamic>>)
 	{
 		this.dps = dps;
 		prepareData();
@@ -146,7 +145,7 @@ class StreamGraph extends CartesianChart<Array<Array<DataPoint>>>
 			return null;
 		}
 
-		var coords = dps.map(function(d : Array<DataPoint>, j) {
+		var coords = dps.map(function(d : Array<Dynamic>, j) {
 			return Ints.range(0, m).map(function(_, i) {
 				var dp = d[i];
 				if(null == dp)
@@ -273,4 +272,4 @@ typedef XYY0 = {
 	y0 : Float
 }
 
-typedef TransformedData = { coord : XYY0, dp : DataPoint }
+typedef TransformedData = { coord : XYY0, dp : Dynamic }

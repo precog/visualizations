@@ -4,7 +4,6 @@
  */
 
 package rg.info;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
@@ -17,8 +16,8 @@ using rg.info.Info;
 {
 	public var animation : InfoAnimation;
 	public var label : InfoLabelFunnel;
-	public var sortDataPoint : DataPoint -> DataPoint -> Int;
-	public var click : DataPoint -> Stats<Dynamic> -> Void;
+	public var sortDataPoint : Dynamic -> Dynamic -> Int;
+	public var click : Dynamic -> Stats<Dynamic> -> Void;
 	public var padding : Float;
 	public var flatness : Float;
 	public var effect : GradientEffect;
@@ -52,60 +51,4 @@ using rg.info.Info;
 			"arrowsize".toFloat(["arrowSize"])
 		];
 	}
-/*
-	public static function filters() : Array<Dynamic>
-	{
-		return [{
-			field : "animation",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "animation",
-				value : new InfoAnimation().feed(v)
-			}]
-		}, {
-			field : "label",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "label",
-				value : new InfoLabelFunnel().feed(v)
-			}]
-		}, {
-			field : "sort",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : function(v) return [{
-				field : "sortDataPoint",
-				value : v
-			}]
-		}, {
-			field : "click",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "segmentpadding",
-			validator : function(v) return Std.is(v, Float),
-			filter : function(v) return [ {
-				field : "padding",
-				value : v
-			}]
-		}, {
-			field : "flatness",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "effect",
-			validator : GradientEffects.canParse,
-			filter : function(v) return [ {
-				field : "effect",
-				value : GradientEffects.parse(v)
-			}]
-		}, {
-			field : "arrowsize",
-			validator : function(v) return Std.is(v, Float),
-			filter : function(v) return [ {
-				field : "arrowSize",
-				value : v
-			}]
-		}];
-	}
-*/
 }

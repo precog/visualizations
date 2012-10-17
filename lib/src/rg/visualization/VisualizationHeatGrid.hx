@@ -8,9 +8,8 @@ import rg.info.InfoHeatGrid;
 import rg.svg.chart.HeatGrid;
 import rg.svg.layer.TickmarksOrtho;
 import rg.svg.widget.GridAnchor;
-import rg.data.DataPoint;
 
-class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
+class VisualizationHeatGrid extends VisualizationCartesian<Array<Dynamic>>
 {
 	public var infoHeatGrid : InfoHeatGrid;
 
@@ -32,7 +31,7 @@ class VisualizationHeatGrid extends VisualizationCartesian<Array<DataPoint>>
 		this.chart = chart;
 	}
 
-	override function transformData(dps : Array<DataPoint>) : Array<DataPoint>
+	override function transformData(dps : Array<Dynamic>) : Array<Dynamic>
 	{
 		return dps;
 	}

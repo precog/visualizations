@@ -11,7 +11,7 @@ import rg.axis.IAxisDiscrete;
 class IndependentVariableProcessor
 {
 	public function new() { }
-	public function process(data : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)
+	public function process(data : Array<Dynamic>, variables : Array<VariableIndependent<Dynamic>>)
 	{
 		for (variable in variables)
 		{

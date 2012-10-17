@@ -1,6 +1,4 @@
 package rg.app.query;
-
-import rg.data.DataPoint;
 import rg.data.ReportGridExecutorCache;
 import rg.data.IExecutorReportGrid;
 import rg.storage.IStorage;

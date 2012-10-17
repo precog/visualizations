@@ -7,7 +7,9 @@ import ufront.web.mvc.view.UrlHelper;
 class RenderableDisplay extends Template<{
 	baseurl : String,
 	url : UrlHelperInst,
-	data : RenderableInfo
+	data : RenderableInfo,
+	milliToString : Float -> Bool -> String,
+	reflectField : Dynamic -> Dynamic -> Dynamic
 }>
 { }
 

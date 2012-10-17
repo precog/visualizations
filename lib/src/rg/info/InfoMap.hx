@@ -4,8 +4,6 @@
  */
 
 package rg.info;
-
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.chart.ColorScaleMode;
 import rg.svg.chart.ColorScaleModes;
@@ -34,8 +32,8 @@ using Arrays;
 	public var mode : ProjectionMode;
 	public var property : Null<String>;
 	public var label : InfoLabel;
-	public var click : DataPoint -> Stats<Dynamic> -> Void;
-	public var radius : Null<DataPoint -> Stats<Dynamic> -> Float>;
+	public var click : Dynamic -> Stats<Dynamic> -> Void;
+	public var radius : Null<Dynamic -> Stats<Dynamic> -> Float>;
 	public var colorScaleMode : ColorScaleMode;
 	public var usejsonp : Bool;
 	public var mapping : Dynamic;
@@ -82,159 +80,6 @@ using Arrays;
 			new FilterDescription("mapping", new MapTransformer())
 		];
 	}
-/*
-	static function isValidTemplate(t : String)
-	{
-		return ["world", "world-countries", "usa-states", "usa-state-centroids", "usa-counties"].exists(t.toLowerCase());
-	}
-*/
-/*
-	static function fromTemplate(t : String)
-	{
-		switch(t.toLowerCase())
-		{
-			case "world", "world-countries":
-				return [{
-					field : "projection",
-					value : "mercator"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "world-countries.json.js"
-				}];
-			case "usa-states":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-states.json.js"
-				}];
-			case "usa-state-centroids":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"
-				}];
-			case "usa-counties":
-				return [{
-					field : "projection",
-					value : "albersusa"
-				}, {
-					field : "url",
-					value : RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"
-				}];
-			default:
-				return throw new Error("invalid template");
-		}
-	}
-*/
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "url",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "type",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "scale",
-			validator : function(v) return Std.is(v, Float),
-			filter : null
-		}, {
-			field : "projection",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "classname",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "translate",
-			validator : function(v) return Std.is(v, Array),
-			filter : null
-		}, {
-			field : "origin",
-			validator : function(v) return Std.is(v, Array),
-			filter : null
-		}, {
-			field : "parallels",
-			validator : function(v) return Std.is(v, Array),
-			filter : null
-		}, {
-			field : "mode",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) {
-				return [{
-					field : "mode",
-					value : Type.createEnum(ProjectionMode, Strings.ucfirst(v.toLowerCase()), [])
-				}];
-			}
-		}, {
-			field : "property",
-			validator : function(v) return v == null || Std.is(v, String),
-			filter : null
-		}, {
-			field : "usejsonp",
-			validator : function(v) return Std.is(v, Bool),
-			filter : null
-		}, {
-			field : "template",
-			validator : function(v) return Std.is(v, String) && isValidTemplate(v),
-			filter : fromTemplate
-		}, {
-			field : "label",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "label",
-				value : new InfoLabel().feed(v)
-			}]
-		}, {
-			field : "click",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "color",
-			validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
-			filter : function(v) {
-				return [{
-					field : "colorScaleMode",
-					value : ColorScaleModes.createFromDynamic(v)
-				}];
-			}
-		}, {
-			field : "radius",
-			validator : function(v) return Std.is(v, Float) || Reflect.isFunction(v),
-			filter : function(v) {
-				return [{
-					field : "radius",
-					value : Std.is(v, Float) ? cast function(_, _) return v : v
-				}];
-			}
-		}, {
-			field : "mapping",
-			validator : function(v) return Std.is(v, String) || Types.isAnonymous(v),
-			filter : function(v) {
-				if(Std.is(v, String))
-				{
-					return [{
-						field : "mappingurl",
-						value : v
-					}];
-				} else {
-					return [{
-						field : "mapping",
-						value : v
-					}];
-				}
-			}
-		}];
-	}
-*/
 }
 
 class MapTransformer implements ITransformer<Dynamic, Pairs>

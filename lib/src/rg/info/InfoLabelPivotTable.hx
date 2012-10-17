@@ -5,7 +5,6 @@
 
 package rg.info;
 import rg.data.Variable;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 using rg.info.filter.FilterDescription;
 
@@ -23,22 +22,4 @@ using rg.info.filter.FilterDescription;
 			"axisvalue".toFunction()
 		].concat(InfoLabelAxis.filters());
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "total",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "totalover",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "axisvalue",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}].concat(InfoLabelAxis.filters());
-	}
-*/
 }

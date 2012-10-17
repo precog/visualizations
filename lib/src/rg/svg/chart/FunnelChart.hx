@@ -9,7 +9,6 @@ import rg.data.VariableDependent;
 import rg.util.RGStrings;
 import rg.svg.panel.Panel;
 import rg.svg.panel.Layer;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.svg.widget.GridAnchor;
 import rg.svg.widget.Label;
@@ -29,18 +28,18 @@ using Arrays;
 
 class FunnelChart extends Chart
 {
-//	public var click : DataPoint -> Stats -> Void;
+//	public var click : Dynamic -> Stats -> Void;
 	public var padding : Float;
 	public var flatness : Float;
 	public var displayGradient : Bool;
 	public var gradientLightness : Float;
 	public var arrowSize : Float;
-	public var labelArrow : DataPoint -> Stats<Dynamic> -> String;
+	public var labelArrow : Dynamic -> Stats<Dynamic> -> String;
 
 	var variableIndependent : VariableIndependent<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
 	var defs : Selection;
-	var dps : Array<DataPoint>;
+	var dps : Array<Dynamic>;
 
 	public function new(panel : Panel)
 	{
@@ -56,18 +55,18 @@ class FunnelChart extends Chart
 		labelDataPointOver = defaultLabelDataPointOver;
 	}
 
-	public function defaultLabelArrow(dp : DataPoint, stats : Stats<Dynamic>)
+	public function defaultLabelArrow(dp : Dynamic, stats : Stats<Dynamic>)
 	{
 		var value = Reflect.field(dp, variableDependent.type) / stats.max;
 		return FormatNumber.percent(100 * value, 0);
 	}
 
-	public function defaultLabelDataPoint(dp : DataPoint, stats : Stats<Dynamic>)
+	public function defaultLabelDataPoint(dp : Dynamic, stats : Stats<Dynamic>)
 	{
 		return RGStrings.humanize(DataPoints.value(dp, variableIndependent.type)).split(" ").join("\n");
 	}
 
-	public function defaultLabelDataPointOver(dp : DataPoint, stats : Stats<Dynamic>)
+	public function defaultLabelDataPointOver(dp : Dynamic, stats : Stats<Dynamic>)
 	{
 		return Ints.format(Reflect.field(dp, variableDependent.type));
 	}
@@ -78,7 +77,7 @@ class FunnelChart extends Chart
 		variableDependent = variableDependents[0];
 	}
 
-	public function data(dps : Array<DataPoint>)
+	public function data(dps : Array<Dynamic>)
 	{
 		this.dps = dps;
 		redraw();
@@ -90,7 +89,7 @@ class FunnelChart extends Chart
 		redraw();
 	}
 
-	function dpvalue(dp : DataPoint) return DataPoints.value(dp, variableDependent.type)
+	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type)
 
 	var stats : Stats<Dynamic>;
 	var topheight : Float;
@@ -267,7 +266,7 @@ class FunnelChart extends Chart
 		ready.dispatch();
 	}
 
-	function mouseOver(dp : DataPoint, i : Int, stats : Stats<Dynamic>)
+	function mouseOver(dp : Dynamic, i : Int, stats : Stats<Dynamic>)
 	{
 		if (null == labelDataPointOver)
 			return;

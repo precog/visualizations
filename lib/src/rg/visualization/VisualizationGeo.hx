@@ -7,7 +7,6 @@ package rg.visualization;
 import rg.factory.FactoryGeoProjection;
 import rg.info.InfoGeo;
 import rg.svg.chart.Geo;
-import rg.data.DataPoint;
 import rg.svg.widget.Map;
 import rg.svg.layer.Title;
 import rg.svg.chart.ColorScaleMode;
@@ -32,6 +31,8 @@ class VisualizationGeo extends VisualizationSvg
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
 		chart = new Geo(panelChart);
+		chart.labelOutline = info.labelOutline;
+		chart.labelShadow = info.labelShadow;
 		baseChart = chart;
 		chart.ready.add(function() ready.dispatch());
 /*
@@ -78,7 +79,7 @@ class VisualizationGeo extends VisualizationSvg
 		}
 	}
 
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables, data);
 

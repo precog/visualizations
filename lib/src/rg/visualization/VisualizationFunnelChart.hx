@@ -9,7 +9,6 @@ import rg.layout.Layout;
 import rg.svg.chart.FunnelChart;
 import rg.svg.chart.GradientEffect;
 import rg.svg.layer.Title;
-import rg.data.DataPoint;
 import rg.util.DataPoints;
 using Arrays;
 
@@ -64,7 +63,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 	}
 
 	// TODO move sort to axis
-	override function feedData(data : Array<DataPoint>)
+	override function feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
 		var data = DataPoints.filterByIndependents(DataPoints.filterByDependents(data, dependentVariables), independentVariables);

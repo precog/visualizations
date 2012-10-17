@@ -10,7 +10,6 @@ import rg.data.VariableIndependent;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.svg.panel.Panel;
-import rg.data.DataPoint;
 import rg.util.RGColors;
 import thx.color.Hsl;
 import dhx.Selection;
@@ -29,18 +28,18 @@ using Arrays;
 // TODO expose options: label.place (distance, angle)
 // TODO expose options: label.anchor
 
-class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
+class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 {
-	public var symbol : DataPoint -> Stats<Dynamic> -> String;
-	public var symbolStyle : DataPoint -> Stats<Dynamic> -> String;
+	public var symbol : Dynamic -> Stats<Dynamic> -> String;
+	public var symbolStyle : Dynamic -> Stats<Dynamic> -> String;
 	public var lineInterpolator : LineInterpolator;
 	public var lineEffect : LineEffect;
 	public var y0property : String;
 	public var sensibleRadius : Int;
 
-	var linePathShape : Array<Array<DataPoint> -> Int -> String>;
+	var linePathShape : Array<Array<Dynamic> -> Int -> String>;
 	var chart : Selection;
-	var dps : Array<Array<Array<DataPoint>>>;
+	var dps : Array<Array<Array<Dynamic>>>;
 	var segment : Int;
 	var stats : Array<Stats<Dynamic>>;
 
@@ -54,7 +53,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		sensibleRadius = 100;
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<DataPoint>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<Dynamic>>>)
 	{
 		super.setVariables(variables, variableIndependents, variableDependents, data);
 		if (y0property != null && y0property != "")
@@ -82,7 +81,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		}
 	}
 
-	function x(d : DataPoint, ?i)
+	function x(d : Dynamic, ?i)
 	{
 		var value   = DataPoints.value(d, xVariable.type),
 			scaled  = xVariable.axis.scale(xVariable.min(), xVariable.max(), value),
@@ -97,12 +96,12 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		if (null != y0property)
 		{
 			var min = scale(v.min()) * height;
-			return function(d : DataPoint, i : Int)
+			return function(d : Dynamic, i : Int)
 			{
 				return getY0(pos)(d, i) - (scale(DataPoints.value(d, v.type)) * height) + min;
 			}
 		} else {
-			return function(d : DataPoint, i : Int)
+			return function(d : Dynamic, i : Int)
 			{
 				var value   = DataPoints.value(d, v.type),
 					scaled  = scale(value),
@@ -116,13 +115,13 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 	{
 		var v = yVariables[pos],
 			scale = callback(v.axis.scale, v.min(), v.max());
-		return function(d : DataPoint, i : Int)
+		return function(d : Dynamic, i : Int)
 		{
 			return height - (scale(DataPoints.valueAlt(d, y0property, v.min())) * height);
 		}
 	}
 
-	var segments : Array<Array<DataPoint>>;
+	var segments : Array<Array<Dynamic>>;
 
 	public function classsf(pos : Int, cls : String)
 	{
@@ -140,7 +139,7 @@ class LineChart extends CartesianChart<Array<Array<Array<DataPoint>>>>
 		}
 	}
 
-	override function data(dps : Array<Array<Array<DataPoint>>>)
+	override function data(dps : Array<Array<Array<Dynamic>>>)
 	{
 		linePathShape = [];
 		for (i in 0...yVariables.length)

@@ -12,7 +12,6 @@ import thx.culture.FormatNumber;
 import dhx.Selection;
 import rg.svg.panel.Layer;
 import rg.svg.panel.Panel;
-import rg.data.DataPoint;
 import thx.geom.layout.Pie;
 import dhx.Svg;
 import thx.math.Const;
@@ -55,7 +54,7 @@ class PieChart extends Chart
 
 	var labels : Hash<Label>;
 
-	public var mouseClick : DataPoint -> Void;
+	public var mouseClick : Dynamic -> Void;
 
 	public function new(panel : Panel)
 	{
@@ -103,7 +102,7 @@ class PieChart extends Chart
 			g.attr("transform").string("translate(0," + (height/2-width/2) + ")");
 	}
 
-	public function data(dp : Array<DataPoint>)
+	public function data(dp : Array<Dynamic>)
 	{
 		var pv = variableDependent.type;
 		// filter out dp with zero values
@@ -170,7 +169,7 @@ class PieChart extends Chart
 	{
 		if (null == labelDataPointOver)
 			return;
-		var d : { dp : DataPoint, startAngle : Float, endAngle : Float } = Access.getData(dom),
+		var d : { dp : Dynamic, startAngle : Float, endAngle : Float } = Access.getData(dom),
 			text = labelDataPointOver(d.dp, stats);
 
 		if (null == text)
@@ -186,7 +185,7 @@ class PieChart extends Chart
 
 	function onMouseClick(dom, i)
 	{
-		var d : { dp : DataPoint } = Access.getData(dom);
+		var d : { dp : Dynamic } = Access.getData(dom);
 		mouseClick(d.dp);
 	}
 
@@ -202,7 +201,7 @@ class PieChart extends Chart
 	function updateLabel(dom, i)
 	{
 		var n = Dom.selectNode(dom),
-			d : { startAngle : Float, endAngle : Float, id : String, dp : DataPoint } = Access.getData(dom),
+			d : { startAngle : Float, endAngle : Float, id : String, dp : Dynamic } = Access.getData(dom),
 			label = labels.get(d.id),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
@@ -222,7 +221,7 @@ class PieChart extends Chart
 	{
 		var n = Dom.selectNode(dom),
 			label = new Label(n, labelDontFlip, true, true),
-			d : { startAngle : Float, endAngle : Float, id : String, dp : DataPoint } = Access.getData(dom),
+			d : { startAngle : Float, endAngle : Float, id : String, dp : Dynamic } = Access.getData(dom),
 			r = radius * labelRadius,
 			a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.orientation = labelOrientation;
@@ -322,7 +321,7 @@ class PieChart extends Chart
 
 	function id(dp : Dynamic, i : Int) return dp.id
 
-	function makeid(dp : DataPoint)
+	function makeid(dp : Dynamic)
 	{
 		var c = Objects.clone(dp);
 		Reflect.deleteField(c, variableDependent.type);
@@ -331,13 +330,13 @@ class PieChart extends Chart
 
 	function arcShape(a : Arc<{ startAngle : Float, endAngle : Float }>)
 	{
-		return function(d : { startAngle : Float, endEngle : Float, id : String, dp : DataPoint }, i : Int)
+		return function(d : { startAngle : Float, endEngle : Float, id : String, dp : Dynamic }, i : Int)
 		{
 			return a.shape(cast d);
 		}
 	}
 
-	function pief(dp : Array<DataPoint>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : DataPoint }>
+	function pief(dp : Array<Dynamic>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : Dynamic }>
 	{
 		var name = variableDependent.type,
 			temp = dp.map(function(d, i) return Reflect.field(d, name)),

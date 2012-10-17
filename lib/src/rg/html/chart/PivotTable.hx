@@ -6,7 +6,6 @@
 package rg.html.chart;
 import rg.axis.Stats;
 import thx.color.Hsl;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import dhx.Selection;
 import rg.util.RGStrings;
@@ -44,8 +43,8 @@ class PivotTable
 
 	public var incolumns : Int;
 
-	public var click : DataPoint -> Void;
-	public var cellclass : DataPoint -> Stats<Dynamic> -> String;
+	public var click : Dynamic -> Void;
+	public var cellclass : Dynamic -> Stats<Dynamic> -> String;
 	public var valueclass : Dynamic -> String -> String;
 	public var headerclass : String -> String;
 	public var totalclass : Dynamic -> Array<Dynamic> -> String;
@@ -66,7 +65,7 @@ class PivotTable
 		incolumns = 1;
 	}
 
-	public dynamic function labelDataPoint(dp : DataPoint, stats : StatsNumeric)
+	public dynamic function labelDataPoint(dp : Dynamic, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
 		if(Math.isNaN(v))
@@ -74,7 +73,7 @@ class PivotTable
 		return FormatNumber.int(v);
 	}
 
-	public dynamic function labelDataPointOver(dp : DataPoint, stats : StatsNumeric)
+	public dynamic function labelDataPointOver(dp : Dynamic, stats : StatsNumeric)
 	{
 		var v = DataPoints.value(dp, cellVariable.type);
 		if(Math.isNaN(v))
@@ -108,7 +107,7 @@ class PivotTable
 		return FormatNumber.percent(100 * v / stats.tot, 1);
 	}
 
-	public function data(dps : Array<DataPoint>)
+	public function data(dps : Array<Dynamic>)
 	{
 		var d = transformData(dps),
 			table = container.append("table").classed().add("pivot-table"),
@@ -323,8 +322,8 @@ class PivotTable
 
 	function formatTotal(v : Float, ?_) return labelTotal(v, stats)
 	function formatTotalOver(v : Float, ?_) return labelTotalOver(v, stats)
-	function formatDataPoint(dp : DataPoint, ?_) return labelDataPoint(dp, stats)
-	function formatDataPointOver(dp : DataPoint, ?_) return labelDataPointOver(dp, stats)
+	function formatDataPoint(dp : Dynamic, ?_) return labelDataPoint(dp, stats)
+	function formatDataPointOver(dp : Dynamic, ?_) return labelDataPointOver(dp, stats)
 
 	function buildValue(value : Dynamic, header : String, counter : Int, tr : Selection)
 	{
@@ -377,11 +376,11 @@ class PivotTable
 		container.html().string("");
 	}
 
-	function transformData(dps : Array<DataPoint>): {
+	function transformData(dps : Array<Dynamic>): {
 		column_headers : Array<String>,
 		row_headers : Array<String>,
 		columns : Array<{ values : Array<Dynamic>, stats : StatsNumeric, type : String }>,
-		rows : Array<{ values : Array<Dynamic>, cells : Array<DataPoint>, stats : StatsNumeric} >,
+		rows : Array<{ values : Array<Dynamic>, cells : Array<Dynamic>, stats : StatsNumeric} >,
 		stats : StatsNumeric
 	}
 	{

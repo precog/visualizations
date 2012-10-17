@@ -44,36 +44,4 @@ using rg.info.filter.TransformResult;
 				})
 		];
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "handler",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "service",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "legacyservice",
-			validator : function(v) return Std.is(v, String),
-			filter : null
-		}, {
-			field : "formats",
-			validator : function(v) return Std.is(v, Array),
-			filter : null
-		}, {
-			field : "position",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v)
-			{
-				return [ {
-					field : "position",
-					value : DownloaderPositions.parse(v)
-				}];
-			}
-		}];
-	}
-*/
 }

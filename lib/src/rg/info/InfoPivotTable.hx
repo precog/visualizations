@@ -4,7 +4,6 @@
  */
 
 package rg.info;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import thx.color.Hsl;
 import thx.color.NamedColors;
@@ -27,8 +26,8 @@ using rg.info.Info;
 
 	public var columnAxes : Int;
 
-	public var click : DataPoint -> Void;
-	public var cellclass : Null<DataPoint -> Stats<Dynamic> -> String>;
+	public var click : Dynamic -> Void;
+	public var cellclass : Null<Dynamic -> Stats<Dynamic> -> String>;
 	public var valueclass : Null<Dynamic -> String -> String>;
 	public var headerclass : Null<String -> String>;
 	public var totalclass : Null<Dynamic -> Array<Dynamic> -> String>;
@@ -70,79 +69,4 @@ using rg.info.Info;
 			"totalclass".toFunction()
 		];
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "columnaxes",
-			validator : function(v) return Std.is(v, Int),
-			filter : function(v) return [{
-				field : "columnAxes",
-				value : v
-			}]
-		}, {
-			field : "displayheatmap",
-			validator : function(v) return Std.is(v, Bool),
-			filter : function(v) return [{
-				field : "displayHeatmap",
-				value : v
-			}]
-		}, {
-			field : "displaycolumntotal",
-			validator : function(v) return Std.is(v, Bool),
-			filter : function(v) return [{
-				field : "displayColumnTotal",
-				value : v
-			}]
-		}, {
-			field : "displayrowtotal",
-			validator : function(v) return Std.is(v, Bool),
-			filter : function(v) return [{
-				field : "displayRowTotal",
-				value : v
-			}]
-		}, {
-			field : "startcolor",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "heatmapColorStart",
-				value : Hsl.toHsl(RGColors.parse(v, defaultStartColor.toCss()))
-			}]
-		}, {
-			field : "endcolor",
-			validator : function(v) return Std.is(v, String),
-			filter : function(v) return [{
-				field : "heatmapColorEnd",
-				value : Hsl.toHsl(RGColors.parse(v, defaultEndColor.toCss()))
-			}]
-		}, {
-			field : "label",
-			validator : function(v) return Types.isAnonymous(v),
-			filter : function(v) return [{
-				field : "label",
-				value : new InfoLabelPivotTable().feed(v)
-			}]
-		}, {
-			field : "click",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "cellclass",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "valueclass",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "headerclass",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}, {
-			field : "totalclass",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}];
-	}
-*/
 }

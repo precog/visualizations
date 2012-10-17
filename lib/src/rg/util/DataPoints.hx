@@ -6,7 +6,6 @@
 package rg.util;
 
 import haxe.Md5;
-import rg.data.DataPoint;
 import rg.axis.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
@@ -15,7 +14,7 @@ using Arrays;
 
 class DataPoints
 {
-	public static function partition(dps : Array<DataPoint>, property : String, def = "default")
+	public static function partition(dps : Array<Dynamic>, property : String, def = "default")
 	{
 		var map = new HashList();
 		function getBucket(n)
@@ -41,7 +40,7 @@ class DataPoints
 		return map.array();
 	}
 
-	public static function filterByIndependents(dps : Array<DataPoint>, variables : Array<VariableIndependent<Dynamic>>)
+	public static function filterByIndependents(dps : Array<Dynamic>, variables : Array<VariableIndependent<Dynamic>>)
 	{
 		for (variable in variables)
 		{
@@ -56,7 +55,7 @@ class DataPoints
 		return dps;
 	}
 
-	public static function filterByDependents(dps : Array<DataPoint>, variables : Array<VariableDependent<Dynamic>>)
+	public static function filterByDependents(dps : Array<Dynamic>, variables : Array<VariableDependent<Dynamic>>)
 	{
 		for (variable in variables)
 		{
@@ -70,20 +69,20 @@ class DataPoints
 		return dps;
 	}
 
-	public inline static function value(dp : DataPoint, property : String) : Dynamic return Reflect.field(dp, property)
+	public inline static function value(dp : Dynamic, property : String) : Dynamic return Reflect.field(dp, property)
 
-	public inline static function valueAlt<T>(dp : DataPoint, property : String, alt : T) : T
+	public inline static function valueAlt<T>(dp : Dynamic, property : String, alt : T) : T
 	{
 		var v;
 		return (null == (v = Reflect.field(dp, property))) ? alt : v;
 	}
 
-	public static function values(dps : Array<DataPoint>, property : String)
+	public static function values(dps : Array<Dynamic>, property : String)
 	{
 		return dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null);
 	}
 
-	public static function id(dp : DataPoint, dependentProperties : Array<String>)
+	public static function id(dp : Dynamic, dependentProperties : Array<String>)
 	{
 		var cdp = Objects.clone(dp);
 		for (p in dependentProperties)

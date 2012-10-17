@@ -29,11 +29,13 @@ class BaseController extends Controller
 		format = normalizeFormat(format);
 		switch (format) {
 			case "html":
-				var template : Template<{ url : ufront.web.mvc.view.UrlHelperInst, data : T, baseurl : String }> = Type.createInstance(templateClass, []);
+				var template : Template<{ url : ufront.web.mvc.view.UrlHelperInst, data : T, baseurl : String, milliToString : Float -> String, reflectField : Dynamic -> Dynamic -> Dynamic }> = Type.createInstance(templateClass, []);
 				var content = {
 					baseurl : App.baseUrl(),
 					url : urlHelper,
-					data : data
+					data : data,
+					milliToString : thx.date.Milli.toString,
+					reflectField : Reflect.field
 				};
 				return new ContentResult(untyped template.execute(content));
 			case "json":

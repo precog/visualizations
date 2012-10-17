@@ -19,7 +19,6 @@ import rg.interactive.RGLegacyRenderer;
 import rg.interactive.RGDownloader;
 import rg.visualization.Visualization;
 import rg.data.DataLoader;
-import rg.data.DataPoint;
 import rg.data.DependentVariableProcessor;
 import rg.data.IndependentVariableProcessor;
 import rg.data.VariableDependent;
@@ -95,7 +94,7 @@ class App
 			if (null != general.ready)
 				visualization.addReady(general.ready);
 
-			loader.onLoad.addOnce(function(datapoints : Array<DataPoint>) {
+			loader.onLoad.addOnce(function(datapoints : Array<Dynamic>) {
 				visualization.feedData(datapoints);
 			});
 		}
@@ -133,7 +132,7 @@ class App
 		}
 		if(!uselegacy)
 		{
-			if(!jsoptions.options.a)
+			if(!jsoptions.options.a && untyped document.location.href.substr(0, 7) != "file://")
 			{
 				visualization.addReadyOnce(function()
 				{

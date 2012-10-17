@@ -13,7 +13,7 @@ class DependentVariableProcessor
 {
 	public function new() { }
 
-	public function process(data : Array<DataPoint>, variables : Array<VariableDependent<Dynamic>>)
+	public function process(data : Array<Dynamic>, variables : Array<VariableDependent<Dynamic>>)
 	{
 		for (variable in variables)
 		{

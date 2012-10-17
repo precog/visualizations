@@ -5,10 +5,10 @@ define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
 define('MANAGE_CODE', '67ww78bhFGY!543fv');
-define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local')) || intval($_SERVER['SERVER_NAME']) > 0);
+define('LOCAL', in_array($_SERVER['SERVER_NAME'], array('localhost', 'reportgrid.local', '192.169.1.21')) || intval($_SERVER['SERVER_NAME']) > 0);
 //define('AUTHCODE', 'IGLBxMA3vSoTDWz+Fu3cjPZNmdpS+fYSlwyN7LvpssTRTRpE4Lt+hqO9nX6LaLf2SZZBVf7vFDTyUID1uWUdoPC73kAA9HVzsOZwxO5jY+NdazmeBwK64oD5vRkxth5vO3ejfjx0nkh7mgaoSwde0zri1V+b+SVHR92RidT5Isk=');
 //define('AUTHCODE', 'kcb+LX2KAKWofM1W54YYcFEE+aZ1L00UGK9PgcnrHpLRuFjCh6bOFSoMwc0NN3jmpZYqsBZ0uR08TQd0R0CmKj1o8FSJfNhPl2ZdjxqmhcZnYgiiFTWN2TLFVu4KvhSUAHp6jMaCzAPNlq7ImGjOovsVyti541aOn5+oFQXNeX0=');
-define('AUTHCODE', 'nUc/1b9aDKYznHcEFWl/NQYKl84SNCi/YAAdrCSuODDa6bXaMPmvm22i6duo6LRhKhRVaTB3D4KsgXFP8qA7RdeDWrPDEgnHa8TjuqamDIOkbEtcgCj0V7amKkwJUfi5eO+19rfFD2B7e8Vinpc5VS3hlmswbiacZE63a9aatGg=');
+define('AUTHCODE', 'QWWwKQIBDTBblBgGtgUCgQjS4MM+R+2oSOfdekNAM2xxE0E98ZLtdwaVfrMjShf51Ou3NsUtkv9yvqWH0pbyH0IRc6kvJ7HDZCyA3ObMouvdcyNxmyDS/EUcjCIZqxkGrCLcj9w43gMjWBHndW1Pk9429QaRI4voWSvZQMd4boE=');
 
 $viz_categories = array(
 	'SK' => array("name" => 'Sankey',				"sequence" => 0),

@@ -4,27 +4,29 @@ body, html
 	padding: 0;
 }
 
+.wide
+{
+	width : 640px;
+	height : 320px;
+}
+
+.square
+{
+	width : 320px;
+	height : 320px;
+}
+
+.big
+{
+	width : 780px;
+	height : 500px;
+}
+
+/*
 #chart
 {
 	width : 480px;
 	height : 320px;
 	margin: 0 auto;
 }
-
-#chart.wide
-{
-	width : 640px;
-	height : 320px;
-}
-
-#chart.square
-{
-	width : 320px;
-	height : 320px;
-}
-
-#chart.big
-{
-	width : 780px;
-	height : 500px;
-}
+*/

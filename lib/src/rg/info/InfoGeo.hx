@@ -4,8 +4,6 @@
  */
 
 package rg.info;
-
-import rg.data.DataPoint;
 import rg.axis.Stats;
 using rg.info.filter.FilterDescription;
 using rg.info.Info;
@@ -15,6 +13,8 @@ using Arrays;
 {
 	public var map : Array<InfoMap>;
 	public var label : InfoLabel;
+	public var labelOutline : Bool = false;
+	public var labelShadow : Bool = false;
 
 	public function new()
 	{
@@ -25,24 +25,9 @@ using Arrays;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"map".toInfoArray(InfoMap)
+			"map".toInfoArray(InfoMap),
+			"labeloutline".toBool(["labelOutline"]),
+			"labelshadow".toBool(["labelShadow"])
 		];
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "map",
-			validator : function(v) return Types.isAnonymous(v) || Std.is(v, Array),
-			filter : function(v) {
-				return [{
-					field : "map",
-					value : (Std.is(v, Array) ? cast v : [v]).map(function(d, i) {
-						return new InfoMap().feed(d);
-					})
-				}];
-			}
-		}];
-	}
-*/
 }

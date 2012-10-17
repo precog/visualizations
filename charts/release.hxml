@@ -9,7 +9,7 @@
 #--connect 8888
 -D release
 -D js_shims
--D noEmbedJS
+#-D noEmbedJS
 --no-traces
 #--dead-code-elimination
 --js-modern

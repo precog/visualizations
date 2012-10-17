@@ -7,14 +7,13 @@ package rg.visualization;
 import rg.info.InfoLineChart;
 import rg.data.Variable;
 import rg.svg.chart.LineChart;
-import rg.data.DataPoint;
 import rg.data.Segmenter;
 import rg.util.DataPoints;
 import rg.axis.IAxis;
 using Arrays;
 import rg.axis.ScaleDistribution;
 
-class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<DataPoint>>>>
+class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Dynamic>>>>
 {
 	public var infoLine : InfoLineChart;
 
@@ -48,7 +47,7 @@ class VisualizationLineChart extends VisualizationCartesian<Array<Array<Array<Da
 		this.chart = chart;
 	}
 
-	override function transformData(dps : Array<DataPoint>) : Array<Array<Array<DataPoint>>>
+	override function transformData(dps : Array<Dynamic>) : Array<Array<Array<Dynamic>>>
 	{
 		var results = [],
 			segmenter = new Segmenter(infoLine.segment.on, infoLine.segment.transform, infoLine.segment.scale, infoLine.segment.values);

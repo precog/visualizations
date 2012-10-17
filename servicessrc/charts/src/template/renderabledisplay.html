@@ -18,7 +18,7 @@
   <dt>will be erased on:</dt>
 @if(null == data.expiresOn)
 {
-  <dd>will be erased after not being used for @thx.date.Milli.toString(data.preserveTimeAfterLastUsage, false)</dd>
+  <dd>will be erased after not being used for @milliToString(data.preserveTimeAfterLastUsage, false)</dd>
 } else {
   <dd>@data.expiresOn.toString()</dd>
 }
@@ -26,14 +26,14 @@
 <h2>Cache</h2>
 <dl>
   <dt>cache expires after:</dt>
-  <dd>@thx.date.Milli.toString(data.cacheExpirationTime, false)</dd>
+  <dd>@milliToString(data.cacheExpirationTime, false)</dd>
 </dl>
 <h2>Download</h2>
 <dl class="bullet">
 @for(format in data.formats)
 {
 @{
-  var p = Reflect.field(data.service, format);
+  var p = reflectField(data.service, format);
 }
   <dt>@format.toUpperCase():</dt>
   <dd><a href="@p">@p</a></dd>
