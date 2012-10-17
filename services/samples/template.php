@@ -27,7 +27,7 @@ if(@$info['html'])
 echo $info['html'];
 } else {
 ?>
-<div id="chart"<?php echo (@$info['class']?' class="'.$info['class'].'"':'')?>></div>
+<div id="chart" class="chart<?php echo (@$info['class']?' '.$info['class']:'')?>"></div>
 <?php
 }
 ?>

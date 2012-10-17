@@ -4,7 +4,7 @@ body, html
 	padding: 0;
 }
 
-div
+.chart
 {
 	width : 480px;
 	height : 320px;
@@ -16,19 +16,19 @@ iframe
 	border: 0;
 }
 
-.wide
+div.wide
 {
 	width : 640px;
 	height : 320px;
 }
 
-.square
+div.square
 {
 	width : 320px;
 	height : 320px;
 }
 
-.big
+div.big
 {
 	width : 780px;
 	height : 500px;
