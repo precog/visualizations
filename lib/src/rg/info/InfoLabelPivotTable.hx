@@ -17,9 +17,9 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"total".toFunction(),
-			"totalover".toFunction(),
-			"axisvalue".toFunction()
+			"total".toTemplateFunction(["value", "stats"]),
+			"totalover".toTemplateFunction(["value", "stats"]),
+			"axisvalue".toTemplateFunction([null, "stats"])
 		].concat(InfoLabelAxis.filters());
 	}
 }

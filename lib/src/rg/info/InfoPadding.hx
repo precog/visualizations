@@ -24,26 +24,4 @@ using rg.info.filter.FilterDescription;
 			"right".toInt()
 		];
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "top",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, {
-			field : "bottom",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, {
-			field : "left",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, {
-			field : "right",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, ];
-	}
-*/
 }

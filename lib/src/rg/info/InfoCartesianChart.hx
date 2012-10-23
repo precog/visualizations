@@ -67,15 +67,17 @@ using rg.info.Info;
 			"animation".toInfo(InfoAnimation),
 			"click".toFunction(),
 			"label".toInfo(InfoLabelAxis),
-			"displaytickmarks".toFunctionOrBool(["displayMinorTick", "displayMajorTick", "displayLabelTick"]),
-			"displaytickminor".toFunctionOrBool(["displayMinorTick"]),
-			"displaytickmajor".toFunctionOrBool(["displayMajorTick"]),
-			"displayticklabel".toFunctionOrBool(["displayLabelTick"]),
-			"displayanchorlinetick".toFunctionOrBool(["displayAnchorLineTick"]),
-			"displayrules".toFunctionOrBool(["displayMinorRule", "displayMajorRule"]),
-			"displayruleminor".toFunctionOrBool(["displayMinorRule"]),
-			"displayrulemajor".toFunctionOrBool(["displayMajorRule"]),
-			"displayanchorlinerule".toFunctionOrBool(["displayAnchorLineRule"]),
+
+			"displaytickmarks".toExpressionFunctionOrBool(["type"], ["displayMinorTick", "displayMajorTick", "displayLabelTick"]),
+			"displaytickminor".toExpressionFunctionOrBool(["type"], ["displayMinorTick"]),
+			"displaytickmajor".toExpressionFunctionOrBool(["type"], ["displayMajorTick"]),
+			"displayticklabel".toExpressionFunctionOrBool(["type"], ["displayLabelTick"]),
+			"displayanchorlinetick".toExpressionFunctionOrBool(["type"], ["displayAnchorLineTick"]),
+			"displayrules".toExpressionFunctionOrBool(["type"], ["displayMinorRule", "displayMajorRule"]),
+			"displayruleminor".toExpressionFunctionOrBool(["type"], ["displayMinorRule"]),
+			"displayrulemajor".toExpressionFunctionOrBool(["type"], ["displayMajorRule"]),
+			"displayanchorlinerule".toExpressionFunctionOrBool(["type"], ["displayAnchorLineRule"]),
+
 			"lengthtick".toFloat(["lengthTickMajor", "lengthTickMinor"]),
 			"lengthtickminor".toFloat(["lengthTickMinor"]),
 			"lengthtickmajor".toFloat(["lengthTickMajor"]),
@@ -83,9 +85,12 @@ using rg.info.Info;
 			"paddingtickminor".toFloat(["paddingTickMinor"]),
 			"paddingtickmajor".toFloat(["paddingTickMajor"]),
 			"paddingticklabel".toFloat(["paddingLabel"]),
-			"labelorientation".toFunctionOrString(["labelOrientation"]),
-			"labelanchor".toFunctionOrString(["labelAnchor"]),
-			"labelangle".toFunctionOrFloat(["labelAngle"]),
+
+			"labelorientation".toExpressionFunctionOrString(["type"], ["labelOrientation"]),
+			"labelanchor".toExpressionFunctionOrString(["type"], ["labelAnchor"]),
+			"labelangle".toExpressionFunctionOrFloat(["type"], ["labelAngle"]),
+			"labelhorizontal".simplified(["labelAnchor"], function(v) return v == false ? function(v) return "right" : function(v) return null, ReturnMessageIfNot.isBool),
+			"labelhorizontal".simplified(["labelAngle"], function(v) return v == false ? function(v) return 0 : function(v) return null, ReturnMessageIfNot.isBool)
 		];
 	}
 }

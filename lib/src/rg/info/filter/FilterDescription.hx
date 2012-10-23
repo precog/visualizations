@@ -67,6 +67,16 @@ class FilterDescription {
 		return pair(name, maps, TransformerFunction.instance);
 	}
 
+	public static function toTemplateFunction(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return pair(name, maps, new TransformerTemplateToFunction(args));
+	}
+
+	public static function toExpressionFunction(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return pair(name, maps, new TransformerExpressionToFunction(args));
+	}
+
 	public static function toInfo<T>(name : String, ?maps : Array<String>, cls : Class<T>, ?fun : T -> Void)
 	{
 		return simplified(name, maps, function(value) {
@@ -163,10 +173,48 @@ class FilterDescription {
 		);
 	}
 
+	public static function toExpressionFunctionOrBool(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerExpressionToFunction(args).transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					return TransformerBool.instance.transform.onResult(
+						function(b : Bool, _)
+							return TransformResult.Success(function() { return b; }),
+						function(vin : Dynamic, msg : Message)
+							return TransformResult.Failure(new Message("parameter should be a boolean value or a function returning a boolean value"))
+					)(vin);
+				}
+			)
+		);
+	}
+
 	public static function toFunctionOrFloat(name : String, ?maps : Array<String>)
 	{
 		return custom(name, maps,
 			TransformerFunction.instance.transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					return TransformerFloat.instance.transform.onResult(
+						function(b : Float, _)
+							return TransformResult.Success(function() { return b; }),
+						function(vin : Dynamic, msg : Message)
+							return TransformResult.Failure(new Message("parameter should be a float value or a function returning a float value"))
+					)(vin);
+				}
+			)
+		);
+	}
+
+	public static function toExpressionFunctionOrFloat(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerExpressionToFunction(args).transform.onResult(
 				function(value : Dynamic, vin : Dynamic) {
 					return TransformResult.Success(value);
 				},
@@ -199,6 +247,40 @@ class FilterDescription {
 		);
 	}
 
+	public static function toExpressionFunctionOrNull(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerExpressionToFunction(args).transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					if(null == vin)
+						return TransformResult.Success(null);
+					else
+						return TransformResult.Failure(new Message("parameter should be a function or null"));
+				}
+			)
+		);
+	}
+
+	public static function toTemplateFunctionOrNull(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerTemplateToFunction(args).transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					if(null == vin)
+						return TransformResult.Success(null);
+					else
+						return TransformResult.Failure(new Message("parameter should be a function or null"));
+				}
+			)
+		);
+	}
+
 	public static function toFunctionOrString(name : String, ?maps : Array<String>)
 	{
 		return custom(name, maps,
@@ -218,23 +300,43 @@ class FilterDescription {
 		);
 	}
 
-/*
-FilterDescription.custom("displaytickmarks", ["displayMinorTick", "displayMajorTick", "displayLabelTick"],
-				TransformerFunction.instance.transform.onResult(
-					function(value : Dynamic, vin : Dynamic) {
-						return TransformResult.Success(function() { return value; });
-					},
-					function(vin : Dynamic, msg : Message) {
-						return TransformerBool.instance.transform.onResult(
-							function(b : Bool, _)
-								return TransformResult.Success(function() { return b; }),
-							function(vin : Dynamic, msg : Message)
-								return TransformResult.Failure(new Message("paramter should be a boolean value or a function returning a boolean value"))
-						)(vin);
-					}
-				)
+	public static function toExpressionFunctionOrString(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerExpressionToFunction(args).transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					return TransformerString.instance.transform.onResult(
+						function(s : String, _)
+							return TransformResult.Success(function() { return s; }),
+						function(vin : Dynamic, msg : Message)
+							return TransformResult.Failure(new Message("parameter should be a string value or a function returning a string value"))
+					)(vin);
+				}
 			)
-*/
+		);
+	}
+
+	public static function toTemplateFunctionOrString(name : String, args : Array<String>, ?maps : Array<String>)
+	{
+		return custom(name, maps,
+			new TransformerTemplateToFunction(args).transform.onResult(
+				function(value : Dynamic, vin : Dynamic) {
+					return TransformResult.Success(value);
+				},
+				function(vin : Dynamic, msg : Message) {
+					return TransformerString.instance.transform.onResult(
+						function(s : String, _)
+							return TransformResult.Success(function() { return s; }),
+						function(vin : Dynamic, msg : Message)
+							return TransformResult.Failure(new Message("parameter should be a string value or a function returning a string value"))
+					)(vin);
+				}
+			)
+		);
+	}
 
 	public static function custom<T>(name : String, ?maps : Array<String>, transformer : Dynamic -> TransformResult<Dynamic>)
 	{
@@ -293,17 +395,6 @@ class TransformerChainer
 			}
 		}
 	}
-/*
-	public static function onFailure<TIn, TOut, TResult>(src : TIn -> TransformResult<TOut>, failure : TIn -> Message -> TransformResult<TResult>) : TIn -> TransformResult<TResult>
-	{
-		return onResult(src, function(v : TOut, _) return TransformResult.Success(v), failure);
-	}
-
-	public static function onSuccess<TIn, TOut, TResult>(src : TIn -> TransformResult<TOut>, success : TOut -> TIn -> TransformResult<TResult>) : TIn -> TransformResult<TResult>
-	{
-		return onResult(src, success, function(v : TIn, m : Message) return TransformResult.Failure(m));
-	}
-*/
 }
 
 class TransformerArray implements ITransformer<Dynamic, Array<Dynamic>>
@@ -437,8 +528,82 @@ class TransformerFunction implements ITransformer<Dynamic, Void -> Void>
 	}
 }
 
+class TransformerTemplateToFunction implements ITransformer<Dynamic, Void -> String>
+{
+	var argumentsMap : Array<String>;
+	public function new(argumentsMap : Array<String>)
+	{
+		this.argumentsMap = argumentsMap;
+	}
+
+	public function transform(value : Dynamic) : TransformResult<Void -> String>
+	{
+		if(Std.is(value, String)) {
+			var template = new erazor.Template(cast value);
+			return TransformResult.Success(function() {
+				return template.execute(TransformerExpressionToFunction.extractValues(argumentsMap, untyped __js__("arguments")));
+			});
+		} else if(Reflect.isFunction(value)) {
+			return TransformResult.Success(value);
+		} else {
+			return TransformResult.Failure(new Message("not a function"));
+		}
+	}
+}
+
+class TransformerExpressionToFunction implements ITransformer<Dynamic, Void -> String>
+{
+	var argumentsMap : Array<String>;
+	static var interp = new hscript.Interp();
+	static var pattern = ~/^\s*=/;
+	public function new(argumentsMap : Array<String>)
+	{
+		this.argumentsMap = argumentsMap;
+	}
+
+	public static function extractValues(map : Array<String>, args : Array<Dynamic>)
+	{
+		var i = map.length,
+			values = new Hash<Dynamic>();
+		values.set("ReportGrid", untyped __js__("ReportGrid"));
+		values.set("Math", Math);
+		values.set("null", null);
+		values.set("true", true);
+		values.set("false", false);
+
+		while(--i >= 0) {
+			var key = map[i];
+			if(null == key) {
+				for(key in Reflect.fields(args[i])) {
+					values.set(key, Reflect.field(args[i], key));
+				}
+			} else {
+				values.set(key, args[i]);
+			}
+		}
+		return values;
+	}
+
+	public function transform(value : Dynamic) : TransformResult<Void -> String>
+	{
+		if(Std.is(value, String) && pattern.match(value)) {
+			value = value.substr(value.indexOf("=")+1);
+			var program = new hscript.Parser().parseString(cast value);
+			return TransformResult.Success(function() {
+				interp.variables = extractValues(argumentsMap, untyped __js__("arguments"));
+				return interp.execute(program);
+			});
+		} else if(Reflect.isFunction(value)) {
+			return TransformResult.Success(value);
+		} else {
+			return TransformResult.Failure(new Message("not a function"));
+		}
+	}
+}
+
 class ReturnMessageIfNot
 {
+	public static function isBool(v : Dynamic) return Std.is(v, Bool) ? null : "not a boolean"
 	public static function isString(v : Dynamic) return Std.is(v, String) ? null : "not a string"
 	public static function isObject(v : Dynamic) return Types.isAnonymous(v) ? null : "not an object"
 }
@@ -464,12 +629,7 @@ class ReturnMessageChainer
 				return o;
 		}
 	}
-/*
-	public static function orNot(f1 : Dynamic -> Null<String>, f2 : Dynamic -> Null<String>)
-	{
-		return or(f1, function(v) return !f2(v));
-	}
-*/
+
 	public static function and(f1 : Dynamic -> Null<String>, f2 : Dynamic -> Null<String>)
 	{
 		return function(v : Dynamic)
@@ -477,10 +637,4 @@ class ReturnMessageChainer
 			return null == f1(v) && null == f2(v);
 		}
 	}
-/*
-	public static function andNot(f1 : Dynamic -> Null<String>, f2 : Dynamic -> Null<String>)
-	{
-		return and(f1, function(v) return !f2(v));
-	}
-*/
 }

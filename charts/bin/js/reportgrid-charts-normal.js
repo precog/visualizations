@@ -822,7 +822,6 @@ BytesBuffer.prototype = {
 var BytesUtil = function() { }
 $hxClasses["BytesUtil"] = BytesUtil;
 BytesUtil.__name__ = ["BytesUtil"];
-BytesUtil.EMPTY = null;
 BytesUtil.byteArrayToBytes = function(a,padToBytes) {
 	var sb = new BytesBuffer();
 	var _g = 0;
@@ -2030,21 +2029,7 @@ var Hash = function() {
 $hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
-	toString: function() {
-		var s = new StringBuf();
-		s.b += "{";
-		var it = this.keys();
-		while( it.hasNext() ) {
-			var i = it.next();
-			s.b += Std.string(i);
-			s.b += " => ";
-			s.b += Std.string(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += ", ";
-		}
-		s.b += "}";
-		return s.b;
-	}
-	,iterator: function() {
+	iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
 			return this.it.hasNext();
 		}, next : function() {
@@ -2445,21 +2430,7 @@ var IntHash = function() {
 $hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
 IntHash.prototype = {
-	toString: function() {
-		var s = new StringBuf();
-		s.b += "{";
-		var it = this.keys();
-		while( it.hasNext() ) {
-			var i = it.next();
-			s.b += Std.string(i);
-			s.b += " => ";
-			s.b += Std.string(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += ", ";
-		}
-		s.b += "}";
-		return s.b;
-	}
-	,iterator: function() {
+	iterator: function() {
 		return { ref : this.h, it : this.keys(), hasNext : function() {
 			return this.it.hasNext();
 		}, next : function() {
@@ -2521,13 +2492,7 @@ var IntIter = function(min,max) {
 $hxClasses["IntIter"] = IntIter;
 IntIter.__name__ = ["IntIter"];
 IntIter.prototype = {
-	next: function() {
-		return this.min++;
-	}
-	,hasNext: function() {
-		return this.min < this.max;
-	}
-	,max: null
+	max: null
 	,min: null
 	,__class__: IntIter
 }
@@ -2781,43 +2746,6 @@ Iterators.isIterator = function(v) {
 var Lambda = function() { }
 $hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
-Lambda.array = function(it) {
-	var a = new Array();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		a.push(i);
-	}
-	return a;
-}
-Lambda.list = function(it) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		l.add(i);
-	}
-	return l;
-}
-Lambda.map = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(x));
-	}
-	return l;
-}
-Lambda.mapi = function(it,f) {
-	var l = new List();
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(i++,x));
-	}
-	return l;
-}
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
 		var $it0 = $iterator(it)();
@@ -2834,141 +2762,11 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
-Lambda.exists = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) return true;
-	}
-	return false;
-}
-Lambda.foreach = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(!f(x)) return false;
-	}
-	return true;
-}
-Lambda.iter = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		f(x);
-	}
-}
-Lambda.filter = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) l.add(x);
-	}
-	return l;
-}
-Lambda.fold = function(it,f,first) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		first = f(x,first);
-	}
-	return first;
-}
-Lambda.count = function(it,pred) {
-	var n = 0;
-	if(pred == null) {
-		var $it0 = $iterator(it)();
-		while( $it0.hasNext() ) {
-			var _ = $it0.next();
-			n++;
-		}
-	} else {
-		var $it1 = $iterator(it)();
-		while( $it1.hasNext() ) {
-			var x = $it1.next();
-			if(pred(x)) n++;
-		}
-	}
-	return n;
-}
-Lambda.empty = function(it) {
-	return !$iterator(it)().hasNext();
-}
-Lambda.indexOf = function(it,v) {
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var v2 = $it0.next();
-		if(v == v2) return i;
-		i++;
-	}
-	return -1;
-}
-Lambda.concat = function(a,b) {
-	var l = new List();
-	var $it0 = $iterator(a)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(x);
-	}
-	var $it1 = $iterator(b)();
-	while( $it1.hasNext() ) {
-		var x = $it1.next();
-		l.add(x);
-	}
-	return l;
-}
-var List = function() {
-	this.length = 0;
-};
+var List = function() { }
 $hxClasses["List"] = List;
 List.__name__ = ["List"];
 List.prototype = {
-	map: function(f) {
-		var b = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			b.add(f(v));
-		}
-		return b;
-	}
-	,filter: function(f) {
-		var l2 = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			if(f(v)) l2.add(v);
-		}
-		return l2;
-	}
-	,join: function(sep) {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		while(l != null) {
-			if(first) first = false; else s.b += Std.string(sep);
-			s.b += Std.string(l[0]);
-			l = l[1];
-		}
-		return s.b;
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		s.b += "{";
-		while(l != null) {
-			if(first) first = false; else s.b += ", ";
-			s.b += Std.string(Std.string(l[0]));
-			l = l[1];
-		}
-		s.b += "}";
-		return s.b;
-	}
-	,iterator: function() {
+	iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
 		}, next : function() {
@@ -2978,57 +2776,6 @@ List.prototype = {
 			return x;
 		}};
 	}
-	,remove: function(v) {
-		var prev = null;
-		var l = this.h;
-		while(l != null) {
-			if(l[0] == v) {
-				if(prev == null) this.h = l[1]; else prev[1] = l[1];
-				if(this.q == l) this.q = prev;
-				this.length--;
-				return true;
-			}
-			prev = l;
-			l = l[1];
-		}
-		return false;
-	}
-	,clear: function() {
-		this.h = null;
-		this.q = null;
-		this.length = 0;
-	}
-	,isEmpty: function() {
-		return this.h == null;
-	}
-	,pop: function() {
-		if(this.h == null) return null;
-		var x = this.h[0];
-		this.h = this.h[1];
-		if(this.h == null) this.q = null;
-		this.length--;
-		return x;
-	}
-	,last: function() {
-		return this.q == null?null:this.q[0];
-	}
-	,first: function() {
-		return this.h == null?null:this.h[0];
-	}
-	,push: function(item) {
-		var x = [item,this.h];
-		this.h = x;
-		if(this.q == null) this.q = x;
-		this.length++;
-	}
-	,add: function(item) {
-		var x = [item];
-		if(this.h == null) this.h = x; else this.q[1] = x;
-		this.q = x;
-		this.length++;
-	}
-	,length: null
-	,q: null
 	,h: null
 	,__class__: List
 }
@@ -3255,20 +3002,6 @@ Reflect.field = function(o,field) {
 	}
 	return v;
 }
-Reflect.setField = function(o,field,value) {
-	o[field] = value;
-}
-Reflect.getProperty = function(o,field) {
-	var tmp;
-	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
-}
-Reflect.setProperty = function(o,field,value) {
-	var tmp;
-	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
-}
-Reflect.callMethod = function(o,func,args) {
-	return func.apply(o,args);
-}
 Reflect.fields = function(o) {
 	var a = [];
 	if(o != null) {
@@ -3281,9 +3014,6 @@ Reflect.fields = function(o) {
 }
 Reflect.isFunction = function(f) {
 	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
-}
-Reflect.compare = function(a,b) {
-	return a == b?0:a > b?1:-1;
 }
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
@@ -3300,16 +3030,6 @@ Reflect.deleteField = function(o,f) {
 	delete(o[f]);
 	return true;
 }
-Reflect.copy = function(o) {
-	var o2 = { };
-	var _g = 0, _g1 = Reflect.fields(o);
-	while(_g < _g1.length) {
-		var f = _g1[_g];
-		++_g;
-		o2[f] = Reflect.field(o,f);
-	}
-	return o2;
-}
 Reflect.makeVarArgs = function(f) {
 	return function() {
 		var a = Array.prototype.slice.call(arguments);
@@ -3319,14 +3039,8 @@ Reflect.makeVarArgs = function(f) {
 var Std = function() { }
 $hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
-Std["is"] = function(v,t) {
-	return js.Boot.__instanceof(v,t);
-}
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
-}
-Std["int"] = function(x) {
-	return x | 0;
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
@@ -3843,7 +3557,7 @@ Strings.ellipsisf = function(maxlen,symbol) {
 Strings.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
 }
-var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+var ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
 ValueType.TNull.__enum__ = ValueType;
@@ -3894,11 +3608,6 @@ Type.resolveClass = function(name) {
 	if(cl == null || !cl.__name__) return null;
 	return cl;
 }
-Type.resolveEnum = function(name) {
-	var e = $hxClasses[name];
-	if(e == null || !e.__ename__) return null;
-	return e;
-}
 Type.createInstance = function(cl,args) {
 	switch(args.length) {
 	case 0:
@@ -3938,30 +3647,12 @@ Type.createEnum = function(e,constr,params) {
 	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
 	return f;
 }
-Type.createEnumIndex = function(e,index,params) {
-	var c = e.__constructs__[index];
-	if(c == null) throw index + " is not a valid enum constructor index";
-	return Type.createEnum(e,c,params);
-}
 Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
 	HxOverrides.remove(a,"__class__");
 	HxOverrides.remove(a,"__properties__");
 	return a;
-}
-Type.getClassFields = function(c) {
-	var a = Reflect.fields(c);
-	HxOverrides.remove(a,"__name__");
-	HxOverrides.remove(a,"__interfaces__");
-	HxOverrides.remove(a,"__properties__");
-	HxOverrides.remove(a,"__super__");
-	HxOverrides.remove(a,"prototype");
-	return a;
-}
-Type.getEnumConstructs = function(e) {
-	var a = e.__constructs__;
-	return a.slice();
 }
 Type["typeof"] = function(v) {
 	switch(typeof(v)) {
@@ -4003,27 +3694,6 @@ Type.enumEq = function(a,b) {
 		return false;
 	}
 	return true;
-}
-Type.enumConstructor = function(e) {
-	return e[0];
-}
-Type.enumParameters = function(e) {
-	return e.slice(2);
-}
-Type.enumIndex = function(e) {
-	return e[1];
-}
-Type.allEnums = function(e) {
-	var all = [];
-	var cst = e.__constructs__;
-	var _g = 0;
-	while(_g < cst.length) {
-		var c = cst[_g];
-		++_g;
-		var v = Reflect.field(e,c);
-		if(!Reflect.isFunction(v)) all.push(v);
-	}
-	return all;
 }
 var Types = function() { }
 $hxClasses["Types"] = Types;
@@ -4143,7 +3813,6 @@ chx.crypt.IBlockCipher.prototype = {
 	,encryptBlock: null
 	,blockSize: null
 	,__class__: chx.crypt.IBlockCipher
-	,__properties__: {get_blockSize:"__getBlockSize"}
 }
 chx.crypt.IPad = function() { }
 $hxClasses["chx.crypt.IPad"] = chx.crypt.IPad;
@@ -4157,7 +3826,6 @@ chx.crypt.IPad.prototype = {
 	,pad: null
 	,blockSize: null
 	,__class__: chx.crypt.IPad
-	,__properties__: {set_blockSize:"setBlockSize"}
 }
 chx.crypt.PadPkcs1Type1 = function(size) {
 	this.blockSize = size;
@@ -4511,7 +4179,6 @@ chx.formats = {}
 chx.formats.Base64 = function() { }
 $hxClasses["chx.formats.Base64"] = chx.formats.Base64;
 chx.formats.Base64.__name__ = ["chx","formats","Base64"];
-chx.formats.Base64.enc = null;
 chx.formats.Base64.encode = function(bytes) {
 	var ext = (function($this) {
 		var $r;
@@ -6309,7 +5976,7 @@ dhx.AccessDataTweenText.prototype = $extend(dhx.AccessTweenText.prototype,{
 	}
 	,__class__: dhx.AccessDataTweenText
 });
-dhx.HostType = $hxClasses["dhx.HostType"] = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
+dhx.HostType = { __ename__ : ["dhx","HostType"], __constructs__ : ["UnknownServer","NodeJs","IE","Firefox","Safari","Chrome","Opera","Unknown"] }
 dhx.HostType.UnknownServer = ["UnknownServer",0];
 dhx.HostType.UnknownServer.toString = $estr;
 dhx.HostType.UnknownServer.__enum__ = dhx.HostType;
@@ -6322,7 +5989,7 @@ dhx.HostType.Safari = function(version) { var $x = ["Safari",4,version]; $x.__en
 dhx.HostType.Chrome = function(version) { var $x = ["Chrome",5,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Opera = function(version) { var $x = ["Opera",6,version]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
 dhx.HostType.Unknown = function(what) { var $x = ["Unknown",7,what]; $x.__enum__ = dhx.HostType; $x.toString = $estr; return $x; }
-dhx.EnvironmentType = $hxClasses["dhx.EnvironmentType"] = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
+dhx.EnvironmentType = { __ename__ : ["dhx","EnvironmentType"], __constructs__ : ["Mobile","Desktop","Server","UnknownEnvironment"] }
 dhx.EnvironmentType.Mobile = ["Mobile",0];
 dhx.EnvironmentType.Mobile.toString = $estr;
 dhx.EnvironmentType.Mobile.__enum__ = dhx.EnvironmentType;
@@ -6335,7 +6002,7 @@ dhx.EnvironmentType.Server.__enum__ = dhx.EnvironmentType;
 dhx.EnvironmentType.UnknownEnvironment = ["UnknownEnvironment",3];
 dhx.EnvironmentType.UnknownEnvironment.toString = $estr;
 dhx.EnvironmentType.UnknownEnvironment.__enum__ = dhx.EnvironmentType;
-dhx.OSType = $hxClasses["dhx.OSType"] = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
+dhx.OSType = { __ename__ : ["dhx","OSType"], __constructs__ : ["Windows","IOs","Android","Mac","Linux","UnknownOs"] }
 dhx.OSType.Windows = function(version) { var $x = ["Windows",0,version]; $x.__enum__ = dhx.OSType; $x.toString = $estr; return $x; }
 dhx.OSType.IOs = ["IOs",1];
 dhx.OSType.IOs.toString = $estr;
@@ -6355,9 +6022,6 @@ dhx.OSType.UnknownOs.__enum__ = dhx.OSType;
 dhx.ClientHost = function() { }
 $hxClasses["dhx.ClientHost"] = dhx.ClientHost;
 dhx.ClientHost.__name__ = ["dhx","ClientHost"];
-dhx.ClientHost.host = null;
-dhx.ClientHost.environment = null;
-dhx.ClientHost.os = null;
 dhx.ClientHost.isIE = function() {
 	return (function($this) {
 		var $r;
@@ -6440,26 +6104,14 @@ var js = {}
 js.Lib = function() { }
 $hxClasses["js.Lib"] = js.Lib;
 js.Lib.__name__ = ["js","Lib"];
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.debug = function() {
-	debugger;
-}
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
-}
-js.Lib["eval"] = function(code) {
-	return eval(code);
-}
-js.Lib.setErrorHandler = function(f) {
-	js.Lib.onerror = f;
 }
 dhx.Group = function(nodes) {
 	this.nodes = nodes;
 };
 $hxClasses["dhx.Group"] = dhx.Group;
 dhx.Group.__name__ = ["dhx","Group"];
-dhx.Group.current = null;
 dhx.Group.merge = function(source,target) {
 	if(target.length != source.length) throw "Group length not equal";
 	var _g1 = 0, _g = target.length;
@@ -6892,8 +6544,6 @@ dhx.Selection = function(groups) {
 $hxClasses["dhx.Selection"] = dhx.Selection;
 dhx.Selection.__name__ = ["dhx","Selection"];
 dhx.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
-dhx.Selection.current = null;
-dhx.Selection.currentNode = null;
 dhx.Selection.create = function(groups) {
 	return new dhx.Selection(groups);
 }
@@ -6982,7 +6632,6 @@ dhx.Dom.selectNodes = function(nodes) {
 dhx.Dom.selectNodeData = function(node) {
 	return dhx.ResumeSelection.create([new dhx.Group([node])]);
 }
-dhx.Dom.event = null;
 dhx.Namespace = function() { }
 $hxClasses["dhx.Namespace"] = dhx.Namespace;
 dhx.Namespace.__name__ = ["dhx","Namespace"];
@@ -7611,6 +7260,903 @@ dhx.BoundTransition.prototype = $extend(dhx.BaseTransition.prototype,{
 	}
 	,__class__: dhx.BoundTransition
 });
+var erazor = {}
+erazor._Parser = {}
+erazor._Parser.ParseContext = { __ename__ : ["erazor","_Parser","ParseContext"], __constructs__ : ["literal","code"] }
+erazor._Parser.ParseContext.literal = ["literal",0];
+erazor._Parser.ParseContext.literal.toString = $estr;
+erazor._Parser.ParseContext.literal.__enum__ = erazor._Parser.ParseContext;
+erazor._Parser.ParseContext.code = ["code",1];
+erazor._Parser.ParseContext.code.toString = $estr;
+erazor._Parser.ParseContext.code.__enum__ = erazor._Parser.ParseContext;
+erazor._Parser.ParseResult = { __ename__ : ["erazor","_Parser","ParseResult"], __constructs__ : ["keepGoing","doneIncludeCurrent","doneSkipCurrent"] }
+erazor._Parser.ParseResult.keepGoing = ["keepGoing",0];
+erazor._Parser.ParseResult.keepGoing.toString = $estr;
+erazor._Parser.ParseResult.keepGoing.__enum__ = erazor._Parser.ParseResult;
+erazor._Parser.ParseResult.doneIncludeCurrent = ["doneIncludeCurrent",1];
+erazor._Parser.ParseResult.doneIncludeCurrent.toString = $estr;
+erazor._Parser.ParseResult.doneIncludeCurrent.__enum__ = erazor._Parser.ParseResult;
+erazor._Parser.ParseResult.doneSkipCurrent = ["doneSkipCurrent",2];
+erazor._Parser.ParseResult.doneSkipCurrent.toString = $estr;
+erazor._Parser.ParseResult.doneSkipCurrent.__enum__ = erazor._Parser.ParseResult;
+erazor.Parser = function() {
+	this.condMatch = new EReg("^@(?:if|for|while)\\b","");
+	this.inConditionalMatch = new EReg("^(?:\\}[\\s\r\n]*else if\\b|\\}[\\s\r\n]*else[\\s\r\n]*{)","");
+	this.variableChar = new EReg("^[_\\w\\.]$","");
+};
+$hxClasses["erazor.Parser"] = erazor.Parser;
+erazor.Parser.__name__ = ["erazor","Parser"];
+erazor.Parser.prototype = {
+	parseWithPosition: function(template) {
+		this.pos = 0;
+		var output = new Array();
+		this.bracketStack = [];
+		this.conditionalStack = 0;
+		while(template != "") {
+			this.context = this.parseContext(template);
+			var block = this.parseBlock(template);
+			if(block.block != null) output.push(block);
+			template = HxOverrides.substr(template,block.length,null);
+			this.pos += block.length;
+		}
+		if(this.bracketStack.length != 0) throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
+		return output;
+	}
+	,parse: function(template) {
+		this.pos = 0;
+		var output = new Array();
+		this.bracketStack = [];
+		this.conditionalStack = 0;
+		while(template != "") {
+			this.context = this.parseContext(template);
+			var block = this.parseBlock(template);
+			if(block.block != null) output.push(block.block);
+			template = HxOverrides.substr(template,block.length,null);
+			this.pos += block.length;
+		}
+		if(this.bracketStack.length != 0) throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
+		return output;
+	}
+	,escapeLiteral: function(input) {
+		return StringTools.replace(input,erazor.Parser.at + erazor.Parser.at,erazor.Parser.at);
+	}
+	,parseLiteral: function(template) {
+		var len = template.length;
+		var i = -1;
+		while(++i < len) {
+			var $char = template.charAt(i);
+			switch($char) {
+			case erazor.Parser.at:
+				if(len > i + 1 && template.charAt(i + 1) != erazor.Parser.at) return { block : erazor.TBlock.literal(this.escapeLiteral(HxOverrides.substr(template,0,i))), length : i, start : this.pos};
+				++i;
+				break;
+			case "}":
+				if(this.bracketStack.length > 0) {
+					switch( (this.bracketStack[this.bracketStack.length - 1])[1] ) {
+					case 1:
+						return { block : erazor.TBlock.literal(this.escapeLiteral(HxOverrides.substr(template,0,i))), length : i, start : this.pos};
+					case 0:
+						this.bracketStack.pop();
+						break;
+					}
+				} else throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
+				break;
+			case "{":
+				this.bracketStack.push(erazor._Parser.ParseContext.literal);
+				break;
+			}
+		}
+		return { block : erazor.TBlock.literal(this.escapeLiteral(template)), length : len, start : this.pos};
+	}
+	,parseString: function(str,modifier,throwAtEnd) {
+		var insideSingleQuote = false;
+		var insideDoubleQuote = false;
+		var i = -1;
+		while(++i < str.length) {
+			var $char = str.charAt(i);
+			if(!insideDoubleQuote && !insideSingleQuote) {
+				switch( (modifier($char))[1] ) {
+				case 1:
+					return HxOverrides.substr(str,0,i + 1);
+				case 2:
+					return HxOverrides.substr(str,0,i);
+				case 0:
+					break;
+				}
+				if($char == "\"") insideDoubleQuote = true; else if($char == "'") insideSingleQuote = true;
+			} else if(insideDoubleQuote && $char == "\"" && str.charAt(i - 1) != "\\") insideDoubleQuote = false; else if(insideSingleQuote && $char == "'" && str.charAt(i - 1) != "\\") insideSingleQuote = false;
+		}
+		if(throwAtEnd) throw new erazor.error.ParserError("Failed to find a closing delimiter: ",this.pos,HxOverrides.substr(str,0,100));
+		return str;
+	}
+	,parseCodeBlock: function(template) {
+		if(this.bracketStack.length > 0 && this.peek(template) == "}") {
+			if(this.inConditionalMatch.match(template)) {
+				var str = this.parseScriptPart(template,"","{");
+				return { block : erazor.TBlock.codeBlock(str), length : str.length, start : this.pos};
+			}
+			if((function($this) {
+				var $r;
+				switch( ($this.bracketStack.pop())[1] ) {
+				case 1:
+					$r = --$this.conditionalStack < 0;
+					break;
+				default:
+					$r = true;
+				}
+				return $r;
+			}(this))) throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
+			return { block : erazor.TBlock.codeBlock("}"), length : 1, start : this.pos};
+		}
+		if(this.condMatch.match(template)) {
+			this.bracketStack.push(erazor._Parser.ParseContext.code);
+			++this.conditionalStack;
+			return this.parseConditional(template);
+		}
+		if(this.peek(template) == "@" && this.isIdentifier(this.peek(template,1))) return this.parseVariable(template);
+		var startBrace = this.peek(template,1);
+		var endBrace = startBrace == "{"?"}":")";
+		var str = this.parseScriptPart(HxOverrides.substr(template,1,null),startBrace,endBrace);
+		var noBraces = StringTools.trim(HxOverrides.substr(str,1,str.length - 2));
+		if(startBrace == "{") return { block : erazor.TBlock.codeBlock(noBraces), length : str.length + 1, start : this.pos}; else return { block : erazor.TBlock.printBlock(noBraces), length : str.length + 1, start : this.pos};
+	}
+	,parseVariableChar: function($char) {
+		return this.variableChar.match($char)?erazor._Parser.ParseResult.keepGoing:erazor._Parser.ParseResult.doneSkipCurrent;
+	}
+	,parseVariable: function(template) {
+		var output = "";
+		var $char = null;
+		var part = null;
+		template = HxOverrides.substr(template,1,null);
+		do {
+			part = this.acceptIdentifier(template);
+			template = HxOverrides.substr(template,part.length,null);
+			output += part;
+			$char = this.peek(template);
+			while($char == "(" || $char == "[") {
+				part = this.acceptBracket(template,$char);
+				template = HxOverrides.substr(template,part.length,null);
+				output += part;
+				$char = this.peek(template);
+			}
+			if($char == "." && this.isIdentifier(this.peek(template,1))) {
+				template = HxOverrides.substr(template,1,null);
+				output += ".";
+			} else break;
+		} while($char != null);
+		return { block : erazor.TBlock.printBlock(output), length : output.length + 1, start : this.pos};
+	}
+	,peek: function(template,offset) {
+		if(offset == null) offset = 0;
+		return template.length > offset?template.charAt(offset):null;
+	}
+	,parseConditional: function(template) {
+		var str = this.parseScriptPart(template,"","{");
+		return { block : erazor.TBlock.codeBlock(HxOverrides.substr(str,1,null)), length : str.length, start : this.pos};
+	}
+	,parseBlock: function(template) {
+		return this.context == erazor._Parser.ParseContext.code?this.parseCodeBlock(template):this.parseLiteral(template);
+	}
+	,acceptBracket: function(template,bracket) {
+		return this.parseScriptPart(template,bracket,bracket == "("?")":"]");
+	}
+	,acceptIdentifier: function(template) {
+		var first = true;
+		var self = this;
+		return this.accept(template,function(chr) {
+			var status = self.isIdentifier(chr,first);
+			first = false;
+			return status;
+		},false);
+	}
+	,isIdentifier: function($char,first) {
+		if(first == null) first = true;
+		return first?$char >= "a" && $char <= "z" || $char >= "A" && $char <= "Z" || $char == "_":$char >= "a" && $char <= "z" || $char >= "A" && $char <= "Z" || $char >= "0" && $char <= "9" || $char == "_";
+	}
+	,accept: function(template,acceptor,throwAtEnd) {
+		return this.parseString(template,function(chr) {
+			return acceptor(chr)?erazor._Parser.ParseResult.keepGoing:erazor._Parser.ParseResult.doneSkipCurrent;
+		},throwAtEnd);
+	}
+	,parseContext: function(template) {
+		if(this.peek(template) == erazor.Parser.at && this.peek(template,1) != erazor.Parser.at) return erazor._Parser.ParseContext.code;
+		if(this.conditionalStack > 0 && this.peek(template) == "}") {
+			switch( (this.bracketStack[this.bracketStack.length - 1])[1] ) {
+			case 1:
+				return erazor._Parser.ParseContext.code;
+			default:
+			}
+		}
+		return erazor._Parser.ParseContext.literal;
+	}
+	,parseScriptPart: function(template,startBrace,endBrace) {
+		var insideSingleQuote = false;
+		var insideDoubleQuote = false;
+		var stack = startBrace == ""?1:0;
+		var i = -1;
+		while(++i < template.length) {
+			var $char = template.charAt(i);
+			if(!insideDoubleQuote && !insideSingleQuote) switch($char) {
+			case startBrace:
+				++stack;
+				break;
+			case endBrace:
+				--stack;
+				if(stack == 0) return HxOverrides.substr(template,0,i + 1);
+				if(stack < 0) throw new erazor.error.ParserError("Unbalanced braces for block: ",this.pos,HxOverrides.substr(template,0,100));
+				break;
+			case "\"":
+				insideDoubleQuote = true;
+				break;
+			case "'":
+				insideSingleQuote = true;
+				break;
+			} else if(insideDoubleQuote && $char == "\"" && template.charAt(i - 1) != "\\") insideDoubleQuote = false; else if(insideSingleQuote && $char == "'" && template.charAt(i - 1) != "\\") insideSingleQuote = false;
+		}
+		throw new erazor.error.ParserError("Failed to find a closing delimiter for the script block: ",this.pos,HxOverrides.substr(template,0,100));
+	}
+	,pos: null
+	,conditionalStack: null
+	,bracketStack: null
+	,context: null
+	,variableChar: null
+	,inConditionalMatch: null
+	,condMatch: null
+	,__class__: erazor.Parser
+}
+erazor.ScriptBuilder = function(context) {
+	this.context = context;
+};
+$hxClasses["erazor.ScriptBuilder"] = erazor.ScriptBuilder;
+erazor.ScriptBuilder.__name__ = ["erazor","ScriptBuilder"];
+erazor.ScriptBuilder.prototype = {
+	blockToString: function(block) {
+		var $e = (block);
+		switch( $e[1] ) {
+		case 0:
+			var s = $e[2];
+			return this.context + ".add('" + StringTools.replace(s,"'","\\'") + "');\n";
+		case 1:
+			var s = $e[2];
+			return s + "\n";
+		case 2:
+			var s = $e[2];
+			return this.context + ".add(" + s + ");\n";
+		}
+	}
+	,build: function(blocks) {
+		var buffer = new StringBuf();
+		var _g = 0;
+		while(_g < blocks.length) {
+			var block = blocks[_g];
+			++_g;
+			buffer.b += Std.string(this.blockToString(block));
+		}
+		return buffer.b;
+	}
+	,context: null
+	,__class__: erazor.ScriptBuilder
+}
+erazor.TBlock = { __ename__ : ["erazor","TBlock"], __constructs__ : ["literal","codeBlock","printBlock"] }
+erazor.TBlock.literal = function(s) { var $x = ["literal",0,s]; $x.__enum__ = erazor.TBlock; $x.toString = $estr; return $x; }
+erazor.TBlock.codeBlock = function(s) { var $x = ["codeBlock",1,s]; $x.__enum__ = erazor.TBlock; $x.toString = $estr; return $x; }
+erazor.TBlock.printBlock = function(s) { var $x = ["printBlock",2,s]; $x.__enum__ = erazor.TBlock; $x.toString = $estr; return $x; }
+erazor.Template = function(template) {
+	this.template = template;
+};
+$hxClasses["erazor.Template"] = erazor.Template;
+erazor.Template.__name__ = ["erazor","Template"];
+erazor.Template.prototype = {
+	setInterpreterVars: function(interp,content) {
+		if(js.Boot.__instanceof(content,Hash)) {
+			var hash = content;
+			var $it0 = hash.keys();
+			while( $it0.hasNext() ) {
+				var field = $it0.next();
+				interp.variables.set(field,hash.get(field));
+			}
+		} else {
+			var _g = 0, _g1 = Reflect.fields(content);
+			while(_g < _g1.length) {
+				var field = _g1[_g];
+				++_g;
+				interp.variables.set(field,Reflect.field(content,field));
+			}
+		}
+	}
+	,execute: function(content) {
+		var buffer = new StringBuf();
+		var parsedBlocks = new erazor.Parser().parse(this.template);
+		var script = new erazor.ScriptBuilder("__b__").build(parsedBlocks);
+		var parser = new hscript.Parser();
+		var program = parser.parseString(script);
+		var interp = new erazor.hscript.EnhancedInterp();
+		this.variables = interp.variables;
+		var bufferStack = [];
+		this.setInterpreterVars(interp,content);
+		interp.variables.set("__b__",buffer);
+		interp.variables.set("__string_buf__",function(current) {
+			bufferStack.push(current);
+			return new StringBuf();
+		});
+		interp.variables.set("__restore_buf__",function() {
+			return bufferStack.pop();
+		});
+		interp.execute(program);
+		return buffer.b;
+	}
+	,variables: null
+	,template: null
+	,__class__: erazor.Template
+}
+erazor.error = {}
+erazor.error.ParserError = function(msg,pos,excerpt) {
+	this.msg = msg;
+	this.pos = pos;
+	this.excerpt = excerpt;
+};
+$hxClasses["erazor.error.ParserError"] = erazor.error.ParserError;
+erazor.error.ParserError.__name__ = ["erazor","error","ParserError"];
+erazor.error.ParserError.prototype = {
+	toString: function() {
+		var excerpt = this.excerpt;
+		if(excerpt != null) {
+			var nl = excerpt.indexOf("\n");
+			if(nl != -1) excerpt = HxOverrides.substr(excerpt,0,nl);
+		}
+		return this.msg + " @ " + this.pos + (excerpt != null?" ( \"" + excerpt + "\" )":"");
+	}
+	,excerpt: null
+	,pos: null
+	,msg: null
+	,__class__: erazor.error.ParserError
+}
+var hscript = {}
+hscript.Interp = function() {
+	this.locals = new Hash();
+	this.declared = new Array();
+	this.variables = new Hash();
+	this.variables.set("null",null);
+	this.variables.set("true",true);
+	this.variables.set("false",false);
+	this.variables.set("trace",function(e) {
+		haxe.Log.trace(Std.string(e),{ fileName : "hscript", lineNumber : 0});
+	});
+	this.initOps();
+};
+$hxClasses["hscript.Interp"] = hscript.Interp;
+hscript.Interp.__name__ = ["hscript","Interp"];
+hscript.Interp.prototype = {
+	cnew: function(cl,args) {
+		return Type.createInstance(Type.resolveClass(cl),args);
+	}
+	,call: function(o,f,args) {
+		return f.apply(o,args);
+	}
+	,set: function(o,f,v) {
+		if(o == null) throw hscript.Error.EInvalidAccess(f);
+		o[f] = v;
+		return v;
+	}
+	,get: function(o,f) {
+		if(o == null) throw hscript.Error.EInvalidAccess(f);
+		return Reflect.field(o,f);
+	}
+	,forLoop: function(n,it,e) {
+		var old = this.declared.length;
+		this.declared.push({ n : n, old : this.locals.get(n)});
+		var it1 = this.makeIterator(this.expr(it));
+		try {
+			while(it1.hasNext()) {
+				this.locals.set(n,{ r : it1.next()});
+				try {
+					this.expr(e);
+				} catch( err ) {
+					if( js.Boot.__instanceof(err,hscript._Interp.Stop) ) {
+						switch( (err)[1] ) {
+						case 1:
+							break;
+						case 0:
+							throw "__break__";
+							break;
+						case 2:
+							throw err;
+							break;
+						}
+					} else throw(err);
+				}
+			}
+		} catch( e ) { if( e != "__break__" ) throw e; }
+		this.restore(old);
+	}
+	,makeIterator: function(v) {
+		try {
+			v = $iterator(v)();
+		} catch( e ) {
+		}
+		if(v.hasNext == null || v.next == null) throw hscript.Error.EInvalidIterator(v);
+		return v;
+	}
+	,whileLoop: function(econd,e) {
+		var old = this.declared.length;
+		try {
+			while(this.expr(econd) == true) try {
+				this.expr(e);
+			} catch( err ) {
+				if( js.Boot.__instanceof(err,hscript._Interp.Stop) ) {
+					switch( (err)[1] ) {
+					case 1:
+						break;
+					case 0:
+						throw "__break__";
+						break;
+					case 2:
+						throw err;
+						break;
+					}
+				} else throw(err);
+			}
+		} catch( e ) { if( e != "__break__" ) throw e; }
+		this.restore(old);
+	}
+	,expr: function(e) {
+		var $e = (e);
+		switch( $e[1] ) {
+		case 0:
+			var c = $e[2];
+			var $e = (c);
+			switch( $e[1] ) {
+			case 0:
+				var v = $e[2];
+				return v;
+			case 1:
+				var f = $e[2];
+				return f;
+			case 2:
+				var s = $e[2];
+				return s;
+			case 3:
+				var v = $e[2];
+				return v;
+			}
+			break;
+		case 1:
+			var id = $e[2];
+			var l = this.locals.get(id);
+			if(l != null) return l.r;
+			var v = this.variables.get(id);
+			if(v == null && !this.variables.exists(id)) throw hscript.Error.EUnknownVariable(id);
+			return v;
+		case 2:
+			var e1 = $e[4], n = $e[2];
+			this.declared.push({ n : n, old : this.locals.get(n)});
+			this.locals.set(n,{ r : e1 == null?null:this.expr(e1)});
+			return null;
+		case 3:
+			var e1 = $e[2];
+			return this.expr(e1);
+		case 4:
+			var exprs = $e[2];
+			var old = this.declared.length;
+			var v = null;
+			var _g = 0;
+			while(_g < exprs.length) {
+				var e1 = exprs[_g];
+				++_g;
+				v = this.expr(e1);
+			}
+			this.restore(old);
+			return v;
+		case 5:
+			var f = $e[3], e1 = $e[2];
+			return this.get(this.expr(e1),f);
+		case 6:
+			var e2 = $e[4], e1 = $e[3], op = $e[2];
+			var fop = this.binops.get(op);
+			if(fop == null) throw hscript.Error.EInvalidOp(op);
+			return fop(e1,e2);
+		case 7:
+			var e1 = $e[4], prefix = $e[3], op = $e[2];
+			switch(op) {
+			case "!":
+				return this.expr(e1) != true;
+			case "-":
+				return -this.expr(e1);
+			case "++":
+				return this.increment(e1,prefix,1);
+			case "--":
+				return this.increment(e1,prefix,-1);
+			case "~":
+				return ~this.expr(e1);
+			default:
+				throw hscript.Error.EInvalidOp(op);
+			}
+			break;
+		case 8:
+			var params = $e[3], e1 = $e[2];
+			var args = new Array();
+			var _g = 0;
+			while(_g < params.length) {
+				var p = params[_g];
+				++_g;
+				args.push(this.expr(p));
+			}
+			var $e = (e1);
+			switch( $e[1] ) {
+			case 5:
+				var f = $e[3], e2 = $e[2];
+				var obj = this.expr(e2);
+				if(obj == null) throw hscript.Error.EInvalidAccess(f);
+				return this.call(obj,Reflect.field(obj,f),args);
+			default:
+				return this.call(null,this.expr(e1),args);
+			}
+			break;
+		case 9:
+			var e2 = $e[4], e1 = $e[3], econd = $e[2];
+			return this.expr(econd) == true?this.expr(e1):e2 == null?null:this.expr(e2);
+		case 10:
+			var e1 = $e[3], econd = $e[2];
+			this.whileLoop(econd,e1);
+			return null;
+		case 11:
+			var e1 = $e[4], it = $e[3], v = $e[2];
+			this.forLoop(v,it,e1);
+			return null;
+		case 12:
+			throw hscript._Interp.Stop.SBreak;
+			break;
+		case 13:
+			throw hscript._Interp.Stop.SContinue;
+			break;
+		case 15:
+			var e1 = $e[2];
+			throw hscript._Interp.Stop.SReturn(e1 == null?null:this.expr(e1));
+			break;
+		case 14:
+			var name = $e[4], fexpr = $e[3], params1 = $e[2];
+			var capturedLocals = this.duplicate(this.locals);
+			var me = this;
+			var f = function(args) {
+				if(args.length != params1.length) throw "Invalid number of parameters";
+				var old = me.locals;
+				me.locals = me.duplicate(capturedLocals);
+				var _g1 = 0, _g = params1.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					me.locals.set(params1[i].name,{ r : args[i]});
+				}
+				var r = null;
+				try {
+					r = me.exprReturn(fexpr);
+				} catch( e1 ) {
+					me.locals = old;
+					throw e1;
+				}
+				me.locals = old;
+				return r;
+			};
+			var f1 = Reflect.makeVarArgs(f);
+			if(name != null) this.variables.set(name,f1);
+			return f1;
+		case 17:
+			var arr = $e[2];
+			var a = new Array();
+			var _g = 0;
+			while(_g < arr.length) {
+				var e1 = arr[_g];
+				++_g;
+				a.push(this.expr(e1));
+			}
+			return a;
+		case 16:
+			var index = $e[3], e1 = $e[2];
+			return this.expr(e1)[this.expr(index)];
+		case 18:
+			var params = $e[3], cl = $e[2];
+			var a = new Array();
+			var _g = 0;
+			while(_g < params.length) {
+				var e1 = params[_g];
+				++_g;
+				a.push(this.expr(e1));
+			}
+			return this.cnew(cl,a);
+		case 19:
+			var e1 = $e[2];
+			throw this.expr(e1);
+			break;
+		case 20:
+			var ecatch = $e[5], n = $e[3], e1 = $e[2];
+			var old = this.declared.length;
+			try {
+				var v = this.expr(e1);
+				this.restore(old);
+				return v;
+			} catch( $e0 ) {
+				if( js.Boot.__instanceof($e0,hscript._Interp.Stop) ) {
+					var err = $e0;
+					throw err;
+				} else {
+				var err = $e0;
+				this.restore(old);
+				this.declared.push({ n : n, old : this.locals.get(n)});
+				this.locals.set(n,{ r : err});
+				var v = this.expr(ecatch);
+				this.restore(old);
+				return v;
+				}
+			}
+			break;
+		case 21:
+			var fl = $e[2];
+			var o = { };
+			var _g = 0;
+			while(_g < fl.length) {
+				var f = fl[_g];
+				++_g;
+				this.set(o,f.name,this.expr(f.e));
+			}
+			return o;
+		case 22:
+			var e2 = $e[4], e1 = $e[3], econd = $e[2];
+			return this.expr(econd) == true?this.expr(e1):this.expr(e2);
+		}
+		return null;
+	}
+	,restore: function(old) {
+		while(this.declared.length > old) {
+			var d = this.declared.pop();
+			this.locals.set(d.n,d.old);
+		}
+	}
+	,duplicate: function(h) {
+		var h2 = new Hash();
+		var $it0 = h.keys();
+		while( $it0.hasNext() ) {
+			var k = $it0.next();
+			h2.set(k,h.get(k));
+		}
+		return h2;
+	}
+	,exprReturn: function(e) {
+		try {
+			return this.expr(e);
+		} catch( e1 ) {
+			if( js.Boot.__instanceof(e1,hscript._Interp.Stop) ) {
+				var $e = (e1);
+				switch( $e[1] ) {
+				case 0:
+					throw "Invalid break";
+					break;
+				case 1:
+					throw "Invalid continue";
+					break;
+				case 2:
+					var v = $e[2];
+					return v;
+				}
+			} else throw(e1);
+		}
+		return null;
+	}
+	,execute: function(expr) {
+		this.locals = new Hash();
+		return this.exprReturn(expr);
+	}
+	,increment: function(e,prefix,delta) {
+		var $e = (e);
+		switch( $e[1] ) {
+		case 1:
+			var id = $e[2];
+			var l = this.locals.get(id);
+			var v = l == null?this.variables.get(id):l.r;
+			if(prefix) {
+				v += delta;
+				if(l == null) this.variables.set(id,v); else l.r = v;
+			} else if(l == null) this.variables.set(id,v + delta); else l.r = v + delta;
+			return v;
+		case 5:
+			var f = $e[3], e1 = $e[2];
+			var obj = this.expr(e1);
+			var v = this.get(obj,f);
+			if(prefix) {
+				v += delta;
+				this.set(obj,f,v);
+			} else this.set(obj,f,v + delta);
+			return v;
+		case 16:
+			var index = $e[3], e1 = $e[2];
+			var arr = this.expr(e1);
+			var index1 = this.expr(index);
+			var v = arr[index1];
+			if(prefix) {
+				v += delta;
+				arr[index1] = v;
+			} else arr[index1] = v + delta;
+			return v;
+		default:
+			throw hscript.Error.EInvalidOp(delta > 0?"++":"--");
+		}
+	}
+	,evalAssignOp: function(op,fop,e1,e2) {
+		var v;
+		var $e = (e1);
+		switch( $e[1] ) {
+		case 1:
+			var id = $e[2];
+			var l = this.locals.get(id);
+			v = fop(this.expr(e1),this.expr(e2));
+			if(l == null) this.variables.set(id,v); else l.r = v;
+			break;
+		case 5:
+			var f = $e[3], e = $e[2];
+			var obj = this.expr(e);
+			v = fop(this.get(obj,f),this.expr(e2));
+			v = this.set(obj,f,v);
+			break;
+		case 16:
+			var index = $e[3], e = $e[2];
+			var arr = this.expr(e);
+			var index1 = this.expr(index);
+			v = fop(arr[index1],this.expr(e2));
+			arr[index1] = v;
+			break;
+		default:
+			throw hscript.Error.EInvalidOp(op);
+		}
+		return v;
+	}
+	,assignOp: function(op,fop) {
+		var me = this;
+		this.binops.set(op,function(e1,e2) {
+			return me.evalAssignOp(op,fop,e1,e2);
+		});
+	}
+	,assign: function(e1,e2) {
+		var v = this.expr(e2);
+		var $e = (e1);
+		switch( $e[1] ) {
+		case 1:
+			var id = $e[2];
+			var l = this.locals.get(id);
+			if(l == null) this.variables.set(id,v); else l.r = v;
+			break;
+		case 5:
+			var f = $e[3], e = $e[2];
+			v = this.set(this.expr(e),f,v);
+			break;
+		case 16:
+			var index = $e[3], e = $e[2];
+			this.expr(e)[this.expr(index)] = v;
+			break;
+		default:
+			throw hscript.Error.EInvalidOp("=");
+		}
+		return v;
+	}
+	,initOps: function() {
+		var me = this;
+		this.binops = new Hash();
+		this.binops.set("+",function(e1,e2) {
+			return me.expr(e1) + me.expr(e2);
+		});
+		this.binops.set("-",function(e1,e2) {
+			return me.expr(e1) - me.expr(e2);
+		});
+		this.binops.set("*",function(e1,e2) {
+			return me.expr(e1) * me.expr(e2);
+		});
+		this.binops.set("/",function(e1,e2) {
+			return me.expr(e1) / me.expr(e2);
+		});
+		this.binops.set("%",function(e1,e2) {
+			return me.expr(e1) % me.expr(e2);
+		});
+		this.binops.set("&",function(e1,e2) {
+			return me.expr(e1) & me.expr(e2);
+		});
+		this.binops.set("|",function(e1,e2) {
+			return me.expr(e1) | me.expr(e2);
+		});
+		this.binops.set("^",function(e1,e2) {
+			return me.expr(e1) ^ me.expr(e2);
+		});
+		this.binops.set("<<",function(e1,e2) {
+			return me.expr(e1) << me.expr(e2);
+		});
+		this.binops.set(">>",function(e1,e2) {
+			return me.expr(e1) >> me.expr(e2);
+		});
+		this.binops.set(">>>",function(e1,e2) {
+			return me.expr(e1) >>> me.expr(e2);
+		});
+		this.binops.set("==",function(e1,e2) {
+			return me.expr(e1) == me.expr(e2);
+		});
+		this.binops.set("!=",function(e1,e2) {
+			return me.expr(e1) != me.expr(e2);
+		});
+		this.binops.set(">=",function(e1,e2) {
+			return me.expr(e1) >= me.expr(e2);
+		});
+		this.binops.set("<=",function(e1,e2) {
+			return me.expr(e1) <= me.expr(e2);
+		});
+		this.binops.set(">",function(e1,e2) {
+			return me.expr(e1) > me.expr(e2);
+		});
+		this.binops.set("<",function(e1,e2) {
+			return me.expr(e1) < me.expr(e2);
+		});
+		this.binops.set("||",function(e1,e2) {
+			return me.expr(e1) == true || me.expr(e2) == true;
+		});
+		this.binops.set("&&",function(e1,e2) {
+			return me.expr(e1) == true && me.expr(e2) == true;
+		});
+		this.binops.set("=",$bind(this,this.assign));
+		this.binops.set("...",function(e1,e2) {
+			return new IntIter(me.expr(e1),me.expr(e2));
+		});
+		this.assignOp("+=",function(v1,v2) {
+			return v1 + v2;
+		});
+		this.assignOp("-=",function(v1,v2) {
+			return v1 - v2;
+		});
+		this.assignOp("*=",function(v1,v2) {
+			return v1 * v2;
+		});
+		this.assignOp("/=",function(v1,v2) {
+			return v1 / v2;
+		});
+		this.assignOp("%=",function(v1,v2) {
+			return v1 % v2;
+		});
+		this.assignOp("&=",function(v1,v2) {
+			return v1 & v2;
+		});
+		this.assignOp("|=",function(v1,v2) {
+			return v1 | v2;
+		});
+		this.assignOp("^=",function(v1,v2) {
+			return v1 ^ v2;
+		});
+		this.assignOp("<<=",function(v1,v2) {
+			return v1 << v2;
+		});
+		this.assignOp(">>=",function(v1,v2) {
+			return v1 >> v2;
+		});
+		this.assignOp(">>>=",function(v1,v2) {
+			return v1 >>> v2;
+		});
+	}
+	,declared: null
+	,binops: null
+	,locals: null
+	,variables: null
+	,__class__: hscript.Interp
+}
+erazor.hscript = {}
+erazor.hscript.EnhancedInterp = function() {
+	hscript.Interp.call(this);
+};
+$hxClasses["erazor.hscript.EnhancedInterp"] = erazor.hscript.EnhancedInterp;
+erazor.hscript.EnhancedInterp.__name__ = ["erazor","hscript","EnhancedInterp"];
+erazor.hscript.EnhancedInterp.__super__ = hscript.Interp;
+erazor.hscript.EnhancedInterp.prototype = $extend(hscript.Interp.prototype,{
+	call: function(o,f,args) {
+		args = args.concat([null,null,null,null,null]);
+		return f.apply(o,args);
+	}
+	,get: function(o,f) {
+		if(o == null) throw hscript.Error.EInvalidAccess(f);
+		return Reflect.field(o,f);
+	}
+	,__class__: erazor.hscript.EnhancedInterp
+});
 var haxe = {}
 haxe.BaseCode = function(base) {
 	var len = base.length;
@@ -7702,6 +8248,35 @@ haxe.BaseCode.prototype = {
 	,base: null
 	,__class__: haxe.BaseCode
 }
+haxe.FastCell = function(elt,next) {
+	this.elt = elt;
+	this.next = next;
+};
+$hxClasses["haxe.FastCell"] = haxe.FastCell;
+haxe.FastCell.__name__ = ["haxe","FastCell"];
+haxe.FastCell.prototype = {
+	next: null
+	,elt: null
+	,__class__: haxe.FastCell
+}
+haxe.FastList = function() {
+};
+$hxClasses["haxe.FastList"] = haxe.FastList;
+haxe.FastList.__name__ = ["haxe","FastList"];
+haxe.FastList.prototype = {
+	pop: function() {
+		var k = this.head;
+		if(k == null) return null; else {
+			this.head = k.next;
+			return k.elt;
+		}
+	}
+	,add: function(item) {
+		this.head = new haxe.FastCell(item,this.head);
+	}
+	,head: null
+	,__class__: haxe.FastList
+}
 haxe.Http = function(url) {
 	this.url = url;
 	this.headers = new Hash();
@@ -7710,19 +8285,6 @@ haxe.Http = function(url) {
 };
 $hxClasses["haxe.Http"] = haxe.Http;
 haxe.Http.__name__ = ["haxe","Http"];
-haxe.Http.requestUrl = function(url) {
-	var h = new haxe.Http(url);
-	h.async = false;
-	var r = null;
-	h.onData = function(d) {
-		r = d;
-	};
-	h.onError = function(e) {
-		throw e;
-	};
-	h.request(false);
-	return r;
-}
 haxe.Http.prototype = {
 	onStatus: function(status) {
 	}
@@ -7789,9 +8351,6 @@ haxe.Http.prototype = {
 		r.send(uri);
 		if(!this.async) onreadystatechange();
 	}
-	,setPostData: function(data) {
-		this.postData = data;
-	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
 	}
@@ -7808,82 +8367,15 @@ haxe.Http.prototype = {
 haxe.Int32 = function() { }
 $hxClasses["haxe.Int32"] = haxe.Int32;
 haxe.Int32.__name__ = ["haxe","Int32"];
-haxe.Int32.make = function(a,b) {
-	return a << 16 | b;
-}
-haxe.Int32.ofInt = function(x) {
-	return x | 0;
-}
-haxe.Int32.clamp = function(x) {
-	return x | 0;
-}
 haxe.Int32.toInt = function(x) {
 	if((x >> 30 & 1) != x >>> 31) throw "Overflow " + Std.string(x);
 	return x;
-}
-haxe.Int32.toNativeInt = function(x) {
-	return x;
-}
-haxe.Int32.add = function(a,b) {
-	return a + b | 0;
-}
-haxe.Int32.sub = function(a,b) {
-	return a - b | 0;
-}
-haxe.Int32.mul = function(a,b) {
-	return a * (b & 65535) + (a * (b >>> 16) << 16 | 0) | 0;
-}
-haxe.Int32.div = function(a,b) {
-	return a / b | 0;
-}
-haxe.Int32.mod = function(a,b) {
-	return a % b;
-}
-haxe.Int32.shl = function(a,b) {
-	return a << b;
-}
-haxe.Int32.shr = function(a,b) {
-	return a >> b;
-}
-haxe.Int32.ushr = function(a,b) {
-	return a >>> b;
-}
-haxe.Int32.and = function(a,b) {
-	return a & b;
-}
-haxe.Int32.or = function(a,b) {
-	return a | b;
-}
-haxe.Int32.xor = function(a,b) {
-	return a ^ b;
-}
-haxe.Int32.neg = function(a) {
-	return -a;
-}
-haxe.Int32.isNeg = function(a) {
-	return a < 0;
-}
-haxe.Int32.isZero = function(a) {
-	return a == 0;
-}
-haxe.Int32.complement = function(a) {
-	return ~a;
-}
-haxe.Int32.compare = function(a,b) {
-	return a - b;
-}
-haxe.Int32.ucompare = function(a,b) {
-	if(a < 0) return b < 0?~b - ~a:1;
-	return b < 0?-1:a - b;
 }
 haxe.Log = function() { }
 $hxClasses["haxe.Log"] = haxe.Log;
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
 	js.Boot.__trace(v,infos);
-}
-haxe.Log.clear = function() {
-	js.Boot.__clear_trace();
 }
 haxe.Md5 = function() {
 };
@@ -8054,7 +8546,7 @@ haxe.Md5.prototype = {
 }
 haxe.Timer = function(time_ms) {
 	var me = this;
-	this.id = window.setInterval(function() {
+	this.id = setInterval(function() {
 		me.run();
 	},time_ms);
 };
@@ -8068,25 +8560,1447 @@ haxe.Timer.delay = function(f,time_ms) {
 	};
 	return t;
 }
-haxe.Timer.measure = function(f,pos) {
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	return r;
-}
-haxe.Timer.stamp = function() {
-	return new Date().getTime() / 1000;
-}
 haxe.Timer.prototype = {
 	run: function() {
 	}
 	,stop: function() {
 		if(this.id == null) return;
-		window.clearInterval(this.id);
+		clearInterval(this.id);
 		this.id = null;
 	}
 	,id: null
 	,__class__: haxe.Timer
+}
+haxe.io = {}
+haxe.io.Bytes = function(length,b) {
+	this.length = length;
+	this.b = b;
+};
+$hxClasses["haxe.io.Bytes"] = haxe.io.Bytes;
+haxe.io.Bytes.__name__ = ["haxe","io","Bytes"];
+haxe.io.Bytes.alloc = function(length) {
+	var a = new Array();
+	var _g = 0;
+	while(_g < length) {
+		var i = _g++;
+		a.push(0);
+	}
+	return new haxe.io.Bytes(length,a);
+}
+haxe.io.Bytes.ofString = function(s) {
+	var a = new Array();
+	var _g1 = 0, _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var c = HxOverrides.cca(s,i);
+		if(c <= 127) a.push(c); else if(c <= 2047) {
+			a.push(192 | c >> 6);
+			a.push(128 | c & 63);
+		} else if(c <= 65535) {
+			a.push(224 | c >> 12);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		} else {
+			a.push(240 | c >> 18);
+			a.push(128 | c >> 12 & 63);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		}
+	}
+	return new haxe.io.Bytes(a.length,a);
+}
+haxe.io.Bytes.prototype = {
+	toString: function() {
+		return this.readString(0,this.length);
+	}
+	,readString: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) throw haxe.io.Error.OutsideBounds;
+		var s = "";
+		var b = this.b;
+		var fcc = String.fromCharCode;
+		var i = pos;
+		var max = pos + len;
+		while(i < max) {
+			var c = b[i++];
+			if(c < 128) {
+				if(c == 0) break;
+				s += fcc(c);
+			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
+				var c2 = b[i++];
+				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
+			} else {
+				var c2 = b[i++];
+				var c3 = b[i++];
+				s += fcc((c & 15) << 18 | (c2 & 127) << 12 | c3 << 6 & 127 | b[i++] & 127);
+			}
+		}
+		return s;
+	}
+	,b: null
+	,length: null
+	,__class__: haxe.io.Bytes
+}
+haxe.io.BytesBuffer = function() {
+	this.b = new Array();
+};
+$hxClasses["haxe.io.BytesBuffer"] = haxe.io.BytesBuffer;
+haxe.io.BytesBuffer.__name__ = ["haxe","io","BytesBuffer"];
+haxe.io.BytesBuffer.prototype = {
+	getBytes: function() {
+		var bytes = new haxe.io.Bytes(this.b.length,this.b);
+		this.b = null;
+		return bytes;
+	}
+	,b: null
+	,__class__: haxe.io.BytesBuffer
+}
+haxe.io.Input = function() { }
+$hxClasses["haxe.io.Input"] = haxe.io.Input;
+haxe.io.Input.__name__ = ["haxe","io","Input"];
+haxe.io.Input.prototype = {
+	readString: function(len) {
+		var b = haxe.io.Bytes.alloc(len);
+		this.readFullBytes(b,0,len);
+		return b.toString();
+	}
+	,readFullBytes: function(s,pos,len) {
+		while(len > 0) {
+			var k = this.readBytes(s,pos,len);
+			pos += k;
+			len -= k;
+		}
+	}
+	,readBytes: function(s,pos,len) {
+		var k = len;
+		var b = s.b;
+		if(pos < 0 || len < 0 || pos + len > s.length) throw haxe.io.Error.OutsideBounds;
+		while(k > 0) {
+			b[pos] = this.readByte();
+			pos++;
+			k--;
+		}
+		return len;
+	}
+	,readByte: function() {
+		return (function($this) {
+			var $r;
+			throw "Not implemented";
+			return $r;
+		}(this));
+	}
+	,__class__: haxe.io.Input
+}
+haxe.io.BytesInput = function(b,pos,len) {
+	if(pos == null) pos = 0;
+	if(len == null) len = b.length - pos;
+	if(pos < 0 || len < 0 || pos + len > b.length) throw haxe.io.Error.OutsideBounds;
+	this.b = b.b;
+	this.pos = pos;
+	this.len = len;
+};
+$hxClasses["haxe.io.BytesInput"] = haxe.io.BytesInput;
+haxe.io.BytesInput.__name__ = ["haxe","io","BytesInput"];
+haxe.io.BytesInput.__super__ = haxe.io.Input;
+haxe.io.BytesInput.prototype = $extend(haxe.io.Input.prototype,{
+	readBytes: function(buf,pos,len) {
+		if(pos < 0 || len < 0 || pos + len > buf.length) throw haxe.io.Error.OutsideBounds;
+		if(this.len == 0 && len > 0) throw new haxe.io.Eof();
+		if(this.len < len) len = this.len;
+		var b1 = this.b;
+		var b2 = buf.b;
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			b2[pos + i] = b1[this.pos + i];
+		}
+		this.pos += len;
+		this.len -= len;
+		return len;
+	}
+	,readByte: function() {
+		if(this.len == 0) throw new haxe.io.Eof();
+		this.len--;
+		return this.b[this.pos++];
+	}
+	,len: null
+	,pos: null
+	,b: null
+	,__class__: haxe.io.BytesInput
+});
+haxe.io.Output = function() { }
+$hxClasses["haxe.io.Output"] = haxe.io.Output;
+haxe.io.Output.__name__ = ["haxe","io","Output"];
+haxe.io.BytesOutput = function() {
+	this.b = new haxe.io.BytesBuffer();
+};
+$hxClasses["haxe.io.BytesOutput"] = haxe.io.BytesOutput;
+haxe.io.BytesOutput.__name__ = ["haxe","io","BytesOutput"];
+haxe.io.BytesOutput.__super__ = haxe.io.Output;
+haxe.io.BytesOutput.prototype = $extend(haxe.io.Output.prototype,{
+	getBytes: function() {
+		return this.b.getBytes();
+	}
+	,writeByte: function(c) {
+		this.b.b.push(c);
+	}
+	,b: null
+	,__class__: haxe.io.BytesOutput
+});
+haxe.io.Eof = function() {
+};
+$hxClasses["haxe.io.Eof"] = haxe.io.Eof;
+haxe.io.Eof.__name__ = ["haxe","io","Eof"];
+haxe.io.Eof.prototype = {
+	__class__: haxe.io.Eof
+}
+haxe.io.Error = { __ename__ : ["haxe","io","Error"], __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] }
+haxe.io.Error.Blocked = ["Blocked",0];
+haxe.io.Error.Blocked.toString = $estr;
+haxe.io.Error.Blocked.__enum__ = haxe.io.Error;
+haxe.io.Error.Overflow = ["Overflow",1];
+haxe.io.Error.Overflow.toString = $estr;
+haxe.io.Error.Overflow.__enum__ = haxe.io.Error;
+haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
+haxe.io.Error.OutsideBounds.toString = $estr;
+haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
+haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
+haxe.io.StringInput = function(s) {
+	haxe.io.BytesInput.call(this,haxe.io.Bytes.ofString(s));
+};
+$hxClasses["haxe.io.StringInput"] = haxe.io.StringInput;
+haxe.io.StringInput.__name__ = ["haxe","io","StringInput"];
+haxe.io.StringInput.__super__ = haxe.io.BytesInput;
+haxe.io.StringInput.prototype = $extend(haxe.io.BytesInput.prototype,{
+	__class__: haxe.io.StringInput
+});
+hscript.Const = { __ename__ : ["hscript","Const"], __constructs__ : ["CInt","CFloat","CString","CInt32"] }
+hscript.Const.CInt = function(v) { var $x = ["CInt",0,v]; $x.__enum__ = hscript.Const; $x.toString = $estr; return $x; }
+hscript.Const.CFloat = function(f) { var $x = ["CFloat",1,f]; $x.__enum__ = hscript.Const; $x.toString = $estr; return $x; }
+hscript.Const.CString = function(s) { var $x = ["CString",2,s]; $x.__enum__ = hscript.Const; $x.toString = $estr; return $x; }
+hscript.Const.CInt32 = function(v) { var $x = ["CInt32",3,v]; $x.__enum__ = hscript.Const; $x.toString = $estr; return $x; }
+hscript.Expr = { __ename__ : ["hscript","Expr"], __constructs__ : ["EConst","EIdent","EVar","EParent","EBlock","EField","EBinop","EUnop","ECall","EIf","EWhile","EFor","EBreak","EContinue","EFunction","EReturn","EArray","EArrayDecl","ENew","EThrow","ETry","EObject","ETernary"] }
+hscript.Expr.EConst = function(c) { var $x = ["EConst",0,c]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EIdent = function(v) { var $x = ["EIdent",1,v]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EVar = function(n,t,e) { var $x = ["EVar",2,n,t,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EParent = function(e) { var $x = ["EParent",3,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EBlock = function(e) { var $x = ["EBlock",4,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EField = function(e,f) { var $x = ["EField",5,e,f]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EBinop = function(op,e1,e2) { var $x = ["EBinop",6,op,e1,e2]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EUnop = function(op,prefix,e) { var $x = ["EUnop",7,op,prefix,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.ECall = function(e,params) { var $x = ["ECall",8,e,params]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EIf = function(cond,e1,e2) { var $x = ["EIf",9,cond,e1,e2]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EWhile = function(cond,e) { var $x = ["EWhile",10,cond,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EFor = function(v,it,e) { var $x = ["EFor",11,v,it,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EBreak = ["EBreak",12];
+hscript.Expr.EBreak.toString = $estr;
+hscript.Expr.EBreak.__enum__ = hscript.Expr;
+hscript.Expr.EContinue = ["EContinue",13];
+hscript.Expr.EContinue.toString = $estr;
+hscript.Expr.EContinue.__enum__ = hscript.Expr;
+hscript.Expr.EFunction = function(args,e,name,ret) { var $x = ["EFunction",14,args,e,name,ret]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EReturn = function(e) { var $x = ["EReturn",15,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EArray = function(e,index) { var $x = ["EArray",16,e,index]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EArrayDecl = function(e) { var $x = ["EArrayDecl",17,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.ENew = function(cl,params) { var $x = ["ENew",18,cl,params]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EThrow = function(e) { var $x = ["EThrow",19,e]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.ETry = function(e,v,t,ecatch) { var $x = ["ETry",20,e,v,t,ecatch]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.EObject = function(fl) { var $x = ["EObject",21,fl]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.Expr.ETernary = function(cond,e1,e2) { var $x = ["ETernary",22,cond,e1,e2]; $x.__enum__ = hscript.Expr; $x.toString = $estr; return $x; }
+hscript.CType = { __ename__ : ["hscript","CType"], __constructs__ : ["CTPath","CTFun","CTAnon","CTParent"] }
+hscript.CType.CTPath = function(path,params) { var $x = ["CTPath",0,path,params]; $x.__enum__ = hscript.CType; $x.toString = $estr; return $x; }
+hscript.CType.CTFun = function(args,ret) { var $x = ["CTFun",1,args,ret]; $x.__enum__ = hscript.CType; $x.toString = $estr; return $x; }
+hscript.CType.CTAnon = function(fields) { var $x = ["CTAnon",2,fields]; $x.__enum__ = hscript.CType; $x.toString = $estr; return $x; }
+hscript.CType.CTParent = function(t) { var $x = ["CTParent",3,t]; $x.__enum__ = hscript.CType; $x.toString = $estr; return $x; }
+hscript.Error = { __ename__ : ["hscript","Error"], __constructs__ : ["EInvalidChar","EUnexpected","EUnterminatedString","EUnterminatedComment","EUnknownVariable","EInvalidIterator","EInvalidOp","EInvalidAccess"] }
+hscript.Error.EInvalidChar = function(c) { var $x = ["EInvalidChar",0,c]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript.Error.EUnexpected = function(s) { var $x = ["EUnexpected",1,s]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript.Error.EUnterminatedString = ["EUnterminatedString",2];
+hscript.Error.EUnterminatedString.toString = $estr;
+hscript.Error.EUnterminatedString.__enum__ = hscript.Error;
+hscript.Error.EUnterminatedComment = ["EUnterminatedComment",3];
+hscript.Error.EUnterminatedComment.toString = $estr;
+hscript.Error.EUnterminatedComment.__enum__ = hscript.Error;
+hscript.Error.EUnknownVariable = function(v) { var $x = ["EUnknownVariable",4,v]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript.Error.EInvalidIterator = function(v) { var $x = ["EInvalidIterator",5,v]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript.Error.EInvalidOp = function(op) { var $x = ["EInvalidOp",6,op]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript.Error.EInvalidAccess = function(f) { var $x = ["EInvalidAccess",7,f]; $x.__enum__ = hscript.Error; $x.toString = $estr; return $x; }
+hscript._Interp = {}
+hscript._Interp.Stop = { __ename__ : ["hscript","_Interp","Stop"], __constructs__ : ["SBreak","SContinue","SReturn"] }
+hscript._Interp.Stop.SBreak = ["SBreak",0];
+hscript._Interp.Stop.SBreak.toString = $estr;
+hscript._Interp.Stop.SBreak.__enum__ = hscript._Interp.Stop;
+hscript._Interp.Stop.SContinue = ["SContinue",1];
+hscript._Interp.Stop.SContinue.toString = $estr;
+hscript._Interp.Stop.SContinue.__enum__ = hscript._Interp.Stop;
+hscript._Interp.Stop.SReturn = function(v) { var $x = ["SReturn",2,v]; $x.__enum__ = hscript._Interp.Stop; $x.toString = $estr; return $x; }
+hscript.Token = { __ename__ : ["hscript","Token"], __constructs__ : ["TEof","TConst","TId","TOp","TPOpen","TPClose","TBrOpen","TBrClose","TDot","TComma","TSemicolon","TBkOpen","TBkClose","TQuestion","TDoubleDot"] }
+hscript.Token.TEof = ["TEof",0];
+hscript.Token.TEof.toString = $estr;
+hscript.Token.TEof.__enum__ = hscript.Token;
+hscript.Token.TConst = function(c) { var $x = ["TConst",1,c]; $x.__enum__ = hscript.Token; $x.toString = $estr; return $x; }
+hscript.Token.TId = function(s) { var $x = ["TId",2,s]; $x.__enum__ = hscript.Token; $x.toString = $estr; return $x; }
+hscript.Token.TOp = function(s) { var $x = ["TOp",3,s]; $x.__enum__ = hscript.Token; $x.toString = $estr; return $x; }
+hscript.Token.TPOpen = ["TPOpen",4];
+hscript.Token.TPOpen.toString = $estr;
+hscript.Token.TPOpen.__enum__ = hscript.Token;
+hscript.Token.TPClose = ["TPClose",5];
+hscript.Token.TPClose.toString = $estr;
+hscript.Token.TPClose.__enum__ = hscript.Token;
+hscript.Token.TBrOpen = ["TBrOpen",6];
+hscript.Token.TBrOpen.toString = $estr;
+hscript.Token.TBrOpen.__enum__ = hscript.Token;
+hscript.Token.TBrClose = ["TBrClose",7];
+hscript.Token.TBrClose.toString = $estr;
+hscript.Token.TBrClose.__enum__ = hscript.Token;
+hscript.Token.TDot = ["TDot",8];
+hscript.Token.TDot.toString = $estr;
+hscript.Token.TDot.__enum__ = hscript.Token;
+hscript.Token.TComma = ["TComma",9];
+hscript.Token.TComma.toString = $estr;
+hscript.Token.TComma.__enum__ = hscript.Token;
+hscript.Token.TSemicolon = ["TSemicolon",10];
+hscript.Token.TSemicolon.toString = $estr;
+hscript.Token.TSemicolon.__enum__ = hscript.Token;
+hscript.Token.TBkOpen = ["TBkOpen",11];
+hscript.Token.TBkOpen.toString = $estr;
+hscript.Token.TBkOpen.__enum__ = hscript.Token;
+hscript.Token.TBkClose = ["TBkClose",12];
+hscript.Token.TBkClose.toString = $estr;
+hscript.Token.TBkClose.__enum__ = hscript.Token;
+hscript.Token.TQuestion = ["TQuestion",13];
+hscript.Token.TQuestion.toString = $estr;
+hscript.Token.TQuestion.__enum__ = hscript.Token;
+hscript.Token.TDoubleDot = ["TDoubleDot",14];
+hscript.Token.TDoubleDot.toString = $estr;
+hscript.Token.TDoubleDot.__enum__ = hscript.Token;
+hscript.Parser = function() {
+	this.line = 1;
+	this.opChars = "+*/-=!><&|^%~";
+	this.identChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+	var priorities = [["%"],["*","/"],["+","-"],["<<",">>",">>>"],["|","&","^"],["==","!=",">","<",">=","<="],["..."],["&&"],["||"],["=","+=","-=","*=","/=","%=","<<=",">>=",">>>=","|=","&=","^="]];
+	this.opPriority = new Hash();
+	this.opRightAssoc = new Hash();
+	var _g1 = 0, _g = priorities.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var _g2 = 0, _g3 = priorities[i];
+		while(_g2 < _g3.length) {
+			var x = _g3[_g2];
+			++_g2;
+			this.opPriority.set(x,i);
+			if(i == 9) this.opRightAssoc.set(x,true);
+		}
+	}
+	this.unops = new Hash();
+	var _g = 0, _g1 = ["!","++","--","-","~"];
+	while(_g < _g1.length) {
+		var x = _g1[_g];
+		++_g;
+		this.unops.set(x,x == "++" || x == "--");
+	}
+};
+$hxClasses["hscript.Parser"] = hscript.Parser;
+hscript.Parser.__name__ = ["hscript","Parser"];
+hscript.Parser.prototype = {
+	tokenString: function(t) {
+		return (function($this) {
+			var $r;
+			var $e = (t);
+			switch( $e[1] ) {
+			case 0:
+				$r = "<eof>";
+				break;
+			case 1:
+				var c = $e[2];
+				$r = $this.constString(c);
+				break;
+			case 2:
+				var s = $e[2];
+				$r = s;
+				break;
+			case 3:
+				var s = $e[2];
+				$r = s;
+				break;
+			case 4:
+				$r = "(";
+				break;
+			case 5:
+				$r = ")";
+				break;
+			case 6:
+				$r = "{";
+				break;
+			case 7:
+				$r = "}";
+				break;
+			case 8:
+				$r = ".";
+				break;
+			case 9:
+				$r = ",";
+				break;
+			case 10:
+				$r = ";";
+				break;
+			case 11:
+				$r = "[";
+				break;
+			case 12:
+				$r = "]";
+				break;
+			case 13:
+				$r = "?";
+				break;
+			case 14:
+				$r = ":";
+				break;
+			}
+			return $r;
+		}(this));
+	}
+	,constString: function(c) {
+		return (function($this) {
+			var $r;
+			var $e = (c);
+			switch( $e[1] ) {
+			case 0:
+				var v = $e[2];
+				$r = Std.string(v);
+				break;
+			case 1:
+				var f = $e[2];
+				$r = Std.string(f);
+				break;
+			case 2:
+				var s = $e[2];
+				$r = s;
+				break;
+			case 3:
+				var v = $e[2];
+				$r = Std.string(v);
+				break;
+			}
+			return $r;
+		}(this));
+	}
+	,tokenComment: function(op,$char) {
+		var c = HxOverrides.cca(op,1);
+		var s = this.input;
+		if(c == 47) {
+			try {
+				while($char != 10 && $char != 13) $char = s.readByte();
+				this["char"] = $char;
+			} catch( e ) {
+			}
+			return this.token();
+		}
+		if(c == 42) {
+			var old = this.line;
+			try {
+				while(true) {
+					while($char != 42) {
+						if($char == 10) this.line++;
+						$char = s.readByte();
+					}
+					$char = s.readByte();
+					if($char == 47) break;
+				}
+			} catch( e ) {
+				this.line = old;
+				throw hscript.Error.EUnterminatedComment;
+			}
+			return this.token();
+		}
+		this["char"] = $char;
+		return hscript.Token.TOp(op);
+	}
+	,token: function() {
+		if(!(this.tokens.head == null)) return this.tokens.pop();
+		var $char;
+		if(this["char"] < 0) $char = this.readChar(); else {
+			$char = this["char"];
+			this["char"] = -1;
+		}
+		while(true) {
+			switch($char) {
+			case 0:
+				return hscript.Token.TEof;
+			case 32:case 9:case 13:
+				break;
+			case 10:
+				this.line++;
+				break;
+			case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:case 66:case 67:case 68:case 69:case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:case 98:case 99:case 100:case 101:case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 59:
+				return hscript.Token.TSemicolon;
+			case 40:
+				return hscript.Token.TPOpen;
+			case 41:
+				return hscript.Token.TPClose;
+			case 44:
+				return hscript.Token.TComma;
+			case 46:
+				$char = this.readChar();
+				switch($char) {
+				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 46:
+					$char = this.readChar();
+					if($char != 46) this.invalidChar($char);
+					return hscript.Token.TOp("...");
+				default:
+					this["char"] = $char;
+					return hscript.Token.TDot;
+				}
+				break;
+			case 123:
+				return hscript.Token.TBrOpen;
+			case 125:
+				return hscript.Token.TBrClose;
+			case 91:
+				return hscript.Token.TBkOpen;
+			case 93:
+				return hscript.Token.TBkClose;
+			case 39:
+				return hscript.Token.TConst(hscript.Const.CString(this.readString(39)));
+			case 34:
+				return hscript.Token.TConst(hscript.Const.CString(this.readString(34)));
+			case 63:
+				return hscript.Token.TQuestion;
+			case 58:
+				return hscript.Token.TDoubleDot;
+			default:
+				if(this.ops[$char]) {
+					var op = String.fromCharCode($char);
+					while(true) {
+						$char = this.readChar();
+						if(!this.ops[$char]) {
+							if(HxOverrides.cca(op,0) == 47) return this.tokenComment(op,$char);
+							this["char"] = $char;
+							return hscript.Token.TOp(op);
+						}
+						op += String.fromCharCode($char);
+					}
+				}
+				if(this.idents[$char]) {
+					var id = String.fromCharCode($char);
+					while(true) {
+						$char = this.readChar();
+						if(!this.idents[$char]) {
+							this["char"] = $char;
+							return hscript.Token.TId(id);
+						}
+						id += String.fromCharCode($char);
+					}
+				}
+				this.invalidChar($char);
+			}
+			$char = this.readChar();
+		}
+		return null;
+	}
+	,readString: function(until) {
+		var c = 0;
+		var b = new haxe.io.BytesOutput();
+		var esc = false;
+		var old = this.line;
+		var s = this.input;
+		while(true) {
+			try {
+				c = s.readByte();
+			} catch( e ) {
+				this.line = old;
+				throw hscript.Error.EUnterminatedString;
+			}
+			if(esc) {
+				esc = false;
+				switch(c) {
+				case 110:
+					b.writeByte(10);
+					break;
+				case 114:
+					b.writeByte(13);
+					break;
+				case 116:
+					b.writeByte(9);
+					break;
+				case 39:case 34:case 92:
+					b.writeByte(c);
+					break;
+				case 47:
+					if(this.allowJSON) b.writeByte(c); else this.invalidChar(c);
+					break;
+				case 117:
+					if(!this.allowJSON) throw this.invalidChar(c);
+					var code = null;
+					try {
+						code = s.readString(4);
+					} catch( e ) {
+						this.line = old;
+						throw hscript.Error.EUnterminatedString;
+					}
+					var k = 0;
+					var _g = 0;
+					while(_g < 4) {
+						var i = _g++;
+						k <<= 4;
+						var $char = HxOverrides.cca(code,i);
+						switch($char) {
+						case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+							k += $char - 48;
+							break;
+						case 65:case 66:case 67:case 68:case 69:case 70:
+							k += $char - 55;
+							break;
+						case 97:case 98:case 99:case 100:case 101:case 102:
+							k += $char - 87;
+							break;
+						default:
+							this.invalidChar($char);
+						}
+					}
+					if(k <= 127) b.writeByte(k); else if(k <= 2047) {
+						b.writeByte(192 | k >> 6);
+						b.writeByte(128 | k & 63);
+					} else {
+						b.writeByte(224 | k >> 12);
+						b.writeByte(128 | k >> 6 & 63);
+						b.writeByte(128 | k & 63);
+					}
+					break;
+				default:
+					this.invalidChar(c);
+				}
+			} else if(c == 92) esc = true; else if(c == until) break; else {
+				if(c == 10) this.line++;
+				b.writeByte(c);
+			}
+		}
+		return b.getBytes().toString();
+	}
+	,readChar: function() {
+		return (function($this) {
+			var $r;
+			try {
+				$r = $this.input.readByte();
+			} catch( e ) {
+				$r = 0;
+			}
+			return $r;
+		}(this));
+	}
+	,incPos: function() {
+	}
+	,parseExprList: function(etk) {
+		var args = new Array();
+		var tk = this.token();
+		if(tk == etk) return args;
+		this.tokens.add(tk);
+		try {
+			while(true) {
+				args.push(this.parseExpr());
+				tk = this.token();
+				switch( (tk)[1] ) {
+				case 9:
+					break;
+				default:
+					if(tk == etk) throw "__break__";
+					this.unexpected(tk);
+				}
+			}
+		} catch( e ) { if( e != "__break__" ) throw e; }
+		return args;
+	}
+	,parseTypeNext: function(t) {
+		var tk = this.token();
+		var $e = (tk);
+		switch( $e[1] ) {
+		case 3:
+			var op = $e[2];
+			if(op != "->") {
+				this.tokens.add(tk);
+				return t;
+			}
+			break;
+		default:
+			this.tokens.add(tk);
+			return t;
+		}
+		var t2 = this.parseType();
+		var $e = (t2);
+		switch( $e[1] ) {
+		case 1:
+			var ret = $e[3], args = $e[2];
+			args.unshift(t);
+			return t2;
+		default:
+			return hscript.CType.CTFun([t],t2);
+		}
+	}
+	,parseType: function() {
+		var t = this.token();
+		var $e = (t);
+		switch( $e[1] ) {
+		case 2:
+			var v = $e[2];
+			var path = [v];
+			while(true) {
+				t = this.token();
+				if(t != hscript.Token.TDot) break;
+				t = this.token();
+				var $e = (t);
+				switch( $e[1] ) {
+				case 2:
+					var v1 = $e[2];
+					path.push(v1);
+					break;
+				default:
+					this.unexpected(t);
+				}
+			}
+			var params = null;
+			var $e = (t);
+			switch( $e[1] ) {
+			case 3:
+				var op = $e[2];
+				if(op == "<") {
+					params = [];
+					try {
+						while(true) {
+							params.push(this.parseType());
+							t = this.token();
+							var $e = (t);
+							switch( $e[1] ) {
+							case 9:
+								continue;
+								break;
+							case 3:
+								var op1 = $e[2];
+								if(op1 == ">") throw "__break__";
+								break;
+							default:
+							}
+							this.unexpected(t);
+						}
+					} catch( e ) { if( e != "__break__" ) throw e; }
+				}
+				break;
+			default:
+				this.tokens.add(t);
+			}
+			return this.parseTypeNext(hscript.CType.CTPath(path,params));
+		case 4:
+			var t1 = this.parseType();
+			this.ensure(hscript.Token.TPClose);
+			return this.parseTypeNext(hscript.CType.CTParent(t1));
+		case 6:
+			var fields = [];
+			try {
+				while(true) {
+					t = this.token();
+					var $e = (t);
+					switch( $e[1] ) {
+					case 7:
+						throw "__break__";
+						break;
+					case 2:
+						var name = $e[2];
+						this.ensure(hscript.Token.TDoubleDot);
+						fields.push({ name : name, t : this.parseType()});
+						t = this.token();
+						switch( (t)[1] ) {
+						case 9:
+							break;
+						case 7:
+							throw "__break__";
+							break;
+						default:
+							this.unexpected(t);
+						}
+						break;
+					default:
+						this.unexpected(t);
+					}
+				}
+			} catch( e ) { if( e != "__break__" ) throw e; }
+			return this.parseTypeNext(hscript.CType.CTAnon(fields));
+		default:
+			return this.unexpected(t);
+		}
+	}
+	,parseExprNext: function(e1) {
+		var tk = this.token();
+		var $e = (tk);
+		switch( $e[1] ) {
+		case 3:
+			var op = $e[2];
+			if(this.unops.get(op)) {
+				if(this.isBlock(e1) || (function($this) {
+					var $r;
+					switch( (e1)[1] ) {
+					case 3:
+						$r = true;
+						break;
+					default:
+						$r = false;
+					}
+					return $r;
+				}(this))) {
+					this.tokens.add(tk);
+					return e1;
+				}
+				return this.parseExprNext(hscript.Expr.EUnop(op,false,e1));
+			}
+			return this.makeBinop(op,e1,this.parseExpr());
+		case 8:
+			tk = this.token();
+			var field = null;
+			var $e = (tk);
+			switch( $e[1] ) {
+			case 2:
+				var id = $e[2];
+				field = id;
+				break;
+			default:
+				this.unexpected(tk);
+			}
+			return this.parseExprNext(hscript.Expr.EField(e1,field));
+		case 4:
+			return this.parseExprNext(hscript.Expr.ECall(e1,this.parseExprList(hscript.Token.TPClose)));
+		case 11:
+			var e2 = this.parseExpr();
+			this.ensure(hscript.Token.TBkClose);
+			return this.parseExprNext(hscript.Expr.EArray(e1,e2));
+		case 13:
+			var e2 = this.parseExpr();
+			this.ensure(hscript.Token.TDoubleDot);
+			var e3 = this.parseExpr();
+			return hscript.Expr.ETernary(e1,e2,e3);
+		default:
+			this.tokens.add(tk);
+			return e1;
+		}
+	}
+	,parseStructure: function(id) {
+		return (function($this) {
+			var $r;
+			switch(id) {
+			case "if":
+				$r = (function($this) {
+					var $r;
+					var cond = $this.parseExpr();
+					var e1 = $this.parseExpr();
+					var e2 = null;
+					var semic = false;
+					var tk = $this.token();
+					if(tk == hscript.Token.TSemicolon) {
+						semic = true;
+						tk = $this.token();
+					}
+					if(Type.enumEq(tk,hscript.Token.TId("else"))) e2 = $this.parseExpr(); else {
+						$this.tokens.add(tk);
+						if(semic) $this.tokens.add(hscript.Token.TSemicolon);
+					}
+					$r = hscript.Expr.EIf(cond,e1,e2);
+					return $r;
+				}($this));
+				break;
+			case "var":
+				$r = (function($this) {
+					var $r;
+					var tk = $this.token();
+					var ident = null;
+					var $e = (tk);
+					switch( $e[1] ) {
+					case 2:
+						var id1 = $e[2];
+						ident = id1;
+						break;
+					default:
+						$this.unexpected(tk);
+					}
+					tk = $this.token();
+					var t = null;
+					if(tk == hscript.Token.TDoubleDot && $this.allowTypes) {
+						t = $this.parseType();
+						tk = $this.token();
+					}
+					var e = null;
+					if(Type.enumEq(tk,hscript.Token.TOp("="))) e = $this.parseExpr(); else $this.tokens.add(tk);
+					$r = hscript.Expr.EVar(ident,t,e);
+					return $r;
+				}($this));
+				break;
+			case "while":
+				$r = (function($this) {
+					var $r;
+					var econd = $this.parseExpr();
+					var e = $this.parseExpr();
+					$r = hscript.Expr.EWhile(econd,e);
+					return $r;
+				}($this));
+				break;
+			case "for":
+				$r = (function($this) {
+					var $r;
+					$this.ensure(hscript.Token.TPOpen);
+					var tk = $this.token();
+					var vname = null;
+					var $e = (tk);
+					switch( $e[1] ) {
+					case 2:
+						var id1 = $e[2];
+						vname = id1;
+						break;
+					default:
+						$this.unexpected(tk);
+					}
+					tk = $this.token();
+					if(!Type.enumEq(tk,hscript.Token.TId("in"))) $this.unexpected(tk);
+					var eiter = $this.parseExpr();
+					$this.ensure(hscript.Token.TPClose);
+					var e = $this.parseExpr();
+					$r = hscript.Expr.EFor(vname,eiter,e);
+					return $r;
+				}($this));
+				break;
+			case "break":
+				$r = hscript.Expr.EBreak;
+				break;
+			case "continue":
+				$r = hscript.Expr.EContinue;
+				break;
+			case "else":
+				$r = $this.unexpected(hscript.Token.TId(id));
+				break;
+			case "function":
+				$r = (function($this) {
+					var $r;
+					var tk = $this.token();
+					var name = null;
+					var $e = (tk);
+					switch( $e[1] ) {
+					case 2:
+						var id1 = $e[2];
+						name = id1;
+						break;
+					default:
+						$this.tokens.add(tk);
+					}
+					$this.ensure(hscript.Token.TPOpen);
+					var args = new Array();
+					tk = $this.token();
+					if(tk != hscript.Token.TPClose) {
+						var arg = true;
+						while(arg) {
+							var name1 = null;
+							var $e = (tk);
+							switch( $e[1] ) {
+							case 2:
+								var id1 = $e[2];
+								name1 = id1;
+								break;
+							default:
+								$this.unexpected(tk);
+							}
+							tk = $this.token();
+							var t = null;
+							if(tk == hscript.Token.TDoubleDot && $this.allowTypes) {
+								t = $this.parseType();
+								tk = $this.token();
+							}
+							args.push({ name : name1, t : t});
+							switch( (tk)[1] ) {
+							case 9:
+								tk = $this.token();
+								break;
+							case 5:
+								arg = false;
+								break;
+							default:
+								$this.unexpected(tk);
+							}
+						}
+					}
+					var ret = null;
+					if($this.allowTypes) {
+						tk = $this.token();
+						if(tk != hscript.Token.TDoubleDot) $this.tokens.add(tk); else ret = $this.parseType();
+					}
+					var body = $this.parseExpr();
+					$r = hscript.Expr.EFunction(args,body,name,ret);
+					return $r;
+				}($this));
+				break;
+			case "return":
+				$r = (function($this) {
+					var $r;
+					var tk = $this.token();
+					$this.tokens.add(tk);
+					var e = tk == hscript.Token.TSemicolon?null:$this.parseExpr();
+					$r = hscript.Expr.EReturn(e);
+					return $r;
+				}($this));
+				break;
+			case "new":
+				$r = (function($this) {
+					var $r;
+					var a = new Array();
+					var tk = $this.token();
+					var $e = (tk);
+					switch( $e[1] ) {
+					case 2:
+						var id1 = $e[2];
+						a.push(id1);
+						break;
+					default:
+						$this.unexpected(tk);
+					}
+					var next = true;
+					while(next) {
+						tk = $this.token();
+						switch( (tk)[1] ) {
+						case 8:
+							tk = $this.token();
+							var $e = (tk);
+							switch( $e[1] ) {
+							case 2:
+								var id1 = $e[2];
+								a.push(id1);
+								break;
+							default:
+								$this.unexpected(tk);
+							}
+							break;
+						case 4:
+							next = false;
+							break;
+						default:
+							$this.unexpected(tk);
+						}
+					}
+					var args = $this.parseExprList(hscript.Token.TPClose);
+					$r = hscript.Expr.ENew(a.join("."),args);
+					return $r;
+				}($this));
+				break;
+			case "throw":
+				$r = (function($this) {
+					var $r;
+					var e = $this.parseExpr();
+					$r = hscript.Expr.EThrow(e);
+					return $r;
+				}($this));
+				break;
+			case "try":
+				$r = (function($this) {
+					var $r;
+					var e = $this.parseExpr();
+					var tk = $this.token();
+					if(!Type.enumEq(tk,hscript.Token.TId("catch"))) $this.unexpected(tk);
+					$this.ensure(hscript.Token.TPOpen);
+					tk = $this.token();
+					var vname = (function($this) {
+						var $r;
+						var $e = (tk);
+						switch( $e[1] ) {
+						case 2:
+							var id1 = $e[2];
+							$r = id1;
+							break;
+						default:
+							$r = $this.unexpected(tk);
+						}
+						return $r;
+					}($this));
+					$this.ensure(hscript.Token.TDoubleDot);
+					var t = null;
+					if($this.allowTypes) t = $this.parseType(); else {
+						tk = $this.token();
+						if(!Type.enumEq(tk,hscript.Token.TId("Dynamic"))) $this.unexpected(tk);
+					}
+					$this.ensure(hscript.Token.TPClose);
+					var ec = $this.parseExpr();
+					$r = hscript.Expr.ETry(e,vname,t,ec);
+					return $r;
+				}($this));
+				break;
+			default:
+				$r = null;
+			}
+			return $r;
+		}(this));
+	}
+	,makeBinop: function(op,e1,e) {
+		return (function($this) {
+			var $r;
+			var $e = (e);
+			switch( $e[1] ) {
+			case 6:
+				var e3 = $e[4], e2 = $e[3], op2 = $e[2];
+				$r = $this.opPriority.get(op) <= $this.opPriority.get(op2) && !$this.opRightAssoc.exists(op)?hscript.Expr.EBinop(op2,$this.makeBinop(op,e1,e2),e3):hscript.Expr.EBinop(op,e1,e);
+				break;
+			case 22:
+				var e4 = $e[4], e3 = $e[3], e2 = $e[2];
+				$r = $this.opRightAssoc.exists(op)?hscript.Expr.EBinop(op,e1,e):hscript.Expr.ETernary($this.makeBinop(op,e1,e2),e3,e4);
+				break;
+			default:
+				$r = hscript.Expr.EBinop(op,e1,e);
+			}
+			return $r;
+		}(this));
+	}
+	,makeUnop: function(op,e) {
+		return (function($this) {
+			var $r;
+			var $e = (e);
+			switch( $e[1] ) {
+			case 6:
+				var e2 = $e[4], e1 = $e[3], bop = $e[2];
+				$r = hscript.Expr.EBinop(bop,$this.makeUnop(op,e1),e2);
+				break;
+			case 22:
+				var e3 = $e[4], e2 = $e[3], e1 = $e[2];
+				$r = hscript.Expr.ETernary($this.makeUnop(op,e1),e2,e3);
+				break;
+			default:
+				$r = hscript.Expr.EUnop(op,true,e);
+			}
+			return $r;
+		}(this));
+	}
+	,parseExpr: function() {
+		var tk = this.token();
+		var $e = (tk);
+		switch( $e[1] ) {
+		case 2:
+			var id = $e[2];
+			var e = this.parseStructure(id);
+			if(e == null) e = hscript.Expr.EIdent(id);
+			return this.parseExprNext(e);
+		case 1:
+			var c = $e[2];
+			return this.parseExprNext(hscript.Expr.EConst(c));
+		case 4:
+			var e = this.parseExpr();
+			this.ensure(hscript.Token.TPClose);
+			return this.parseExprNext(hscript.Expr.EParent(e));
+		case 6:
+			tk = this.token();
+			var $e = (tk);
+			switch( $e[1] ) {
+			case 7:
+				return this.parseExprNext(hscript.Expr.EObject([]));
+			case 2:
+				var id = $e[2];
+				var tk2 = this.token();
+				this.tokens.add(tk2);
+				this.tokens.add(tk);
+				switch( (tk2)[1] ) {
+				case 14:
+					return this.parseExprNext(this.parseObject(0));
+				default:
+				}
+				break;
+			case 1:
+				var c = $e[2];
+				if(this.allowJSON) {
+					switch( (c)[1] ) {
+					case 2:
+						var tk2 = this.token();
+						this.tokens.add(tk2);
+						this.tokens.add(tk);
+						switch( (tk2)[1] ) {
+						case 14:
+							return this.parseExprNext(this.parseObject(0));
+						default:
+						}
+						break;
+					default:
+						this.tokens.add(tk);
+					}
+				} else this.tokens.add(tk);
+				break;
+			default:
+				this.tokens.add(tk);
+			}
+			var a = new Array();
+			while(true) {
+				a.push(this.parseFullExpr());
+				tk = this.token();
+				if(tk == hscript.Token.TBrClose) break;
+				this.tokens.add(tk);
+			}
+			return hscript.Expr.EBlock(a);
+		case 3:
+			var op = $e[2];
+			if(this.unops.exists(op)) return this.makeUnop(op,this.parseExpr());
+			return this.unexpected(tk);
+		case 11:
+			var a = new Array();
+			tk = this.token();
+			while(tk != hscript.Token.TBkClose) {
+				this.tokens.add(tk);
+				a.push(this.parseExpr());
+				tk = this.token();
+				if(tk == hscript.Token.TComma) tk = this.token();
+			}
+			return this.parseExprNext(hscript.Expr.EArrayDecl(a));
+		default:
+			return this.unexpected(tk);
+		}
+	}
+	,parseObject: function(p1) {
+		var fl = new Array();
+		try {
+			while(true) {
+				var tk = this.token();
+				var id = null;
+				var $e = (tk);
+				switch( $e[1] ) {
+				case 2:
+					var i = $e[2];
+					id = i;
+					break;
+				case 1:
+					var c = $e[2];
+					if(!this.allowJSON) this.unexpected(tk);
+					var $e = (c);
+					switch( $e[1] ) {
+					case 2:
+						var s = $e[2];
+						id = s;
+						break;
+					default:
+						this.unexpected(tk);
+					}
+					break;
+				case 7:
+					throw "__break__";
+					break;
+				default:
+					this.unexpected(tk);
+				}
+				this.ensure(hscript.Token.TDoubleDot);
+				fl.push({ name : id, e : this.parseExpr()});
+				tk = this.token();
+				switch( (tk)[1] ) {
+				case 7:
+					throw "__break__";
+					break;
+				case 9:
+					break;
+				default:
+					this.unexpected(tk);
+				}
+			}
+		} catch( e ) { if( e != "__break__" ) throw e; }
+		return this.parseExprNext(hscript.Expr.EObject(fl));
+	}
+	,parseFullExpr: function() {
+		var e = this.parseExpr();
+		var tk = this.token();
+		if(tk != hscript.Token.TSemicolon && tk != hscript.Token.TEof) {
+			if(this.isBlock(e)) this.tokens.add(tk); else this.unexpected(tk);
+		}
+		return e;
+	}
+	,isBlock: function(e) {
+		return (function($this) {
+			var $r;
+			var $e = (e);
+			switch( $e[1] ) {
+			case 4:
+			case 21:
+				$r = true;
+				break;
+			case 14:
+				var e1 = $e[3];
+				$r = $this.isBlock(e1);
+				break;
+			case 2:
+				var e1 = $e[4];
+				$r = e1 != null && $this.isBlock(e1);
+				break;
+			case 9:
+				var e2 = $e[4], e1 = $e[3];
+				$r = e2 != null?$this.isBlock(e2):$this.isBlock(e1);
+				break;
+			case 6:
+				var e1 = $e[4];
+				$r = $this.isBlock(e1);
+				break;
+			case 7:
+				var e1 = $e[4], prefix = $e[3];
+				$r = !prefix && $this.isBlock(e1);
+				break;
+			case 10:
+				var e1 = $e[3];
+				$r = $this.isBlock(e1);
+				break;
+			case 11:
+				var e1 = $e[4];
+				$r = $this.isBlock(e1);
+				break;
+			case 15:
+				var e1 = $e[2];
+				$r = e1 != null && $this.isBlock(e1);
+				break;
+			default:
+				$r = false;
+			}
+			return $r;
+		}(this));
+	}
+	,mk: function(e,pmin,pmax) {
+		return e;
+	}
+	,pmax: function(e) {
+		return 0;
+	}
+	,pmin: function(e) {
+		return 0;
+	}
+	,expr: function(e) {
+		return e;
+	}
+	,ensure: function(tk) {
+		var t = this.token();
+		if(t != tk) this.unexpected(t);
+	}
+	,push: function(tk) {
+		this.tokens.add(tk);
+	}
+	,unexpected: function(tk) {
+		throw hscript.Error.EUnexpected(this.tokenString(tk));
+		return null;
+	}
+	,parse: function(s) {
+		this.tokens = new haxe.FastList();
+		this["char"] = -1;
+		this.input = s;
+		this.ops = new Array();
+		this.idents = new Array();
+		var _g1 = 0, _g = this.opChars.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.ops[HxOverrides.cca(this.opChars,i)] = true;
+		}
+		var _g1 = 0, _g = this.identChars.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.idents[HxOverrides.cca(this.identChars,i)] = true;
+		}
+		var a = new Array();
+		while(true) {
+			var tk = this.token();
+			if(tk == hscript.Token.TEof) break;
+			this.tokens.add(tk);
+			a.push(this.parseFullExpr());
+		}
+		return a.length == 1?a[0]:hscript.Expr.EBlock(a);
+	}
+	,parseString: function(s) {
+		this.line = 1;
+		return this.parse(new haxe.io.StringInput(s));
+	}
+	,invalidChar: function(c) {
+		throw hscript.Error.EInvalidChar(c);
+	}
+	,error: function(err,pmin,pmax) {
+		throw err;
+	}
+	,tokens: null
+	,idents: null
+	,ops: null
+	,'char': null
+	,input: null
+	,allowTypes: null
+	,allowJSON: null
+	,unops: null
+	,opRightAssoc: null
+	,opPriority: null
+	,identChars: null
+	,opChars: null
+	,line: null
+	,__class__: hscript.Parser
 }
 var hxevents = {}
 hxevents.Dispatcher = function() {
@@ -8241,19 +10155,6 @@ js.Boot.__trace = function(v,i) {
 	var d;
 	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
 }
-js.Boot.__clear_trace = function() {
-	var d = document.getElementById("haxe:trace");
-	if(d != null) d.innerHTML = "";
-}
-js.Boot.isClass = function(o) {
-	return o.__name__;
-}
-js.Boot.isEnum = function(e) {
-	return e.__ename__;
-}
-js.Boot.getClass = function(o) {
-	return o.__class__;
-}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -8386,9 +10287,6 @@ js.Scroll.getLeft = function() {
 	}
 	return document.documentElement.scrollLeft;
 }
-js.Scroll.set = function(left,top) {
-	window.scroll(left,top);
-}
 var math = {}
 math.BigInteger = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
@@ -8412,20 +10310,6 @@ math.BigInteger = function() {
 $hxClasses["math.BigInteger"] = math.BigInteger;
 math.BigInteger.__name__ = ["math","BigInteger"];
 math.BigInteger.__properties__ = {get_ONE:"getONE",get_ZERO:"getZERO"}
-math.BigInteger.DB = null;
-math.BigInteger.DM = null;
-math.BigInteger.DV = null;
-math.BigInteger.BI_FP = null;
-math.BigInteger.FV = null;
-math.BigInteger.F1 = null;
-math.BigInteger.F2 = null;
-math.BigInteger.ZERO = null;
-math.BigInteger.ONE = null;
-math.BigInteger.BI_RM = null;
-math.BigInteger.BI_RC = null;
-math.BigInteger.lowprimes = null;
-math.BigInteger.lplim = null;
-math.BigInteger.defaultAm = null;
 math.BigInteger.initBiRc = function() {
 	math.BigInteger.BI_RC = new Array();
 	var rr = HxOverrides.cca("0",0);
@@ -9614,7 +11498,7 @@ math.BigInteger.prototype = {
 	,__class__: math.BigInteger
 }
 math._IEEE754 = {}
-math._IEEE754.Status = $hxClasses["math._IEEE754.Status"] = { __ename__ : ["math","_IEEE754","Status"], __constructs__ : ["Normal","Overflow","Underflow","Denormalized","Quiet","Signalling"] }
+math._IEEE754.Status = { __ename__ : ["math","_IEEE754","Status"], __constructs__ : ["Normal","Overflow","Underflow","Denormalized","Quiet","Signalling"] }
 math._IEEE754.Status.Normal = ["Normal",0];
 math._IEEE754.Status.Normal.toString = $estr;
 math._IEEE754.Status.Normal.__enum__ = math._IEEE754.Status;
@@ -10651,7 +12535,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.249.8934"};
+	r.info.charts = { version : "1.5.0.8943"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -10672,7 +12556,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 196, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 193, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -10836,7 +12720,6 @@ rg.axis.IAxisDiscrete.prototype = {
 	range: null
 	,scaleDistribution: null
 	,__class__: rg.axis.IAxisDiscrete
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
 }
 rg.axis.IAxisOrdinal = function() { }
 $hxClasses["rg.axis.IAxisOrdinal"] = rg.axis.IAxisOrdinal;
@@ -11131,9 +13014,8 @@ rg.axis.ITickmark.prototype = {
 	,major: null
 	,delta: null
 	,__class__: rg.axis.ITickmark
-	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
 }
-rg.axis.ScaleDistribution = $hxClasses["rg.axis.ScaleDistribution"] = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
+rg.axis.ScaleDistribution = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
 rg.axis.ScaleDistribution.ScaleFit.toString = $estr;
 rg.axis.ScaleDistribution.ScaleFit.__enum__ = rg.axis.ScaleDistribution;
@@ -11824,13 +13706,13 @@ rg.frame.Frame.prototype = {
 	,x: null
 	,__class__: rg.frame.Frame
 }
-rg.frame.FrameLayout = $hxClasses["rg.frame.FrameLayout"] = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
+rg.frame.FrameLayout = { __ename__ : ["rg","frame","FrameLayout"], __constructs__ : ["Fill","FillPercent","FillRatio","Fixed","Floating"] }
 rg.frame.FrameLayout.Fill = function(before,after,min,max) { var $x = ["Fill",0,before,after,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillPercent = function(before,after,percent,min,max) { var $x = ["FillPercent",1,before,after,percent,min,max]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.FillRatio = function(before,after,ratio) { var $x = ["FillRatio",2,before,after,ratio]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Fixed = function(before,after,size) { var $x = ["Fixed",3,before,after,size]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
 rg.frame.FrameLayout.Floating = function(x,y,width,height) { var $x = ["Floating",4,x,y,width,height]; $x.__enum__ = rg.frame.FrameLayout; $x.toString = $estr; return $x; }
-rg.frame.Orientation = $hxClasses["rg.frame.Orientation"] = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
+rg.frame.Orientation = { __ename__ : ["rg","frame","Orientation"], __constructs__ : ["Vertical","Horizontal"] }
 rg.frame.Orientation.Vertical = ["Vertical",0];
 rg.frame.Orientation.Vertical.toString = $estr;
 rg.frame.Orientation.Vertical.__enum__ = rg.frame.Orientation;
@@ -12883,7 +14765,7 @@ rg.html.widget.DownloaderMenu.prototype = {
 	,handler: null
 	,__class__: rg.html.widget.DownloaderMenu
 }
-rg.html.widget.DownloaderPosition = $hxClasses["rg.html.widget.DownloaderPosition"] = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
+rg.html.widget.DownloaderPosition = { __ename__ : ["rg","html","widget","DownloaderPosition"], __constructs__ : ["ElementSelector","TopLeft","TopRight","BottomLeft","BottomRight","Before","After"] }
 rg.html.widget.DownloaderPosition.ElementSelector = function(selector) { var $x = ["ElementSelector",0,selector]; $x.__enum__ = rg.html.widget.DownloaderPosition; $x.toString = $estr; return $x; }
 rg.html.widget.DownloaderPosition.TopLeft = ["TopLeft",1];
 rg.html.widget.DownloaderPosition.TopLeft.toString = $estr;
@@ -13059,7 +14941,6 @@ rg.html.widget.Tooltip = function(el) {
 $hxClasses["rg.html.widget.Tooltip"] = rg.html.widget.Tooltip;
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
 rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
-rg.html.widget.Tooltip.instance = null;
 rg.html.widget.Tooltip.getInstance = function() {
 	if(null == rg.html.widget.Tooltip.instance) {
 		rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
@@ -13192,7 +15073,7 @@ rg.info.InfoAnimation = function() {
 $hxClasses["rg.info.InfoAnimation"] = rg.info.InfoAnimation;
 rg.info.InfoAnimation.__name__ = ["rg","info","InfoAnimation"];
 rg.info.InfoAnimation.filters = function() {
-	return [rg.info.filter.FilterDescription.toBool("animated"),rg.info.filter.FilterDescription.toInt("duration"),rg.info.filter.FilterDescription.toInt("delay"),rg.info.filter.FilterDescription.toFunction("ease")];
+	return [rg.info.filter.FilterDescription.toBool("animated"),rg.info.filter.FilterDescription.toInt("duration"),rg.info.filter.FilterDescription.toInt("delay"),rg.info.filter.FilterDescription.toExpressionFunction("ease",["value"])];
 }
 rg.info.InfoAnimation.prototype = {
 	delay: null
@@ -13243,7 +15124,19 @@ rg.info.InfoCartesianChart = function() {
 $hxClasses["rg.info.InfoCartesianChart"] = rg.info.InfoCartesianChart;
 rg.info.InfoCartesianChart.__name__ = ["rg","info","InfoCartesianChart"];
 rg.info.InfoCartesianChart.filters = function() {
-	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelAxis),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmarks",["displayMinorTick","displayMajorTick","displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickminor",["displayMinorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displaytickmajor",["displayMajorTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayticklabel",["displayLabelTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinetick",["displayAnchorLineTick"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrules",["displayMinorRule","displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayruleminor",["displayMinorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayrulemajor",["displayMajorRule"]),rg.info.filter.FilterDescription.toFunctionOrBool("displayanchorlinerule",["displayAnchorLineRule"]),rg.info.filter.FilterDescription.toFloat("lengthtick",["lengthTickMajor","lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickminor",["lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickmajor",["lengthTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingtick",["paddingTickMajor","paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickminor",["paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickmajor",["paddingTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingticklabel",["paddingLabel"]),rg.info.filter.FilterDescription.toFunctionOrString("labelorientation",["labelOrientation"]),rg.info.filter.FilterDescription.toFunctionOrString("labelanchor",["labelAnchor"]),rg.info.filter.FilterDescription.toFunctionOrFloat("labelangle",["labelAngle"])];
+	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelAxis),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displaytickmarks",["type"],["displayMinorTick","displayMajorTick","displayLabelTick"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displaytickminor",["type"],["displayMinorTick"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displaytickmajor",["type"],["displayMajorTick"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayticklabel",["type"],["displayLabelTick"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayanchorlinetick",["type"],["displayAnchorLineTick"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayrules",["type"],["displayMinorRule","displayMajorRule"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayruleminor",["type"],["displayMinorRule"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayrulemajor",["type"],["displayMajorRule"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayanchorlinerule",["type"],["displayAnchorLineRule"]),rg.info.filter.FilterDescription.toFloat("lengthtick",["lengthTickMajor","lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickminor",["lengthTickMinor"]),rg.info.filter.FilterDescription.toFloat("lengthtickmajor",["lengthTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingtick",["paddingTickMajor","paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickminor",["paddingTickMinor"]),rg.info.filter.FilterDescription.toFloat("paddingtickmajor",["paddingTickMajor"]),rg.info.filter.FilterDescription.toFloat("paddingticklabel",["paddingLabel"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("labelorientation",["type"],["labelOrientation"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("labelanchor",["type"],["labelAnchor"]),rg.info.filter.FilterDescription.toExpressionFunctionOrFloat("labelangle",["type"],["labelAngle"]),rg.info.filter.FilterDescription.simplified("labelhorizontal",["labelAnchor"],function(v) {
+		return v == false?function(v1) {
+			return "right";
+		}:function(v1) {
+			return null;
+		};
+	},rg.info.filter.ReturnMessageIfNot.isBool),rg.info.filter.FilterDescription.simplified("labelhorizontal",["labelAngle"],function(v) {
+		return v == false?function(v1) {
+			return 0;
+		}:function(v1) {
+			return null;
+		};
+	},rg.info.filter.ReturnMessageIfNot.isBool)];
 }
 rg.info.InfoCartesianChart.prototype = {
 	paddingLabel: null
@@ -13319,7 +15212,7 @@ rg.info.InfoDomType.prototype = {
 	kind: null
 	,__class__: rg.info.InfoDomType
 }
-rg.info.DomKind = $hxClasses["rg.info.DomKind"] = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
+rg.info.DomKind = { __ename__ : ["rg","info","DomKind"], __constructs__ : ["Html","Svg"] }
 rg.info.DomKind.Html = ["Html",0];
 rg.info.DomKind.Html.toString = $estr;
 rg.info.DomKind.Html.__enum__ = rg.info.DomKind;
@@ -13357,7 +15250,7 @@ rg.info.InfoFunnelChart = function() {
 $hxClasses["rg.info.InfoFunnelChart"] = rg.info.InfoFunnelChart;
 rg.info.InfoFunnelChart.__name__ = ["rg","info","InfoFunnelChart"];
 rg.info.InfoFunnelChart.filters = function() {
-	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelFunnel),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFloat("segmentpadding",["padding"]),rg.info.filter.FilterDescription.toFloat("flatness"),rg.info.filter.FilterDescription.custom("effect",null,function(value) {
+	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelFunnel),rg.info.filter.FilterDescription.toExpressionFunction("sort",["a","b"],["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFloat("segmentpadding",["padding"]),rg.info.filter.FilterDescription.toFloat("flatness"),rg.info.filter.FilterDescription.custom("effect",null,function(value) {
 		if(rg.svg.chart.GradientEffects.canParse(value)) return rg.info.filter.TransformResult.Success(rg.svg.chart.GradientEffects.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("'{0}' is not a valid effect",value));
 	}),rg.info.filter.FilterDescription.toFloat("arrowsize",["arrowSize"])];
 }
@@ -13425,7 +15318,7 @@ rg.info.InfoLabel = function() {
 $hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunctionOrString("title"),rg.info.filter.FilterDescription.toFunction("datapoint"),rg.info.filter.FilterDescription.toFunction("datapointover")];
+	return [rg.info.filter.FilterDescription.toTemplateFunctionOrString("title",["axes","values"]),rg.info.filter.FilterDescription.toTemplateFunction("datapoint",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("datapointover",[null,"stats"])];
 }
 rg.info.InfoLabel.prototype = {
 	datapointover: null
@@ -13439,7 +15332,7 @@ rg.info.InfoLabelAxis = function() {
 $hxClasses["rg.info.InfoLabelAxis"] = rg.info.InfoLabelAxis;
 rg.info.InfoLabelAxis.__name__ = ["rg","info","InfoLabelAxis"];
 rg.info.InfoLabelAxis.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunction("axis"),rg.info.filter.FilterDescription.toFunction("tickmark")].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunction("axis",["type"]),rg.info.filter.FilterDescription.toTemplateFunction("tickmark",["value","type"])].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelAxis.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelAxis.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -13453,7 +15346,7 @@ rg.info.InfoLabelFunnel = function() {
 $hxClasses["rg.info.InfoLabelFunnel"] = rg.info.InfoLabelFunnel;
 rg.info.InfoLabelFunnel.__name__ = ["rg","info","InfoLabelFunnel"];
 rg.info.InfoLabelFunnel.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunction("arrow")].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunction("arrow",[null,"stats"])].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelFunnel.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelFunnel.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -13466,7 +15359,7 @@ rg.info.InfoLabelLeaderboard = function() {
 $hxClasses["rg.info.InfoLabelLeaderboard"] = rg.info.InfoLabelLeaderboard;
 rg.info.InfoLabelLeaderboard.__name__ = ["rg","info","InfoLabelLeaderboard"];
 rg.info.InfoLabelLeaderboard.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunctionOrNull("rank"),rg.info.filter.FilterDescription.toFunctionOrNull("value")].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunctionOrNull("rank",[null,"index","stats"]),rg.info.filter.FilterDescription.toTemplateFunctionOrNull("value",[null,"stats"])].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelLeaderboard.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelLeaderboard.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -13480,7 +15373,7 @@ rg.info.InfoLabelPivotTable = function() {
 $hxClasses["rg.info.InfoLabelPivotTable"] = rg.info.InfoLabelPivotTable;
 rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
 rg.info.InfoLabelPivotTable.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunction("total"),rg.info.filter.FilterDescription.toFunction("totalover"),rg.info.filter.FilterDescription.toFunction("axisvalue")].concat(rg.info.InfoLabelAxis.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunction("total",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("totalover",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("axisvalue",[null,"stats"])].concat(rg.info.InfoLabelAxis.filters());
 }
 rg.info.InfoLabelPivotTable.__super__ = rg.info.InfoLabelAxis;
 rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,{
@@ -13495,7 +15388,7 @@ rg.info.InfoLabelSankey = function() {
 $hxClasses["rg.info.InfoLabelSankey"] = rg.info.InfoLabelSankey;
 rg.info.InfoLabelSankey.__name__ = ["rg","info","InfoLabelSankey"];
 rg.info.InfoLabelSankey.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunction("edge"),rg.info.filter.FilterDescription.toFunction("edgeover"),rg.info.filter.FilterDescription.toFunction("node")].concat(rg.info.InfoLabel.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunction("edge",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("edgeover",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("node",[null,"stats"])].concat(rg.info.InfoLabel.filters());
 }
 rg.info.InfoLabelSankey.__super__ = rg.info.InfoLabel;
 rg.info.InfoLabelSankey.prototype = $extend(rg.info.InfoLabel.prototype,{
@@ -13560,7 +15453,7 @@ rg.info.InfoLeaderboard.__name__ = ["rg","info","InfoLeaderboard"];
 rg.info.InfoLeaderboard.filters = function() {
 	return [rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation,function(info) {
 		info.ease = thx.math.Equations.linear;
-	}),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelLeaderboard),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toBool("displaybar"),rg.info.filter.FilterDescription.toBool("usemax"),rg.info.filter.FilterDescription.toBool("colorscale")];
+	}),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelLeaderboard),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toExpressionFunction("sort",["a","b"],["sortDataPoint"]),rg.info.filter.FilterDescription.toBool("displaybar"),rg.info.filter.FilterDescription.toBool("usemax"),rg.info.filter.FilterDescription.toBool("colorscale")];
 }
 rg.info.InfoLeaderboard.prototype = {
 	colorscale: null
@@ -13583,7 +15476,7 @@ rg.info.InfoLineChart = function() {
 $hxClasses["rg.info.InfoLineChart"] = rg.info.InfoLineChart;
 rg.info.InfoLineChart.__name__ = ["rg","info","InfoLineChart"];
 rg.info.InfoLineChart.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+	return [rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbol",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbolstyle",[null,"stats"],["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
 		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
 	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment),rg.info.filter.FilterDescription.toStr("y0property"),rg.info.filter.FilterDescription.toBool("displayarea"),rg.info.filter.FilterDescription.toInt("sensibleradius"),rg.info.filter.FilterDescription.toTry("effect",null,rg.svg.chart.LineEffects.parse,"invalid effect string value '{0}'"),rg.info.filter.FilterDescription.toTry("interpolation",null,function(v) {
 		return thx.svg.LineInterpolators.parse(v);
@@ -13617,7 +15510,7 @@ rg.info.InfoMap.filters = function() {
 		return Type.createEnum(thx.geo.ProjectionMode,Strings.ucfirst(v.toLowerCase()),[]);
 	},"value is not a valid projection mode '{0}'"),rg.info.filter.FilterDescription.toStrOrNull("property"),rg.info.filter.FilterDescription.toBool("usejsonp"),new rg.info.filter.FilterDescription("template",new rg.info.TemplateTransformer()),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("color",["colorScaleMode"],rg.svg.chart.ColorScaleModes.createFromDynamic,rg.info.filter.ReturnMessageChainer.make(function(v) {
 		return js.Boot.__instanceof(v,String) || Reflect.isFunction(v);
-	},"invalid color mode value '{0}'")),rg.info.filter.FilterDescription.toFunctionOrFloat("radius"),new rg.info.filter.FilterDescription("mapping",new rg.info.MapTransformer())];
+	},"invalid color mode value '{0}'")),rg.info.filter.FilterDescription.toExpressionFunctionOrFloat("radius",[null,"stats"]),new rg.info.filter.FilterDescription("mapping",new rg.info.MapTransformer())];
 }
 rg.info.InfoMap.prototype = {
 	mappingurl: null
@@ -13739,7 +15632,7 @@ rg.info.InfoPieChart.filterOrientation = function(s) {
 	}
 }
 rg.info.InfoPieChart.filters = function() {
-	return [rg.info.filter.FilterDescription.toFloat("labelradius"),rg.info.filter.FilterDescription.toBool("dontfliplabel"),rg.info.filter.FilterDescription.toTry("labelorientation",null,rg.info.InfoPieChart.filterOrientation,"invalid orientation value '{0}'"),rg.info.filter.FilterDescription.toFloat("innerradius"),rg.info.filter.FilterDescription.toFloat("outerradius"),rg.info.filter.FilterDescription.toFloat("overradius"),rg.info.filter.FilterDescription.toFloat("tooltipradius"),rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toFunction("sort",["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}")))];
+	return [rg.info.filter.FilterDescription.toFloat("labelradius"),rg.info.filter.FilterDescription.toBool("dontfliplabel"),rg.info.filter.FilterDescription.toTry("labelorientation",null,rg.info.InfoPieChart.filterOrientation,"invalid orientation value '{0}'"),rg.info.filter.FilterDescription.toFloat("innerradius"),rg.info.filter.FilterDescription.toFloat("outerradius"),rg.info.filter.FilterDescription.toFloat("overradius"),rg.info.filter.FilterDescription.toFloat("tooltipradius"),rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toExpressionFunction("sort",["a","b"],["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}")))];
 }
 rg.info.InfoPieChart.prototype = {
 	click: null
@@ -13772,7 +15665,7 @@ rg.info.InfoPivotTable.filters = function() {
 		return thx.color.Hsl.toHsl(rg.util.RGColors.parse(value,rg.info.InfoPivotTable.defaultStartColor.hex("#")));
 	},"value is not a parsable color '{0}'"),rg.info.filter.FilterDescription.toTry("endcolor",["heatmapColorEnd"],function(value) {
 		return thx.color.Hsl.toHsl(rg.util.RGColors.parse(value,rg.info.InfoPivotTable.defaultEndColor.hex("#")));
-	},"value is not a parsable color '{0}'"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelPivotTable),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toFunction("cellclass"),rg.info.filter.FilterDescription.toFunction("valueclass"),rg.info.filter.FilterDescription.toFunction("headerclass"),rg.info.filter.FilterDescription.toFunction("totalclass")];
+	},"value is not a parsable color '{0}'"),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelPivotTable),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.toExpressionFunction("cellclass",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunction("valueclass",["value","header"]),rg.info.filter.FilterDescription.toExpressionFunction("headerclass",["header"]),rg.info.filter.FilterDescription.toExpressionFunction("totalclass",["value","values"])];
 }
 rg.info.InfoPivotTable.prototype = {
 	totalclass: null
@@ -13800,7 +15693,7 @@ rg.info.InfoSankey = function() {
 $hxClasses["rg.info.InfoSankey"] = rg.info.InfoSankey;
 rg.info.InfoSankey.__name__ = ["rg","info","InfoSankey"];
 rg.info.InfoSankey.filters = function() {
-	return [rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelSankey),rg.info.filter.FilterDescription.toFloat("layerwidth",["layerWidth"]),rg.info.filter.FilterDescription.toFloat("nodespacing",["nodeSpacing"]),rg.info.filter.FilterDescription.toFloat("dummyspacing",["dummySpacing"]),rg.info.filter.FilterDescription.toFloat("extrawidth",["extraWidth"]),rg.info.filter.FilterDescription.toFloat("backedgespacing",["backEdgeSpacing"]),rg.info.filter.FilterDescription.toFloat("extraheight",["extraHeight"]),rg.info.filter.FilterDescription.toFloat("extraradius",["extraRadius"]),rg.info.filter.FilterDescription.toFloat("imagewidth",["imageWidth"]),rg.info.filter.FilterDescription.toFloat("imageheight",["imageHeight"]),rg.info.filter.FilterDescription.toFloat("imagespacing",["imageSpacing"]),rg.info.filter.FilterDescription.toFloat("labelnodespacing",["labelNodeSpacing"]),rg.info.filter.FilterDescription.toFunction("imagepath",["imagePath"]),rg.info.filter.FilterDescription.toFunction("click",["click"]),rg.info.filter.FilterDescription.toFunction("clickedge",["clickEdge"]),rg.info.filter.FilterDescription.toObject("layoutmap"),rg.info.filter.FilterDescription.toStr("layoutmethod"),rg.info.filter.FilterDescription.toFunctionOrString("nodeclass"),rg.info.filter.FilterDescription.toFunctionOrString("edgeclass"),rg.info.filter.FilterDescription.toFunctionOrBool("displayentry"),rg.info.filter.FilterDescription.toFunctionOrBool("displayexit"),rg.info.filter.FilterDescription.toBool("stackbackedges"),rg.info.filter.FilterDescription.toBool("thinbackedges")];
+	return [rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabelSankey),rg.info.filter.FilterDescription.toFloat("layerwidth",["layerWidth"]),rg.info.filter.FilterDescription.toFloat("nodespacing",["nodeSpacing"]),rg.info.filter.FilterDescription.toFloat("dummyspacing",["dummySpacing"]),rg.info.filter.FilterDescription.toFloat("extrawidth",["extraWidth"]),rg.info.filter.FilterDescription.toFloat("backedgespacing",["backEdgeSpacing"]),rg.info.filter.FilterDescription.toFloat("extraheight",["extraHeight"]),rg.info.filter.FilterDescription.toFloat("extraradius",["extraRadius"]),rg.info.filter.FilterDescription.toFloat("imagewidth",["imageWidth"]),rg.info.filter.FilterDescription.toFloat("imageheight",["imageHeight"]),rg.info.filter.FilterDescription.toFloat("imagespacing",["imageSpacing"]),rg.info.filter.FilterDescription.toFloat("labelnodespacing",["labelNodeSpacing"]),rg.info.filter.FilterDescription.toExpressionFunction("imagepath",[null],["imagePath"]),rg.info.filter.FilterDescription.toFunction("click",["click"]),rg.info.filter.FilterDescription.toFunction("clickedge",["clickEdge"]),rg.info.filter.FilterDescription.toObject("layoutmap"),rg.info.filter.FilterDescription.toStr("layoutmethod"),rg.info.filter.FilterDescription.toExpressionFunctionOrString("nodeclass",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("edgeclass",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayentry",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrBool("displayexit",[null,"stats"]),rg.info.filter.FilterDescription.toBool("stackbackedges"),rg.info.filter.FilterDescription.toBool("thinbackedges")];
 }
 rg.info.InfoSankey.prototype = {
 	thinbackedges: null
@@ -13841,7 +15734,7 @@ rg.info.InfoScatterGraph = function() {
 $hxClasses["rg.info.InfoScatterGraph"] = rg.info.InfoScatterGraph;
 rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
 rg.info.InfoScatterGraph.filters = function() {
-	return [rg.info.filter.FilterDescription.toFunctionOrString("symbol"),rg.info.filter.FilterDescription.toFunctionOrString("symbolstyle",["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+	return [rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbol",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbolstyle",[null,"stats"],["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
 		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
 	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
 }
@@ -13901,7 +15794,14 @@ rg.info.InfoVariable.filters = function() {
 		if(!js.Boot.__instanceof(value,Array) || !rg.info.InfoVariable.testViewValue(value[0])) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be an array of two items but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value[0]);
 	}),rg.info.filter.FilterDescription.custom("view",["max"],function(value) {
 		if(!js.Boot.__instanceof(value,Array) || !rg.info.InfoVariable.testViewValue(value[1])) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be an array of two items but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value[1]);
-	}),rg.info.filter.FilterDescription.toArray("values"),rg.info.filter.FilterDescription.custom("groupby",["groupBy"],function(value) {
+	}),rg.info.filter.FilterDescription.toArray("values"),rg.info.filter.FilterDescription.custom("values",["min"],function(value) {
+		if(!js.Boot.__instanceof(value,Array)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("values is expected to be an array")); else return rg.info.filter.TransformResult.Success(value[0]);
+	}),rg.info.filter.FilterDescription.custom("values",["max"],function(value) {
+		if(!js.Boot.__instanceof(value,Array)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("values is expected to be an array")); else {
+			var arr = js.Boot.__cast(value , Array);
+			return rg.info.filter.TransformResult.Success(arr[arr.length - 1]);
+		}
+	}),rg.info.filter.FilterDescription.custom("groupby",["groupBy"],function(value) {
 		if(!js.Boot.__instanceof(value,String) || !rg.util.Periodicity.isValidGroupBy(value)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value is expected to be a valid string periodicity but is '{0}'",[value])); else return rg.info.filter.TransformResult.Success(value);
 	}),rg.info.filter.FilterDescription.custom("variable",["variableType"],function(value) {
 		var v = null == value?null:("" + Std.string(value)).toLowerCase();
@@ -13924,7 +15824,7 @@ rg.info.InfoVariable.prototype = $extend(rg.info.Info.prototype,{
 	,type: null
 	,__class__: rg.info.InfoVariable
 });
-rg.info.VariableType = $hxClasses["rg.info.VariableType"] = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
+rg.info.VariableType = { __ename__ : ["rg","info","VariableType"], __constructs__ : ["Unknown","Independent","Dependent"] }
 rg.info.VariableType.Unknown = ["Unknown",0];
 rg.info.VariableType.Unknown.toString = $estr;
 rg.info.VariableType.Unknown.__enum__ = rg.info.VariableType;
@@ -14009,6 +15909,12 @@ rg.info.filter.FilterDescription.toObject = function(name,maps) {
 rg.info.filter.FilterDescription.toFunction = function(name,maps) {
 	return rg.info.filter.FilterDescription.pair(name,maps,rg.info.filter.TransformerFunction.instance);
 }
+rg.info.filter.FilterDescription.toTemplateFunction = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,new rg.info.filter.TransformerTemplateToFunction(args));
+}
+rg.info.filter.FilterDescription.toExpressionFunction = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.pair(name,maps,new rg.info.filter.TransformerExpressionToFunction(args));
+}
 rg.info.filter.FilterDescription.toInfo = function(name,maps,cls,fun) {
 	return rg.info.filter.FilterDescription.simplified(name,maps,function(value) {
 		var inst = Type.createInstance(cls,[]);
@@ -14067,8 +15973,34 @@ rg.info.filter.FilterDescription.toFunctionOrBool = function(name,maps) {
 		}))(vin);
 	}));
 }
+rg.info.filter.FilterDescription.toExpressionFunctionOrBool = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerExpressionToFunction(args),$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerBool.instance,$bind($_,$_.transform)),function(b,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return b;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a boolean value or a function returning a boolean value"));
+		}))(vin);
+	}));
+}
 rg.info.filter.FilterDescription.toFunctionOrFloat = function(name,maps) {
 	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFloat.instance,$bind($_,$_.transform)),function(b,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return b;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a float value or a function returning a float value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.toExpressionFunctionOrFloat = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerExpressionToFunction(args),$bind($_,$_.transform)),function(value,vin) {
 		return rg.info.filter.TransformResult.Success(value);
 	},function(vin,msg) {
 		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFloat.instance,$bind($_,$_.transform)),function(b,_) {
@@ -14087,8 +16019,48 @@ rg.info.filter.FilterDescription.toFunctionOrNull = function(name,maps) {
 		if(null == vin) return rg.info.filter.TransformResult.Success(null); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a function or null"));
 	}));
 }
+rg.info.filter.FilterDescription.toExpressionFunctionOrNull = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerExpressionToFunction(args),$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		if(null == vin) return rg.info.filter.TransformResult.Success(null); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a function or null"));
+	}));
+}
+rg.info.filter.FilterDescription.toTemplateFunctionOrNull = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerTemplateToFunction(args),$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		if(null == vin) return rg.info.filter.TransformResult.Success(null); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a function or null"));
+	}));
+}
 rg.info.filter.FilterDescription.toFunctionOrString = function(name,maps) {
 	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerFunction.instance,$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerString.instance,$bind($_,$_.transform)),function(s,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return s;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a string value or a function returning a string value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.toExpressionFunctionOrString = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerExpressionToFunction(args),$bind($_,$_.transform)),function(value,vin) {
+		return rg.info.filter.TransformResult.Success(value);
+	},function(vin,msg) {
+		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerString.instance,$bind($_,$_.transform)),function(s,_) {
+			return rg.info.filter.TransformResult.Success(function() {
+				return s;
+			});
+		},function(vin1,msg1) {
+			return rg.info.filter.TransformResult.Failure(new thx.util.Message("parameter should be a string value or a function returning a string value"));
+		}))(vin);
+	}));
+}
+rg.info.filter.FilterDescription.toTemplateFunctionOrString = function(name,args,maps) {
+	return rg.info.filter.FilterDescription.custom(name,maps,rg.info.filter.TransformerChainer.onResult(($_=new rg.info.filter.TransformerTemplateToFunction(args),$bind($_,$_.transform)),function(value,vin) {
 		return rg.info.filter.TransformResult.Success(value);
 	},function(vin,msg) {
 		return (rg.info.filter.TransformerChainer.onResult(($_=rg.info.filter.TransformerString.instance,$bind($_,$_.transform)),function(s,_) {
@@ -14271,9 +16243,72 @@ rg.info.filter.TransformerFunction.prototype = {
 	}
 	,__class__: rg.info.filter.TransformerFunction
 }
+rg.info.filter.TransformerTemplateToFunction = function(argumentsMap) {
+	this.argumentsMap = argumentsMap;
+};
+$hxClasses["rg.info.filter.TransformerTemplateToFunction"] = rg.info.filter.TransformerTemplateToFunction;
+rg.info.filter.TransformerTemplateToFunction.__name__ = ["rg","info","filter","TransformerTemplateToFunction"];
+rg.info.filter.TransformerTemplateToFunction.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerTemplateToFunction.prototype = {
+	transform: function(value) {
+		var _g = this;
+		if(js.Boot.__instanceof(value,String)) {
+			var template = new erazor.Template(value);
+			return rg.info.filter.TransformResult.Success(function() {
+				return template.execute(rg.info.filter.TransformerExpressionToFunction.extractValues(_g.argumentsMap,arguments));
+			});
+		} else if(Reflect.isFunction(value)) return rg.info.filter.TransformResult.Success(value); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("not a function"));
+	}
+	,argumentsMap: null
+	,__class__: rg.info.filter.TransformerTemplateToFunction
+}
+rg.info.filter.TransformerExpressionToFunction = function(argumentsMap) {
+	this.argumentsMap = argumentsMap;
+};
+$hxClasses["rg.info.filter.TransformerExpressionToFunction"] = rg.info.filter.TransformerExpressionToFunction;
+rg.info.filter.TransformerExpressionToFunction.__name__ = ["rg","info","filter","TransformerExpressionToFunction"];
+rg.info.filter.TransformerExpressionToFunction.__interfaces__ = [rg.info.filter.ITransformer];
+rg.info.filter.TransformerExpressionToFunction.extractValues = function(map,args) {
+	var i = map.length, values = new Hash();
+	values.set("ReportGrid",ReportGrid);
+	values.set("Math",Math);
+	values.set("null",null);
+	values.set("true",true);
+	values.set("false",false);
+	while(--i >= 0) {
+		var key = map[i];
+		if(null == key) {
+			var _g = 0, _g1 = Reflect.fields(args[i]);
+			while(_g < _g1.length) {
+				var key1 = _g1[_g];
+				++_g;
+				values.set(key1,Reflect.field(args[i],key1));
+			}
+		} else values.set(key,args[i]);
+	}
+	return values;
+}
+rg.info.filter.TransformerExpressionToFunction.prototype = {
+	transform: function(value) {
+		var _g = this;
+		if(js.Boot.__instanceof(value,String) && rg.info.filter.TransformerExpressionToFunction.pattern.match(value)) {
+			value = value.substr(value.indexOf("=") + 1);
+			var program = new hscript.Parser().parseString(value);
+			return rg.info.filter.TransformResult.Success(function() {
+				rg.info.filter.TransformerExpressionToFunction.interp.variables = rg.info.filter.TransformerExpressionToFunction.extractValues(_g.argumentsMap,arguments);
+				return rg.info.filter.TransformerExpressionToFunction.interp.execute(program);
+			});
+		} else if(Reflect.isFunction(value)) return rg.info.filter.TransformResult.Success(value); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("not a function"));
+	}
+	,argumentsMap: null
+	,__class__: rg.info.filter.TransformerExpressionToFunction
+}
 rg.info.filter.ReturnMessageIfNot = function() { }
 $hxClasses["rg.info.filter.ReturnMessageIfNot"] = rg.info.filter.ReturnMessageIfNot;
 rg.info.filter.ReturnMessageIfNot.__name__ = ["rg","info","filter","ReturnMessageIfNot"];
+rg.info.filter.ReturnMessageIfNot.isBool = function(v) {
+	return js.Boot.__instanceof(v,Bool)?null:"not a boolean";
+}
 rg.info.filter.ReturnMessageIfNot.isString = function(v) {
 	return js.Boot.__instanceof(v,String)?null:"not a string";
 }
@@ -14345,7 +16380,7 @@ rg.info.filter.Pairs.prototype = {
 	,names: null
 	,__class__: rg.info.filter.Pairs
 }
-rg.info.filter.TransformResult = $hxClasses["rg.info.filter.TransformResult"] = { __ename__ : ["rg","info","filter","TransformResult"], __constructs__ : ["Success","Failure"] }
+rg.info.filter.TransformResult = { __ename__ : ["rg","info","filter","TransformResult"], __constructs__ : ["Success","Failure"] }
 rg.info.filter.TransformResult.Success = function(value) { var $x = ["Success",0,value]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
 rg.info.filter.TransformResult.Failure = function(reason) { var $x = ["Failure",1,reason]; $x.__enum__ = rg.info.filter.TransformResult; $x.toString = $estr; return $x; }
 rg.interactive = {}
@@ -14554,7 +16589,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	,__class__: rg.interactive.RGLegacyRenderer
 }
 rg.layout = {}
-rg.layout.Anchor = $hxClasses["rg.layout.Anchor"] = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
+rg.layout.Anchor = { __ename__ : ["rg","layout","Anchor"], __constructs__ : ["Top","Bottom","Left","Right"] }
 rg.layout.Anchor.Top = ["Top",0];
 rg.layout.Anchor.Top.toString = $estr;
 rg.layout.Anchor.Top.__enum__ = rg.layout.Anchor;
@@ -15043,7 +17078,7 @@ rg.layout.PanelContext.prototype = {
 	,panel: null
 	,__class__: rg.layout.PanelContext
 }
-rg.layout.ScalePattern = $hxClasses["rg.layout.ScalePattern"] = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
+rg.layout.ScalePattern = { __ename__ : ["rg","layout","ScalePattern"], __constructs__ : ["ScalesBefore","ScalesAfter","ScalesAlternating"] }
 rg.layout.ScalePattern.ScalesBefore = ["ScalesBefore",0];
 rg.layout.ScalePattern.ScalesBefore.toString = $estr;
 rg.layout.ScalePattern.ScalesBefore.__enum__ = rg.layout.ScalePattern;
@@ -15954,7 +17989,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,stacked: null
 	,__class__: rg.svg.chart.BarChart
 });
-rg.svg.chart.ColorScaleMode = $hxClasses["rg.svg.chart.ColorScaleMode"] = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
+rg.svg.chart.ColorScaleMode = { __ename__ : ["rg","svg","chart","ColorScaleMode"], __constructs__ : ["FromCssInterpolation","FromCss","Interpolation","Sequence","Fixed","Fun"] }
 rg.svg.chart.ColorScaleMode.FromCssInterpolation = function(steps) { var $x = ["FromCssInterpolation",0,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.FromCss = function(steps) { var $x = ["FromCss",1,steps]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
 rg.svg.chart.ColorScaleMode.Interpolation = function(colors) { var $x = ["Interpolation",2,colors]; $x.__enum__ = rg.svg.chart.ColorScaleMode; $x.toString = $estr; return $x; }
@@ -16352,7 +18387,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,__class__: rg.svg.chart.Geo
 	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
 });
-rg.svg.chart.GradientEffect = $hxClasses["rg.svg.chart.GradientEffect"] = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
+rg.svg.chart.GradientEffect = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
 rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.GradientEffect.NoEffect.toString = $estr;
 rg.svg.chart.GradientEffect.NoEffect.__enum__ = rg.svg.chart.GradientEffect;
@@ -16807,7 +18842,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 	,symbol: null
 	,__class__: rg.svg.chart.LineChart
 });
-rg.svg.chart.LineEffect = $hxClasses["rg.svg.chart.LineEffect"] = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
+rg.svg.chart.LineEffect = { __ename__ : ["rg","svg","chart","LineEffect"], __constructs__ : ["NoEffect","Gradient","DropShadow"] }
 rg.svg.chart.LineEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.LineEffect.NoEffect.toString = $estr;
 rg.svg.chart.LineEffect.NoEffect.__enum__ = rg.svg.chart.LineEffect;
@@ -17811,7 +19846,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 	,symbol: null
 	,__class__: rg.svg.chart.ScatterGraph
 });
-rg.svg.chart.StreamEffect = $hxClasses["rg.svg.chart.StreamEffect"] = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
+rg.svg.chart.StreamEffect = { __ename__ : ["rg","svg","chart","StreamEffect"], __constructs__ : ["NoEffect","GradientHorizontal","GradientVertical"] }
 rg.svg.chart.StreamEffect.NoEffect = ["NoEffect",0];
 rg.svg.chart.StreamEffect.NoEffect.toString = $estr;
 rg.svg.chart.StreamEffect.NoEffect.__enum__ = rg.svg.chart.StreamEffect;
@@ -18744,7 +20779,6 @@ rg.svg.util = {}
 rg.svg.util.RGCss = function() { }
 $hxClasses["rg.svg.util.RGCss"] = rg.svg.util.RGCss;
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
-rg.svg.util.RGCss.cache = null;
 rg.svg.util.RGCss.cssSources = function() {
 	var sources = [];
 	dhx.Dom.selectAll("link[rel=\"stylesheet\"]").eachNode(function(n,_) {
@@ -18777,7 +20811,6 @@ rg.svg.util.SymbolCache = function() {
 };
 $hxClasses["rg.svg.util.SymbolCache"] = rg.svg.util.SymbolCache;
 rg.svg.util.SymbolCache.__name__ = ["rg","svg","util","SymbolCache"];
-rg.svg.util.SymbolCache.cache = null;
 rg.svg.util.SymbolCache.prototype = {
 	stats: function() {
 		return { cachedSymbols : Iterators.array(this.c.iterator()).length};
@@ -19327,7 +21360,7 @@ rg.svg.widget.ElbowArea.prototype = {
 	,g: null
 	,__class__: rg.svg.widget.ElbowArea
 }
-rg.svg.widget.Orientation = $hxClasses["rg.svg.widget.Orientation"] = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
+rg.svg.widget.Orientation = { __ename__ : ["rg","svg","widget","Orientation"], __constructs__ : ["RightBottom","LeftBottom","RightTop","LeftTop","BottomRight","BottomLeft","TopRight","TopLeft"] }
 rg.svg.widget.Orientation.RightBottom = ["RightBottom",0];
 rg.svg.widget.Orientation.RightBottom.toString = $estr;
 rg.svg.widget.Orientation.RightBottom.__enum__ = rg.svg.widget.Orientation;
@@ -19352,7 +21385,7 @@ rg.svg.widget.Orientation.TopRight.__enum__ = rg.svg.widget.Orientation;
 rg.svg.widget.Orientation.TopLeft = ["TopLeft",7];
 rg.svg.widget.Orientation.TopLeft.toString = $estr;
 rg.svg.widget.Orientation.TopLeft.__enum__ = rg.svg.widget.Orientation;
-rg.svg.widget.GridAnchor = $hxClasses["rg.svg.widget.GridAnchor"] = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
+rg.svg.widget.GridAnchor = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
 rg.svg.widget.GridAnchor.TopLeft.__enum__ = rg.svg.widget.GridAnchor;
@@ -19806,7 +21839,7 @@ rg.svg.widget.Label.prototype = {
 	,__class__: rg.svg.widget.Label
 	,__properties__: {set_text:"setText",set_orientation:"setOrientation",set_anchor:"setAnchor"}
 }
-rg.svg.widget.LabelOrientation = $hxClasses["rg.svg.widget.LabelOrientation"] = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
+rg.svg.widget.LabelOrientation = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
 rg.svg.widget.LabelOrientation.Aligned = ["Aligned",1];
 rg.svg.widget.LabelOrientation.Aligned.toString = $estr;
@@ -21842,9 +23875,6 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 rg.visualization.Visualizations = function() { }
 $hxClasses["rg.visualization.Visualizations"] = rg.visualization.Visualizations;
 rg.visualization.Visualizations.__name__ = ["rg","visualization","Visualizations"];
-rg.visualization.Visualizations.layoutDefault = null;
-rg.visualization.Visualizations.layoutType = null;
-rg.visualization.Visualizations.layoutArgs = null;
 rg.visualization.Visualizations.instantiateLayout = function(name,width,height,container) {
 	return Type.createInstance(rg.visualization.Visualizations.layoutType.get(name),[width,height,container]);
 }
@@ -22132,7 +24162,7 @@ thx.color.Grey.prototype = $extend(thx.color.Rgb.prototype,{
 	grey: null
 	,__class__: thx.color.Grey
 });
-thx.color.PerceivedLuminance = $hxClasses["thx.color.PerceivedLuminance"] = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
+thx.color.PerceivedLuminance = { __ename__ : ["thx","color","PerceivedLuminance"], __constructs__ : ["Standard","Perceived","PerceivedAccurate"] }
 thx.color.PerceivedLuminance.Standard = ["Standard",0];
 thx.color.PerceivedLuminance.Standard.toString = $estr;
 thx.color.PerceivedLuminance.Standard.__enum__ = thx.color.PerceivedLuminance;
@@ -22145,154 +24175,6 @@ thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLum
 thx.color.NamedColors = function() { }
 $hxClasses["thx.color.NamedColors"] = thx.color.NamedColors;
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
-thx.color.NamedColors.aliceblue = null;
-thx.color.NamedColors.antiquewhite = null;
-thx.color.NamedColors.aqua = null;
-thx.color.NamedColors.aquamarine = null;
-thx.color.NamedColors.azure = null;
-thx.color.NamedColors.beige = null;
-thx.color.NamedColors.bisque = null;
-thx.color.NamedColors.black = null;
-thx.color.NamedColors.blanchedalmond = null;
-thx.color.NamedColors.blue = null;
-thx.color.NamedColors.blueviolet = null;
-thx.color.NamedColors.brown = null;
-thx.color.NamedColors.burlywood = null;
-thx.color.NamedColors.cadetblue = null;
-thx.color.NamedColors.chartreuse = null;
-thx.color.NamedColors.chocolate = null;
-thx.color.NamedColors.coral = null;
-thx.color.NamedColors.cornflowerblue = null;
-thx.color.NamedColors.cornsilk = null;
-thx.color.NamedColors.crimson = null;
-thx.color.NamedColors.cyan = null;
-thx.color.NamedColors.darkblue = null;
-thx.color.NamedColors.darkcyan = null;
-thx.color.NamedColors.darkgoldenrod = null;
-thx.color.NamedColors.darkgray = null;
-thx.color.NamedColors.darkgreen = null;
-thx.color.NamedColors.darkgrey = null;
-thx.color.NamedColors.darkkhaki = null;
-thx.color.NamedColors.darkmagenta = null;
-thx.color.NamedColors.darkolivegreen = null;
-thx.color.NamedColors.darkorange = null;
-thx.color.NamedColors.darkorchid = null;
-thx.color.NamedColors.darkred = null;
-thx.color.NamedColors.darksalmon = null;
-thx.color.NamedColors.darkseagreen = null;
-thx.color.NamedColors.darkslateblue = null;
-thx.color.NamedColors.darkslategray = null;
-thx.color.NamedColors.darkslategrey = null;
-thx.color.NamedColors.darkturquoise = null;
-thx.color.NamedColors.darkviolet = null;
-thx.color.NamedColors.deeppink = null;
-thx.color.NamedColors.deepskyblue = null;
-thx.color.NamedColors.dimgray = null;
-thx.color.NamedColors.dimgrey = null;
-thx.color.NamedColors.dodgerblue = null;
-thx.color.NamedColors.firebrick = null;
-thx.color.NamedColors.floralwhite = null;
-thx.color.NamedColors.forestgreen = null;
-thx.color.NamedColors.fuchsia = null;
-thx.color.NamedColors.gainsboro = null;
-thx.color.NamedColors.ghostwhite = null;
-thx.color.NamedColors.gold = null;
-thx.color.NamedColors.goldenrod = null;
-thx.color.NamedColors.gray = null;
-thx.color.NamedColors.green = null;
-thx.color.NamedColors.greenyellow = null;
-thx.color.NamedColors.grey = null;
-thx.color.NamedColors.honeydew = null;
-thx.color.NamedColors.hotpink = null;
-thx.color.NamedColors.indianred = null;
-thx.color.NamedColors.indigo = null;
-thx.color.NamedColors.ivory = null;
-thx.color.NamedColors.khaki = null;
-thx.color.NamedColors.lavender = null;
-thx.color.NamedColors.lavenderblush = null;
-thx.color.NamedColors.lawngreen = null;
-thx.color.NamedColors.lemonchiffon = null;
-thx.color.NamedColors.lightblue = null;
-thx.color.NamedColors.lightcoral = null;
-thx.color.NamedColors.lightcyan = null;
-thx.color.NamedColors.lightgoldenrodyellow = null;
-thx.color.NamedColors.lightgray = null;
-thx.color.NamedColors.lightgreen = null;
-thx.color.NamedColors.lightgrey = null;
-thx.color.NamedColors.lightpink = null;
-thx.color.NamedColors.lightsalmon = null;
-thx.color.NamedColors.lightseagreen = null;
-thx.color.NamedColors.lightskyblue = null;
-thx.color.NamedColors.lightslategray = null;
-thx.color.NamedColors.lightslategrey = null;
-thx.color.NamedColors.lightsteelblue = null;
-thx.color.NamedColors.lightyellow = null;
-thx.color.NamedColors.lime = null;
-thx.color.NamedColors.limegreen = null;
-thx.color.NamedColors.linen = null;
-thx.color.NamedColors.magenta = null;
-thx.color.NamedColors.maroon = null;
-thx.color.NamedColors.mediumaquamarine = null;
-thx.color.NamedColors.mediumblue = null;
-thx.color.NamedColors.mediumorchid = null;
-thx.color.NamedColors.mediumpurple = null;
-thx.color.NamedColors.mediumseagreen = null;
-thx.color.NamedColors.mediumslateblue = null;
-thx.color.NamedColors.mediumspringgreen = null;
-thx.color.NamedColors.mediumturquoise = null;
-thx.color.NamedColors.mediumvioletred = null;
-thx.color.NamedColors.midnightblue = null;
-thx.color.NamedColors.mintcream = null;
-thx.color.NamedColors.mistyrose = null;
-thx.color.NamedColors.moccasin = null;
-thx.color.NamedColors.navajowhite = null;
-thx.color.NamedColors.navy = null;
-thx.color.NamedColors.oldlace = null;
-thx.color.NamedColors.olive = null;
-thx.color.NamedColors.olivedrab = null;
-thx.color.NamedColors.orange = null;
-thx.color.NamedColors.orangered = null;
-thx.color.NamedColors.orchid = null;
-thx.color.NamedColors.palegoldenrod = null;
-thx.color.NamedColors.palegreen = null;
-thx.color.NamedColors.paleturquoise = null;
-thx.color.NamedColors.palevioletred = null;
-thx.color.NamedColors.papayawhip = null;
-thx.color.NamedColors.peachpuff = null;
-thx.color.NamedColors.peru = null;
-thx.color.NamedColors.pink = null;
-thx.color.NamedColors.plum = null;
-thx.color.NamedColors.powderblue = null;
-thx.color.NamedColors.purple = null;
-thx.color.NamedColors.red = null;
-thx.color.NamedColors.rosybrown = null;
-thx.color.NamedColors.royalblue = null;
-thx.color.NamedColors.saddlebrown = null;
-thx.color.NamedColors.salmon = null;
-thx.color.NamedColors.sandybrown = null;
-thx.color.NamedColors.seagreen = null;
-thx.color.NamedColors.seashell = null;
-thx.color.NamedColors.sienna = null;
-thx.color.NamedColors.silver = null;
-thx.color.NamedColors.skyblue = null;
-thx.color.NamedColors.slateblue = null;
-thx.color.NamedColors.slategray = null;
-thx.color.NamedColors.slategrey = null;
-thx.color.NamedColors.snow = null;
-thx.color.NamedColors.springgreen = null;
-thx.color.NamedColors.steelblue = null;
-thx.color.NamedColors.tan = null;
-thx.color.NamedColors.teal = null;
-thx.color.NamedColors.thistle = null;
-thx.color.NamedColors.tomato = null;
-thx.color.NamedColors.turquoise = null;
-thx.color.NamedColors.violet = null;
-thx.color.NamedColors.wheat = null;
-thx.color.NamedColors.white = null;
-thx.color.NamedColors.whitesmoke = null;
-thx.color.NamedColors.yellow = null;
-thx.color.NamedColors.yellowgreen = null;
-thx.color.NamedColors.byName = null;
 thx.culture = {}
 thx.culture.Info = function() { }
 $hxClasses["thx.culture.Info"] = thx.culture.Info;
@@ -22313,7 +24195,6 @@ thx.culture.Culture = function() { }
 $hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
-thx.culture.Culture.cultures = null;
 thx.culture.Culture.getCultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
@@ -22327,8 +24208,6 @@ thx.culture.Culture.names = function() {
 thx.culture.Culture.exists = function(culture) {
 	return thx.culture.Culture.getCultures().exists(culture.toLowerCase());
 }
-thx.culture.Culture._defaultCulture = null;
-thx.culture.Culture.defaultCulture = null;
 thx.culture.Culture.getDefaultCulture = function() {
 	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
 }
@@ -22695,7 +24574,6 @@ thx.culture.Language = function() { }
 $hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
-thx.culture.Language.languages = null;
 thx.culture.Language.getLanguages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
@@ -22793,7 +24671,6 @@ thx.languages.En = function() {
 $hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
 thx.languages.En.__properties__ = {get_language:"getLanguage"}
-thx.languages.En.language = null;
 thx.languages.En.getLanguage = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
@@ -22834,7 +24711,6 @@ thx.cultures.EnUS = function() {
 $hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
 thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
-thx.cultures.EnUS.culture = null;
 thx.cultures.EnUS.getCulture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
@@ -23554,7 +25430,7 @@ thx.geo.Azimuthal.prototype = {
 	,__class__: thx.geo.Azimuthal
 	,__properties__: {set_mode:"setMode",get_mode:"getMode",set_origin:"setOrigin",get_origin:"getOrigin",set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
 }
-thx.geo.ProjectionMode = $hxClasses["thx.geo.ProjectionMode"] = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
+thx.geo.ProjectionMode = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
 thx.geo.ProjectionMode.Orthographic.toString = $estr;
 thx.geo.ProjectionMode.Orthographic.__enum__ = thx.geo.ProjectionMode;
@@ -23955,7 +25831,7 @@ thx.geom.layout.Stack.prototype = {
 	,_order: null
 	,__class__: thx.geom.layout.Stack
 }
-thx.geom.layout.StackOrder = $hxClasses["thx.geom.layout.StackOrder"] = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
+thx.geom.layout.StackOrder = { __ename__ : ["thx","geom","layout","StackOrder"], __constructs__ : ["DefaultOrder","InsideOut","ReverseOrder"] }
 thx.geom.layout.StackOrder.DefaultOrder = ["DefaultOrder",0];
 thx.geom.layout.StackOrder.DefaultOrder.toString = $estr;
 thx.geom.layout.StackOrder.DefaultOrder.__enum__ = thx.geom.layout.StackOrder;
@@ -23965,7 +25841,7 @@ thx.geom.layout.StackOrder.InsideOut.__enum__ = thx.geom.layout.StackOrder;
 thx.geom.layout.StackOrder.ReverseOrder = ["ReverseOrder",2];
 thx.geom.layout.StackOrder.ReverseOrder.toString = $estr;
 thx.geom.layout.StackOrder.ReverseOrder.__enum__ = thx.geom.layout.StackOrder;
-thx.geom.layout.StackOffset = $hxClasses["thx.geom.layout.StackOffset"] = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
+thx.geom.layout.StackOffset = { __ename__ : ["thx","geom","layout","StackOffset"], __constructs__ : ["Silhouette","Wiggle","ZeroOffset"] }
 thx.geom.layout.StackOffset.Silhouette = ["Silhouette",0];
 thx.geom.layout.StackOffset.Silhouette.toString = $estr;
 thx.geom.layout.StackOffset.Silhouette.__enum__ = thx.geom.layout.StackOffset;
@@ -25356,8 +27232,6 @@ thx.json = {}
 thx.json.Json = function() { }
 $hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
-thx.json.Json.nativeEncoder = null;
-thx.json.Json.nativeDecoder = null;
 thx.json.Json.encode = function(value) {
 	if(null != thx.json.Json.nativeEncoder) return thx.json.Json.nativeEncoder(value);
 	var handler = new thx.json.JsonEncoder();
@@ -25636,7 +27510,7 @@ thx.json.JsonDecoder.prototype = {
 	,__class__: thx.json.JsonDecoder
 }
 thx.json._JsonDecoder = {}
-thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
+thx.json._JsonDecoder.StreamError = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
@@ -25739,7 +27613,7 @@ thx.math.Ease.mode = function(easemode,f) {
 		return thx.math.Ease.mode(thx.math.EaseMode.EaseInEaseOut,thx.math.Ease.mode(thx.math.EaseMode.EaseOut,f));
 	}
 }
-thx.math.EaseMode = $hxClasses["thx.math.EaseMode"] = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
+thx.math.EaseMode = { __ename__ : ["thx","math","EaseMode"], __constructs__ : ["EaseIn","EaseOut","EaseInEaseOut","EaseOutEaseIn"] }
 thx.math.EaseMode.EaseIn = ["EaseIn",0];
 thx.math.EaseMode.EaseIn.toString = $estr;
 thx.math.EaseMode.EaseIn.__enum__ = thx.math.EaseMode;
@@ -26537,7 +28411,7 @@ thx.svg.LineInternals._lineCardinalTangents = function(points,tension) {
 	tangents.push([a * (p2[0] - p0[0]),a * (p2[1] - p0[1])]);
 	return tangents;
 }
-thx.svg.LineInterpolator = $hxClasses["thx.svg.LineInterpolator"] = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
+thx.svg.LineInterpolator = { __ename__ : ["thx","svg","LineInterpolator"], __constructs__ : ["Linear","Step","StepBefore","StepAfter","Basis","BasisOpen","BasisClosed","Cardinal","CardinalOpen","CardinalClosed","Monotone"] }
 thx.svg.LineInterpolator.Linear = ["Linear",0];
 thx.svg.LineInterpolator.Linear.toString = $estr;
 thx.svg.LineInterpolator.Linear.__enum__ = thx.svg.LineInterpolator;
@@ -27037,12 +28911,11 @@ thx.translation.ITranslation.prototype = {
 	,singular: null
 	,domain: null
 	,__class__: thx.translation.ITranslation
-	,__properties__: {set_domain:"setDomain",get_domain:"getDomain"}
 }
 thx.util.MacroVersion = function() { }
 $hxClasses["thx.util.MacroVersion"] = thx.util.MacroVersion;
 thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
-thx.util.Result = $hxClasses["thx.util.Result"] = { __ename__ : ["thx","util","Result"], __constructs__ : ["Ok","Failure"] }
+thx.util.Result = { __ename__ : ["thx","util","Result"], __constructs__ : ["Ok","Failure"] }
 thx.util.Result.Ok = ["Ok",0];
 thx.util.Result.Ok.toString = $estr;
 thx.util.Result.Ok.__enum__ = thx.util.Result;
@@ -27143,11 +29016,11 @@ var Int = $hxClasses.Int = { __name__ : ["Int"]};
 var Dynamic = $hxClasses.Dynamic = { __name__ : ["Dynamic"]};
 var Float = $hxClasses.Float = Number;
 Float.__name__ = ["Float"];
-var Bool = $hxClasses.Bool = Boolean;
+var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = $hxClasses.Class = { __name__ : ["Class"]};
 var Enum = { };
-var Void = $hxClasses.Void = { __ename__ : ["Void"]};
+var Void = { __ename__ : ["Void"]};
 var useragent = dhx.ClientHost.userAgent(), hasnavigator = dhx.ClientHost.hasNavigator(), pattern;
 dhx.ClientHost.host = !hasnavigator?dhx.HostType.UnknownServer:typeof module !== 'undefined' && module.exports?dhx.HostType.NodeJs:(pattern = new EReg("MSIE(?:/| )(\\S*);","")).match(useragent)?dhx.HostType.IE(pattern.matched(1)):(pattern = new EReg("Firefox(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Firefox(pattern.matched(1)):(pattern = new EReg("Chrome(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Chrome(pattern.matched(1)):(pattern = new EReg("Version(?:/| )(\\S*) Safari(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Safari(pattern.matched(1)):(pattern = new EReg("Opera(?:/| )(\\S*)","")).match(useragent)?dhx.HostType.Opera(pattern.matched(1)):dhx.HostType.Unknown(useragent);
 dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Windows NT\\s+(\\d+\\.\\d+)","")).match(useragent)?(function($this) {
@@ -29020,7 +30893,6 @@ dhx.Access.FIELD_TRANSITION = "__dhx_transition__";
 dhx.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 dhx.AccessClassed._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 dhx.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
-js.Lib.onerror = null;
 dhx.Dom.doc = (function() {
 	var g = new dhx.Group([js.Lib.document]), gs = dhx.Selection.create([g]);
 	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
@@ -29044,11 +30916,16 @@ dhx.Namespace.prefix = (function() {
 })();
 dhx.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
 dhx.Timer.timeout = 0;
-dhx.Timer.queue = null;
 dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
 dhx.BaseTransition._id = 0;
 dhx.BaseTransition._inheritid = 0;
+erazor.Parser.at = "@";
+erazor.Parser.bracketMismatch = "Bracket mismatch! Inside template, non-paired brackets, '{' or '}', should be replaced by @{'{'} and @{'}'}.";
+hscript.Parser.p1 = 0;
+hscript.Parser.readPos = 0;
+hscript.Parser.tokenMin = 0;
+hscript.Parser.tokenMax = 0;
 math.BigInteger.MAX_RADIX = 36;
 math.BigInteger.MIN_RADIX = 2;
 math.IEEE754.bias = 1024;
@@ -29087,6 +30964,8 @@ rg.info.filter.TransformerBool.instance = new rg.info.filter.TransformerBool();
 rg.info.filter.TransformerInt.instance = new rg.info.filter.TransformerInt();
 rg.info.filter.TransformerFloat.instance = new rg.info.filter.TransformerFloat();
 rg.info.filter.TransformerFunction.instance = new rg.info.filter.TransformerFunction();
+rg.info.filter.TransformerExpressionToFunction.interp = new hscript.Interp();
+rg.info.filter.TransformerExpressionToFunction.pattern = new EReg("^\\s*=","");
 rg.interactive.RGDownloader.ALLOWED_FORMATS = ["pdf","ps","png","jpg","svg"];
 rg.interactive.RGLegacyRenderer.FORMAT = "jpg";
 rg.interactive.RGLegacyRenderer.nextframeid = 0;

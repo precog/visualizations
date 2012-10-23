@@ -5,7 +5,7 @@
 
 package rg.svg.widget;
 
-enum LabelOrientation 
+enum LabelOrientation
 {
 	FixedAngle(angle : Float);
 	Aligned;

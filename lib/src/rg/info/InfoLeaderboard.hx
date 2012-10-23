@@ -33,7 +33,7 @@ using rg.info.Info;
 			"animation".toInfo(InfoAnimation, function(info) { info.ease = Equations.linear; }),
 			"label".toInfo(InfoLabelLeaderboard),
 			"click".toFunction(),
-			"sort".toFunction(["sortDataPoint"]),
+			"sort".toExpressionFunction(["a", "b"], ["sortDataPoint"]),
 			"displaybar".toBool(),
 			"usemax".toBool(),
 			"colorscale".toBool(),

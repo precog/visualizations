@@ -25,8 +25,8 @@ using rg.info.Info;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"symbol".toFunctionOrString(),
-			"symbolstyle".toFunctionOrString(["symbolStyle"]),
+			"symbol".toExpressionFunctionOrString([null, "stats"]),
+			"symbolstyle".toExpressionFunctionOrString([null, "stats"], ["symbolStyle"]),
 			"segmenton".simplified(["segment"],
 				function(value) return new InfoSegment().feed({ on : value }),
 				ReturnMessageIfNot.isString

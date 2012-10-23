@@ -32,23 +32,4 @@ using rg.info.Info;
 			)
 		].concat(cast InfoCartesianChart.filters());
 	}
-/*
-	public static function filters() : Array<FieldFilter>
-	{
-		return [{
-			field : "contour",
-			validator : function(v) return Std.is(v, Bool),
-			filter : null
-		}, {
-			field : "color",
-			validator : function(v) return Std.is(v, String) || Reflect.isFunction(v),
-			filter : function(v) {
-				return [{
-					field : "colorScaleMode",
-					value : ColorScaleModes.createFromDynamic(v)
-				}];
-			}
-		}].concat(cast InfoCartesianChart.filters());
-	}
-*/
 }

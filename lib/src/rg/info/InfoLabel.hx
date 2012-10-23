@@ -20,9 +20,9 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"title".toFunctionOrString(),
-			"datapoint".toFunction(),
-			"datapointover".toFunction()
+			"title".toTemplateFunctionOrString(["axes", "values"]),
+			"datapoint".toTemplateFunction([null, "stats"]),
+			"datapointover".toTemplateFunction([null, "stats"])
 		];
 	}
 }

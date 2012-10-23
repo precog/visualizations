@@ -45,6 +45,20 @@ using Arrays;
 					return TransformResult.Success(value[1]);
 			}),
 			"values".toArray(),
+			"values".custom(["min"], function(value : Dynamic) {
+				if(!Std.is(value, Array))
+					return TransformResult.Failure(new Message("values is expected to be an array"));
+				else
+					return TransformResult.Success(value[0]);
+			}),
+			"values".custom(["max"], function(value : Dynamic) {
+				if(!Std.is(value, Array))
+					return TransformResult.Failure(new Message("values is expected to be an array"));
+				else {
+					var arr = cast(value, Array<Dynamic>);
+					return TransformResult.Success(arr[arr.length - 1]);
+				}
+			}),
 			"groupby".custom(["groupBy"], function(value : Dynamic) {
 				if(!Std.is(value, String) || !Periodicity.isValidGroupBy(value))
 					return TransformResult.Failure(new Message("value is expected to be a valid string periodicity but is '{0}'", [value]));
@@ -63,7 +77,7 @@ using Arrays;
 			}, "value is expected to be a valid scale distribution value but is '{0}'")
 		];
 	}
-	
+
 	static function testViewValue(v : Dynamic)
 	{
 		return v == null || Types.isPrimitive(v) || Std.is(v, Date) || Reflect.isFunction(v);

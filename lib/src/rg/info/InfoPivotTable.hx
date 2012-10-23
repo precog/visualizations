@@ -63,10 +63,10 @@ using rg.info.Info;
 			),
 			"label".toInfo(InfoLabelPivotTable),
 			"click".toFunction(),
-			"cellclass".toFunction(),
-			"valueclass".toFunction(),
-			"headerclass".toFunction(),
-			"totalclass".toFunction()
+			"cellclass".toExpressionFunction([null, "stats"]),
+			"valueclass".toExpressionFunction(["value", "header"]),
+			"headerclass".toExpressionFunction(["header"]),
+			"totalclass".toExpressionFunction(["value", "values"])
 		];
 	}
 }

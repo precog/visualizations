@@ -85,7 +85,7 @@ using Arrays;
 			"tooltipradius".toFloat(),
 			"animation".toInfo(InfoAnimation),
 			"label".toInfo(InfoLabel),
-			"sort".toFunction(["sortDataPoint"]),
+			"sort".toExpressionFunction(["a", "b"], ["sortDataPoint"]),
 			"click".toFunction(),
 			"effect".simplified(
 				GradientEffects.parse,

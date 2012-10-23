@@ -24,18 +24,4 @@ using rg.info.Info;
 			"forcelegacy".toBool()
 		];
 	}
-/*
-	public static function filter() : Array<FieldFilter>
-	{
-		return [{
-			field : "ready",
-			validator : function(v) return Reflect.isFunction(v),
-			value : null
-		}, {
-			field : "forcelegacy",
-			validator : function(v) return Std.is(v, Bool),
-			value : null
-		}];
-	}
-*/
 }

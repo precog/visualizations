@@ -34,21 +34,4 @@ import thx.util.Message;
 			"replace".toBool()
 		];
 	}
-/*
-	public static function filters() : Array<Dynamic>
-	{
-		return [{
-			field : "visualization",
-			validator : function(v) return Arrays.exists(Visualizations.visualizations, v.toLowerCase()),
-			filter : function(v) return [{
-				value : v.toLowerCase(),
-				field : "type"
-			}]
-		}, {
-			field : "replace",
-			validator : function(v) return Std.is(v, Bool),
-			filtern : null
-		}];
-	}
-*/
 }

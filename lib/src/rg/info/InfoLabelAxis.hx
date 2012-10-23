@@ -16,8 +16,8 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"axis".toFunction(),
-			"tickmark".toFunction()
+			"axis".toTemplateFunction(["type"]),
+			"tickmark".toTemplateFunction(["value", "type"])
 		].concat(InfoLabel.filters());
 	}
 }

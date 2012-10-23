@@ -17,9 +17,9 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"edge".toFunction(),
-			"edgeover".toFunction(),
-			"node".toFunction()
+			"edge".toTemplateFunction([null, "stats"]),
+			"edgeover".toTemplateFunction([null, "stats"]),
+			"node".toTemplateFunction([null, "stats"])
 		].concat(InfoLabel.filters());
 	}
 }

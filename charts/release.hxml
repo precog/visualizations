@@ -4,6 +4,8 @@
 -lib thx
 -lib dhx
 -lib hxevents
+-cp ../../../erazor/src/
+-cp ../../../extern/hscript/
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
 #--connect 8888
@@ -13,5 +15,5 @@
 --no-traces
 #--dead-code-elimination
 --js-modern
---macro keep(["thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
+--macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 -cmd ./deploy.sh

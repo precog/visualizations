@@ -31,29 +31,7 @@ using rg.info.filter.FilterDescription;
 			"animated".toBool(),
 			"duration".toInt(),
 			"delay".toInt(),
-			"ease".toFunction()
+			"ease".toExpressionFunction(["value"])
 		];
 	}
-/*
-	public static function filters() : Array<Dynamic>
-	{
-		return [{
-			field : "animated",
-			validator : function(v) return Std.is(v, Bool),
-			filter : null
-		}, {
-			field : "duration",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, {
-			field : "delay",
-			validator : function(v) return Std.is(v, Int),
-			filter : null
-		}, {
-			field : "ease",
-			validator : function(v) return Reflect.isFunction(v),
-			filter : null
-		}];
-	}
-*/
 }

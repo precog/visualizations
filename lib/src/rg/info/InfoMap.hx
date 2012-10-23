@@ -66,17 +66,13 @@ using Arrays;
 			"property".toStrOrNull(),
 			"usejsonp".toBool(),
 			new FilterDescription("template", new TemplateTransformer()),
-//			"template".simplified(
-//				fromTemplate,
-//				(function(v) return Std.is(v, String) && isValidTemplate(v)).make("invalid template value '{0}'")
-//			),
 			"label".toInfo(InfoLabel),
 			"click".toFunction(),
 			"color".simplified(["colorScaleMode"],
 				ColorScaleModes.createFromDynamic,
 				(function(v) return Std.is(v, String) || Reflect.isFunction(v)).make("invalid color mode value '{0}'")
 			),
-			"radius".toFunctionOrFloat(),
+			"radius".toExpressionFunctionOrFloat([null, "stats"]),
 			new FilterDescription("mapping", new MapTransformer())
 		];
 	}

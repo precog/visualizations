@@ -38,7 +38,7 @@ using rg.info.Info;
 		return [
 			"animation".toInfo(InfoAnimation),
 			"label".toInfo(InfoLabelFunnel),
-			"sort".toFunction(["sortDataPoint"]),
+			"sort".toExpressionFunction(["a", "b"], ["sortDataPoint"]),
 			"click".toFunction(),
 			"segmentpadding".toFloat(["padding"]),
 			"flatness".toFloat(),

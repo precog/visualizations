@@ -17,8 +17,8 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"rank".toFunctionOrNull(),
-			"value".toFunctionOrNull()
+			"rank".toTemplateFunctionOrNull([null, "index", "stats"]),
+			"value".toTemplateFunctionOrNull([null, "stats"])
 		].concat(InfoLabel.filters());
 	}
 }

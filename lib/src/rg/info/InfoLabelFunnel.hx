@@ -15,7 +15,7 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"arrow".toFunction()
+			"arrow".toTemplateFunction([null, "stats"])
 		].concat(InfoLabel.filters());
 	}
 }
