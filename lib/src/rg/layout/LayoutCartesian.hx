@@ -37,7 +37,7 @@ import rg.frame.Orientation;
 	var xtickmarks : PanelContext;
 	var title : PanelContext;
 
-	var left : Bool;
+	var right : Bool;
 	var alternating : Bool;
 	var yitems : Array<{
 		container : Container,
@@ -51,7 +51,7 @@ import rg.frame.Orientation;
 	{
 		super(width, height, container);
 		titleOnTop = true;
-		left = true;
+		right = false;
 		alternating = true;
 		yitems = [];
 	}
@@ -111,7 +111,7 @@ import rg.frame.Orientation;
 				container : null,
 				context : null,
 				title : null,
-				anchor : alternating && index % 2 == 0 ? Right : Left
+				anchor : (right || (alternating && (index % 2 != 0))) ? Left : Right
 			};
 		}
 		return yitems[index];
@@ -122,11 +122,11 @@ import rg.frame.Orientation;
 		var item = getYItem(index);
 		if (null == item.container)
 		{
-			if (alternating && index % 2 == 0)
+			if (right || (alternating && (index % 2 != 0)))
 			{
-				item.container = getLeftContainer().createContainerAt(0, FrameLayout.Fixed(0, 0, 0), Horizontal);
-			} else {
 				item.container = getRightContainer().createContainer(FrameLayout.Fixed(0, 0, 0), Horizontal);
+			} else {
+				item.container = getLeftContainer().createContainerAt(0, FrameLayout.Fixed(0, 0, 0), Horizontal);
 			}
 			item.container.g.classed().add("group-" + index);
 		}
@@ -297,7 +297,10 @@ import rg.frame.Orientation;
 	function getRightContainer()
 	{
 		if (null == rightcontainer)
-			rightcontainer = getMiddleContainer().createContainerAt(2, FrameLayout.Fixed(0, 0, 0), Horizontal);
+		{
+			getMain();
+			rightcontainer = getMiddleContainer().createContainer(FrameLayout.Fixed(0, 0, 0), Horizontal);
+		}
 		return rightcontainer;
 	}
 
@@ -345,13 +348,13 @@ import rg.frame.Orientation;
 		switch(info.scalePattern)
 		{
 			case ScalePattern.ScalesBefore:
-				left = true;
+				right = false;
 				alternating = false;
 			case ScalePattern.ScalesAfter:
-				left = false;
+				right = true;
 				alternating = false;
 			case ScalePattern.ScalesAlternating:
-				left = true;
+				right = false;
 				alternating = true;
 		}
 	}

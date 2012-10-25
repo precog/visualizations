@@ -51,8 +51,8 @@ using rg.info.Info;
 			}),
 			"main".toStr(),
 			"titleontop".toBool(["titleOnTop"]),
-			"yscaleposition".custom(["type"], function(value : Dynamic) {
-				if(!Std.is(value, Dynamic))
+			"yscaleposition".custom(['scalePattern'], function(value : Dynamic) {
+				if(!Std.is(value, String))
 					return TransformResult.Failure(new Message("value '{0}' must be a string", [value]));
 				return TransformResult.Success(switch(value) {
 					case "alt", "alternate", "alternating": ScalePattern.ScalesAlternating;
