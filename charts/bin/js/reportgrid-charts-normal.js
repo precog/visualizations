@@ -12535,7 +12535,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.0.8943"};
+	r.info.charts = { version : "1.5.1.8944"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -15412,8 +15412,8 @@ rg.info.InfoLayout.filters = function() {
 	}),rg.info.filter.FilterDescription.toFloat("width"),rg.info.filter.FilterDescription.toFloat("height"),rg.info.filter.FilterDescription.custom("visualization",["type"],function(value) {
 		var v = null == value?null:("" + Std.string(value)).toLowerCase();
 		if(!Arrays.exists(rg.visualization.Visualizations.svg,v)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' is not a valid visualization type",[value])); else return rg.info.filter.TransformResult.Success(v);
-	}),rg.info.filter.FilterDescription.toStr("main"),rg.info.filter.FilterDescription.toBool("titleontop",["titleOnTop"]),rg.info.filter.FilterDescription.custom("yscaleposition",["type"],function(value) {
-		if(!js.Boot.__instanceof(value,Dynamic)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' must be a string",[value]));
+	}),rg.info.filter.FilterDescription.toStr("main"),rg.info.filter.FilterDescription.toBool("titleontop",["titleOnTop"]),rg.info.filter.FilterDescription.custom("yscaleposition",["scalePattern"],function(value) {
+		if(!js.Boot.__instanceof(value,String)) return rg.info.filter.TransformResult.Failure(new thx.util.Message("value '{0}' must be a string",[value]));
 		return rg.info.filter.TransformResult.Success((function($this) {
 			var $r;
 			switch(value) {
@@ -16678,7 +16678,7 @@ rg.layout.Layout.prototype = {
 rg.layout.LayoutCartesian = function(width,height,container) {
 	rg.layout.Layout.call(this,width,height,container);
 	this.titleOnTop = true;
-	this.left = true;
+	this.right = false;
 	this.alternating = true;
 	this.yitems = [];
 };
@@ -16699,15 +16699,15 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 		this.titleOnTop = info.titleOnTop;
 		switch( (info.scalePattern)[1] ) {
 		case 0:
-			this.left = true;
+			this.right = false;
 			this.alternating = false;
 			break;
 		case 1:
-			this.left = false;
+			this.right = true;
 			this.alternating = false;
 			break;
 		case 2:
-			this.left = true;
+			this.right = false;
 			this.alternating = true;
 			break;
 		}
@@ -16738,7 +16738,10 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 		return this.bottomcontainer;
 	}
 	,getRightContainer: function() {
-		if(null == this.rightcontainer) this.rightcontainer = this.getMiddleContainer().createContainerAt(2,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		if(null == this.rightcontainer) {
+			this.getMain();
+			this.rightcontainer = this.getMiddleContainer().createContainer(rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+		}
 		return this.rightcontainer;
 	}
 	,getLeftContainer: function() {
@@ -16862,13 +16865,13 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 	,getYContainer: function(index) {
 		var item = this.getYItem(index);
 		if(null == item.container) {
-			if(this.alternating && index % 2 == 0) item.container = this.getLeftContainer().createContainerAt(0,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal); else item.container = this.getRightContainer().createContainer(rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
+			if(this.right || this.alternating && index % 2 != 0) item.container = this.getRightContainer().createContainer(rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal); else item.container = this.getLeftContainer().createContainerAt(0,rg.frame.FrameLayout.Fixed(0,0,0),rg.frame.Orientation.Horizontal);
 			item.container.g.classed().add("group-" + index);
 		}
 		return item.container;
 	}
 	,getYItem: function(index) {
-		if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.alternating && index % 2 == 0?rg.layout.Anchor.Right:rg.layout.Anchor.Left};
+		if(null == this.yitems[index]) this.yitems[index] = { container : null, context : null, title : null, anchor : this.right || this.alternating && index % 2 != 0?rg.layout.Anchor.Left:rg.layout.Anchor.Right};
 		return this.yitems[index];
 	}
 	,getPanel: function(name) {
@@ -16908,7 +16911,7 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 	,xtitle: null
 	,yitems: null
 	,alternating: null
-	,left: null
+	,right: null
 	,title: null
 	,xtickmarks: null
 	,bottomright: null
