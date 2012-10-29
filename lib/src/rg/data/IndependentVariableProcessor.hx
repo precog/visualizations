@@ -16,7 +16,7 @@ class IndependentVariableProcessor
 		for (variable in variables)
 		{
 			variable.stats.addMany(DataPoints.values(data, variable.type));
-			var discrete;
+			var discrete : IAxisDiscrete<Dynamic>;
 			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
 				discrete.scaleDistribution = variable.scaleDistribution;

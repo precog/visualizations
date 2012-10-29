@@ -25,23 +25,23 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 		this.scaleDistribution = scaleDistribution;
 		this.major = major;
 	}
-	public var delta(getDelta, null) : Float;
-	function getDelta()
+	public var delta(get, null) : Float;
+	function get_delta()
 	{
 		return ScaleDistributions.distribute(scaleDistribution, pos, values.length);
 	}
 
-	public var major(getMajor, null) : Bool;
-	function getMajor() return major
+	@:isVar public var major(get, null) : Bool;
+	function get_major() return major
 
-	public var value(getValue, null) : T;
-	function getValue()
+	public var value(get, null) : T;
+	function get_value()
 	{
 		return values[pos];
 	}
 
-	public var label(getLabel, null) : String;
-	function getLabel()
+	public var label(get, null) : String;
+	function get_label()
 	{
 		return RGStrings.humanize(values[pos]);
 	}

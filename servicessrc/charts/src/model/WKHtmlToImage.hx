@@ -3,14 +3,14 @@ package model;
 class WKHtmlToImage extends WKHtml
 {
 	var _imageConfig : ConfigImage;
-	public var imageConfig(getImageConfig, setImageConfig) : ConfigImage;
+	public var imageConfig(get, set) : ConfigImage;
 	public function new(binpath : String)
 	{
 		allowedFormats = ['png', 'jpg', 'svg', 'bmp', 'tif'];
 		super(binpath);
 	}
 
-	function getImageConfig()
+	function get_imageConfig()
 	{
 		if(null == _imageConfig)
 		{
@@ -19,7 +19,7 @@ class WKHtmlToImage extends WKHtml
 		return _imageConfig;
 	}
 
-	function setImageConfig(c : model.ConfigImage)
+	function set_imageConfig(c : model.ConfigImage)
 	{
 		return _imageConfig = c;
 	}

@@ -12,7 +12,7 @@ using Arrays;
 class AxisTime implements IAxisDiscrete<Float>
 {
 	public var periodicity(default, null) : String;
-	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
+	public var scaleDistribution(default, set) : ScaleDistribution;
 	public function new(periodicity)
 	{
 		this.periodicity = periodicity;
@@ -93,7 +93,7 @@ class AxisTime implements IAxisDiscrete<Float>
 		}
 	}
 
-	function setScaleDistribution(v : ScaleDistribution)
+	function set_scaleDistribution(v : ScaleDistribution)
 	{
 		return this.scaleDistribution = v;
 	}

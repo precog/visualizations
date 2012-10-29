@@ -13,8 +13,8 @@ class WKHtml
 #end
 	var cmd : String;
 	var _wkConfig : ConfigWKHtml;
-	public var wkConfig(getWKConfig, setWKConfig) : ConfigWKHtml;
-	public var format(getFormat, setFormat) : String;
+	public var wkConfig(get, set) : ConfigWKHtml;
+	public var format(get, set) : String;
 	public var allowedFormats(default, null) : Array<String>;
 	function new(cmd : String)
 	{
@@ -132,15 +132,15 @@ class WKHtml
 		return cmd + (args.length > 0 ? " " : "") + args.join(" ");
 	}
 
-	function getFormat() return format
-	function setFormat(f : String)
+	function get_format() return format
+	function set_format(f : String)
 	{
 		if(!allowedFormats.exists(f))
 			throw new Error("invalid format {0}, you can use any of: {1}", [f, allowedFormats]);
 		return format = f;
 	}
 
-	function getWKConfig()
+	function get_wkConfig()
 	{
 		if(null == _wkConfig)
 		{
@@ -149,7 +149,7 @@ class WKHtml
 		return _wkConfig;
 	}
 
-	function setWKConfig(c : model.ConfigWKHtml)
+	function set_wkConfig(c : model.ConfigWKHtml)
 	{
 		return _wkConfig = c;
 	}

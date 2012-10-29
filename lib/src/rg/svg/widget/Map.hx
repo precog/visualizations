@@ -25,7 +25,7 @@ using Arrays;
 
 class Map
 {
-	public var className(null, setClassName) : String;
+	public var className(null, set) : String;
 	public var map(default, null) : Hash<{ svg : Selection, dp : Dynamic }>;
 	public var onReady(default, null) : Notifier;
 
@@ -150,7 +150,7 @@ class Map
 	public var handlerDataPointOver : HtmlDom -> Dynamic -> (Dynamic -> Stats<Dynamic> -> String) -> Void;
 	public var handlerClick : Dynamic -> (Dynamic -> Stats<Dynamic> -> Void) -> Void;
 
-	function setClassName(cls : String)
+	function set_className(cls : String)
 	{
 		g.attr("class").string("map" + (null == cls ? "" : " "  + cls));
 		return cls;

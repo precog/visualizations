@@ -17,8 +17,8 @@ class Variable<T, TAxis : IAxis<T>>
 	public var axis(default, null) : TAxis;
 	public var stats(default, null) : Stats<T>;
 	public var meta(default, null) : Dynamic;
-	public var minf(getMinF, setMinF) : Stats<T> -> Dynamic -> T;
-	public var maxf(getMaxF, setMaxF) : Stats<T> -> Dynamic -> T;
+	@:isVar public var minf(get, set) : Stats<T> -> Dynamic -> T;
+	@:isVar public var maxf(get, set) : Stats<T> -> Dynamic -> T;
 
 	public function new(type : String, scaleDistribution : Null<ScaleDistribution>)
 	{
@@ -39,10 +39,10 @@ class Variable<T, TAxis : IAxis<T>>
 	public function min() return minf(stats, meta)
 	public function max() return maxf(stats, meta)
 
-	function setMinF(f : Stats<T> -> Dynamic -> T) return minf = f
-	function setMaxF(f : Stats<T> -> Dynamic -> T) return maxf = f
+	function set_minf(f : Stats<T> -> Dynamic -> T) return minf = f
+	function set_maxf(f : Stats<T> -> Dynamic -> T) return maxf = f
 
-	function getMinF()
+	function get_minf()
 	{
 		if (null == minf)
 		{
@@ -53,7 +53,7 @@ class Variable<T, TAxis : IAxis<T>>
 		return minf;
 	}
 
-	function getMaxF()
+	function get_maxf()
 	{
 		if (null == maxf)
 		{

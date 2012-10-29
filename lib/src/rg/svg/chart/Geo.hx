@@ -29,7 +29,7 @@ using Arrays;
 class Geo extends Chart
 {
 	public var mapcontainer(default, null) : Selection;
-	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
+	@:isVar public var colorMode(get, set) : ColorScaleMode;
 	public var labelOutline : Bool = false;
 	public var labelShadow : Bool = false;
 	var variableDependent : VariableDependent<Dynamic>;
@@ -127,8 +127,8 @@ class Geo extends Chart
 			queue.shift()();
 	}
 
-	function getColorMode() return colorMode
-	function setColorMode(v : ColorScaleMode)
+	function get_colorMode() return colorMode
+	function set_colorMode(v : ColorScaleMode)
 	{
 		switch(colorMode = v)
 		{
@@ -144,7 +144,7 @@ class Geo extends Chart
 					colors.push(Hsl.lighter(Hsl.toHsl(Colors.parse(colors[0])), 0.9).toCss());
 				}
 				colors.reverse();
-				setColorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
+				set_colorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();
@@ -189,7 +189,7 @@ class Geo extends Chart
 		return v;
 	}
 /*
-	function setColorMode(v : ColorScaleMode)
+	function set_colorMode(v : ColorScaleMode)
 	{
 		stylefeature = colorStyleFunction(this.colorMode = v, variableDependent);
 		return v;

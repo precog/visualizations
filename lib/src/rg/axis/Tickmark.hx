@@ -8,10 +8,10 @@ import rg.util.RGStrings;
 
 class Tickmark<T> implements ITickmark<T>
 {
-	public var delta(getDelta, null) : Float;
-	public var major(getMajor, null) : Bool;
-	public var value(getValue, null) : T;
-	public var label(getLabel, null) : String;
+	@:isVar public var delta(get, null) : Float;
+	@:isVar public var major(get, null) : Bool;
+	@:isVar public var value(get, null) : T;
+	public var label(get, null) : String;
 
 	public function new(value : T, major : Bool, delta : Float)
 	{
@@ -20,10 +20,10 @@ class Tickmark<T> implements ITickmark<T>
 		this.delta = delta;
 	}
 
-	function getDelta() return delta
-	function getMajor() return major
-	function getValue() return value
-	function getLabel() return RGStrings.humanize(value)
+	function get_delta() return delta
+	function get_major() return major
+	function get_value() return value
+	function get_label() return RGStrings.humanize(value)
 
 	function toString() return Tickmarks.string(this)
 }

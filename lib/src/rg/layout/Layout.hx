@@ -52,7 +52,7 @@ class Layout
 
 	function suggestPanelSize(panel : Panel, size : Int)
 	{
-		var stackitem = Types.as(panel.frame, StackItem);
+		var stackitem : StackItem = Types.as(panel.frame, StackItem);
 		if (null == stackitem)
 			return;
 		switch(stackitem.disposition)
@@ -68,7 +68,7 @@ class Layout
 	{
 		if (null == panel)
 			return;
-		var stackitem = Types.as(panel.frame, StackItem);
+		var stackitem : StackItem = Types.as(panel.frame, StackItem);
 		if (null == stackitem)
 			return;
 		switch(stackitem.disposition)

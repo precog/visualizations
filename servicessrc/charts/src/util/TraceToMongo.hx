@@ -9,7 +9,7 @@ import ufront.web.module.ITraceModule;
 
 class TraceToMongo implements ITraceModule
 {
-	var coll(getColl, null) : MongoCollection;
+	var coll(get, null) : MongoCollection;
 	var dbname : String;
 	var collname : String;
 	var servername : String;
@@ -40,9 +40,9 @@ class TraceToMongo implements ITraceModule
 	}
 	public function dispose()
 	{
-		
+
 	}
-	function getColl()
+	function get_coll()
 	{
 		if(null == coll)
 		{

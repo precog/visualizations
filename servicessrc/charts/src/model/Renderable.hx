@@ -19,8 +19,8 @@ class Renderable
 		this.usages    = null == usages ? 0 : usages;
 	}
 
-	public var uid(getUid, null) : String;
-	function getUid()
+	public var uid(get, null) : String;
+	function get_uid()
 	{
 		if(null == uid)
 		{

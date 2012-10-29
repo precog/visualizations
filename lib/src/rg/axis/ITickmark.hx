@@ -7,8 +7,8 @@ package rg.axis;
 
 interface ITickmark<T>
 {
-	public var delta(getDelta, null) : Float;
-	public var major(getMajor, null) : Bool;
-	public var value(getValue, null) : T;
-	public var label(getLabel, null) : String;
+	public var delta(get, null) : Float;
+	public var major(get, null) : Bool;
+	public var value(get, null) : T;
+	public var label(get, null) : String;
 }

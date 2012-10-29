@@ -57,7 +57,7 @@ class VariableProcessor
 			}
 			variable.stats.addMany(values);
 
-			var discrete;
+			var discrete : IAxisDiscrete;
 			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
 				discrete.scaleDistribution = variable.scaleDistribution;
@@ -71,7 +71,7 @@ class VariableProcessor
 		for (variable in independentVariables)
 		{
 			variable.stats.addMany(DataPoints.values(flatten, variable.type));
-			var discrete;
+			var discrete : IAxisDiscrete;
 			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
 				discrete.scaleDistribution = variable.scaleDistribution;

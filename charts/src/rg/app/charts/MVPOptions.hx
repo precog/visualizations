@@ -158,7 +158,6 @@ class MVPOptions
 					switch(params.options.visualization)
 					{
 						case "barchart", "pivottable":
-//							trace(axis.type + " " + axis.scalemode);
 							if(null == axis.scalemode)
 								axis.scalemode = "fit";
 					}
@@ -204,6 +203,8 @@ class MVPOptions
 				case "geo":
 					var type = params.axes[0].type,
 						maps : Array<Dynamic> = params.options.map;
+					if(null == maps[maps.length-1].label)
+						maps[maps.length-1].label = {};
 					if(null == maps[maps.length-1].label.datapointover)
 						maps[maps.length-1].label.datapointover = function(dp, stats) {
 							var v = Properties.formatValue(type, dp);
@@ -291,7 +292,6 @@ class MVPOptions
 							return Floats.format(dp.edgeweight, "D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
 						};
 			}
-//trace(Dynamics.string(params));
 			handler(params);
 		});
 

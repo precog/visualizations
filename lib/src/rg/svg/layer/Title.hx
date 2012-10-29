@@ -14,9 +14,9 @@ import rg.svg.widget.GridAnchor;
 
 class Title extends Layer
 {
-	public var text(getText, setText) : String;
-	public var anchor(default, setAnchor) : Anchor;
-	public var padding(default, setPadding) : Int;
+	public var text(get, set) : String;
+	public var anchor(default, set) : Anchor;
+	public var padding(default, set) : Int;
 
 	var label : Label;
 	var group : Selection;
@@ -100,9 +100,9 @@ class Title extends Layer
 */
 	}
 
-	function getText() return label.text
+	function get_text() return label.text
 
-	function setText(v : String)
+	function set_text(v : String)
 	{
 		return label.text = v;
 //		this.text = v;
@@ -111,7 +111,7 @@ class Title extends Layer
 //		return v;
 	}
 
-	function setAnchor(v : Anchor)
+	function set_anchor(v : Anchor)
 	{
 
 		switch(this.anchor = v)
@@ -128,7 +128,7 @@ class Title extends Layer
 //		return v;
 	}
 
-	function setPadding(v : Int)
+	function set_padding(v : Int)
 	{
 		this.padding = v;
 		switch(anchor)

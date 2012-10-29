@@ -74,10 +74,8 @@ class JSBridge
 		r.chart = function(el : Dynamic, options : Dynamic, type : String)
 		{
 			var copt = chartopt(options, type);
-//			trace(Dynamics.string(copt));
 			copt.options.a = false; // authorized
 			MVPOptions.complete(copt, function(opt : Dynamic) {
-//				trace(Dynamics.string(opt));
 #if release
 				try {
 #end
@@ -158,6 +156,9 @@ class JSBridge
 		r.info = null != r.info ? r.info : { };
 		r.info.charts = {
 			version : MacroVersion.next()
+		};
+		r.getTooltip = function() {
+			return rg.html.widget.Tooltip.instance;
 		};
 
 //		untyped JsExport.property(rg.util.ChainedExecutor.prototype, "execute", rg.util.ChainedExecutor.prototype.execute);

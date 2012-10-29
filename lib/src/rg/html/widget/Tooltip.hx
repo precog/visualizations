@@ -5,8 +5,8 @@ import dhx.Selection;
 
 class Tooltip
 {
-	public static var instance(getInstance, null) : Tooltip;
-	static function getInstance()
+	@:isVar public static var instance(get, null) : Tooltip;
+	static function get_instance()
 	{
 		if(null == instance)
 		{

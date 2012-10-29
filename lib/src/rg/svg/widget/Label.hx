@@ -11,9 +11,9 @@ using Arrays;
 
 class Label
 {
-	public var text(default, setText) : String;
-	public var orientation(default, setOrientation) : LabelOrientation;
-	public var anchor(default, setAnchor) : GridAnchor;
+	public var text(default, set) : String;
+	public var orientation(default, set) : LabelOrientation;
+	public var anchor(default, set) : GridAnchor;
 	public var x(default, null) : Float;
 	public var y(default, null) : Float;
 	public var angle(default, null) : Float;
@@ -144,7 +144,7 @@ class Label
 		}
 	}
 
-	function setText(v : String)
+	function set_text(v : String)
 	{
 		this.text = v;
 		if (outline)
@@ -156,14 +156,14 @@ class Label
 		return v;
 	}
 
-	function setOrientation(v : LabelOrientation)
+	function set_orientation(v : LabelOrientation)
 	{
 		this.orientation = v;
 		place(x, y, angle);
 		return v;
 	}
 
-	function setAnchor(v : GridAnchor)
+	function set_anchor(v : GridAnchor)
 	{
 		this.anchor = v;
 		reanchor();

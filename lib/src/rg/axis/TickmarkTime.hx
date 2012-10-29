@@ -15,5 +15,5 @@ class TickmarkTime extends TickmarkOrdinal<Float>
 		super(Arrays.indexOf(values, value), values, major, scaleDistribution);
 		this.periodicity = periodicity;
 	}
-	override function getLabel() return Periodicity.smartFormat(periodicity, values[pos])
+	override function get_label() return Periodicity.smartFormat(periodicity, values[pos])
 }

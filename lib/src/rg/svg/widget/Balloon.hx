@@ -15,17 +15,17 @@ import thx.svg.Symbol;
 
 class Balloon
 {
-	public var text(default, setText) : Array<String>;
+	public var text(default, set) : Array<String>;
 	public var x(default, null) : Float;
 	public var y(default, null) : Float;
 	public var boxWidth(default, null) : Float;
 	public var boxHeight(default, null) : Float;
 	public var visible(default, null) : Bool;
-	public var lineHeight(default, setLineHeight) : Float;
-	public var roundedCorner(default, setRoundedCorner) : Float;
+	public var lineHeight(default, set) : Float;
+	public var roundedCorner(default, set) : Float;
 	public var paddingHorizontal(default, null) : Float;
 	public var paddingVertical(default, null) : Float;
-	public var preferredSide(default, setPreferredSide) : Int;
+	public var preferredSide(default, set) : Int;
 	public var minwidth : Float;
 	var labels : Array<Label>;
 	var container : Selection;
@@ -37,7 +37,7 @@ class Balloon
 	var ease : Float -> Float;
 	var connectorShapeV : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
 	var connectorShapeH : Diagonal<{ x0 : Float, y0 : Float, x1 : Float, y1 : Float }>;
-	public var boundingBox(getBoundingBox, setBoundingBox) : { x : Float, y : Float, width : Float, height : Float };
+	@:isVar public var boundingBox(get, set) : { x : Float, y : Float, width : Float, height : Float };
 	public function new(container : Selection, bindOnTop = true)
 	{
 		if (bindOnTop)
@@ -112,14 +112,14 @@ class Balloon
 		return label;
 	}
 
-	function setPreferredSide(v : Int)
+	function set_preferredSide(v : Int)
 	{
 		preferredSide = Ints.clamp(v, 0, 3);
 		redraw();
 		return v;
 	}
 
-	function setText(v : Array<String>)
+	function set_text(v : Array<String>)
 	{
 		while (labels.length > v.length)
 		{
@@ -141,7 +141,7 @@ class Balloon
 		return v;
 	}
 
-	function setLineHeight(v : Float)
+	function set_lineHeight(v : Float)
 	{
 		lineHeight = v;
 		redraw();
@@ -155,7 +155,7 @@ class Balloon
 		redraw();
 	}
 
-	function setRoundedCorner(v : Float)
+	function set_roundedCorner(v : Float)
 	{
 		roundedCorner = v;
 		redraw();
@@ -163,7 +163,7 @@ class Balloon
 	}
 
 	// TODO when null is passed remove the onresize event listener
-	function setBoundingBox(v : { x : Float, y : Float, width : Float, height : Float })
+	function set_boundingBox(v : { x : Float, y : Float, width : Float, height : Float })
 	{
 		boundingBox = v;
 		redraw();
@@ -171,7 +171,7 @@ class Balloon
 	}
 
 	// TODO add onresize event on container to rescale bounds dinamically
-	function getBoundingBox()
+	function get_boundingBox()
 	{
 		if (null == boundingBox)
 		{
@@ -216,7 +216,7 @@ class Balloon
 
 	function _moveTo(x : Float, y : Float)
 	{
-		var bb = getBoundingBox(),
+		var bb = get_boundingBox(),
 			left = bb.x,
 			right = bb.x + bb.width,
 			top = bb.y,
@@ -590,7 +590,7 @@ class Balloon
 		if(w == 0) // fix for firefox
 		{
 			var t = text;
-			haxe.Timer.delay(function() setText(t), 15);
+			haxe.Timer.delay(function() set_text(t), 15);
 			return;
 		}
 		boxWidth += paddingHorizontal * 2;

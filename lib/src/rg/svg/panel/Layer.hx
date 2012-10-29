@@ -17,7 +17,7 @@ class Layer
 	public var width(default, null) : Int;
 	public var height(default, null) : Int;
 
-	public var customClass(default, setCustomClass) : String;
+	public var customClass(default, set) : String;
 
 	public function new(panel : Panel)
 	{
@@ -60,7 +60,7 @@ class Layer
 		g.remove();
 	}
 
-	function setCustomClass(v : String)
+	function set_customClass(v : String)
 	{
 		if (null != customClass)
 			g.classed().remove(customClass);

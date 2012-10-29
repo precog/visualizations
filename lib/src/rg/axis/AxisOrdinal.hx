@@ -11,7 +11,7 @@ using Arrays;
 
 class AxisOrdinal<T> implements IAxisOrdinal<T>
 {
-	public var scaleDistribution(default, setScaleDistribution) : ScaleDistribution;
+	public var scaleDistribution(default, set) : ScaleDistribution;
 
 	private function new()
 	{
@@ -68,7 +68,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 			l = last();
 		return range(f, l).map(function(d, i) return toTickmark(f, l, d));
 	}
-	function setScaleDistribution(v : ScaleDistribution)
+	function set_scaleDistribution(v : ScaleDistribution)
 	{
 		return this.scaleDistribution = v;
 	}

@@ -31,7 +31,7 @@ class DependentVariableProcessor
 			}
 			variable.stats.addMany(values);
 
-			var discrete;
+			var discrete : IAxisDiscrete<Dynamic>;
 			if (null != variable.scaleDistribution && null != (discrete = Types.as(variable.axis, IAxisDiscrete)))
 			{
 				discrete.scaleDistribution = variable.scaleDistribution;

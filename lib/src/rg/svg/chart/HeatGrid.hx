@@ -31,7 +31,7 @@ using Arrays;
 class HeatGrid extends CartesianChart<Array<Dynamic>>
 {
 	public var useContour : Bool;
-	public var colorMode(getColorMode, setColorMode) : ColorScaleMode;
+	@:isVar public var colorMode(get, set) : ColorScaleMode;
 	var dps : Array<Dynamic>;
 	var variableDependent : VariableDependent<Dynamic>;
 
@@ -219,7 +219,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 
 	function range(variable : rg.data.Variable<Dynamic, IAxis<Dynamic>>) : Array<Dynamic>
 	{
-		var v = Types.as(variable, VariableIndependent);
+		var v : VariableIndependent<Dynamic> = Types.as(variable, VariableIndependent);
 		if (null != v)
 			return v.axis.range(v.min(), v.max());
 		var tickmarks = variable.axis.ticks(variable.min(), variable.max());
@@ -228,8 +228,8 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 
 	dynamic function stylefeature(svg : Selection, dp : Dynamic) {}
 
-	function getColorMode() return colorMode
-	function setColorMode(v : ColorScaleMode)
+	function get_colorMode() return colorMode
+	function set_colorMode(v : ColorScaleMode)
 	{
 		switch(colorMode = v)
 		{
@@ -245,7 +245,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 					colors.push(Hsl.lighter(Hsl.toHsl(Colors.parse(colors[0])), 0.9).toCss());
 				}
 				colors.reverse();
-				setColorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
+				set_colorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();

@@ -13,7 +13,7 @@ class Stack
 	public var width(default, null) : Int;
 	public var height(default, null) : Int;
 	public var orientation(default, null) : Orientation;
-	public var length(getLength, null) : Int;
+	public var length(get, null) : Int;
 
 	public dynamic function moreSpaceRequired(size : Int) {}
 	public function new(width : Int, height : Int, ?orientation : Orientation)
@@ -34,7 +34,7 @@ class Stack
 			pos = 0;
 		children.insert(pos, child);
 		var f : FriendPanel = child;
-		f.setParent(this);
+		f.set_parent(this);
 		reflow();
 		return this;
 	}
@@ -45,7 +45,7 @@ class Stack
 			return this;
 		children.push(child);
 		var f : FriendPanel = child;
-		f.setParent(this);
+		f.set_parent(this);
 		reflow();
 		return this;
 	}
@@ -59,7 +59,7 @@ class Stack
 			added = true;
 			children.push(child);
 			var f : FriendPanel = child;
-			f.setParent(this);
+			f.set_parent(this);
 		}
 		if(added)
 			reflow();
@@ -72,7 +72,7 @@ class Stack
 			return false;
 
 		var f : FriendPanel = child;
-		f.setParent(null);
+		f.set_parent(null);
 		reflow();
 		return true;
 	}
@@ -152,13 +152,13 @@ class Stack
 					switch(child.disposition)
 					{
 						case Floating(x, y, w, h):
-							sizeable.setLayout(x, y, w, h);
+							sizeable.set_layout(x, y, w, h);
 						case
 							Fixed(before, after, _),
 							Fill(before, after, _, _),
 							FillPercent(before, after, _, _, _),
 							FillRatio(before, after, _):
-							sizeable.setLayout(0, pos + before, this.width, values[i] - after - before);
+							sizeable.set_layout(0, pos + before, this.width, values[i] - after - before);
 					}
 					pos += values[i++];
 				}
@@ -169,13 +169,13 @@ class Stack
 					switch(child.disposition)
 					{
 						case Floating(x, y, w, h):
-							sizeable.setLayout(x, y, w, h);
+							sizeable.set_layout(x, y, w, h);
 						case
 							Fixed(before, after, _),
 							Fill(before, after, _, _),
 							FillPercent(before, after, _, _, _),
 							FillRatio(before, after, _):
-							sizeable.setLayout(pos + before, 0, values[i] - after - before, this.height);
+							sizeable.set_layout(pos + before, 0, values[i] - after - before, this.height);
 					}
 					pos += values[i++];
 				}
@@ -185,7 +185,7 @@ class Stack
 			moreSpaceRequired(required);
 	}
 
-	function getLength() return children.length
+	function get_length() return children.length
 
 	public function setSize(width : Int, height : Int)
 	{
@@ -201,9 +201,9 @@ class Stack
 }
 
 typedef FriendPanel = {
-	private function setParent(v : Stack) : Stack;
+	private function set_parent(v : Stack) : Stack;
 }
 
 typedef SizeableFriend = {
-	private function setLayout(x : Int, y : Int, width : Int, height : Int) : Void;
+	private function set_layout(x : Int, y : Int, width : Int, height : Int) : Void;
 }

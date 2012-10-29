@@ -20,7 +20,7 @@ class Frame
 		x = y = width = height = 0;
 	}
 
-	function setLayout(x : Int, y : Int, width : Int, height : Int)
+	function set_layout(x : Int, y : Int, width : Int, height : Int)
 	{
 		if (this.x == x && this.y == y && this.width == width && this.height == height)
 			return;
@@ -35,5 +35,5 @@ class Frame
 }
 
 typedef FrameFriend = {
-	private function setLayout(x : Int, y : Int, width : Int, height : Int) : Void;
+	private function set_layout(x : Int, y : Int, width : Int, height : Int) : Void;
 }

@@ -9,8 +9,8 @@ import ufront.web.mvc.view.UrlHelper;
 
 class BaseController extends Controller
 {
-	public var urlHelper(getUrlHelper, null) : UrlHelperInst;
-	function getUrlHelper()
+	public var urlHelper(get, null) : UrlHelperInst;
+	function get_urlHelper()
 	{
 		if(null == urlHelper)
 		{
