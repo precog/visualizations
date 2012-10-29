@@ -146,8 +146,8 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					var dp = axisdps[k],
 						seggroup = getGroup("fill-" + k, axisg),
 						x = prev,
-						y = height * yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)),
-						w = (xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)) * width);
+						y = Math.max(height * yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)), 1),
+						w = xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)) * width;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
 						.attr("x").float(x)
@@ -225,7 +225,7 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
 						.attr("x").float(stacked ? x + offset : x + offset + k * (pad + paddingDataPoint))
-						.attr("width").float(stacked ? dist : pad)
+						.attr("width").float(Math.max(stacked ? dist : pad, 1))
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)
 						.onNode("mouseover", over)

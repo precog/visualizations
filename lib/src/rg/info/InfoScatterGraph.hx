@@ -26,7 +26,7 @@ using rg.info.Info;
 	{
 		return [
 			"symbol".toExpressionFunctionOrString([null, "stats"]),
-			"symbolstyle".toExpressionFunctionOrString([null, "stats"], ["symbolStyle"]),
+			"symbolstyle".toTemplateFunction([null, "stats"], ["symbolStyle"]),
 			"segmenton".simplified(["segment"],
 				function(value) return new InfoSegment().feed({ on : value }),
 				ReturnMessageIfNot.isString

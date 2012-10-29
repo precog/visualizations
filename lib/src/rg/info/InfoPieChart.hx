@@ -7,6 +7,7 @@ package rg.info;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
 import rg.svg.widget.LabelOrientation;
+import rg.svg.widget.LabelOrientations;
 import thx.error.Error;
 using rg.info.filter.FilterDescription;
 using rg.info.Info;
@@ -43,40 +44,13 @@ using Arrays;
 		dontfliplabel = true;
 	}
 
-	static function validateOrientation(s : String)
-	{
-		var name = s.split(":")[0].toLowerCase();
-		return ["fixed", "ortho", "orthogonal", "align", "aligned", "horizontal"].exists(name);
-	}
-
-	static function filterOrientation(s : String)
-	{
-		var name = s.split(":")[0].toLowerCase();
-		switch(name)
-		{
-			case "fixed":
-				var v = Std.parseFloat(s.split(":")[1]);
-				if (null == v || !Math.isFinite(v))
-					throw new Error("when 'fixed' is used a number should follow the 'dash' character");
-				return LabelOrientation.FixedAngle(v);
-			case "ortho", "orthogonal":
-				return LabelOrientation.Orthogonal;
-			case "align", "aligned":
-				return LabelOrientation.Aligned;
-			case "horizontal":
-				return LabelOrientation.FixedAngle(0);
-			default:
-				throw new Error("invalid filter orientation '{0}'", s);
-		}
-	}
-
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
 			"labelradius".toFloat(),
 			"dontfliplabel".toBool(),
 			"labelorientation".toTry(
-					filterOrientation,
+					LabelOrientations.parse,
 					"invalid orientation value '{0}'"
 				),
 			"innerradius".toFloat(),

@@ -566,6 +566,12 @@ class TransformerExpressionToFunction implements ITransformer<Dynamic, Void -> S
 		var i = map.length,
 			values = new Hash<Dynamic>();
 		values.set("ReportGrid", untyped __js__("ReportGrid"));
+
+		values.set("format",   untyped __js__("ReportGrid.format"));
+		values.set("symbol",   untyped __js__("ReportGrid.symbol"));
+		values.set("humanize", untyped __js__("ReportGrid.humanize"));
+		values.set("compare",  untyped __js__("ReportGrid.compare"));
+
 		values.set("Math", Math);
 		values.set("null", null);
 		values.set("true", true);

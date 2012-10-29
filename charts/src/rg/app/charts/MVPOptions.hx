@@ -173,113 +173,123 @@ class MVPOptions
 		{
 			if (null == params.options.label)
 			{
-				switch(params.options.visualization)
-				{
-					case "linechart", "barchart", "streamgraph":
-						var type = params.axes[0].type;
-						params.options.label = {
-							datapointover : function(dp, stats) {
-								return
-									(null != params.options.segmenton
-										? Properties.formatValue(params.options.segmenton, dp) + ", "
-										: "")
-									+
-									Properties.formatValue(type, dp)
-									+ ": " +
-									Properties.formatValue(stats.type, dp)
-								;
-							}
+				params.options.label = {};
+			}
+			switch(params.options.visualization)
+			{
+				case "linechart", "barchart", "streamgraph":
+					var type = params.axes[0].type;
+					if(null == params.options.label.datapointover)
+						params.options.label.datapointover = function(dp, stats) {
+							return
+								(null != params.options.segmenton
+									? Properties.formatValue(params.options.segmenton, dp) + ", "
+									: "")
+								+
+								Properties.formatValue(type, dp)
+								+ ": " +
+								Properties.formatValue(stats.type, dp)
+							;
 						};
-					case "scattergraph", "heatgrid":
-						var type = params.axes[0].type;
-						params.options.label = {
-							datapointover : function(dp, stats) {
-								return
-									Properties.formatValue(type, dp)
-									+ ": " +
-									Properties.formatValue(stats.type, dp)
-								;
-							}
+				case "scattergraph", "heatgrid":
+					var type = params.axes[0].type;
+					if(null == params.options.label.datapointover)
+						params.options.label.datapointover = function(dp, stats) {
+							return
+								Properties.formatValue(type, dp)
+								+ ": " +
+								Properties.formatValue(stats.type, dp)
+							;
 						};
-					case "geo":
-						var type = params.axes[0].type,
-							maps : Array<Dynamic> = params.options.map;
-						maps[maps.length-1].label = {
-							datapointover : function(dp, stats) {
-								var v = Properties.formatValue(type, dp);
-								if(null == v)
-									return null;
-								return
-									v
-									+ ": " +
-									Properties.formatValue(stats.type, dp)
-								;
-							}
+				case "geo":
+					var type = params.axes[0].type,
+						maps : Array<Dynamic> = params.options.map;
+					if(null == maps[maps.length-1].label.datapointover)
+						maps[maps.length-1].label.datapointover = function(dp, stats) {
+							var v = Properties.formatValue(type, dp);
+							if(null == v)
+								return null;
+							return
+								v
+								+ ": " +
+								Properties.formatValue(stats.type, dp)
+							;
 						};
-					case "piechart":
-						params.options.label = {
-							datapoint : function(dp, stats) {
-								var v = DataPoints.value(dp, stats.type);
-								return
-									params.axes.length > 1
-									? Properties.formatValue(params.axes[0].type, dp)
-									: (stats.tot != 0.0
-										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
-										: RGStrings.humanize(v))
-								;
-							},
-
-							datapointover : function(dp, stats) {
-								var v = DataPoints.value(dp, stats.type);
-								return
-									Properties.humanize(stats.type) + ": " +
-									RGStrings.humanize(v) + (
-										params.axes.length > 1 && stats.tot != 0.0
-										? " ("+Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")+")"
-										: "")
-								;
-							}
+				case "piechart":
+					if(null == params.options.label.datapoint)
+						params.options.label.datapoint = function(dp, stats) {
+							var v = DataPoints.value(dp, stats.type);
+							return
+								params.axes.length > 1
+								? Properties.formatValue(params.axes[0].type, dp)
+								: (stats.tot != 0.0
+									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+									: RGStrings.humanize(v))
+							;
 						};
-					case "sankey":
-						var axes : Array<Dynamic> = params.axes,
-							type = axes[axes.length - 1].type;
-						params.options.label = {
-							datapointover : function(dp, stats) {
-								var v = DataPoints.value(dp, type);
-								return
-									Properties.humanize(type) + ": " +
-									Properties.formatValue(type, dp)
-									+ "\n" + (
-										stats.tot != 0.0
-										? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
-										: RGStrings.humanize(v)
-									)
-								;
-							},
 
-							node : function(dp, stats) {
-								return null != dp ? dp.id : "";
-							},
-
-							datapoint : function(dp, stats) {
-								return
-									Properties.formatValue(type, dp)
-									+ "\n"
-									+ Properties.humanize(type)
-								;
-							},
-
-							edge : function(dp : Dynamic, stats)
-							{
-								return Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
-							},
-
-							edgeover : function(dp : Dynamic, stats)
-							{
-								return Floats.format(dp.edgeweight, "D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
-							}
+					if(null == params.options.label.datapointover)
+						params.options.label.datapointover = function(dp, stats) {
+							var v = DataPoints.value(dp, stats.type);
+							return
+								Properties.humanize(stats.type) + ": " +
+								RGStrings.humanize(v) + (
+									params.axes.length > 1 && stats.tot != 0.0
+									? " ("+Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")+")"
+									: "")
+							;
 						};
-				}
+				case "funnelchart":
+					if(null == params.options.label.datapointover)
+						params.options.label.datapointover = function(dp, stats) {
+							var v = DataPoints.value(dp, stats.type);
+							return
+								Properties.humanize(stats.type) + ": " +
+								RGStrings.humanize(v) + (
+									params.axes.length > 1 && stats.tot != 0.0
+									? " ("+Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")+")"
+									: "")
+							;
+						};
+				case "sankey":
+					var axes : Array<Dynamic> = params.axes,
+						type = axes[axes.length - 1].type;
+
+					if(null == params.options.label.datapointover)
+						params.options.label.datapointover = function(dp, stats) {
+							var v = DataPoints.value(dp, type);
+							return
+								Properties.humanize(type) + ": " +
+								Properties.formatValue(type, dp)
+								+ "\n" + (
+									stats.tot != 0.0
+									? Floats.format(Math.round(1000 * v / stats.tot)/10, "P:1")
+									: RGStrings.humanize(v)
+								)
+							;
+						};
+					if(null == params.options.label.node)
+						params.options.label.node = function(dp, stats) {
+							return null != dp ? dp.id : "";
+						};
+					if(null == params.options.label.datapoint)
+						params.options.label.datapoint = function(dp, stats) {
+							return
+								Properties.formatValue(type, dp)
+								+ "\n"
+								+ Properties.humanize(type)
+							;
+						};
+					if(null == params.options.label.edge)
+						params.options.label.edge = function(dp : Dynamic, stats)
+						{
+							return Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
+						};
+					if(null == params.options.label.edgeover)
+						params.options.label.edgeover = function(dp : Dynamic, stats)
+						{
+							return Floats.format(dp.edgeweight, "D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight, "D:0")+"%";
+						};
 			}
 //trace(Dynamics.string(params));
 			handler(params);
