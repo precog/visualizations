@@ -3811,7 +3811,6 @@ chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
 	decryptBlock: null
 	,encryptBlock: null
-	,blockSize: null
 	,__class__: chx.crypt.IBlockCipher
 }
 chx.crypt.IPad = function() { }
@@ -4031,7 +4030,6 @@ chx.crypt.RSAEncrypt.prototype = {
 		this.n = null;
 		this.e = 0;
 	}
-	,blockSize: null
 	,e: null
 	,n: null
 	,__class__: chx.crypt.RSAEncrypt
@@ -4404,7 +4402,6 @@ chx.io.Input.prototype = {
 		}(this));
 	}
 	,bigEndian: null
-	,bytesAvailable: null
 	,__class__: chx.io.Input
 	,__properties__: {get_bytesAvailable:"__getBytesAvailable",set_bigEndian:"__setEndian"}
 }
@@ -4470,7 +4467,6 @@ chx.io.BytesInput.prototype = $extend(chx.io.Input.prototype,{
 	,len: null
 	,pos: null
 	,b: null
-	,position: null
 	,__class__: chx.io.BytesInput
 	,__properties__: $extend(chx.io.Input.prototype.__properties__,{set_position:"setPosition",get_position:"getPosition"})
 });
@@ -6543,14 +6539,14 @@ dhx.Selection = function(groups) {
 };
 $hxClasses["dhx.Selection"] = dhx.Selection;
 dhx.Selection.__name__ = ["dhx","Selection"];
-dhx.Selection.__properties__ = {get_currentNode:"getCurrentNode",get_current:"getCurrent"}
+dhx.Selection.__properties__ = {get_currentNode:"get_currentNode",get_current:"get_current"}
 dhx.Selection.create = function(groups) {
 	return new dhx.Selection(groups);
 }
-dhx.Selection.getCurrent = function() {
+dhx.Selection.get_current = function() {
 	return dhx.Dom.selectNode(dhx.Group.current);
 }
-dhx.Selection.getCurrentNode = function() {
+dhx.Selection.get_currentNode = function() {
 	return dhx.Group.current;
 }
 dhx.Selection.__super__ = dhx.UnboundSelection;
@@ -12535,7 +12531,10 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.1.8944"};
+	r.info.charts = { version : "1.5.2.8945"};
+	r.getTooltip = function() {
+		return rg.html.widget.Tooltip.get_instance();
+	};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -12556,7 +12555,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 193, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 194, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -12650,50 +12649,63 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 		handler1(params);
 	});
 	chain.addAction(function(params1,handler1) {
-		if(null == params1.options.label) switch(params1.options.visualization) {
+		if(null == params1.options.label) params1.options.label = { };
+		switch(params1.options.visualization) {
 		case "linechart":case "barchart":case "streamgraph":
 			var type = params1.axes[0].type;
-			params1.options.label = { datapointover : function(dp,stats) {
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				return (null != params1.options.segmenton?rg.util.Properties.formatValue(params1.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
+			};
 			break;
 		case "scattergraph":case "heatgrid":
 			var type1 = params1.axes[0].type;
-			params1.options.label = { datapointover : function(dp,stats) {
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				return rg.util.Properties.formatValue(type1,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
+			};
 			break;
 		case "geo":
 			var type2 = params1.axes[0].type, maps = params1.options.map;
-			maps[maps.length - 1].label = { datapointover : function(dp,stats) {
+			if(null == maps[maps.length - 1].label) maps[maps.length - 1].label = { };
+			if(null == maps[maps.length - 1].label.datapointover) maps[maps.length - 1].label.datapointover = function(dp,stats) {
 				var v = rg.util.Properties.formatValue(type2,dp);
 				if(null == v) return null;
 				return v + ": " + rg.util.Properties.formatValue(stats.type,dp);
-			}};
+			};
 			break;
 		case "piechart":
-			params1.options.label = { datapoint : function(dp,stats) {
+			if(null == params1.options.label.datapoint) params1.options.label.datapoint = function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
 				return params1.axes.length > 1?rg.util.Properties.formatValue(params1.axes[0].type,dp):stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v);
-			}, datapointover : function(dp,stats) {
+			};
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				var v = Reflect.field(dp,stats.type);
 				return rg.util.RGStrings.humanize(stats.type) + ": " + rg.util.RGStrings.humanize(v) + (params1.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
-			}};
+			};
+			break;
+		case "funnelchart":
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
+				var v = Reflect.field(dp,stats.type);
+				return rg.util.RGStrings.humanize(stats.type) + ": " + rg.util.RGStrings.humanize(v) + (params1.axes.length > 1 && stats.tot != 0.0?" (" + Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1") + ")":"");
+			};
 			break;
 		case "sankey":
 			var axes = params1.axes, type3 = axes[axes.length - 1].type;
-			params1.options.label = { datapointover : function(dp,stats) {
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				var v = Reflect.field(dp,type3);
 				return rg.util.RGStrings.humanize(type3) + ": " + rg.util.Properties.formatValue(type3,dp) + "\n" + (stats.tot != 0.0?Floats.format(Math.round(1000 * v / stats.tot) / 10,"P:1"):rg.util.RGStrings.humanize(v));
-			}, node : function(dp,stats) {
+			};
+			if(null == params1.options.label.node) params1.options.label.node = function(dp,stats) {
 				return null != dp?dp.id:"";
-			}, datapoint : function(dp,stats) {
+			};
+			if(null == params1.options.label.datapoint) params1.options.label.datapoint = function(dp,stats) {
 				return rg.util.Properties.formatValue(type3,dp) + "\n" + rg.util.RGStrings.humanize(type3);
-			}, edge : function(dp,stats) {
+			};
+			if(null == params1.options.label.edge) params1.options.label.edge = function(dp,stats) {
 				return Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
-			}, edgeover : function(dp,stats) {
+			};
+			if(null == params1.options.label.edgeover) params1.options.label.edgeover = function(dp,stats) {
 				return Floats.format(dp.edgeweight,"D:0") + "\n" + Floats.format(100 * dp.edgeweight / dp.nodeweight,"D:0") + "%";
-			}};
+			};
 			break;
 		}
 		handler1(params1);
@@ -12733,7 +12745,7 @@ rg.axis.IAxisOrdinal.prototype = {
 	,__class__: rg.axis.IAxisOrdinal
 }
 rg.axis.AxisOrdinal = function() {
-	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
+	this.set_scaleDistribution(rg.axis.ScaleDistribution.ScaleFit);
 };
 $hxClasses["rg.axis.AxisOrdinal"] = rg.axis.AxisOrdinal;
 rg.axis.AxisOrdinal.__name__ = ["rg","axis","AxisOrdinal"];
@@ -12748,7 +12760,7 @@ rg.axis.AxisOrdinal.prototype = {
 	,min: function(stats,meta) {
 		return this.values()[0];
 	}
-	,setScaleDistribution: function(v) {
+	,set_scaleDistribution: function(v) {
 		return this.scaleDistribution = v;
 	}
 	,allTicks: function() {
@@ -12795,7 +12807,7 @@ rg.axis.AxisOrdinal.prototype = {
 	}
 	,scaleDistribution: null
 	,__class__: rg.axis.AxisOrdinal
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
+	,__properties__: {set_scaleDistribution:"set_scaleDistribution"}
 }
 rg.axis.AxisOrdinalFixedValues = function(arr) {
 	rg.axis.AxisOrdinal.call(this);
@@ -12924,7 +12936,7 @@ rg.axis.AxisOrdinalStats.prototype = $extend(rg.axis.AxisOrdinal.prototype,{
 });
 rg.axis.AxisTime = function(periodicity) {
 	this.periodicity = periodicity;
-	this.setScaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
+	this.set_scaleDistribution(rg.axis.ScaleDistribution.ScaleFill);
 };
 $hxClasses["rg.axis.AxisTime"] = rg.axis.AxisTime;
 rg.axis.AxisTime.__name__ = ["rg","axis","AxisTime"];
@@ -12939,7 +12951,7 @@ rg.axis.AxisTime.prototype = {
 	,min: function(stats,meta) {
 		return stats.min;
 	}
-	,setScaleDistribution: function(v) {
+	,set_scaleDistribution: function(v) {
 		return this.scaleDistribution = v;
 	}
 	,scale: function(start,end,v) {
@@ -13003,17 +13015,13 @@ rg.axis.AxisTime.prototype = {
 	,scaleDistribution: null
 	,periodicity: null
 	,__class__: rg.axis.AxisTime
-	,__properties__: {set_scaleDistribution:"setScaleDistribution"}
+	,__properties__: {set_scaleDistribution:"set_scaleDistribution"}
 }
 rg.axis.ITickmark = function() { }
 $hxClasses["rg.axis.ITickmark"] = rg.axis.ITickmark;
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
-	label: null
-	,value: null
-	,major: null
-	,delta: null
-	,__class__: rg.axis.ITickmark
+	__class__: rg.axis.ITickmark
 }
 rg.axis.ScaleDistribution = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
@@ -13130,24 +13138,23 @@ rg.axis.Tickmark.prototype = {
 	toString: function() {
 		return rg.axis.Tickmarks.string(this);
 	}
-	,getLabel: function() {
-		return rg.util.RGStrings.humanize(this.getValue());
+	,get_label: function() {
+		return rg.util.RGStrings.humanize(this.get_value());
 	}
-	,getValue: function() {
+	,get_value: function() {
 		return this.value;
 	}
-	,getMajor: function() {
+	,get_major: function() {
 		return this.major;
 	}
-	,getDelta: function() {
+	,get_delta: function() {
 		return this.delta;
 	}
-	,label: null
 	,value: null
 	,major: null
 	,delta: null
 	,__class__: rg.axis.Tickmark
-	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
+	,__properties__: {get_delta:"get_delta",get_major:"get_major",get_value:"get_value",get_label:"get_label"}
 }
 rg.axis.TickmarkOrdinal = function(pos,values,major,scaleDistribution) {
 	if(major == null) major = true;
@@ -13168,27 +13175,24 @@ rg.axis.TickmarkOrdinal.prototype = {
 	toString: function() {
 		return rg.axis.Tickmarks.string(this);
 	}
-	,getLabel: function() {
+	,get_label: function() {
 		return rg.util.RGStrings.humanize(this.values[this.pos]);
 	}
-	,label: null
-	,getValue: function() {
+	,get_value: function() {
 		return this.values[this.pos];
 	}
-	,value: null
-	,getMajor: function() {
+	,get_major: function() {
 		return this.major;
 	}
 	,major: null
-	,getDelta: function() {
+	,get_delta: function() {
 		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
 	}
-	,delta: null
 	,scaleDistribution: null
 	,values: null
 	,pos: null
 	,__class__: rg.axis.TickmarkOrdinal
-	,__properties__: {get_delta:"getDelta",get_major:"getMajor",get_value:"getValue",get_label:"getLabel"}
+	,__properties__: {get_delta:"get_delta",get_major:"get_major",get_value:"get_value",get_label:"get_label"}
 }
 rg.axis.TickmarkTime = function(value,values,major,periodicity,scaleDistribution) {
 	rg.axis.TickmarkOrdinal.call(this,values.indexOf(value),values,major,scaleDistribution);
@@ -13198,7 +13202,7 @@ $hxClasses["rg.axis.TickmarkTime"] = rg.axis.TickmarkTime;
 rg.axis.TickmarkTime.__name__ = ["rg","axis","TickmarkTime"];
 rg.axis.TickmarkTime.__super__ = rg.axis.TickmarkOrdinal;
 rg.axis.TickmarkTime.prototype = $extend(rg.axis.TickmarkOrdinal.prototype,{
-	getLabel: function() {
+	get_label: function() {
 		return rg.util.Periodicity.smartFormat(this.periodicity,this.values[this.pos]);
 	}
 	,periodicity: null
@@ -13210,14 +13214,14 @@ rg.axis.Tickmarks.__name__ = ["rg","axis","Tickmarks"];
 rg.axis.Tickmarks.bound = function(tickmarks,max) {
 	if(null == max || tickmarks.length <= (2 > max?2:max)) return tickmarks;
 	var majors = Arrays.filter(tickmarks,function(d) {
-		return d.getMajor();
+		return d.get_major();
 	});
 	if(majors.length > max) return rg.axis.Tickmarks.reduce(majors,max);
 	var result = rg.axis.Tickmarks.reduce(Arrays.filter(tickmarks,function(d) {
-		return !d.getMajor();
+		return !d.get_major();
 	}),max - majors.length).concat(majors);
 	result.sort(function(a,b) {
-		return Floats.compare(a.getDelta(),b.getDelta());
+		return Floats.compare(a.get_delta(),b.get_delta());
 	});
 	return result;
 }
@@ -13229,7 +13233,7 @@ rg.axis.Tickmarks.reduce = function(arr,max) {
 	return result;
 }
 rg.axis.Tickmarks.string = function(tick) {
-	return Dynamics.string(tick.getValue()) + " (" + (tick.getMajor()?"Major":"minor") + ", " + Floats.format(tick.getDelta()) + ")";
+	return Dynamics.string(tick.get_value()) + " (" + (tick.get_major()?"Major":"minor") + ", " + Floats.format(tick.get_delta()) + ")";
 }
 rg.axis.Tickmarks.forFloat = function(start,end,value,major) {
 	return new rg.axis.Tickmark(value,major,(value - start) / (end - start));
@@ -13269,7 +13273,7 @@ rg.data.DependentVariableProcessor.prototype = {
 			variable.stats.addMany(values);
 			var discrete;
 			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.axis.IAxisDiscrete))) {
-				discrete.setScaleDistribution(variable.scaleDistribution);
+				discrete.set_scaleDistribution(variable.scaleDistribution);
 				variable.scaleDistribution = null;
 			}
 		}
@@ -13289,7 +13293,7 @@ rg.data.IndependentVariableProcessor.prototype = {
 			variable.stats.addMany(rg.util.DataPoints.values(data,variable.type));
 			var discrete;
 			if(null != variable.scaleDistribution && null != (discrete = Types["as"](variable.axis,rg.axis.IAxisDiscrete))) {
-				discrete.setScaleDistribution(variable.scaleDistribution);
+				discrete.set_scaleDistribution(variable.scaleDistribution);
 				variable.scaleDistribution = null;
 			}
 		}
@@ -13353,31 +13357,31 @@ rg.data.Variable = function(type,scaleDistribution) {
 $hxClasses["rg.data.Variable"] = rg.data.Variable;
 rg.data.Variable.__name__ = ["rg","data","Variable"];
 rg.data.Variable.prototype = {
-	getMaxF: function() {
+	get_maxf: function() {
 		if(null == this.maxf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 61, className : "rg.data.Variable", methodName : "getMaxF"});
-			this.setMaxF(($_=this.axis,$bind($_,$_.max)));
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by max)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 61, className : "rg.data.Variable", methodName : "get_maxf"});
+			this.set_maxf(($_=this.axis,$bind($_,$_.max)));
 		}
 		return this.maxf;
 	}
-	,getMinF: function() {
+	,get_minf: function() {
 		if(null == this.minf) {
-			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 50, className : "rg.data.Variable", methodName : "getMinF"});
-			this.setMinF(($_=this.axis,$bind($_,$_.min)));
+			if(null == this.axis) throw new thx.error.Error("axis is null in '{0}' variable (required by min)",[this.type],null,{ fileName : "Variable.hx", lineNumber : 50, className : "rg.data.Variable", methodName : "get_minf"});
+			this.set_minf(($_=this.axis,$bind($_,$_.min)));
 		}
 		return this.minf;
 	}
-	,setMaxF: function(f) {
+	,set_maxf: function(f) {
 		return this.maxf = f;
 	}
-	,setMinF: function(f) {
+	,set_minf: function(f) {
 		return this.minf = f;
 	}
 	,max: function() {
-		return (this.getMaxF())(this.stats,this.meta);
+		return (this.get_maxf())(this.stats,this.meta);
 	}
 	,min: function() {
-		return (this.getMinF())(this.stats,this.meta);
+		return (this.get_minf())(this.stats,this.meta);
 	}
 	,setAxis: function(axis) {
 		this.axis = axis;
@@ -13391,7 +13395,7 @@ rg.data.Variable.prototype = {
 	,scaleDistribution: null
 	,type: null
 	,__class__: rg.data.Variable
-	,__properties__: {set_minf:"setMinF",get_minf:"getMinF",set_maxf:"setMaxF",get_maxf:"getMaxF"}
+	,__properties__: {set_minf:"set_minf",get_minf:"get_minf",set_maxf:"set_maxf",get_maxf:"get_maxf"}
 }
 rg.data.VariableDependent = function(type,scaleDistribution) {
 	rg.data.Variable.call(this,type,scaleDistribution);
@@ -13437,27 +13441,27 @@ rg.factory.FactoryGeoProjection.prototype = {
 		switch(info.projection.toLowerCase()) {
 		case "mercator":
 			var projection = new thx.geo.Mercator();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			if(null != info.scale) projection.set_scale(info.scale);
+			if(null != info.translate) projection.set_translate(info.translate); else projection.set_translate([0.0,0]);
 			return projection;
 		case "albers":
 			var projection = new thx.geo.Albers();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			if(null != info.origin) projection.setOrigin(info.origin);
-			if(null != info.parallels) projection.setParallels(info.parallels);
+			if(null != info.scale) projection.set_scale(info.scale);
+			if(null != info.translate) projection.set_translate(info.translate); else projection.set_translate([0.0,0]);
+			if(null != info.origin) projection.set_origin(info.origin);
+			if(null != info.parallels) projection.set_parallels(info.parallels);
 			return projection;
 		case "albersusa":
 			var projection = new thx.geo.AlbersUsa();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
+			if(null != info.scale) projection.set_scale(info.scale);
+			if(null != info.translate) projection.set_translate(info.translate); else projection.set_translate([0.0,0]);
 			return projection;
 		case "azimuthal":
 			var projection = new thx.geo.Azimuthal();
-			if(null != info.scale) projection.setScale(info.scale);
-			if(null != info.translate) projection.setTranslate(info.translate); else projection.setTranslate([0.0,0]);
-			if(null != info.mode) projection.setMode(info.mode);
-			if(null != info.origin) projection.setOrigin(info.origin);
+			if(null != info.scale) projection.set_scale(info.scale);
+			if(null != info.translate) projection.set_translate(info.translate); else projection.set_translate([0.0,0]);
+			if(null != info.mode) projection.set_mode(info.mode);
+			if(null != info.origin) projection.set_origin(info.origin);
 			return projection;
 		default:
 			return (function($this) {
@@ -13643,8 +13647,8 @@ rg.factory.FactoryVariableDependent.prototype = {
 		if(null == info.type) throw new thx.error.Error("cannot create an axis if type is not specified",null,null,{ fileName : "FactoryVariableDependent.hx", lineNumber : 18, className : "rg.factory.FactoryVariableDependent", methodName : "create"});
 		var axiscreator = new rg.factory.FactoryAxis(), variable = new rg.data.VariableDependent(info.type,info.scaleDistribution), axis = axiscreator.create(info.type,isnumeric,variable,info.values);
 		variable.setAxis(axis);
-		variable.setMinF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
-		variable.setMaxF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+		variable.set_minf(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+		variable.set_maxf(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
 		return variable;
 	}
 	,__class__: rg.factory.FactoryVariableDependent
@@ -13674,8 +13678,8 @@ rg.factory.FactoryVariableIndependent.prototype = {
 		if(null == info.type) return null;
 		var axiscreateer = new rg.factory.FactoryAxis(), variable = new rg.data.VariableIndependent(info.type,info.scaleDistribution), axis = axiscreateer.createDiscrete(info.type,variable,info.values,info.groupBy);
 		variable.setAxis(axis);
-		variable.setMinF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
-		variable.setMaxF(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
+		variable.set_minf(rg.factory.FactoryVariableIndependent.convertBound(axis,info.min));
+		variable.set_maxf(rg.factory.FactoryVariableIndependent.convertBound(axis,info.max));
 		return variable;
 	}
 	,__class__: rg.factory.FactoryVariableIndependent
@@ -13690,7 +13694,7 @@ rg.frame.Frame.prototype = {
 	toString: function() {
 		return "[x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "]";
 	}
-	,setLayout: function(x,y,width,height) {
+	,set_layout: function(x,y,width,height) {
 		if(this.x == x && this.y == y && this.width == width && this.height == height) return;
 		this.x = x;
 		this.y = y;
@@ -13738,7 +13742,7 @@ rg.frame.Stack.prototype = {
 		this.reflow();
 		return this;
 	}
-	,getLength: function() {
+	,get_length: function() {
 		return this.children.length;
 	}
 	,reflow: function() {
@@ -13838,14 +13842,14 @@ rg.frame.Stack.prototype = {
 				switch( $e[1] ) {
 				case 4:
 					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.setLayout(x,y,w,h);
+					sizeable.set_layout(x,y,w,h);
 					break;
 				case 3:
 				case 0:
 				case 1:
 				case 2:
 					var after = $e[3], before = $e[2];
-					sizeable.setLayout(0,pos + before,this.width,values[i] - after - before);
+					sizeable.set_layout(0,pos + before,this.width,values[i] - after - before);
 					break;
 				}
 				pos += values[i++];
@@ -13861,14 +13865,14 @@ rg.frame.Stack.prototype = {
 				switch( $e[1] ) {
 				case 4:
 					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.setLayout(x,y,w,h);
+					sizeable.set_layout(x,y,w,h);
 					break;
 				case 3:
 				case 0:
 				case 1:
 				case 2:
 					var after = $e[3], before = $e[2];
-					sizeable.setLayout(pos + before,0,values[i] - after - before,this.height);
+					sizeable.set_layout(pos + before,0,values[i] - after - before,this.height);
 					break;
 				}
 				pos += values[i++];
@@ -13883,7 +13887,7 @@ rg.frame.Stack.prototype = {
 	,removeChild: function(child) {
 		if(!HxOverrides.remove(this.children,child)) return false;
 		var f = child;
-		f.setParent(null);
+		f.set_parent(null);
 		this.reflow();
 		return true;
 	}
@@ -13896,7 +13900,7 @@ rg.frame.Stack.prototype = {
 			added = true;
 			this.children.push(child);
 			var f = child;
-			f.setParent(this);
+			f.set_parent(this);
 		}
 		if(added) this.reflow();
 		return this;
@@ -13905,7 +13909,7 @@ rg.frame.Stack.prototype = {
 		if(null == child) return this;
 		this.children.push(child);
 		var f = child;
-		f.setParent(this);
+		f.set_parent(this);
 		this.reflow();
 		return this;
 	}
@@ -13915,41 +13919,40 @@ rg.frame.Stack.prototype = {
 		if(pos < 0) pos = 0;
 		this.children.splice(pos,0,child);
 		var f = child;
-		f.setParent(this);
+		f.set_parent(this);
 		this.reflow();
 		return this;
 	}
 	,moreSpaceRequired: function(size) {
 	}
-	,length: null
 	,orientation: null
 	,height: null
 	,width: null
 	,children: null
 	,__class__: rg.frame.Stack
-	,__properties__: {get_length:"getLength"}
+	,__properties__: {get_length:"get_length"}
 }
 rg.frame.StackItem = function(disposition) {
 	rg.frame.Frame.call(this);
-	this.setDisposition(disposition);
+	this.set_disposition(disposition);
 };
 $hxClasses["rg.frame.StackItem"] = rg.frame.StackItem;
 rg.frame.StackItem.__name__ = ["rg","frame","StackItem"];
 rg.frame.StackItem.__super__ = rg.frame.Frame;
 rg.frame.StackItem.prototype = $extend(rg.frame.Frame.prototype,{
-	setDisposition: function(v) {
+	set_disposition: function(v) {
 		this.disposition = v;
 		if(null != this.parent) this.parent.reflow();
 		return v;
 	}
-	,setParent: function(v) {
+	,set_parent: function(v) {
 		if(null != this.parent) this.parent.removeChild(this);
 		return this.parent = v;
 	}
 	,parent: null
 	,disposition: null
 	,__class__: rg.frame.StackItem
-	,__properties__: {set_disposition:"setDisposition"}
+	,__properties__: {set_disposition:"set_disposition"}
 });
 rg.html = {}
 rg.html.chart = {}
@@ -14940,8 +14943,8 @@ rg.html.widget.Tooltip = function(el) {
 };
 $hxClasses["rg.html.widget.Tooltip"] = rg.html.widget.Tooltip;
 rg.html.widget.Tooltip.__name__ = ["rg","html","widget","Tooltip"];
-rg.html.widget.Tooltip.__properties__ = {get_instance:"getInstance"}
-rg.html.widget.Tooltip.getInstance = function() {
+rg.html.widget.Tooltip.__properties__ = {get_instance:"get_instance"}
+rg.html.widget.Tooltip.get_instance = function() {
 	if(null == rg.html.widget.Tooltip.instance) {
 		rg.html.widget.Tooltip.instance = new rg.html.widget.Tooltip();
 		ReportGrid.tooltip = rg.html.widget.Tooltip.instance;
@@ -15610,29 +15613,8 @@ rg.info.InfoPieChart = function() {
 };
 $hxClasses["rg.info.InfoPieChart"] = rg.info.InfoPieChart;
 rg.info.InfoPieChart.__name__ = ["rg","info","InfoPieChart"];
-rg.info.InfoPieChart.validateOrientation = function(s) {
-	var name = s.split(":")[0].toLowerCase();
-	return Arrays.exists(["fixed","ortho","orthogonal","align","aligned","horizontal"],name);
-}
-rg.info.InfoPieChart.filterOrientation = function(s) {
-	var name = s.split(":")[0].toLowerCase();
-	switch(name) {
-	case "fixed":
-		var v = Std.parseFloat(s.split(":")[1]);
-		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "InfoPieChart.hx", lineNumber : 60, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
-		return rg.svg.widget.LabelOrientation.FixedAngle(v);
-	case "ortho":case "orthogonal":
-		return rg.svg.widget.LabelOrientation.Orthogonal;
-	case "align":case "aligned":
-		return rg.svg.widget.LabelOrientation.Aligned;
-	case "horizontal":
-		return rg.svg.widget.LabelOrientation.FixedAngle(0);
-	default:
-		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "InfoPieChart.hx", lineNumber : 69, className : "rg.info.InfoPieChart", methodName : "filterOrientation"});
-	}
-}
 rg.info.InfoPieChart.filters = function() {
-	return [rg.info.filter.FilterDescription.toFloat("labelradius"),rg.info.filter.FilterDescription.toBool("dontfliplabel"),rg.info.filter.FilterDescription.toTry("labelorientation",null,rg.info.InfoPieChart.filterOrientation,"invalid orientation value '{0}'"),rg.info.filter.FilterDescription.toFloat("innerradius"),rg.info.filter.FilterDescription.toFloat("outerradius"),rg.info.filter.FilterDescription.toFloat("overradius"),rg.info.filter.FilterDescription.toFloat("tooltipradius"),rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toExpressionFunction("sort",["a","b"],["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}")))];
+	return [rg.info.filter.FilterDescription.toFloat("labelradius"),rg.info.filter.FilterDescription.toBool("dontfliplabel"),rg.info.filter.FilterDescription.toTry("labelorientation",null,rg.svg.widget.LabelOrientations.parse,"invalid orientation value '{0}'"),rg.info.filter.FilterDescription.toFloat("innerradius"),rg.info.filter.FilterDescription.toFloat("outerradius"),rg.info.filter.FilterDescription.toFloat("overradius"),rg.info.filter.FilterDescription.toFloat("tooltipradius"),rg.info.filter.FilterDescription.toInfo("animation",null,rg.info.InfoAnimation),rg.info.filter.FilterDescription.toInfo("label",null,rg.info.InfoLabel),rg.info.filter.FilterDescription.toExpressionFunction("sort",["a","b"],["sortDataPoint"]),rg.info.filter.FilterDescription.toFunction("click"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}")))];
 }
 rg.info.InfoPieChart.prototype = {
 	click: null
@@ -15734,7 +15716,7 @@ rg.info.InfoScatterGraph = function() {
 $hxClasses["rg.info.InfoScatterGraph"] = rg.info.InfoScatterGraph;
 rg.info.InfoScatterGraph.__name__ = ["rg","info","InfoScatterGraph"];
 rg.info.InfoScatterGraph.filters = function() {
-	return [rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbol",[null,"stats"]),rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbolstyle",[null,"stats"],["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
+	return [rg.info.filter.FilterDescription.toExpressionFunctionOrString("symbol",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("symbolstyle",[null,"stats"],["symbolStyle"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
 		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
 	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
 }
@@ -16271,6 +16253,10 @@ rg.info.filter.TransformerExpressionToFunction.__interfaces__ = [rg.info.filter.
 rg.info.filter.TransformerExpressionToFunction.extractValues = function(map,args) {
 	var i = map.length, values = new Hash();
 	values.set("ReportGrid",ReportGrid);
+	values.set("format",ReportGrid.format);
+	values.set("symbol",ReportGrid.symbol);
+	values.set("humanize",ReportGrid.humanize);
+	values.set("compare",ReportGrid.compare);
 	values.set("Math",Math);
 	values.set("null",null);
 	values.set("true",true);
@@ -16625,19 +16611,19 @@ rg.layout.Layout.prototype = {
 		switch( $e[1] ) {
 		case 0:
 			var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
+			stackitem.set_disposition(rg.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
 			break;
 		case 1:
 			var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
+			stackitem.set_disposition(rg.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
 			break;
 		case 2:
 			var ratio = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
+			stackitem.set_disposition(rg.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
 			break;
 		case 3:
 			var size = $e[4], a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
+			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
 			break;
 		default:
 		}
@@ -16649,7 +16635,7 @@ rg.layout.Layout.prototype = {
 		switch( $e[1] ) {
 		case 3:
 			var a = $e[3], b = $e[2];
-			stackitem.setDisposition(rg.frame.FrameLayout.Fixed(b,a,size));
+			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(b,a,size));
 			break;
 		default:
 		}
@@ -17721,7 +17707,7 @@ rg.svg.panel.Layer = function(panel) {
 $hxClasses["rg.svg.panel.Layer"] = rg.svg.panel.Layer;
 rg.svg.panel.Layer.__name__ = ["rg","svg","panel","Layer"];
 rg.svg.panel.Layer.prototype = {
-	setCustomClass: function(v) {
+	set_customClass: function(v) {
 		if(null != this.customClass) this.g.classed().remove(this.customClass);
 		this.g.classed().add(v);
 		return this.customClass = v;
@@ -17757,7 +17743,7 @@ rg.svg.panel.Layer.prototype = {
 	,frame: null
 	,panel: null
 	,__class__: rg.svg.panel.Layer
-	,__properties__: {set_customClass:"setCustomClass"}
+	,__properties__: {set_customClass:"set_customClass"}
 }
 rg.svg.chart = {}
 rg.svg.chart.Chart = function(panel) {
@@ -17779,7 +17765,7 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		this.tooltip.showAt(this.panelx + x | 0,this.panely + y | 0);
 	}
 	,init: function() {
-		if(null != this.labelDataPointOver) this.tooltip = rg.html.widget.Tooltip.getInstance();
+		if(null != this.labelDataPointOver) this.tooltip = rg.html.widget.Tooltip.get_instance();
 		this.resize();
 	}
 	,resize: function() {
@@ -17886,7 +17872,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					var k = _g5++;
 					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
 					if(Math.isNaN(h)) h = 0;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](this.stacked?dist:pad).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
+					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](Math.max(this.stacked?dist:pad,1)).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
 							return f2(dp1,_,i1);
 						};
@@ -17930,7 +17916,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = Math.max(this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)),1), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
 					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
 							return f2(dp1,_,i1);
@@ -18169,17 +18155,17 @@ rg.svg.chart.FunnelChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			node.append("svg:path").attr("transform").string("scale(1.1,0.85)translate(1,1)").attr("class").string("shadow").style("fill").string("#000").attr("opacity")["float"](.25).attr("d").string(thx.svg.Symbol.arrowDownWide(_g.arrowSize * _g.arrowSize));
 			node.append("svg:path").attr("transform").string("scale(1.1,0.8)").attr("d").string(thx.svg.Symbol.arrowDownWide(_g.arrowSize * _g.arrowSize));
 			var label = new rg.svg.widget.Label(node,true,false,true);
-			label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
-			label.setText(text);
+			label.set_anchor(rg.svg.widget.GridAnchor.Bottom);
+			label.set_text(text);
 		});
 		ga.each(function(d,i) {
 			if(null == _g.labelDataPoint) return;
 			var text = _g.labelDataPoint(d,_g.stats);
 			if(null == text) return;
 			var balloon = new rg.svg.widget.Balloon(_g.g);
-			balloon.setBoundingBox({ x : _g.width / 2 + _g.arrowSize / 3 * 2, y : 0, width : _g.width, height : _g.height});
-			balloon.setPreferredSide(3);
-			balloon.setText(text.split("\n"));
+			balloon.set_boundingBox({ x : _g.width / 2 + _g.arrowSize / 3 * 2, y : 0, width : _g.width, height : _g.height});
+			balloon.set_preferredSide(3);
+			balloon.set_text(text.split("\n"));
 			balloon.moveTo(_g.width / 2,_g.topheight + _g.h * .6 + (_g.h + _g.padding) * i,false);
 		});
 		this.ready.dispatch();
@@ -18237,7 +18223,7 @@ rg.svg.chart.Geo = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
 	this.mapcontainer = this.g.append("svg:g").attr("class").string("mapcontainer");
 	this.queue = [];
-	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
+	this.set_colorMode(rg.svg.chart.ColorScaleMode.FromCss());
 	this.resize();
 };
 $hxClasses["rg.svg.chart.Geo"] = rg.svg.chart.Geo;
@@ -18253,11 +18239,11 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,init: function() {
 		rg.svg.chart.Chart.prototype.init.call(this);
-		rg.html.widget.Tooltip.getInstance().hide();
-		if(null == this.tooltip) this.tooltip = rg.html.widget.Tooltip.getInstance();
+		rg.html.widget.Tooltip.get_instance().hide();
+		if(null == this.tooltip) this.tooltip = rg.html.widget.Tooltip.get_instance();
 		this.g.classed().add("geo");
 	}
-	,setColorMode: function(v) {
+	,set_colorMode: function(v) {
 		var _g = this;
 		var $e = (this.colorMode = v);
 		switch( $e[1] ) {
@@ -18268,7 +18254,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			if(colors.length > g) colors = colors.slice(0,g);
 			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
 			colors.reverse();
-			this.setColorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
+			this.set_colorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
 				return thx.color.Colors.parse(s);
 			})));
 			break;
@@ -18319,7 +18305,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		}
 		return v;
 	}
-	,getColorMode: function() {
+	,get_colorMode: function() {
 		return this.colorMode;
 	}
 	,redraw: function() {
@@ -18347,7 +18333,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			})($bind(this,this.drawmap),map,field));
 			return;
 		}
-		this.setColorMode(map.colorMode);
+		this.set_colorMode(map.colorMode);
 		var text = null;
 		var _g = 0, _g1 = this.dps;
 		while(_g < _g1.length) {
@@ -18360,7 +18346,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			if(null != map.labelDataPoint && null != (text = map.labelDataPoint(feature.dp,this.variableDependent.stats))) {
 				var c = Reflect.field(feature.dp,"$centroid");
 				var label = new rg.svg.widget.Label(this.mapcontainer,true,this.labelShadow,this.labelOutline);
-				label.setText(text);
+				label.set_text(text);
 				label.place(c[0],c[1],0);
 			}
 		}
@@ -18388,7 +18374,7 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,colorMode: null
 	,mapcontainer: null
 	,__class__: rg.svg.chart.Geo
-	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
+	,__properties__: $extend(rg.svg.chart.Chart.prototype.__properties__,{set_colorMode:"set_colorMode",get_colorMode:"get_colorMode"})
 });
 rg.svg.chart.GradientEffect = { __ename__ : ["rg","svg","chart","GradientEffect"], __constructs__ : ["NoEffect","Gradient"] }
 rg.svg.chart.GradientEffect.NoEffect = ["NoEffect",0];
@@ -18426,13 +18412,13 @@ rg.svg.chart.GradientEffects.parse = function(s) {
 rg.svg.chart.HeatGrid = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
 	this.useContour = false;
-	this.setColorMode(rg.svg.chart.ColorScaleMode.FromCss());
+	this.set_colorMode(rg.svg.chart.ColorScaleMode.FromCss());
 };
 $hxClasses["rg.svg.chart.HeatGrid"] = rg.svg.chart.HeatGrid;
 rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
-	setColorMode: function(v) {
+	set_colorMode: function(v) {
 		var _g = this;
 		var $e = (this.colorMode = v);
 		switch( $e[1] ) {
@@ -18443,7 +18429,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			if(colors.length > g) colors = colors.slice(0,g);
 			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
 			colors.reverse();
-			this.setColorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
+			this.set_colorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
 				return thx.color.Colors.parse(s);
 			})));
 			break;
@@ -18489,7 +18475,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		}
 		return v;
 	}
-	,getColorMode: function() {
+	,get_colorMode: function() {
 		return this.colorMode;
 	}
 	,stylefeature: function(svg,dp) {
@@ -18499,7 +18485,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		if(null != v) return v.axis.range(v.min(),v.max());
 		var tickmarks = variable.axis.ticks(variable.min(),variable.max());
 		return tickmarks.map(function(d,i) {
-			return d.getValue();
+			return d.get_value();
 		});
 	}
 	,onclick: function(dp,i) {
@@ -18595,7 +18581,7 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,colorMode: null
 	,useContour: null
 	,__class__: rg.svg.chart.HeatGrid
-	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"setColorMode",get_colorMode:"getColorMode"})
+	,__properties__: $extend(rg.svg.chart.CartesianChart.prototype.__properties__,{set_colorMode:"set_colorMode",get_colorMode:"get_colorMode"})
 });
 rg.svg.chart.LineChart = function(panel) {
 	rg.svg.chart.CartesianChart.call(this,panel);
@@ -18747,7 +18733,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				gsymbol.eachNode((function(f,i2) {
 					return function(n,_) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,false,false);
-						label.setText(f[0](dp,_g2.stats[i2[0]]));
+						label.set_text(f[0](dp,_g2.stats[i2[0]]));
 					};
 				})(f,i2));
 			}
@@ -18969,26 +18955,26 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,appendLabel: function(dom,i) {
 		var n = dhx.Dom.selectNode(dom), label = new rg.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__dhx_data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.setOrientation(this.labelOrientation);
+		label.set_orientation(this.labelOrientation);
 		switch( (this.labelOrientation)[1] ) {
 		case 0:
-			label.setAnchor(rg.svg.widget.GridAnchor.Center);
+			label.set_anchor(rg.svg.widget.GridAnchor.Center);
 			break;
 		case 1:
-			label.setAnchor(rg.svg.widget.GridAnchor.Left);
+			label.set_anchor(rg.svg.widget.GridAnchor.Left);
 			break;
 		case 2:
-			label.setAnchor(rg.svg.widget.GridAnchor.Top);
+			label.set_anchor(rg.svg.widget.GridAnchor.Top);
 			break;
 		}
-		label.setText(this.labelDataPoint(d.dp,this.stats));
+		label.set_text(this.labelDataPoint(d.dp,this.stats));
 		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 		this.labels.set(d.id,label);
 		if(Reflect.field(d.dp,this.stats.type) <= 0) label.hide();
 	}
 	,updateLabel: function(dom,i) {
 		var n = dhx.Dom.selectNode(dom), d = Reflect.field(dom,"__dhx_data__"), label = this.labels.get(d.id), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-		label.setText(this.labelDataPoint(d.dp,this.stats));
+		label.set_text(this.labelDataPoint(d.dp,this.stats));
 		label.place(-2.5 + Math.cos(a) * r,-2.5 + Math.sin(a) * r,57.29577951308232088 * a);
 		if(Reflect.field(d.dp,this.stats.type) == 0) label.hide(); else label.show();
 	}
@@ -19519,8 +19505,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
 				label.place(x,y + extra / 2,0);
-				label.setAnchor(rg.svg.widget.GridAnchor.Left);
-				label.setText(text);
+				label.set_anchor(rg.svg.widget.GridAnchor.Left);
+				label.set_text(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
 			elbow.g.onNode("mouseover",(function(f8,x7,y7,a18) {
@@ -19549,8 +19535,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 				label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 				label.addClass("edge");
 				label.place(x,_g2.ynode(node) + extra / 2,0);
-				label.setAnchor(rg.svg.widget.GridAnchor.Right);
-				label.setText(text);
+				label.set_anchor(rg.svg.widget.GridAnchor.Right);
+				label.set_text(text);
 				if(label.getSize().height > extra * .75) label.destroy();
 			}
 			elbow.g.onNode("mouseover",(function(f10,x8,y8,a110) {
@@ -19578,8 +19564,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			label = new rg.svg.widget.Label(edgescontainer,true,true,false);
 			label.addClass("edge");
 			label.place(_g2.layerWidth / 2 + _g2.xlayer(celltail.layer) + nodeSpacing,_g2.ynode(tail) + _g2.ydiagonal(edge.id,tail.graph.edges.positives(tail)) + weight / 2,0);
-			label.setAnchor(rg.svg.widget.GridAnchor.Left);
-			label.setText(text);
+			label.set_anchor(rg.svg.widget.GridAnchor.Left);
+			label.set_text(text);
 			if(label.getSize().height > weight * .75) label.destroy();
 		});
 		var rules = this.g.selectAll("g.layer").data(this.layout.layers()).enter().append("svg:g").attr("class").string("layer").append("svg:line").attr("class").stringf(function(_,i) {
@@ -19629,8 +19615,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 					pos = nodeSpacing;
 					if(null != prev) pos += prev.y + prev.getSize().height;
 					label.place(-_g2.layerWidth / 2 + nodeSpacing * 2,pos,0);
-					label.setAnchor(rg.svg.widget.GridAnchor.TopLeft);
-					label.setText(text);
+					label.set_anchor(rg.svg.widget.GridAnchor.TopLeft);
+					label.set_text(text);
 					if(label.y + label.getSize().height > nodeheight) {
 						label.destroy();
 						break;
@@ -19649,9 +19635,9 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			}
 			if(null != _g2.labelNode) {
 				if(hasimage) label = new rg.svg.widget.Label(node,true,true,true); else label = new rg.svg.widget.Label(node,true,false,false);
-				label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+				label.set_anchor(rg.svg.widget.GridAnchor.Bottom);
 				label.place(0,-_g2.labelNodeSpacing,0);
-				label.setText(_g2.labelNode(n.data.dp,_g2.dependentVariable.stats));
+				label.set_text(_g2.labelNode(n.data.dp,_g2.dependentVariable.stats));
 			}
 		});
 		cont.each(function(n,i) {
@@ -19806,7 +19792,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 				enter.eachNode((function(f2,stats) {
 					return function(n,i1) {
 						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,true,true);
-						label.setText(f2[0](dp,stats[0]));
+						label.set_text(f2[0](dp,stats[0]));
 					};
 				})(f2,stats));
 			}
@@ -20031,7 +20017,7 @@ rg.svg.layer.RulesOrtho.__name__ = ["rg","svg","layer","RulesOrtho"];
 rg.svg.layer.RulesOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	tickClass: function(d,i) {
-		return d.getMajor()?"major":null;
+		return d.get_major()?"major":null;
 	}
 	,y2Vertical: function(d,i) {
 		return this.height;
@@ -20058,10 +20044,10 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return 0;
 	}
 	,translateVertical: function(d,i) {
-		return "translate(" + d.getDelta() * this.width + "," + 0 + ")";
+		return "translate(" + d.get_delta() * this.width + "," + 0 + ")";
 	}
 	,translateHorizontal: function(d,i) {
-		return "translate(" + 0 + "," + (this.height - d.getDelta() * this.height) + ")";
+		return "translate(" + 0 + "," + (this.height - d.get_delta() * this.height) + ")";
 	}
 	,t: function(x,y) {
 		return "translate(" + x + "," + y + ")";
@@ -20105,7 +20091,7 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		rule.exit().remove();
 	}
 	,id: function(d,i) {
-		return "" + Std.string(d.getValue());
+		return "" + Std.string(d.get_value());
 	}
 	,maxTicks: function() {
 		var size = (function($this) {
@@ -20179,7 +20165,7 @@ rg.svg.layer.TickmarksOrtho.__name__ = ["rg","svg","layer","TickmarksOrtho"];
 rg.svg.layer.TickmarksOrtho.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	tickClass: function(d,i) {
-		return d.getMajor()?"major":null;
+		return d.get_major()?"major":null;
 	}
 	,y2Right: function(d,i) {
 		return 0;
@@ -20188,16 +20174,16 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return 0;
 	}
 	,y2Bottom: function(d,i) {
-		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+		return -(d.get_major()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
 	}
 	,y2Top: function(d,i) {
-		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+		return d.get_major()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
 	}
 	,x2Right: function(d,i) {
-		return -(d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
+		return -(d.get_major()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor);
 	}
 	,x2Left: function(d,i) {
-		return d.getMajor()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
+		return d.get_major()?this.lengthMajor + this.paddingMajor:this.lengthMinor + this.paddingMinor;
 	}
 	,x2Bottom: function(d,i) {
 		return 0;
@@ -20212,16 +20198,16 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return 0;
 	}
 	,y1Bottom: function(d,i) {
-		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+		return -(d.get_major()?this.paddingMajor:this.paddingMinor);
 	}
 	,y1Top: function(d,i) {
-		return d.getMajor()?this.paddingMajor:this.paddingMinor;
+		return d.get_major()?this.paddingMajor:this.paddingMinor;
 	}
 	,x1Right: function(d,i) {
-		return -(d.getMajor()?this.paddingMajor:this.paddingMinor);
+		return -(d.get_major()?this.paddingMajor:this.paddingMinor);
 	}
 	,x1Left: function(d,i) {
-		return d.getMajor()?this.paddingMajor:this.paddingMinor;
+		return d.get_major()?this.paddingMajor:this.paddingMinor;
 	}
 	,x1Bottom: function(d,i) {
 		return 0;
@@ -20230,16 +20216,16 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return 0;
 	}
 	,translateRight: function(d,i) {
-		return "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+		return "translate(" + this.panel.frame.width + "," + (this.panel.frame.height - d.get_delta() * this.panel.frame.height) + ")";
 	}
 	,translateLeft: function(d,i) {
-		return "translate(" + 0 + "," + (this.panel.frame.height - d.getDelta() * this.panel.frame.height) + ")";
+		return "translate(" + 0 + "," + (this.panel.frame.height - d.get_delta() * this.panel.frame.height) + ")";
 	}
 	,translateBottom: function(d,i) {
-		return "translate(" + d.getDelta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
+		return "translate(" + d.get_delta() * this.panel.frame.width + "," + this.panel.frame.height + ")";
 	}
 	,translateTop: function(d,i) {
-		return "translate(" + d.getDelta() * this.panel.frame.width + "," + 0 + ")";
+		return "translate(" + d.get_delta() * this.panel.frame.width + "," + 0 + ")";
 	}
 	,t: function(x,y) {
 		return "translate(" + x + "," + y + ")";
@@ -20360,12 +20346,12 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,createLabel: function(n,i) {
 		var d = Reflect.field(n,"__dhx_data__");
-		if(!d.getMajor()) return;
+		if(!d.get_major()) return;
 		var label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),false,false,false);
-		label.setAnchor(this.labelAnchor);
-		label.setOrientation(this.labelOrientation);
+		label.set_anchor(this.labelAnchor);
+		label.set_orientation(this.labelOrientation);
 		var padding = this.paddingLabel;
-		label.setText(null == this.tickLabel?d.getLabel():this.tickLabel(d.getValue()));
+		label.set_text(null == this.tickLabel?d.get_label():this.tickLabel(d.get_value()));
 		switch( (this.anchor)[1] ) {
 		case 0:
 			label.place(0,padding,this.labelAngle);
@@ -20412,7 +20398,7 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		tick.exit().remove();
 	}
 	,id: function(d,i) {
-		return "" + Std.string(d.getValue());
+		return "" + Std.string(d.get_value());
 	}
 	,maxTicks: function() {
 		var size = (function($this) {
@@ -20495,17 +20481,17 @@ rg.svg.layer.Title = function(panel,text,anchor,padding,className,shadow,outline
 	this.addClass(className);
 	this.group = this.g.append("svg:g");
 	this.label = new rg.svg.widget.Label(this.group,false,shadow,outline);
-	this.label.setOrientation(rg.svg.widget.LabelOrientation.Orthogonal);
-	this.setAnchor(anchor);
-	this.setPadding(padding);
-	this.setText(text);
+	this.label.set_orientation(rg.svg.widget.LabelOrientation.Orthogonal);
+	this.set_anchor(anchor);
+	this.set_padding(padding);
+	this.set_text(text);
 	this.resize();
 };
 $hxClasses["rg.svg.layer.Title"] = rg.svg.layer.Title;
 rg.svg.layer.Title.__name__ = ["rg","svg","layer","Title"];
 rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
-	setPadding: function(v) {
+	set_padding: function(v) {
 		this.padding = v;
 		switch( (this.anchor)[1] ) {
 		case 0:
@@ -20523,27 +20509,27 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		}
 		return v;
 	}
-	,setAnchor: function(v) {
+	,set_anchor: function(v) {
 		switch( (this.anchor = v)[1] ) {
 		case 0:
-			this.label.setAnchor(rg.svg.widget.GridAnchor.Top);
+			this.label.set_anchor(rg.svg.widget.GridAnchor.Top);
 			break;
 		case 1:
-			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			this.label.set_anchor(rg.svg.widget.GridAnchor.Bottom);
 			break;
 		case 2:
-			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			this.label.set_anchor(rg.svg.widget.GridAnchor.Bottom);
 			break;
 		case 3:
-			this.label.setAnchor(rg.svg.widget.GridAnchor.Bottom);
+			this.label.set_anchor(rg.svg.widget.GridAnchor.Bottom);
 			break;
 		}
 		return v;
 	}
-	,setText: function(v) {
-		return this.label.setText(v);
+	,set_text: function(v) {
+		return this.label.set_text(v);
 	}
-	,getText: function() {
+	,get_text: function() {
 		return this.label.text;
 	}
 	,resize: function() {
@@ -20584,9 +20570,8 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,label: null
 	,padding: null
 	,anchor: null
-	,text: null
 	,__class__: rg.svg.layer.Title
-	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_text:"setText",get_text:"getText",set_anchor:"setAnchor",set_padding:"setPadding"})
+	,__properties__: $extend(rg.svg.panel.Layer.prototype.__properties__,{set_text:"set_text",get_text:"get_text",set_anchor:"set_anchor",set_padding:"set_padding"})
 });
 rg.svg.panel.Panel = function(frame) {
 	this.frame = frame;
@@ -20692,7 +20677,7 @@ rg.svg.panel.Container.prototype = $extend(rg.svg.panel.Panel.prototype,{
 	}
 	,insertPanel: function(pos,panel) {
 		if(null == panel) return this;
-		if(pos >= this.stack.getLength()) return this.addPanel(panel); else if(pos < 0) pos = 0;
+		if(pos >= this.stack.get_length()) return this.addPanel(panel); else if(pos < 0) pos = 0;
 		if(null != panel.parent) panel.parent.removePanel(panel);
 		this.panels.splice(pos,0,panel);
 		var f = panel;
@@ -20772,7 +20757,7 @@ rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
 		if(this.panel.width == width && this.panel.height == height) return;
 		this.svg.attr("width")["float"](width).attr("height")["float"](height);
 		var sf = this.panel;
-		sf.setLayout(0,0,width,height);
+		sf.set_layout(0,0,width,height);
 	}
 	,svg: null
 	,panel: null
@@ -20842,9 +20827,9 @@ rg.svg.widget.Balloon = function(container,bindOnTop) {
 	this.visible = true;
 	this.duration = 350;
 	this.minwidth = 30;
-	this.setPreferredSide(2);
+	this.set_preferredSide(2);
 	this.ease = thx.math.Ease.mode(thx.math.EaseMode.EaseOut,thx.math.Equations.cubic);
-	this.setRoundedCorner(5);
+	this.set_roundedCorner(5);
 	this.paddingHorizontal = 3.5;
 	this.paddingVertical = 1.5;
 	this.transition_id = 0;
@@ -20860,8 +20845,8 @@ rg.svg.widget.Balloon = function(container,bindOnTop) {
 	this.labelsContainer = this.frame.append("svg:g").attr("class").string("labels");
 	this.labels = [];
 	var temp = this.createLabel(0);
-	temp.setText("HELLO");
-	this.setLineHeight(temp.getSize().height);
+	temp.set_text("HELLO");
+	this.set_lineHeight(temp.getSize().height);
 	temp.destroy();
 };
 $hxClasses["rg.svg.widget.Balloon"] = rg.svg.widget.Balloon;
@@ -20881,7 +20866,7 @@ rg.svg.widget.Balloon.prototype = {
 		if(w == 0) {
 			var t = this.text;
 			haxe.Timer.delay(function() {
-				_g.setText(t);
+				_g.set_text(t);
 			},15);
 			return;
 		}
@@ -20911,7 +20896,7 @@ rg.svg.widget.Balloon.prototype = {
 		if(animate) this.balloon.transition().attr("opacity")["float"](1); else this.balloon.attr("opacity")["float"](1);
 	}
 	,_moveTo: function(x,y) {
-		var bb = this.getBoundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
+		var bb = this.get_boundingBox(), left = bb.x, right = bb.x + bb.width, top = bb.y, bottom = bb.y + bb.height, limit = this.roundedCorner * 2, offset = 0.0, diagonal = 0;
 		var tx = 0.0, ty = 0.0, side = this.preferredSide, found = 1;
 		while(found > 0 && found < 5) {
 			if(x >= right - limit) {
@@ -21155,20 +21140,20 @@ rg.svg.widget.Balloon.prototype = {
 		})($bind(this,this._moveTo),x,y),15); else this._moveTo(x,y);
 	}
 	,transition_id: null
-	,getBoundingBox: function() {
+	,get_boundingBox: function() {
 		if(null == this.boundingBox) try {
-			this.setBoundingBox(this.container.node().getBBox());
+			this.set_boundingBox(this.container.node().getBBox());
 		} catch( e ) {
 			return { width : 0.0, height : 0.0, x : 0.0, y : 0.0};
 		}
 		return this.boundingBox;
 	}
-	,setBoundingBox: function(v) {
+	,set_boundingBox: function(v) {
 		this.boundingBox = v;
 		this.redraw();
 		return v;
 	}
-	,setRoundedCorner: function(v) {
+	,set_roundedCorner: function(v) {
 		this.roundedCorner = v;
 		this.redraw();
 		return v;
@@ -21178,12 +21163,12 @@ rg.svg.widget.Balloon.prototype = {
 		this.paddingVertical = v;
 		this.redraw();
 	}
-	,setLineHeight: function(v) {
+	,set_lineHeight: function(v) {
 		this.lineHeight = v;
 		this.redraw();
 		return v;
 	}
-	,setText: function(v) {
+	,set_text: function(v) {
 		while(this.labels.length > v.length) {
 			var label = this.labels.pop();
 			label.destroy();
@@ -21196,13 +21181,13 @@ rg.svg.widget.Balloon.prototype = {
 		var _g1 = 0, _g = v.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			this.labels[i].setText(v[i]);
+			this.labels[i].set_text(v[i]);
 		}
 		this.text = v;
 		this.redraw();
 		return v;
 	}
-	,setPreferredSide: function(v) {
+	,set_preferredSide: function(v) {
 		this.preferredSide = Ints.clamp(v,0,3);
 		this.redraw();
 		return v;
@@ -21210,8 +21195,8 @@ rg.svg.widget.Balloon.prototype = {
 	,createLabel: function(i) {
 		var label = new rg.svg.widget.Label(this.labelsContainer,true,false,false);
 		label.addClass("line-" + i);
-		label.setAnchor(rg.svg.widget.GridAnchor.Top);
-		label.setOrientation(rg.svg.widget.LabelOrientation.Orthogonal);
+		label.set_anchor(rg.svg.widget.GridAnchor.Top);
+		label.set_orientation(rg.svg.widget.LabelOrientation.Orthogonal);
 		label.place(0,i * this.lineHeight,90);
 		return label;
 	}
@@ -21245,7 +21230,7 @@ rg.svg.widget.Balloon.prototype = {
 	,x: null
 	,text: null
 	,__class__: rg.svg.widget.Balloon
-	,__properties__: {set_text:"setText",set_lineHeight:"setLineHeight",set_roundedCorner:"setRoundedCorner",set_preferredSide:"setPreferredSide",set_boundingBox:"setBoundingBox",get_boundingBox:"getBoundingBox"}
+	,__properties__: {set_text:"set_text",set_lineHeight:"set_lineHeight",set_roundedCorner:"set_roundedCorner",set_preferredSide:"set_preferredSide",set_boundingBox:"set_boundingBox",get_boundingBox:"get_boundingBox"}
 }
 rg.svg.widget.BalloonShape = function() { }
 $hxClasses["rg.svg.widget.BalloonShape"] = rg.svg.widget.BalloonShape;
@@ -21601,8 +21586,8 @@ rg.svg.widget.Label = function(container,dontflip,shadow,outline) {
 	this.x = 0;
 	this.y = 0;
 	this.angle = 0;
-	this.setOrientation(rg.svg.widget.LabelOrientation.FixedAngle(0));
-	this.setAnchor(rg.svg.widget.GridAnchor.Center);
+	this.set_orientation(rg.svg.widget.LabelOrientation.FixedAngle(0));
+	this.set_anchor(rg.svg.widget.GridAnchor.Center);
 	this.visible = true;
 };
 $hxClasses["rg.svg.widget.Label"] = rg.svg.widget.Label;
@@ -21747,17 +21732,17 @@ rg.svg.widget.Label.prototype = {
 		}
 		return { width : w, height : h};
 	}
-	,setAnchor: function(v) {
+	,set_anchor: function(v) {
 		this.anchor = v;
 		this.reanchor();
 		return v;
 	}
-	,setOrientation: function(v) {
+	,set_orientation: function(v) {
 		this.orientation = v;
 		this.place(this.x,this.y,this.angle);
 		return v;
 	}
-	,setText: function(v) {
+	,set_text: function(v) {
 		this.text = v;
 		if(this.outline) this.toutline.text().string(v);
 		this.ttext.text().string(v);
@@ -21840,7 +21825,7 @@ rg.svg.widget.Label.prototype = {
 	,orientation: null
 	,text: null
 	,__class__: rg.svg.widget.Label
-	,__properties__: {set_text:"setText",set_orientation:"setOrientation",set_anchor:"setAnchor"}
+	,__properties__: {set_text:"set_text",set_orientation:"set_orientation",set_anchor:"set_anchor"}
 }
 rg.svg.widget.LabelOrientation = { __ename__ : ["rg","svg","widget","LabelOrientation"], __constructs__ : ["FixedAngle","Aligned","Orthogonal"] }
 rg.svg.widget.LabelOrientation.FixedAngle = function(angle) { var $x = ["FixedAngle",0,angle]; $x.__enum__ = rg.svg.widget.LabelOrientation; $x.toString = $estr; return $x; }
@@ -21853,18 +21838,26 @@ rg.svg.widget.LabelOrientation.Orthogonal.__enum__ = rg.svg.widget.LabelOrientat
 rg.svg.widget.LabelOrientations = function() { }
 $hxClasses["rg.svg.widget.LabelOrientations"] = rg.svg.widget.LabelOrientations;
 rg.svg.widget.LabelOrientations.__name__ = ["rg","svg","widget","LabelOrientations"];
+rg.svg.widget.LabelOrientations.canParse = function(s) {
+	var name = s.split(":")[0].toLowerCase();
+	return Arrays.exists(["angle","fixed","ortho","orthogonal","align","aligned","horizontal"],name);
+}
 rg.svg.widget.LabelOrientations.parse = function(s) {
-	return (function($this) {
-		var $r;
-		switch(s.toLowerCase()) {
-		case "ortho":case "orthogonal":
-			$r = rg.svg.widget.LabelOrientation.Orthogonal;
-			break;
-		default:
-			$r = rg.svg.widget.LabelOrientation.Aligned;
-		}
-		return $r;
-	}(this));
+	var name = s.split(":")[0].toLowerCase();
+	switch(name) {
+	case "fixed":case "angle":
+		var v = Std.parseFloat(s.split(":")[1]);
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "LabelOrientations.hx", lineNumber : 27, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
+		return rg.svg.widget.LabelOrientation.FixedAngle(v);
+	case "ortho":case "orthogonal":
+		return rg.svg.widget.LabelOrientation.Orthogonal;
+	case "align":case "aligned":
+		return rg.svg.widget.LabelOrientation.Aligned;
+	case "horiz":case "horizontal":
+		return rg.svg.widget.LabelOrientation.FixedAngle(0);
+	default:
+		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "LabelOrientations.hx", lineNumber : 36, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
+	}
 }
 rg.svg.widget.Map = function(container,projection) {
 	var _g = this;
@@ -21894,7 +21887,7 @@ rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
 	http.request(false);
 }
 rg.svg.widget.Map.prototype = {
-	setClassName: function(cls) {
+	set_className: function(cls) {
 		this.g.attr("class").string("map" + (null == cls?"":" " + cls));
 		return cls;
 	}
@@ -21914,7 +21907,7 @@ rg.svg.widget.Map.prototype = {
 			return s;
 		};
 		var path = new thx.svg.PathGeoJson();
-		path.setProjection(this.projection);
+		path.set_projection(this.projection);
 		switch(json.type) {
 		case "FeatureCollection":
 			var _g1 = 0, _g2 = json.features.length;
@@ -21973,9 +21966,8 @@ rg.svg.widget.Map.prototype = {
 	,click: null
 	,onReady: null
 	,map: null
-	,className: null
 	,__class__: rg.svg.widget.Map
-	,__properties__: {set_className:"setClassName"}
+	,__properties__: {set_className:"set_className"}
 }
 rg.svg.widget.Sensible = function() { }
 $hxClasses["rg.svg.widget.Sensible"] = rg.svg.widget.Sensible;
@@ -22987,7 +22979,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	,feedData: function(data) {
 		if(0 == data.length) return;
 		if(null != this.title && null != this.info.label.title) {
-			this.title.setText(this.info.label.title(this.variables,data));
+			this.title.set_text(this.info.label.title(this.variables,data));
 			this.layout.suggestSize("title",this.title.idealHeight());
 		}
 		var transformed = this.transformData(data);
@@ -23219,7 +23211,7 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data1));
+				this.title.set_text(this.info.label.title(this.variables,data1));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23280,7 +23272,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23308,7 +23300,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 			var imap = _g11[_g1];
 			++_g1;
 			var projection = pfactory.create(imap), map = new rg.svg.widget.Map(this.chart.mapcontainer,projection);
-			map.setClassName(imap.classname);
+			map.set_className(imap.classname);
 			if(null == imap.label) map.labelDataPoint = this.info.label.datapoint; else map.labelDataPoint = imap.label.datapoint;
 			if(null == imap.label) map.labelDataPointOver = this.info.label.datapointover; else map.labelDataPointOver = imap.label.datapointover;
 			map.click = imap.click;
@@ -23351,7 +23343,7 @@ rg.visualization.VisualizationHeatGrid.prototype = $extend(rg.visualization.Visu
 			_g.ready.dispatch();
 		});
 		chart.useContour = this.infoHeatGrid.contour;
-		chart.setColorMode(this.infoHeatGrid.colorScaleMode);
+		chart.set_colorMode(this.infoHeatGrid.colorScaleMode);
 		this.chart = chart;
 	}
 	,initAxes: function() {
@@ -23464,7 +23456,7 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23739,7 +23731,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.setText(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -24197,30 +24189,30 @@ thx.culture.Info.prototype = {
 thx.culture.Culture = function() { }
 $hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
-thx.culture.Culture.__properties__ = {set_defaultCulture:"setDefaultCulture",get_defaultCulture:"getDefaultCulture",get_cultures:"getCultures"}
-thx.culture.Culture.getCultures = function() {
+thx.culture.Culture.__properties__ = {set_defaultCulture:"set_defaultCulture",get_defaultCulture:"get_defaultCulture",get_cultures:"get_cultures"}
+thx.culture.Culture.get_cultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
 thx.culture.Culture.get = function(name) {
-	return thx.culture.Culture.getCultures().get(name.toLowerCase());
+	return thx.culture.Culture.get_cultures().get(name.toLowerCase());
 }
 thx.culture.Culture.names = function() {
-	return thx.culture.Culture.getCultures().keys();
+	return thx.culture.Culture.get_cultures().keys();
 }
 thx.culture.Culture.exists = function(culture) {
-	return thx.culture.Culture.getCultures().exists(culture.toLowerCase());
+	return thx.culture.Culture.get_cultures().exists(culture.toLowerCase());
 }
-thx.culture.Culture.getDefaultCulture = function() {
-	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
+thx.culture.Culture.get_defaultCulture = function() {
+	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.get_culture(); else return thx.culture.Culture._defaultCulture;
 }
-thx.culture.Culture.setDefaultCulture = function(culture) {
+thx.culture.Culture.set_defaultCulture = function(culture) {
 	return thx.culture.Culture._defaultCulture = culture;
 }
 thx.culture.Culture.add = function(culture) {
 	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
 	var name = culture.name.toLowerCase();
-	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
+	if(!thx.culture.Culture.get_cultures().exists(name)) thx.culture.Culture.get_cultures().set(name,culture);
 }
 thx.culture.Culture.loadAll = function() {
 }
@@ -24253,7 +24245,7 @@ $hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	var pos = 0;
 	var len = pattern.length;
 	var buf = new StringBuf();
@@ -24407,102 +24399,102 @@ thx.culture.FormatDate.getMHours = function(date) {
 	return v > 12?v - 12:v;
 }
 thx.culture.FormatDate.yearMonth = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternYearMonth,date,culture,false);
 }
 thx.culture.FormatDate.monthDay = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternMonthDay,date,culture,false);
 }
 thx.culture.FormatDate.date = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDate,date,culture,false);
 }
 thx.culture.FormatDate.dateShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateShort,date,culture,false);
 }
 thx.culture.FormatDate.dateRfc = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateRfc,date,culture,false);
 }
 thx.culture.FormatDate.dateTime = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateTime,date,culture,false);
 }
 thx.culture.FormatDate.universal = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternUniversal,date,culture,false);
 }
 thx.culture.FormatDate.sortable = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternSortable,date,culture,false);
 }
 thx.culture.FormatDate.time = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternTime,date,culture,false);
 }
 thx.culture.FormatDate.timeShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternTimeShort,date,culture,false);
 }
 thx.culture.FormatDate.hourShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	if(null == culture.date.am) return thx.culture.FormatDate.format("%H",date,culture,false); else return thx.culture.FormatDate.format("%l %p",date,culture,false);
 }
 thx.culture.FormatDate.year = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
 }
 thx.culture.FormatDate.month = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + (date.getMonth() + 1),culture);
 }
 thx.culture.FormatDate.monthName = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.abbrMonths[date.getMonth()];
 }
 thx.culture.FormatDate.monthNameShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.months[date.getMonth()];
 }
 thx.culture.FormatDate.weekDay = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + (date.getDay() + culture.date.firstWeekDay),culture);
 }
 thx.culture.FormatDate.weekDayName = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.abbrDays[date.getDay()];
 }
 thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.days[date.getDay()];
 }
 thx.culture.FormatNumber = function() { }
 $hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.number.patternNegative,culture.number.patternPositive,culture,null,null);
 }
 thx.culture.FormatNumber.percent = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPercent);
 }
 thx.culture.FormatNumber.permille = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPermille);
 }
 thx.culture.FormatNumber.currency = function(v,symbol,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.currency,culture.currency.patternNegative,culture.currency.patternPositive,culture,"$",symbol == null?culture.currencySymbol:symbol);
 }
 thx.culture.FormatNumber["int"] = function(v,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.decimal(v,0,culture);
 }
 thx.culture.FormatNumber.digits = function(v,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.processDigits(v,culture.digits);
 }
 thx.culture.FormatNumber.crunch = function(v,decimals,info,negative,positive,culture,symbol,replace) {
@@ -24576,19 +24568,19 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 thx.culture.Language = function() { }
 $hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
-thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
-thx.culture.Language.getLanguages = function() {
+thx.culture.Language.__properties__ = {get_languages:"get_languages"}
+thx.culture.Language.get_languages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
 }
 thx.culture.Language.get = function(name) {
-	return thx.culture.Language.getLanguages().get(name.toLowerCase());
+	return thx.culture.Language.get_languages().get(name.toLowerCase());
 }
 thx.culture.Language.names = function() {
-	return thx.culture.Language.getLanguages().keys();
+	return thx.culture.Language.get_languages().keys();
 }
 thx.culture.Language.add = function(language) {
-	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
+	if(!thx.culture.Language.get_languages().exists(language.iso2)) thx.culture.Language.get_languages().set(language.iso2,language);
 }
 thx.culture.Language.__super__ = thx.culture.Info;
 thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
@@ -24673,8 +24665,8 @@ thx.languages.En = function() {
 };
 $hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
-thx.languages.En.__properties__ = {get_language:"getLanguage"}
-thx.languages.En.getLanguage = function() {
+thx.languages.En.__properties__ = {get_language:"get_language"}
+thx.languages.En.get_language = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
 }
@@ -24684,7 +24676,7 @@ thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
 });
 thx.cultures = {}
 thx.cultures.EnUS = function() {
-	this.language = thx.languages.En.getLanguage();
+	this.language = thx.languages.En.get_language();
 	this.name = "en-US";
 	this.english = "English (United States)";
 	this["native"] = "English (United States)";
@@ -24713,8 +24705,8 @@ thx.cultures.EnUS = function() {
 };
 $hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
-thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
-thx.cultures.EnUS.getCulture = function() {
+thx.cultures.EnUS.__properties__ = {get_culture:"get_culture"}
+thx.cultures.EnUS.get_culture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
 }
@@ -25141,7 +25133,7 @@ $hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
 	translate: function(translator,domain) {
-		if(null == domain) domain = translator.getDomain();
+		if(null == domain) domain = translator.get_domain();
 		var culture = thx.culture.Culture.get(domain);
 		if(this.params.length == 1 && js.Boot.__instanceof(this.params[0],Int)) return Strings.format(translator.plural(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator.singular(this.message,domain),this.params,null,culture);
 	}
@@ -25232,50 +25224,50 @@ $hxClasses["thx.geo.Albers"] = thx.geo.Albers;
 thx.geo.Albers.__name__ = ["thx","geo","Albers"];
 thx.geo.Albers.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Albers.prototype = {
-	getScale: function() {
+	get_scale: function() {
 		return this._scale;
 	}
-	,setScale: function(scale) {
+	,set_scale: function(scale) {
 		return this._scale = scale;
 	}
 	,reload: function() {
-		var phi1 = 0.01745329251994329577 * this.getParallels()[0], phi2 = 0.01745329251994329577 * this.getParallels()[1], lat0 = 0.01745329251994329577 * this.getOrigin()[1], s = Math.sin(phi1), c = Math.cos(phi1);
-		this.lng0 = 0.01745329251994329577 * this.getOrigin()[0];
+		var phi1 = 0.01745329251994329577 * this.get_parallels()[0], phi2 = 0.01745329251994329577 * this.get_parallels()[1], lat0 = 0.01745329251994329577 * this.get_origin()[1], s = Math.sin(phi1), c = Math.cos(phi1);
+		this.lng0 = 0.01745329251994329577 * this.get_origin()[0];
 		this.n = .5 * (s + Math.sin(phi2));
 		this.C = c * c + 2 * this.n * s;
 		this.p0 = Math.sqrt(this.C - 2 * this.n * Math.sin(lat0)) / this.n;
 		return this;
 	}
-	,setTranslate: function(translate) {
+	,set_translate: function(translate) {
 		this._translate = [translate[0],translate[1]];
 		return translate;
 	}
-	,getTranslate: function() {
+	,get_translate: function() {
 		return this._translate.slice();
 	}
-	,setParallels: function(parallels) {
+	,set_parallels: function(parallels) {
 		this._parallels = [parallels[0],parallels[1]];
 		this.reload();
 		return parallels;
 	}
-	,getParallels: function() {
+	,get_parallels: function() {
 		return this._parallels.slice();
 	}
-	,setOrigin: function(origin) {
+	,set_origin: function(origin) {
 		this._origin = [origin[0],origin[1]];
 		this.reload();
 		return origin;
 	}
-	,getOrigin: function() {
+	,get_origin: function() {
 		return this._origin.slice();
 	}
 	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p0y = this.p0 + y, t = Math.atan2(x,p0y), p = Math.sqrt(x * x + p0y * p0y);
+		var x = (coords[0] - this.get_translate()[0]) / this.get_scale(), y = (coords[1] - this.get_translate()[1]) / this.get_scale(), p0y = this.p0 + y, t = Math.atan2(x,p0y), p = Math.sqrt(x * x + p0y * p0y);
 		return [(this.lng0 + t / this.n) / 0.01745329251994329577,Math.asin((this.C - p * p * this.n * this.n) / (2 * this.n)) / 0.01745329251994329577];
 	}
 	,project: function(coords) {
 		var t = this.n * (0.01745329251994329577 * coords[0] - this.lng0), p = Math.sqrt(this.C - 2 * this.n * Math.sin(0.01745329251994329577 * coords[1])) / this.n;
-		return [this.getScale() * p * Math.sin(t) + this.getTranslate()[0],this.getScale() * (p * Math.cos(t) - this.p0) + this.getTranslate()[1]];
+		return [this.get_scale() * p * Math.sin(t) + this.get_translate()[0],this.get_scale() * (p * Math.cos(t) - this.p0) + this.get_translate()[1]];
 	}
 	,_scale: null
 	,_translate: null
@@ -25285,50 +25277,46 @@ thx.geo.Albers.prototype = {
 	,C: null
 	,n: null
 	,lng0: null
-	,scale: null
-	,translate: null
-	,parallels: null
-	,origin: null
 	,__class__: thx.geo.Albers
-	,__properties__: {set_origin:"setOrigin",get_origin:"getOrigin",set_parallels:"setParallels",get_parallels:"getParallels",set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
+	,__properties__: {set_origin:"set_origin",get_origin:"get_origin",set_parallels:"set_parallels",get_parallels:"get_parallels",set_translate:"set_translate",get_translate:"get_translate",set_scale:"set_scale",get_scale:"get_scale"}
 }
 thx.geo.AlbersUsa = function() {
 	this.lower48 = new thx.geo.Albers();
 	this.alaska = new thx.geo.Albers();
-	this.alaska.setOrigin([-160.0,60]);
-	this.alaska.setParallels([55.0,65]);
+	this.alaska.set_origin([-160.0,60]);
+	this.alaska.set_parallels([55.0,65]);
 	this.hawaii = new thx.geo.Albers();
-	this.hawaii.setOrigin([-160.0,20]);
-	this.hawaii.setParallels([8.0,18]);
+	this.hawaii.set_origin([-160.0,20]);
+	this.hawaii.set_parallels([8.0,18]);
 	this.puertoRico = new thx.geo.Albers();
-	this.puertoRico.setOrigin([-60.0,10]);
-	this.puertoRico.setParallels([8.0,18]);
-	this.setScale(this.lower48.getScale());
+	this.puertoRico.set_origin([-60.0,10]);
+	this.puertoRico.set_parallels([8.0,18]);
+	this.set_scale(this.lower48.get_scale());
 };
 $hxClasses["thx.geo.AlbersUsa"] = thx.geo.AlbersUsa;
 thx.geo.AlbersUsa.__name__ = ["thx","geo","AlbersUsa"];
 thx.geo.AlbersUsa.__interfaces__ = [thx.geo.IProjection];
 thx.geo.AlbersUsa.prototype = {
-	getTranslate: function() {
-		return this.lower48.getTranslate();
+	get_translate: function() {
+		return this.lower48.get_translate();
 	}
-	,setTranslate: function(translate) {
-		var dz = this.lower48.getScale() / 1000, dx = translate[0], dy = translate[1];
-		this.lower48.setTranslate(translate);
-		this.alaska.setTranslate([dx - 400 * dz,dy + 170 * dz]);
-		this.hawaii.setTranslate([dx - 190 * dz,dy + 200 * dz]);
-		this.puertoRico.setTranslate([dx + 580 * dz,dy + 430 * dz]);
+	,set_translate: function(translate) {
+		var dz = this.lower48.get_scale() / 1000, dx = translate[0], dy = translate[1];
+		this.lower48.set_translate(translate);
+		this.alaska.set_translate([dx - 400 * dz,dy + 170 * dz]);
+		this.hawaii.set_translate([dx - 190 * dz,dy + 200 * dz]);
+		this.puertoRico.set_translate([dx + 580 * dz,dy + 430 * dz]);
 		return translate;
 	}
-	,getScale: function() {
-		return this.lower48.getScale();
+	,get_scale: function() {
+		return this.lower48.get_scale();
 	}
-	,setScale: function(scale) {
-		this.lower48.setScale(scale);
-		this.alaska.setScale(scale * .6);
-		this.hawaii.setScale(scale);
-		this.puertoRico.setScale(scale * 1.5);
-		this.setTranslate(this.lower48.getTranslate());
+	,set_scale: function(scale) {
+		this.lower48.set_scale(scale);
+		this.alaska.set_scale(scale * .6);
+		this.hawaii.set_scale(scale);
+		this.puertoRico.set_scale(scale * 1.5);
+		this.set_translate(this.lower48.get_translate());
 		return scale;
 	}
 	,invert: function(coords) {
@@ -25347,41 +25335,39 @@ thx.geo.AlbersUsa.prototype = {
 	,hawaii: null
 	,alaska: null
 	,lower48: null
-	,scale: null
-	,translate: null
 	,__class__: thx.geo.AlbersUsa
-	,__properties__: {set_translate:"setTranslate",get_translate:"getTranslate",set_scale:"setScale",get_scale:"getScale"}
+	,__properties__: {set_translate:"set_translate",get_translate:"get_translate",set_scale:"set_scale",get_scale:"get_scale"}
 }
 thx.geo.Azimuthal = function() {
-	this.setMode(thx.geo.ProjectionMode.Orthographic);
-	this.setScale(200);
-	this.setTranslate([480.0,250]);
-	this.setOrigin([0.0,0]);
+	this.set_mode(thx.geo.ProjectionMode.Orthographic);
+	this.set_scale(200);
+	this.set_translate([480.0,250]);
+	this.set_origin([0.0,0]);
 };
 $hxClasses["thx.geo.Azimuthal"] = thx.geo.Azimuthal;
 thx.geo.Azimuthal.__name__ = ["thx","geo","Azimuthal"];
 thx.geo.Azimuthal.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Azimuthal.prototype = {
-	getMode: function() {
+	get_mode: function() {
 		return this.mode;
 	}
-	,setMode: function(mode) {
+	,set_mode: function(mode) {
 		return this.mode = mode;
 	}
-	,getScale: function() {
+	,get_scale: function() {
 		return this.scale;
 	}
-	,setScale: function(scale) {
+	,set_scale: function(scale) {
 		return this.scale = scale;
 	}
-	,setTranslate: function(translate) {
+	,set_translate: function(translate) {
 		this.translate = [translate[0],translate[1]];
 		return translate;
 	}
-	,getTranslate: function() {
+	,get_translate: function() {
 		return this.translate.slice();
 	}
-	,setOrigin: function(origin) {
+	,set_origin: function(origin) {
 		this.origin = [origin[0],origin[1]];
 		this.x0 = origin[0] * 0.01745329251994329577;
 		this.y0 = origin[1] * 0.01745329251994329577;
@@ -25389,13 +25375,13 @@ thx.geo.Azimuthal.prototype = {
 		this.sy0 = Math.sin(this.y0);
 		return origin;
 	}
-	,getOrigin: function() {
+	,get_origin: function() {
 		return this.origin.slice();
 	}
 	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale(), p = Math.sqrt(x * x + y * y), c = (function($this) {
+		var x = (coords[0] - this.get_translate()[0]) / this.get_scale(), y = (coords[1] - this.get_translate()[1]) / this.get_scale(), p = Math.sqrt(x * x + y * y), c = (function($this) {
 			var $r;
-			switch( ($this.getMode())[1] ) {
+			switch( ($this.get_mode())[1] ) {
 			case 0:
 				$r = Math.asin(p);
 				break;
@@ -25410,7 +25396,7 @@ thx.geo.Azimuthal.prototype = {
 	,project: function(coords) {
 		var x1 = coords[0] * 0.01745329251994329577 - this.x0, y1 = coords[1] * 0.01745329251994329577, cx1 = Math.cos(x1), sx1 = Math.sin(x1), cy1 = Math.cos(y1), sy1 = Math.sin(y1), k = (function($this) {
 			var $r;
-			switch( ($this.getMode())[1] ) {
+			switch( ($this.get_mode())[1] ) {
 			case 0:
 				$r = 1;
 				break;
@@ -25420,7 +25406,7 @@ thx.geo.Azimuthal.prototype = {
 			}
 			return $r;
 		}(this)), x = k * cy1 * sx1, y = k * (this.sy0 * cy1 * cx1 - this.cy0 * sy1);
-		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * y + this.getTranslate()[1]];
+		return [this.get_scale() * x + this.get_translate()[0],this.get_scale() * y + this.get_translate()[1]];
 	}
 	,sy0: null
 	,cy0: null
@@ -25431,7 +25417,7 @@ thx.geo.Azimuthal.prototype = {
 	,origin: null
 	,mode: null
 	,__class__: thx.geo.Azimuthal
-	,__properties__: {set_mode:"setMode",get_mode:"getMode",set_origin:"setOrigin",get_origin:"getOrigin",set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
+	,__properties__: {set_mode:"set_mode",get_mode:"get_mode",set_origin:"set_origin",get_origin:"get_origin",set_scale:"set_scale",get_scale:"get_scale",set_translate:"set_translate",get_translate:"get_translate"}
 }
 thx.geo.ProjectionMode = { __ename__ : ["thx","geo","ProjectionMode"], __constructs__ : ["Orthographic","Stereographic"] }
 thx.geo.ProjectionMode.Orthographic = ["Orthographic",0];
@@ -25441,38 +25427,38 @@ thx.geo.ProjectionMode.Stereographic = ["Stereographic",1];
 thx.geo.ProjectionMode.Stereographic.toString = $estr;
 thx.geo.ProjectionMode.Stereographic.__enum__ = thx.geo.ProjectionMode;
 thx.geo.Mercator = function() {
-	this.setScale(500);
-	this.setTranslate([480.0,250]);
+	this.set_scale(500);
+	this.set_translate([480.0,250]);
 };
 $hxClasses["thx.geo.Mercator"] = thx.geo.Mercator;
 thx.geo.Mercator.__name__ = ["thx","geo","Mercator"];
 thx.geo.Mercator.__interfaces__ = [thx.geo.IProjection];
 thx.geo.Mercator.prototype = {
-	setTranslate: function(translate) {
+	set_translate: function(translate) {
 		this.translate = [translate[0],translate[1]];
 		return translate;
 	}
-	,getTranslate: function() {
+	,get_translate: function() {
 		return this.translate.slice();
 	}
-	,getScale: function() {
+	,get_scale: function() {
 		return this.scale;
 	}
-	,setScale: function(scale) {
+	,set_scale: function(scale) {
 		return this.scale = scale;
 	}
 	,invert: function(coords) {
-		var x = (coords[0] - this.getTranslate()[0]) / this.getScale(), y = (coords[1] - this.getTranslate()[1]) / this.getScale();
+		var x = (coords[0] - this.get_translate()[0]) / this.get_scale(), y = (coords[1] - this.get_translate()[1]) / this.get_scale();
 		return [360 * x,2 * Math.atan(Math.exp(-360 * y * 0.01745329251994329577)) / 0.01745329251994329577 - 90];
 	}
 	,project: function(coords) {
 		var x = coords[0] / 360, y = -(Math.log(Math.tan(Math.PI / 4 + coords[1] * 0.01745329251994329577 / 2)) / 0.01745329251994329577) / 360;
-		return [this.getScale() * x + this.getTranslate()[0],this.getScale() * Math.max(-.5,Math.min(.5,y)) + this.getTranslate()[1]];
+		return [this.get_scale() * x + this.get_translate()[0],this.get_scale() * Math.max(-.5,Math.min(.5,y)) + this.get_translate()[1]];
 	}
 	,translate: null
 	,scale: null
 	,__class__: thx.geo.Mercator
-	,__properties__: {set_scale:"setScale",get_scale:"getScale",set_translate:"setTranslate",get_translate:"getTranslate"}
+	,__properties__: {set_scale:"set_scale",get_scale:"get_scale",set_translate:"set_translate",get_translate:"get_translate"}
 }
 thx.geom = {}
 thx.geom.Contour = function() { }
@@ -26282,7 +26268,6 @@ thx.graph.GraphCollection.prototype = {
 	,getById: function(id) {
 		return this._map.get(id);
 	}
-	,length: null
 	,_map: null
 	,idf: null
 	,nextid: null
@@ -28492,8 +28477,8 @@ thx.svg.LineInterpolators.argument = function(s) {
 	if(null == v) return null; else return Std.parseFloat(v);
 }
 thx.svg.PathGeoJson = function() {
-	this.setPointRadius(4.5);
-	this.setProjection(new thx.geo.AlbersUsa());
+	this.set_pointRadius(4.5);
+	this.set_projection(new thx.geo.AlbersUsa());
 	this.pathTypes = new thx.svg.PathTypes(this);
 	this.centroidTypes = new thx.svg.CentroidTypes(this);
 	this.areaTypes = new thx.svg.AreaTypes(this);
@@ -28581,10 +28566,10 @@ thx.svg.PathGeoJson.applyBounds = function(d,f) {
 	}
 }
 thx.svg.PathGeoJson.prototype = {
-	setProjection: function(projection) {
+	set_projection: function(projection) {
 		return this.projection = projection;
 	}
-	,setPointRadius: function(r) {
+	,set_pointRadius: function(r) {
 		this.pointRadius = r;
 		this.pathCircle = thx.svg.PathGeoJson.circle(r);
 		return r;
@@ -28605,7 +28590,7 @@ thx.svg.PathGeoJson.prototype = {
 	,projection: null
 	,pointRadius: null
 	,__class__: thx.svg.PathGeoJson
-	,__properties__: {set_pointRadius:"setPointRadius",set_projection:"setProjection"}
+	,__properties__: {set_pointRadius:"set_pointRadius",set_projection:"set_projection"}
 }
 thx.svg.PathTypes = function(geo) {
 	this.geo = geo;
@@ -28912,7 +28897,6 @@ thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
 thx.translation.ITranslation.prototype = {
 	plural: null
 	,singular: null
-	,domain: null
 	,__class__: thx.translation.ITranslation
 }
 thx.util.MacroVersion = function() { }
@@ -30840,8 +30824,8 @@ thx.color.NamedColors.byName.set("white smoke",thx.color.NamedColors.whitesmoke)
 thx.color.NamedColors.byName.set("yellow",thx.color.NamedColors.yellow = thx.color.Rgb.fromInt(16776960));
 thx.color.NamedColors.byName.set("yellowgreen",thx.color.NamedColors.yellowgreen = thx.color.Rgb.fromInt(10145074));
 thx.color.NamedColors.byName.set("yellow green",thx.color.NamedColors.yellowgreen);
-thx.languages.En.getLanguage();
-thx.cultures.EnUS.getCulture();
+thx.languages.En.get_language();
+thx.cultures.EnUS.get_culture();
 var j;
 if(null != (j = window.JSON)) {
 	thx.json.Json.nativeDecoder = j.parse;
@@ -30998,16 +30982,16 @@ rg.visualization.Visualizations.visualizations = rg.visualization.Visualizations
 rg.visualization.Visualizations.layouts = ["simple","cartesian","x"];
 thx.color.Colors._reParse = new EReg("^(?:(hsl|rgb|rgba|cmyk)\\(([^)]+)\\))|(?:(?:0x|#)([a-f0-9]{3,6}))$","i");
 thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
-thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
+thx.date.DateParser.months = thx.cultures.EnUS.get_culture().date.months.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.shortmonths = thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(d,i) {
+thx.date.DateParser.shortmonths = thx.cultures.EnUS.get_culture().date.abbrMonths.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.days = thx.cultures.EnUS.getCulture().date.days.map(function(d,i) {
+thx.date.DateParser.days = thx.cultures.EnUS.get_culture().date.days.map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.shortdays = thx.cultures.EnUS.getCulture().date.abbrDays.map(function(d,i) {
+thx.date.DateParser.shortdays = thx.cultures.EnUS.get_culture().date.abbrDays.map(function(d,i) {
 	return d.toLowerCase();
 });
 thx.date.DateParser.sfullmonths = thx.date.DateParser.months.join("|");
