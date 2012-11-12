@@ -12,7 +12,7 @@
 -D js_shims
 #-D noEmbedJS
 #--dead-code-elimination
-#-dce none
+--dce no
 --macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 #--connect 8888
 --js-modern

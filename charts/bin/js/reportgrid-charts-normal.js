@@ -3811,6 +3811,7 @@ chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
 chx.crypt.IBlockCipher.prototype = {
 	decryptBlock: null
 	,encryptBlock: null
+	,blockSize: null
 	,__class__: chx.crypt.IBlockCipher
 }
 chx.crypt.IPad = function() { }
@@ -4030,6 +4031,7 @@ chx.crypt.RSAEncrypt.prototype = {
 		this.n = null;
 		this.e = 0;
 	}
+	,blockSize: null
 	,e: null
 	,n: null
 	,__class__: chx.crypt.RSAEncrypt
@@ -4402,6 +4404,7 @@ chx.io.Input.prototype = {
 		}(this));
 	}
 	,bigEndian: null
+	,bytesAvailable: null
 	,__class__: chx.io.Input
 	,__properties__: {get_bytesAvailable:"__getBytesAvailable",set_bigEndian:"__setEndian"}
 }
@@ -12531,7 +12534,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.2.8945"};
+	r.info.charts = { version : "1.5.13.8957"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -13021,7 +13024,11 @@ rg.axis.ITickmark = function() { }
 $hxClasses["rg.axis.ITickmark"] = rg.axis.ITickmark;
 rg.axis.ITickmark.__name__ = ["rg","axis","ITickmark"];
 rg.axis.ITickmark.prototype = {
-	__class__: rg.axis.ITickmark
+	label: null
+	,value: null
+	,major: null
+	,delta: null
+	,__class__: rg.axis.ITickmark
 }
 rg.axis.ScaleDistribution = { __ename__ : ["rg","axis","ScaleDistribution"], __constructs__ : ["ScaleFit","ScaleFill","ScaleBefore","ScaleAfter"] }
 rg.axis.ScaleDistribution.ScaleFit = ["ScaleFit",0];
@@ -13150,6 +13157,7 @@ rg.axis.Tickmark.prototype = {
 	,get_delta: function() {
 		return this.delta;
 	}
+	,label: null
 	,value: null
 	,major: null
 	,delta: null
@@ -13178,9 +13186,11 @@ rg.axis.TickmarkOrdinal.prototype = {
 	,get_label: function() {
 		return rg.util.RGStrings.humanize(this.values[this.pos]);
 	}
+	,label: null
 	,get_value: function() {
 		return this.values[this.pos];
 	}
+	,value: null
 	,get_major: function() {
 		return this.major;
 	}
@@ -13188,6 +13198,7 @@ rg.axis.TickmarkOrdinal.prototype = {
 	,get_delta: function() {
 		return rg.axis.ScaleDistributions.distribute(this.scaleDistribution,this.pos,this.values.length);
 	}
+	,delta: null
 	,scaleDistribution: null
 	,values: null
 	,pos: null
@@ -13925,6 +13936,7 @@ rg.frame.Stack.prototype = {
 	}
 	,moreSpaceRequired: function(size) {
 	}
+	,length: null
 	,orientation: null
 	,height: null
 	,width: null
@@ -14621,7 +14633,9 @@ rg.html.chart.PivotTable.prototype = {
 				td.attr("class").string(clsbuf.join(" "));
 			}
 			if(this.displayRowTotal && d.columns.length > 1) {
-				var th = tr.append("th").text().string(this.formatTotal(row.stats.tot)).attr("title").string(this.formatTotalOver(row.stats.tot));
+				var th = tr.append("th").text().string(this.formatTotal(row.stats.tot));
+				var title = this.formatTotalOver(row.stats.tot);
+				if(null != title) th.attr("title").string(title);
 				var clsbuf = ["row total"];
 				if(null != this.totalclass) {
 					var cls = this.totalclass(row.stats.tot,row.values);
@@ -14638,7 +14652,9 @@ rg.html.chart.PivotTable.prototype = {
 			while(_g < _g1.length) {
 				var col = _g1[_g];
 				++_g;
-				var th = tr.append("th").text().string(this.formatTotal(col.stats.tot)).attr("title").string(this.formatTotalOver(col.stats.tot));
+				var title = this.formatTotalOver(col.stats.tot);
+				var th = tr.append("th").text().string(this.formatTotal(col.stats.tot));
+				if(null != title) th.attr("title").string(title);
 				var clsbuf = ["column total"];
 				if(null != this.totalclass) {
 					var cls = this.totalclass(col.stats.tot,col.values);
@@ -15321,7 +15337,7 @@ rg.info.InfoLabel = function() {
 $hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
-	return [rg.info.filter.FilterDescription.toTemplateFunctionOrString("title",["axes","values"]),rg.info.filter.FilterDescription.toTemplateFunction("datapoint",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("datapointover",[null,"stats"])];
+	return [rg.info.filter.FilterDescription.toTemplateFunctionOrString("title",["axes","values","types"]),rg.info.filter.FilterDescription.toTemplateFunction("datapoint",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("datapointover",[null,"stats"])];
 }
 rg.info.InfoLabel.prototype = {
 	datapointover: null
@@ -15376,7 +15392,7 @@ rg.info.InfoLabelPivotTable = function() {
 $hxClasses["rg.info.InfoLabelPivotTable"] = rg.info.InfoLabelPivotTable;
 rg.info.InfoLabelPivotTable.__name__ = ["rg","info","InfoLabelPivotTable"];
 rg.info.InfoLabelPivotTable.filters = function() {
-	return [rg.info.filter.FilterDescription.toTemplateFunction("total",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("totalover",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("axisvalue",[null,"stats"])].concat(rg.info.InfoLabelAxis.filters());
+	return [rg.info.filter.FilterDescription.toTemplateFunction("total",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("totalover",["value","stats"]),rg.info.filter.FilterDescription.toTemplateFunction("axisvalue",["value","axis"])].concat(rg.info.InfoLabelAxis.filters());
 }
 rg.info.InfoLabelPivotTable.__super__ = rg.info.InfoLabelAxis;
 rg.info.InfoLabelPivotTable.prototype = $extend(rg.info.InfoLabelAxis.prototype,{
@@ -21966,6 +21982,7 @@ rg.svg.widget.Map.prototype = {
 	,click: null
 	,onReady: null
 	,map: null
+	,className: null
 	,__class__: rg.svg.widget.Map
 	,__properties__: {set_className:"set_className"}
 }
@@ -22346,8 +22363,13 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		step = 3600000;
 		break;
 	case "day":
-		step = 86400000;
-		break;
+		var s = Dates.snap(start,"day"), e = Dates.snap(end,"day");
+		var result = [];
+		while(s <= e) {
+			result.push(s);
+			s = Dates.snap(s + 86400000,"day");
+		}
+		return result;
 	case "week":
 		step = 604800000;
 		break;
@@ -22972,14 +22994,16 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	,transformData: function(dps) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 162, className : "rg.visualization.VisualizationCartesian", methodName : "transformData"});
+			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.visualization.VisualizationCartesian", methodName : "transformData"});
 			return $r;
 		}(this));
 	}
 	,feedData: function(data) {
 		if(0 == data.length) return;
 		if(null != this.title && null != this.info.label.title) {
-			this.title.set_text(this.info.label.title(this.variables,data));
+			this.title.set_text(this.info.label.title(this.variables,data,this.variables.map(function(variable,_) {
+				return variable.type;
+			})));
 			this.layout.suggestSize("title",this.title.idealHeight());
 		}
 		var transformed = this.transformData(data);
@@ -23026,7 +23050,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 		this.chart.init();
 	}
 	,initChart: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 87, className : "rg.visualization.VisualizationCartesian", methodName : "initChart"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 88, className : "rg.visualization.VisualizationCartesian", methodName : "initChart"});
 	}
 	,initXAxis: function() {
 		this.xlabel = this.createTickmarks(0,this.xvariable.type,"x");
@@ -23047,7 +23071,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 		this.layout.adjustPadding();
 	}
 	,initAxes: function() {
-		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 45, className : "rg.visualization.VisualizationCartesian", methodName : "initAxes"});
+		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 46, className : "rg.visualization.VisualizationCartesian", methodName : "initAxes"});
 	}
 	,init: function() {
 		this.initAxes();
@@ -23211,7 +23235,9 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.set_text(this.info.label.title(this.variables,data1));
+				this.title.set_text(this.info.label.title(this.variables,data1,this.variables.map(function(variable,_) {
+					return variable.type;
+				})));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23272,7 +23298,9 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.set_text(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data,this.variables.map(function(variable,_) {
+					return variable.type;
+				})));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23456,7 +23484,9 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.set_text(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data,this.variables.map(function(variable,_) {
+					return variable.type;
+				})));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -23731,7 +23761,9 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
-				this.title.set_text(this.info.label.title(this.variables,data));
+				this.title.set_text(this.info.label.title(this.variables,data,this.variables.map(function(variable,_) {
+					return variable.type;
+				})));
 				this.layout.suggestSize("title",this.title.idealHeight());
 			} else this.layout.suggestSize("title",0);
 		}
@@ -26268,6 +26300,7 @@ thx.graph.GraphCollection.prototype = {
 	,getById: function(id) {
 		return this._map.get(id);
 	}
+	,length: null
 	,_map: null
 	,idf: null
 	,nextid: null
@@ -28431,7 +28464,7 @@ thx.svg.LineInterpolators = function() { }
 $hxClasses["thx.svg.LineInterpolators"] = thx.svg.LineInterpolators;
 thx.svg.LineInterpolators.__name__ = ["thx","svg","LineInterpolators"];
 thx.svg.LineInterpolators.parse = function(s,sep) {
-	if(sep == null) sep = "-";
+	if(sep == null) sep = ":";
 	var interp = s.split(sep)[0].toLowerCase();
 	return (function($this) {
 		var $r;
@@ -28446,13 +28479,13 @@ thx.svg.LineInterpolators.parse = function(s,sep) {
 			$r = thx.svg.LineInterpolator.BasisClosed;
 			break;
 		case "cardinal":
-			$r = thx.svg.LineInterpolator.Cardinal(thx.svg.LineInterpolators.argument(s));
+			$r = thx.svg.LineInterpolator.Cardinal(thx.svg.LineInterpolators.argument(s,sep));
 			break;
 		case "cardinalopen":
-			$r = thx.svg.LineInterpolator.CardinalOpen(thx.svg.LineInterpolators.argument(s));
+			$r = thx.svg.LineInterpolator.CardinalOpen(thx.svg.LineInterpolators.argument(s,sep));
 			break;
 		case "cardinalclosed":
-			$r = thx.svg.LineInterpolator.CardinalClosed(thx.svg.LineInterpolators.argument(s));
+			$r = thx.svg.LineInterpolator.CardinalClosed(thx.svg.LineInterpolators.argument(s,sep));
 			break;
 		case "monotone":
 			$r = thx.svg.LineInterpolator.Monotone;
@@ -28472,8 +28505,8 @@ thx.svg.LineInterpolators.parse = function(s,sep) {
 		return $r;
 	}(this));
 }
-thx.svg.LineInterpolators.argument = function(s) {
-	var v = s.split("-")[1];
+thx.svg.LineInterpolators.argument = function(s,sep) {
+	var v = s.split(sep)[1];
 	if(null == v) return null; else return Std.parseFloat(v);
 }
 thx.svg.PathGeoJson = function() {
