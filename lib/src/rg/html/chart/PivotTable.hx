@@ -258,8 +258,10 @@ class PivotTable
 			{
 				var th = tr.append("th")
 //					.attr("class").string("row total")
-					.text().string(formatTotal(row.stats.tot))
-					.attr("title").string(formatTotalOver(row.stats.tot));
+					.text().string(formatTotal(row.stats.tot));
+				var title = formatTotalOver(row.stats.tot);
+				if(null != title)
+					th.attr("title").string(title);
 				var clsbuf = ["row total"];
 				if(null != totalclass)
 				{
@@ -280,10 +282,12 @@ class PivotTable
 			prependSpacer(leftspan, tr);
 			for (col in d.columns)
 			{
+				var title = formatTotalOver(col.stats.tot);
 				var th = tr.append("th")
 //					.attr("class").string("column total")
-					.text().string(formatTotal(col.stats.tot))
-					.attr("title").string(formatTotalOver(col.stats.tot));
+					.text().string(formatTotal(col.stats.tot));
+				if(null != title)
+					th.attr("title").string(title);
 
 				var clsbuf = ["column total"];
 				if(null != totalclass)

@@ -14,7 +14,7 @@ import rg.axis.IAxis;
 import thx.collection.Set;
 using Arrays;
 
-class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dynamic>>>>
+class VisualizationBarChart extends VisualizationCartesian<{ data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> }>
 {
 	public var infoBar : InfoBarChart;
 
@@ -49,12 +49,13 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dyn
 		chart.paddingAxis = infoBar.barPaddingAxis;
 		chart.paddingDataPoint = infoBar.barPaddingDataPoint;
 		chart.horizontal = infoBar.horizontal;
-
+		chart.startat = infoBar.startat;
+		chart.segmentProperty = infoBar.segment.on;
 
 		this.chart = chart;
 	}
 
-	override function transformData(dps : Array<Dynamic>) : Array<Array<Array<Dynamic>>>
+	override function transformData(dps : Array<Dynamic>) : { data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> }
 	{
 		var results = [],
 			variable = independentVariables[0],
@@ -86,16 +87,18 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dyn
 			}
 		}
 
+		var svalues = null;
 		if(null != infoBar.segment.on)
 		{
-			var segmenton = infoBar.segment.on,
-				svalues = new Set();
+			var segmenton = infoBar.segment.on;
+			svalues = new Set();
 			if(infoBar.segment.values.length != 0) {
 				for(value in infoBar.segment.values)
 					svalues.add(value);
 			} else {
 				dps.each(function(dp, _) { svalues.add(Reflect.field(dp, segmenton)); });
 			}
+			var svalues = svalues.array();
 			for (i in 0...values.length)
 			{
 				for (j in 0...dependentVariables.length)
@@ -103,23 +106,40 @@ class VisualizationBarChart extends VisualizationCartesian<Array<Array<Array<Dyn
 					var segment = results[i][j],
 						replace = [],
 						pos     = 0;
-					for(svalue in svalues)
+
+//					replace[svalues.length-1] = null;
+
+					for(k in 0...svalues.length)
 					{
-						if(svalue == Reflect.field(segment[pos], segmenton))
-						{
-							replace.push(segment[pos++]);
-						} else {
-							var ob : Dynamic = {};
-							Reflect.setField(ob, segmenton, svalue);
-							Reflect.setField(ob, variable.type, values[i]);
-							Reflect.setField(ob, dependentVariables[j].type, 0);
-							replace.push(ob);
+						var svalue = svalues[k];
+
+						for(m in 0...segment.length) {
+							var seg = Reflect.field(segment[m], segmenton);
+							if(svalue == seg) {
+								replace.push(segment[m]);
+//								break;
+							}
 						}
 					}
+/*
+					for(k in 0...replace.length) {
+						if(null == replace[k]) {
+							var ob : Dynamic = {};
+							Reflect.setField(ob, segmenton, svalues[k]);
+							Reflect.setField(ob, variable.type, values[i]);
+							Reflect.setField(ob, dependentVariables[j].type, 0);
+							replace[k] = ob;
+						}
+					}
+					*/
+//					trace(replace);
 					results[i][j] = replace;
 				}
 			}
 		}
-		return results;
+		return {
+			data : results,
+			segments : null == svalues ? null : svalues.array()
+		};
 	}
 }

@@ -13,6 +13,7 @@ import rg.svg.layer.Title;
 import rg.data.Variable;
 import rg.data.VariableIndependent;
 import rg.util.Properties;
+using Arrays;
 
 class VisualizationPieChart extends VisualizationSvg
 {
@@ -77,7 +78,7 @@ class VisualizationPieChart extends VisualizationSvg
 		{
 			if (null != info.label.title)
 			{
-				title.text = info.label.title(variables, data);
+				title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
 				layout.suggestSize("title", title.idealHeight());
 			} else
 				layout.suggestSize("title", 0);

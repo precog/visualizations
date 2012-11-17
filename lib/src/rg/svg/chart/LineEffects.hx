@@ -5,9 +5,9 @@
 
 package rg.svg.chart;
 
-class LineEffects 
+class LineEffects
 {
-	public static function parse(s : String) : LineEffect 
+	public static function parse(s : String) : LineEffect
 	{
 		var parts = s.toLowerCase().split(":");
 		switch(parts.shift())

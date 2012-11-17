@@ -24,7 +24,7 @@ import rg.data.Variable;
 import rg.axis.IAxis;
 using Arrays;
 
-class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
+class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> }>
 {
 	public var stacked : Bool;
 
@@ -37,6 +37,8 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 	public var paddingAxis : Float;
 	public var paddingDataPoint : Float;
 	public var horizontal : Bool;
+	public var startat : Null<String>;
+	public var segmentProperty : Null<String>;
 
 	public function new(panel : Panel)
 	{
@@ -51,9 +53,11 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 		paddingAxis = 4;
 		paddingDataPoint = 2;
 		horizontal = false;
+		startat = null;
+		segmentProperty = null;
 	}
 
-	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data : Array<Array<Array<Dynamic>>>)
+	override function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, result : { data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> })
 	{
 		if(horizontal)
 		{
@@ -63,12 +67,13 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 			this.xVariable  = cast variableIndependents[0];
 			this.yVariables = cast variableDependents;
 		}
-		if (stacked)
+		if (visuallyStacked())
 		{
 			for (v in variableDependents)
 				v.meta.max = Math.NEGATIVE_INFINITY;
 
 			// datapoints
+			var data = result.data;
 			for (i in 0...data.length)
 			{
 				// y axis
@@ -88,17 +93,20 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 		}
 	}
 
+	function visuallyStacked() return stacked && startat == null
 
-	override function data(dps : Array<Array<Array<Dynamic>>>)
+
+	override function data(result : { data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> })
 	{
 		if(horizontal)
-			datah(dps);
+			datah(result.data, result.segments);
 		else
-			datav(dps);
+			datav(result.data, result.segments);
 	}
 
-	function datah(dps : Array<Array<Array<Dynamic>>>)
+	function datah(dps : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>>)
 	{
+
 		var axisgs = new Hash(),
 			span = (height - (padding * (dps.length - 1))) / dps.length;
 
@@ -123,20 +131,20 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 			for (j in 0...valuedps.length)
 			{
 				var axisdps = valuedps[j],
-					axisg = getGroup("group-" + j, chart),
-					xtype = xVariable.type,
-					xaxis = xVariable.axis,
-					xmin  = xVariable.min(),
-					xmax  = xVariable.max(),
-					ytype = yVariables[j].type,
-					yaxis = yVariables[j].axis,
-					ymin  = yVariables[j].min(),
-					ymax  = yVariables[j].max(),
-					pad   = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
-					offset = - span / 2 + j * (dist + paddingAxis),
-					stats = xVariable.stats,
-					over = callback(onmouseover, stats),
-					click = callback(onclick, stats)
+					axisg   = getGroup("group-" + j, chart),
+					xtype   = xVariable.type,
+					xaxis   = xVariable.axis,
+					xmin    = xVariable.min(),
+					xmax    = xVariable.max(),
+					ytype   = yVariables[j].type,
+					yaxis   = yVariables[j].axis,
+					ymin    = yVariables[j].min(),
+					ymax    = yVariables[j].max(),
+					pad     = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
+					offset  = - span / 2 + j * (dist + paddingAxis),
+					stats   = xVariable.stats,
+					over    = callback(onmouseover, stats),
+					click   = callback(onclick, stats)
 				;
 
 				var prev = 0.0;
@@ -144,10 +152,20 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 				for (k in 0...axisdps.length)
 				{
 					var dp = axisdps[k],
-						seggroup = getGroup("fill-" + k, axisg),
-						x = prev,
+						seggroup = getGroup("fill-" + (segmentProperty == null ? k : Arrays.indexOf(segments, DataPoints.value(dp, segmentProperty))), axisg),
+						x = startat == null ? prev : xaxis.scale(xmin, xmax, DataPoints.value(dp, startat)) * width,
 						y = Math.max(height * yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)), 1),
-						w = xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)) * width;
+						w = xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)) * width - (
+								startat == null
+									? 0
+									: x
+							);
+					if(Math.isNaN(x)) continue;
+					if(w < 0) {
+						x -= w;
+						w = -w;
+					} else if(Math.isNaN(w))
+						w = 0;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
 						.attr("x").float(x)
@@ -161,7 +179,7 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
-					if(stacked)
+					if(visuallyStacked())
 						prev = x + w;
 				}
 			}
@@ -169,7 +187,7 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 		ready.dispatch();
 	}
 
-	function datav(dps : Array<Array<Array<Dynamic>>>)
+	function datav(dps : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>>)
 	{
 		var axisgs = new Hash(),
 			span = (width - (padding * (dps.length - 1))) / dps.length;
@@ -210,17 +228,24 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					click = callback(onclick, stats)
 				;
 
-//				trace(Type.typeof(xVariable.axis));
 				var prev = 0.0;
 				// segment values, datapoints
 				for (k in 0...axisdps.length)
 				{
 					var dp = axisdps[k],
-						seggroup = getGroup("fill-" + k, axisg),
+						seggroup = getGroup("fill-" + (segmentProperty == null ? k : Arrays.indexOf(segments, DataPoints.value(dp, segmentProperty))), axisg),
 						x = width * xaxis.scale(xmin, xmax, DataPoints.value(dp, xtype)),
-						y = prev,
-						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height;
-					if(Math.isNaN(h))
+						y = startat == null ? prev : yaxis.scale(ymin, ymax, DataPoints.value(dp, startat)) * height,
+						h = yaxis.scale(ymin, ymax, DataPoints.value(dp, ytype)) * height - (
+								startat == null
+									? 0
+									: y
+							);
+					if(Math.isNaN(y)) continue;
+					if(h < 0) {
+						y += h;
+						h = -h;
+					} else if(Math.isNaN(h))
 						h = 0;
 					var bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
@@ -235,7 +260,7 @@ class BarChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
-					if(stacked)
+					if(visuallyStacked())
 						prev = y + h;
 				}
 			}

@@ -5,8 +5,9 @@
 -js bin/js/reportgrid-query.js
 -main rg.app.query.JSBridge
 --js-modern
---macro keep(["rg.query.ReportGridQuery","rg.query.ReportGridBaseQuery"])
---dead-code-elimination
+--dce no
+--macro keep(["js.Boot","Type","rg.query.ReportGridQuery","rg.query.ReportGridBaseQuery"])
+#--dead-code-elimination
 -D js_shims
 #--times
 -debug

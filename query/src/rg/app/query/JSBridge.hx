@@ -31,9 +31,6 @@ class JSBridge
 
 	static function main()
 	{
-#if !release
-		if(haxe.Firebug.detect()) haxe.Firebug.redirectTraces();
-#end
 		var storage : IStorage;
 		if(BrowserStorage.hasSessionStorage())
 			storage = BrowserStorage.sessionStorage()

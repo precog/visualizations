@@ -19,7 +19,7 @@ using rg.info.filter.FilterDescription;
 		return [
 			"total".toTemplateFunction(["value", "stats"]),
 			"totalover".toTemplateFunction(["value", "stats"]),
-			"axisvalue".toTemplateFunction([null, "stats"])
+			"axisvalue".toTemplateFunction(["value", "axis"])
 		].concat(InfoLabelAxis.filters());
 	}
 }

@@ -12534,7 +12534,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.13.8957"};
+	r.info.charts = { version : "1.5.15.8959"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};

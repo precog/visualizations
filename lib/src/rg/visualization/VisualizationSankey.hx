@@ -11,7 +11,6 @@ import thx.graph.SugiyamaMethod;
 import thx.graph.HeaviestNodeLayer;
 import thx.graph.GreedySwitchDecrosser;
 import rg.util.DataPoints;
-
 using Arrays;
 
 class VisualizationSankey extends VisualizationSvg
@@ -46,7 +45,7 @@ class VisualizationSankey extends VisualizationSvg
 		{
 			if (null != info.label.title)
 			{
-				title.text = info.label.title(variables, data);
+				title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
 				layout.suggestSize("title", title.idealHeight());
 			} else
 				layout.suggestSize("title", 0);

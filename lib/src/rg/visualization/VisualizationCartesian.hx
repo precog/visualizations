@@ -16,6 +16,7 @@ import rg.svg.widget.LabelOrientations;
 import rg.svg.widget.GridAnchors;
 import rg.frame.Orientation;
 import rg.axis.IAxis;
+using Arrays;
 
 class VisualizationCartesian<T> extends VisualizationSvg
 {
@@ -116,7 +117,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			return;
 		if (null != title && null != info.label.title)
 		{
-			title.text = info.label.title(variables, data);
+			title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
 			layout.suggestSize("title", title.idealHeight());
 		}
 

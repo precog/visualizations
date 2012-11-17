@@ -11,7 +11,7 @@ using rg.info.filter.FilterDescription;
 
 @:keep class InfoLabel
 {
-	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<Dynamic> -> String;
+	public var title : Array<Variable<Dynamic, IAxis<Dynamic>>> -> Array<Dynamic> -> Array<String> -> String;
 	public var datapoint : Dynamic -> Stats<Dynamic> -> String;
 	public var datapointover : Dynamic -> Stats<Dynamic> -> String;
 
@@ -20,7 +20,7 @@ using rg.info.filter.FilterDescription;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
-			"title".toTemplateFunctionOrString(["axes", "values"]),
+			"title".toTemplateFunctionOrString(["axes", "values", "types"]),
 			"datapoint".toTemplateFunction([null, "stats"]),
 			"datapointover".toTemplateFunction([null, "stats"])
 		];

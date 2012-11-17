@@ -479,7 +479,17 @@ class ReportGridTransformers
 			}
 			Reflect.setField(o, "timezone", timezone);
 		} else {
-			Reflect.setField(o, "time:" + periodicity, value.timestamp);
+			Reflect.setField(o, "time:" + periodicity, _fixDay(value.timestamp, periodicity));
+		}
+	}
+
+	static function _fixDay(timestamp : Float, periodicity : String)
+	{
+		switch(periodicity) {
+			case "day":
+				return Dates.snap(timestamp, periodicity, 0);
+			default:
+				return timestamp;
 		}
 	}
 

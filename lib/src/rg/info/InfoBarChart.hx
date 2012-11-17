@@ -20,6 +20,7 @@ using rg.info.Info;
 	public var barPadding : Float;
 	public var horizontal : Bool;
 	public var segment : InfoSegment;
+	public var startat : Null<String>;
 
 	public function new()
 	{
@@ -31,6 +32,7 @@ using rg.info.Info;
 		barPaddingAxis = 4;
 		barPaddingDataPoint = 2;
 		horizontal = false;
+		startat = null;
 	}
 
 	public static function filters() : Array<FilterDescription>
@@ -49,7 +51,8 @@ using rg.info.Info;
 				function(value) return new InfoSegment().feed({ on : value }),
 				ReturnMessageIfNot.isString
 			),
-			"segment".toInfo(InfoSegment)
+			"segment".toInfo(InfoSegment),
+			"startat".toStr()
 		].concat(InfoCartesianChart.filters());
 	}
 }

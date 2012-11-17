@@ -1,12 +1,45 @@
 (function () { "use strict";
-var $estr = function() { return js.Boot.__string_rec(this,''); };
+var $hxClasses = {},$estr = function() { return js.Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
 	return proto;
 }
 var Arrays = function() { }
+$hxClasses["Arrays"] = Arrays;
 Arrays.__name__ = ["Arrays"];
+Arrays.addIf = function(arr,condition,value) {
+	if(null != condition) {
+		if(condition) arr.push(value);
+	} else if(null != value) arr.push(value);
+	return arr;
+}
+Arrays.add = function(arr,value) {
+	arr.push(value);
+	return arr;
+}
+Arrays["delete"] = function(arr,value) {
+	HxOverrides.remove(arr,value);
+	return arr;
+}
+Arrays.removef = function(arr,f) {
+	var index = -1;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(f(arr[i])) {
+			index = i;
+			break;
+		}
+	}
+	if(index < 0) return false;
+	arr.splice(index,1);
+	return true;
+}
+Arrays.deletef = function(arr,f) {
+	Arrays.removef(arr,f);
+	return arr;
+}
 Arrays.filter = function(arr,f) {
 	var result = [];
 	var _g = 0;
@@ -16,6 +49,121 @@ Arrays.filter = function(arr,f) {
 		if(f(i)) result.push(i);
 	}
 	return result;
+}
+Arrays.min = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var comp = Dynamics.comparef(a);
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+		}
+		return arr[p];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		return arr[p];
+	}
+}
+Arrays.floatMin = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+	}
+	return a;
+}
+Arrays.bounds = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var b = arr[0], q = 0;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var comp = Dynamics.comparef(a);
+			if(comp(a,arr[i]) > 0) a = arr[p = i];
+			if(comp(b,arr[i]) < 0) b = arr[q = i];
+		}
+		return [arr[p],arr[q]];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var c = f(arr[0]), q = 0, d;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a > (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(c < (d = f(arr[i]))) {
+				c = d;
+				q = i;
+			}
+		}
+		return [arr[p],arr[q]];
+	}
+}
+Arrays.boundsFloat = function(arr,f) {
+	if(arr.length == 0) return null;
+	var a = f(arr[0]), b;
+	var c = f(arr[0]), d;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a > (b = f(arr[i]))) a = b;
+		if(c < (d = f(arr[i]))) c = d;
+	}
+	return [a,c];
+}
+Arrays.max = function(arr,f) {
+	if(arr.length == 0) return null;
+	if(null == f) {
+		var a = arr[0], p = 0;
+		var comp = Dynamics.comparef(a);
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(comp(a,arr[i]) < 0) a = arr[p = i];
+		}
+		return arr[p];
+	} else {
+		var a = f(arr[0]), p = 0, b;
+		var _g1 = 1, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(a < (b = f(arr[i]))) {
+				a = b;
+				p = i;
+			}
+		}
+		return arr[p];
+	}
+}
+Arrays.floatMax = function(arr,f) {
+	if(arr.length == 0) return Math.NaN;
+	var a = f(arr[0]), b;
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(a < (b = f(arr[i]))) a = b;
+	}
+	return a;
 }
 Arrays.flatten = function(arr) {
 	var r = [];
@@ -27,6 +175,241 @@ Arrays.flatten = function(arr) {
 	}
 	return r;
 }
+Arrays.map = function(arr,f) {
+	return arr.map(f);
+}
+Arrays.reduce = function(arr,f,initialValue) {
+	return arr.reduce(f,initialValue);
+}
+Arrays.order = function(arr,f) {
+	arr.sort(null == f?Dynamics.compare:f);
+	return arr;
+}
+Arrays.orderMultiple = function(arr,f,rest) {
+	var swap = true, t;
+	HxOverrides.remove(rest,arr);
+	while(swap) {
+		swap = false;
+		var _g1 = 0, _g = arr.length - 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(f(arr[i],arr[i + 1]) > 0) {
+				swap = true;
+				t = arr[i];
+				arr[i] = arr[i + 1];
+				arr[i + 1] = t;
+				var _g2 = 0;
+				while(_g2 < rest.length) {
+					var a = rest[_g2];
+					++_g2;
+					t = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = t;
+				}
+			}
+		}
+	}
+}
+Arrays.split = function(arr,f) {
+	if(null == f) f = function(v,_) {
+		return v == null;
+	};
+	var arrays = [], i = -1, values = [], value;
+	var _g1 = 0, _g = arr.length;
+	while(_g1 < _g) {
+		var i1 = _g1++;
+		if(f(value = arr[i1],i1)) values = []; else {
+			if(values.length == 0) arrays.push(values);
+			values.push(value);
+		}
+	}
+	return arrays;
+}
+Arrays.exists = function(arr,value,f) {
+	if(null != f) {
+		var _g = 0;
+		while(_g < arr.length) {
+			var v = arr[_g];
+			++_g;
+			if(f(v)) return true;
+		}
+	} else {
+		var _g = 0;
+		while(_g < arr.length) {
+			var v = arr[_g];
+			++_g;
+			if(v == value) return true;
+		}
+	}
+	return false;
+}
+Arrays.format = function(v,param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		if(v.length == 0) {
+			var empty = null == params[1]?"[]":params[1];
+			return empty;
+		}
+		var sep = null == params[2]?", ":params[2];
+		var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+		if(null != max && max < v.length) {
+			var elipsis = null == params[4]?" ...":params[4];
+			return v.slice().splice(0,max).map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep) + elipsis;
+		} else return v.map(function(d,i) {
+			return Dynamics.format(d,params[0],null,null,culture);
+		}).join(sep);
+		break;
+	case "C":
+		return Ints.format(v.length,"I",[],culture);
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"J");
+	var format = params.shift();
+	switch(format) {
+	case "J":
+		return function(v) {
+			if(v.length == 0) {
+				var empty = null == params[1]?"[]":params[1];
+				return empty;
+			}
+			var sep = null == params[2]?", ":params[2];
+			var max = params[3] == null?null:"" == params[3]?null:Std.parseInt(params[3]);
+			if(null != max && max < v.length) {
+				var elipsis = null == params[4]?" ...":params[4];
+				return v.slice().splice(0,max).map(function(d,i) {
+					return Dynamics.format(d,params[0],null,null,culture);
+				}).join(sep) + elipsis;
+			} else return v.map(function(d,i) {
+				return Dynamics.format(d,params[0],null,null,culture);
+			}).join(sep);
+		};
+	case "C":
+		var f = Ints.formatf("I",[],culture);
+		return function(v) {
+			return f(v.length);
+		};
+	default:
+		throw "Unsupported array format: " + format;
+	}
+}
+Arrays.interpolate = function(v,a,b,equation) {
+	return (Arrays.interpolatef(a,b,equation))(v);
+}
+Arrays.interpolatef = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Floats.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
+			return function(_) {
+				return v1[0];
+			};
+		})(v1));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateStrings = function(v,a,b,equation) {
+	return (Arrays.interpolateStringsf(a,b,equation))(v);
+}
+Arrays.interpolateStringsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Strings.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
+			return function(_) {
+				return v1[0];
+			};
+		})(v1));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.interpolateInts = function(v,a,b,equation) {
+	return (Arrays.interpolateIntsf(a,b,equation))(v);
+}
+Arrays.interpolateIntsf = function(a,b,equation) {
+	var functions = [], i = 0, min = Ints.min(a.length,b.length);
+	while(i < min) {
+		if(a[i] == b[i]) {
+			var v = [b[i]];
+			functions.push((function(v) {
+				return function(_) {
+					return v[0];
+				};
+			})(v));
+		} else functions.push(Ints.interpolatef(a[i],b[i],equation));
+		i++;
+	}
+	while(i < b.length) {
+		var v1 = [b[i]];
+		functions.push((function(v1) {
+			return function(_) {
+				return v1[0];
+			};
+		})(v1));
+		i++;
+	}
+	return function(t) {
+		return functions.map(function(f,_) {
+			return f(t);
+		});
+	};
+}
+Arrays.indexOf = function(arr,el) {
+	return arr.indexOf(el);
+}
+Arrays.every = function(arr,f) {
+	return arr.every(f);
+}
+Arrays.each = function(arr,f) {
+	arr.forEach(f);
+}
+Arrays.any = function(arr,f) {
+	return Iterators.any(HxOverrides.iter(arr),f);
+}
+Arrays.all = function(arr,f) {
+	return Iterators.all(HxOverrides.iter(arr),f);
+}
+Arrays.random = function(arr) {
+	return arr[Std.random(arr.length)];
+}
 Arrays.string = function(arr) {
 	return "[" + arr.map(function(v,_) {
 		return Dynamics.string(v);
@@ -34,6 +417,57 @@ Arrays.string = function(arr) {
 }
 Arrays.last = function(arr) {
 	return arr[arr.length - 1];
+}
+Arrays.lastf = function(arr,f) {
+	var i = arr.length;
+	while(--i >= 0) if(f(arr[i])) return arr[i];
+	return null;
+}
+Arrays.first = function(arr) {
+	return arr[0];
+}
+Arrays.firstf = function(arr,f) {
+	var _g = 0;
+	while(_g < arr.length) {
+		var v = arr[_g];
+		++_g;
+		if(f(v)) return v;
+	}
+	return null;
+}
+Arrays.bisect = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	return Arrays.bisectRight(a,x,lo,hi);
+}
+Arrays.bisectRight = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(x < a[mid]) hi = mid; else lo = mid + 1;
+	}
+	return lo;
+}
+Arrays.bisectLeft = function(a,x,lo,hi) {
+	if(lo == null) lo = 0;
+	if(null == hi) hi = a.length;
+	while(lo < hi) {
+		var mid = lo + hi >> 1;
+		if(a[mid] < x) lo = mid + 1; else hi = mid;
+	}
+	return lo;
+}
+Arrays.nearest = function(a,x,f) {
+	var delta = [];
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		delta.push({ i : i, v : Math.abs(f(a[i]) - x)});
+	}
+	delta.sort(function(a1,b) {
+		return Floats.compare(a1.v,b.v);
+	});
+	return a[delta[0].i];
 }
 Arrays.compare = function(a,b) {
 	var v;
@@ -45,7 +479,97 @@ Arrays.compare = function(a,b) {
 	}
 	return 0;
 }
+Arrays.product = function(a) {
+	if(a.length == 0) return [];
+	var arr = a.slice(), result = [], temp;
+	var _g = 0, _g1 = arr[0];
+	while(_g < _g1.length) {
+		var value = _g1[_g];
+		++_g;
+		result.push([value]);
+	}
+	var _g1 = 1, _g = arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		temp = [];
+		var _g2 = 0;
+		while(_g2 < result.length) {
+			var acc = result[_g2];
+			++_g2;
+			var _g3 = 0, _g4 = arr[i];
+			while(_g3 < _g4.length) {
+				var value = _g4[_g3];
+				++_g3;
+				temp.push(acc.slice().concat([value]));
+			}
+		}
+		result = temp;
+	}
+	return result;
+}
+Arrays.rotate = function(a) {
+	if(a.length == 0) return [];
+	var result = [];
+	var _g1 = 0, _g = a[0].length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		result[i] = [];
+	}
+	var _g1 = 0, _g = a.length;
+	while(_g1 < _g) {
+		var j = _g1++;
+		var _g3 = 0, _g2 = a[0].length;
+		while(_g3 < _g2) {
+			var i = _g3++;
+			result[i][j] = a[j][i];
+		}
+	}
+	return result;
+}
+Arrays.shuffle = function(a) {
+	var t = Ints.range(a.length), arr = [];
+	while(t.length > 0) {
+		var pos = Std.random(t.length), index = t[pos];
+		t.splice(pos,1);
+		arr.push(a[index]);
+	}
+	return arr;
+}
+Arrays.scanf = function(arr,weightf,incremental) {
+	if(incremental == null) incremental = true;
+	var tot = 0.0, weights = [];
+	if(incremental) {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = tot += weightf(arr[i],i);
+		}
+	} else {
+		var _g1 = 0, _g = arr.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			weights[i] = weightf(arr[i],i);
+		}
+		tot = weights[weights.length - 1];
+	}
+	var scan = (function($this) {
+		var $r;
+		var scan1 = null;
+		scan1 = function(v,start,end) {
+			if(start == end) return arr[start];
+			var mid = Math.floor((end - start) / 2) + start, value = weights[mid];
+			if(v < value) return scan1(v,start,mid); else return scan1(v,mid + 1,end);
+		};
+		$r = scan1;
+		return $r;
+	}(this));
+	return function(v) {
+		if(v < 0 || v > tot) return null;
+		return scan(v,0,weights.length - 1);
+	};
+}
 var Bools = function() { }
+$hxClasses["Bools"] = Bools;
 Bools.__name__ = ["Bools"];
 Bools.format = function(v,param,params,culture) {
 	return (Bools.formatf(param,params,culture))(v);
@@ -71,8 +595,144 @@ Bools.formatf = function(param,params,culture) {
 		throw "Unsupported bool format: " + format;
 	}
 }
+Bools.interpolate = function(v,a,b,equation) {
+	return (Bools.interpolatef(a,b,equation))(v);
+}
+Bools.interpolatef = function(a,b,equation) {
+	if(a == b) return function(_) {
+		return a;
+	}; else {
+		var f = Floats.interpolatef(0,1,equation);
+		return function(v) {
+			return f(v) < 0.5?a:b;
+		};
+	}
+}
+Bools.canParse = function(s) {
+	s = s.toLowerCase();
+	return s == "true" || s == "false";
+}
+Bools.parse = function(s) {
+	return s.toLowerCase() == "true";
+}
+Bools.compare = function(a,b) {
+	return a == b?0:a?-1:1;
+}
 var DateTools = function() { }
+$hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
+DateTools.__format_get = function(d,e) {
+	return (function($this) {
+		var $r;
+		switch(e) {
+		case "%":
+			$r = "%";
+			break;
+		case "C":
+			$r = StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
+			break;
+		case "d":
+			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+			break;
+		case "D":
+			$r = DateTools.__format(d,"%m/%d/%y");
+			break;
+		case "e":
+			$r = Std.string(d.getDate());
+			break;
+		case "H":case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":case "l":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "m":
+			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+			break;
+		case "M":
+			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+			break;
+		case "n":
+			$r = "\n";
+			break;
+		case "p":
+			$r = d.getHours() > 11?"PM":"AM";
+			break;
+		case "r":
+			$r = DateTools.__format(d,"%I:%M:%S %p");
+			break;
+		case "R":
+			$r = DateTools.__format(d,"%H:%M");
+			break;
+		case "s":
+			$r = Std.string(d.getTime() / 1000 | 0);
+			break;
+		case "S":
+			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+			break;
+		case "t":
+			$r = "\t";
+			break;
+		case "T":
+			$r = DateTools.__format(d,"%H:%M:%S");
+			break;
+		case "u":
+			$r = (function($this) {
+				var $r;
+				var t = d.getDay();
+				$r = t == 0?"7":Std.string(t);
+				return $r;
+			}($this));
+			break;
+		case "w":
+			$r = Std.string(d.getDay());
+			break;
+		case "y":
+			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+			break;
+		case "Y":
+			$r = Std.string(d.getFullYear());
+			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "Date.format %" + e + "- not implemented yet.";
+				return $r;
+			}($this));
+		}
+		return $r;
+	}(this));
+}
+DateTools.__format = function(d,f) {
+	var r = new StringBuf();
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) break;
+		r.b += HxOverrides.substr(f,p,np - p);
+		r.b += Std.string(DateTools.__format_get(d,HxOverrides.substr(f,np + 1,1)));
+		p = np + 2;
+	}
+	r.b += HxOverrides.substr(f,p,f.length - p);
+	return r.b;
+}
+DateTools.format = function(d,f) {
+	return DateTools.__format(d,f);
+}
+DateTools.delta = function(d,t) {
+	return (function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(d.getTime() + t);
+		$r = d1;
+		return $r;
+	}(this));
+}
 DateTools.getMonthDays = function(d) {
 	var month = d.getMonth();
 	var year = d.getFullYear();
@@ -80,10 +740,32 @@ DateTools.getMonthDays = function(d) {
 	var isB = year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
 	return isB?29:28;
 }
+DateTools.seconds = function(n) {
+	return n * 1000.0;
+}
+DateTools.minutes = function(n) {
+	return n * 60.0 * 1000.0;
+}
+DateTools.hours = function(n) {
+	return n * 60.0 * 60.0 * 1000.0;
+}
+DateTools.days = function(n) {
+	return n * 24.0 * 60.0 * 60.0 * 1000.0;
+}
+DateTools.parse = function(t) {
+	var s = t / 1000;
+	var m = s / 60;
+	var h = m / 60;
+	return { ms : t % 1000, seconds : s % 60 | 0, minutes : m % 60 | 0, hours : h % 24 | 0, days : h / 24 | 0};
+}
+DateTools.make = function(o) {
+	return o.ms + 1000.0 * (o.seconds + 60.0 * (o.minutes + 60.0 * (o.hours + 24.0 * o.days)));
+}
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
+$hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	customReplace: function(s,f) {
@@ -99,6 +781,14 @@ EReg.prototype = {
 	}
 	,replace: function(s,by) {
 		return s.replace(this.r,by);
+	}
+	,split: function(s) {
+		var d = "#__delim__#";
+		return s.replace(this.r,d).split(d);
+	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
 	}
 	,matchedRight: function() {
 		if(this.r.m == null) throw "No string matched";
@@ -126,6 +816,7 @@ EReg.prototype = {
 	,__class__: EReg
 }
 var Dates = function() { }
+$hxClasses["Dates"] = Dates;
 Dates.__name__ = ["Dates"];
 Dates.format = function(d,param,params,culture) {
 	return (Dates.formatf(param,params,culture))(d);
@@ -225,6 +916,21 @@ Dates.formatf = function(param,params,culture) {
 	default:
 		throw new thx.error.Error("Unsupported date format: {0}",null,format,{ fileName : "Dates.hx", lineNumber : 71, className : "Dates", methodName : "formatf"});
 	}
+}
+Dates.interpolate = function(f,a,b,equation) {
+	return (Dates.interpolatef(a,b,equation))(f);
+}
+Dates.interpolatef = function(a,b,equation) {
+	var f = Floats.interpolatef(a.getTime(),b.getTime(),equation);
+	return function(v) {
+		return (function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(f(v));
+			$r = d;
+			return $r;
+		}(this));
+	};
 }
 Dates.snap = function(time,period,mode) {
 	if(mode == null) mode = 0;
@@ -344,8 +1050,134 @@ Dates.snap = function(time,period,mode) {
 		return 0;
 	}
 }
+Dates.snapToWeekDay = function(time,day) {
+	var d = ((function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(time);
+		$r = d1;
+		return $r;
+	}(this))).getDay();
+	var s = 0;
+	switch(day.toLowerCase()) {
+	case "sunday":
+		s = 0;
+		break;
+	case "monday":
+		s = 1;
+		break;
+	case "tuesday":
+		s = 2;
+		break;
+	case "wednesday":
+		s = 3;
+		break;
+	case "thursday":
+		s = 4;
+		break;
+	case "friday":
+		s = 5;
+		break;
+	case "saturday":
+		s = 6;
+		break;
+	default:
+		throw new thx.error.Error("unknown week day '{0}'",null,day,{ fileName : "Dates.hx", lineNumber : 186, className : "Dates", methodName : "snapToWeekDay"});
+	}
+	return time - (d - s) % 7 * 24 * 60 * 60 * 1000;
+}
+Dates.canParse = function(s) {
+	return Dates._reparse.match(s);
+}
+Dates.parse = function(s) {
+	var parts = s.split(".");
+	var date = HxOverrides.strDate(StringTools.replace(parts[0],"T"," "));
+	if(parts.length > 1) date = (function($this) {
+		var $r;
+		var d = new Date();
+		d.setTime(date.getTime() + Std.parseInt(parts[1]));
+		$r = d;
+		return $r;
+	}(this));
+	return date;
+}
+Dates.compare = function(a,b) {
+	return Floats.compare(a.getTime(),b.getTime());
+}
 var Dynamics = function() { }
+$hxClasses["Dynamics"] = Dynamics;
 Dynamics.__name__ = ["Dynamics"];
+Dynamics.format = function(v,param,params,nullstring,culture) {
+	return (Dynamics.formatf(param,params,nullstring,culture))(v);
+}
+Dynamics.formatf = function(param,params,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	return function(v) {
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 0:
+			return nullstring;
+		case 1:
+			return Ints.format(v,param,params,culture);
+		case 2:
+			return Floats.format(v,param,params,culture);
+		case 3:
+			return Bools.format(v,param,params,culture);
+		case 6:
+			var c = $e[2];
+			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
+			break;
+		case 4:
+			return Objects.format(v,param,params,culture);
+		case 5:
+			return "function()";
+		default:
+			return (function($this) {
+				var $r;
+				throw new thx.error.Error("Unsupported type format: {0}",null,Type["typeof"](v),{ fileName : "Dynamics.hx", lineNumber : 44, className : "Dynamics", methodName : "formatf"});
+				return $r;
+			}(this));
+		}
+	};
+}
+Dynamics.interpolate = function(v,a,b,equation) {
+	return (Dynamics.interpolatef(a,b,equation))(v);
+}
+Dynamics.interpolatef = function(a,b,equation) {
+	var ta = Type["typeof"](a);
+	var tb = Type["typeof"](b);
+	if(!((js.Boot.__instanceof(a,Float) || js.Boot.__instanceof(a,Int)) && (js.Boot.__instanceof(b,Float) || js.Boot.__instanceof(b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
+	var $e = (ta);
+	switch( $e[1] ) {
+	case 0:
+		return function(_) {
+			return null;
+		};
+	case 1:
+		if(js.Boot.__instanceof(b,Int)) return Ints.interpolatef(a,b,equation); else return Floats.interpolatef(a,b,equation);
+		break;
+	case 2:
+		return Floats.interpolatef(a,b,equation);
+	case 3:
+		return Bools.interpolatef(a,b,equation);
+	case 4:
+		return Objects.interpolatef(a,b,equation);
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "String":
+			return Strings.interpolatef(a,b,equation);
+		case "Date":
+			return Dates.interpolatef(a,b,equation);
+		default:
+			throw new thx.error.Error("cannot interpolate on instances of {0}",null,name,{ fileName : "Dynamics.hx", lineNumber : 77, className : "Dynamics", methodName : "interpolatef"});
+		}
+		break;
+	default:
+		throw new thx.error.Error("cannot interpolate on functions/enums/unknown",null,null,{ fileName : "Dynamics.hx", lineNumber : 79, className : "Dynamics", methodName : "interpolatef"});
+	}
+}
 Dynamics.string = function(v) {
 	var $e = (Type["typeof"](v));
 	switch( $e[1] ) {
@@ -424,6 +1256,39 @@ Dynamics.compare = function(a,b) {
 		return Enums.compare(a,b);
 	default:
 		return 0;
+	}
+}
+Dynamics.comparef = function(sample) {
+	var $e = (Type["typeof"](sample));
+	switch( $e[1] ) {
+	case 1:
+	case 2:
+		return Floats.compare;
+	case 3:
+		return Bools.compare;
+	case 4:
+		return Objects.compare;
+	case 6:
+		var c = $e[2];
+		var name = Type.getClassName(c);
+		switch(name) {
+		case "Array":
+			return Arrays.compare;
+		case "String":
+			return Strings.compare;
+		case "Date":
+			return Dates.compare;
+		default:
+			return function(a,b) {
+				return Strings.compare(Std.string(a),Std.string(b));
+			};
+		}
+		break;
+	case 7:
+		var e = $e[2];
+		return Enums.compare;
+	default:
+		return Dynamics.compare;
 	}
 }
 Dynamics.clone = function(v,cloneInstances) {
@@ -590,7 +1455,11 @@ Dynamics.same = function(a,b) {
 		return $r;
 	}(this));
 }
+Dynamics.number = function(v) {
+	return Number(v);
+}
 var Enums = function() { }
+$hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
 	var cons = e[0];
@@ -609,7 +1478,17 @@ Enums.compare = function(a,b) {
 	return Arrays.compare(a.slice(2),b.slice(2));
 }
 var Floats = function() { }
+$hxClasses["Floats"] = Floats;
 Floats.__name__ = ["Floats"];
+Floats.normalize = function(v) {
+	if(v < 0.0) return 0.0; else if(v > 1.0) return 1.0; else return v;
+}
+Floats.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Floats.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
 Floats.range = function(start,stop,step,inclusive) {
 	if(inclusive == null) inclusive = false;
 	if(step == null) step = 1.0;
@@ -623,6 +1502,52 @@ Floats.range = function(start,stop,step,inclusive) {
 		if(step < 0) while((j = start + step * ++i) >= stop) range.push(j); else while((j = start + step * ++i) <= stop) range.push(j);
 	} else if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
+}
+Floats.sign = function(v) {
+	return v < 0?-1:1;
+}
+Floats.abs = function(a) {
+	return a < 0?-a:a;
+}
+Floats.min = function(a,b) {
+	return a < b?a:b;
+}
+Floats.max = function(a,b) {
+	return a > b?a:b;
+}
+Floats.wrap = function(v,min,max) {
+	var range = max - min + 1;
+	if(v < min) v += range * ((min - v) / range + 1);
+	return min + (v - min) % range;
+}
+Floats.circularWrap = function(v,max) {
+	v = v % max;
+	if(v < 0) v += max;
+	return v;
+}
+Floats.interpolate = function(f,a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return a + equation(f) * (b - a);
+}
+Floats.interpolatef = function(a,b,equation) {
+	if(b == null) b = 1.0;
+	if(a == null) a = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = b - a;
+	return function(f) {
+		return a + equation(f) * d;
+	};
+}
+Floats.interpolateClampf = function(min,max,equation) {
+	if(null == equation) equation = thx.math.Equations.linear;
+	return function(a,b) {
+		var d = b - a;
+		return function(f) {
+			return a + equation(Floats.clamp(f,min,max)) * d;
+		};
+	};
 }
 Floats.format = function(v,param,params,culture) {
 	return (Floats.formatf(param,params,culture))(v);
@@ -661,20 +1586,71 @@ Floats.formatf = function(param,params,culture) {
 		}(this));
 	}
 }
+Floats.canParse = function(s,strict) {
+	if(strict == null) strict = false;
+	if(strict) return Floats._reparseStrict.match(s); else return Floats._reparse.match(s);
+}
+Floats.parse = function(s) {
+	if(HxOverrides.substr(s,0,1) == "+") s = HxOverrides.substr(s,1,null);
+	return Std.parseFloat(s);
+}
 Floats.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
+}
+Floats.isNumeric = function(v) {
+	return js.Boot.__instanceof(v,Float) || js.Boot.__instanceof(v,Int);
 }
 Floats.equals = function(a,b,approx) {
 	if(approx == null) approx = 1e-5;
 	if(Math.isNaN(a)) return Math.isNaN(b); else if(Math.isNaN(b)) return false; else if(!Math.isFinite(a) && !Math.isFinite(b)) return a > 0 == b > 0;
 	return Math.abs(b - a) < approx;
 }
+Floats.uninterpolatef = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return (x - a) * b;
+	};
+}
+Floats.uninterpolateClampf = function(a,b) {
+	b = 1 / (b - a);
+	return function(x) {
+		return Floats.clamp((x - a) * b,0.0,1.0);
+	};
+}
+Floats.round = function(number,precision) {
+	if(precision == null) precision = 2;
+	number *= Math.pow(10,precision);
+	return Math.round(number) / Math.pow(10,precision);
+}
 var Hash = function() {
 	this.h = { };
 };
+$hxClasses["Hash"] = Hash;
 Hash.__name__ = ["Hash"];
 Hash.prototype = {
-	keys: function() {
+	toString: function() {
+		var s = new StringBuf();
+		s.b += "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b += Std.string(i);
+			s.b += " => ";
+			s.b += Std.string(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += ", ";
+		}
+		s.b += "}";
+		return s.b;
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+	,keys: function() {
 		var a = [];
 		for( var key in this.h ) {
 		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
@@ -700,7 +1676,16 @@ Hash.prototype = {
 	,__class__: Hash
 }
 var HxOverrides = function() { }
+$hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = ["HxOverrides"];
+HxOverrides.dateStr = function(date) {
+	var m = date.getMonth() + 1;
+	var d = date.getDate();
+	var h = date.getHours();
+	var mi = date.getMinutes();
+	var s = date.getSeconds();
+	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+}
 HxOverrides.strDate = function(s) {
 	switch(s.length) {
 	case 8:
@@ -756,9 +1741,77 @@ HxOverrides.iter = function(a) {
 		return this.arr[this.cur++];
 	}};
 }
-var IntHash = function() { }
+var IntHash = function() {
+	this.h = { };
+};
+$hxClasses["IntHash"] = IntHash;
 IntHash.__name__ = ["IntHash"];
+IntHash.prototype = {
+	toString: function() {
+		var s = new StringBuf();
+		s.b += "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s.b += Std.string(i);
+			s.b += " => ";
+			s.b += Std.string(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += ", ";
+		}
+		s.b += "}";
+		return s.b;
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref[i];
+		}};
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key | 0);
+		}
+		return HxOverrides.iter(a);
+	}
+	,remove: function(key) {
+		if(!this.h.hasOwnProperty(key)) return false;
+		delete(this.h[key]);
+		return true;
+	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty(key);
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,set: function(key,value) {
+		this.h[key] = value;
+	}
+	,h: null
+	,__class__: IntHash
+}
+var IntIter = function(min,max) {
+	this.min = min;
+	this.max = max;
+};
+$hxClasses["IntIter"] = IntIter;
+IntIter.__name__ = ["IntIter"];
+IntIter.prototype = {
+	next: function() {
+		return this.min++;
+	}
+	,hasNext: function() {
+		return this.min < this.max;
+	}
+	,max: null
+	,min: null
+	,__class__: IntIter
+}
 var Ints = function() { }
+$hxClasses["Ints"] = Ints;
 Ints.__name__ = ["Ints"];
 Ints.range = function(start,stop,step) {
 	if(step == null) step = 1;
@@ -771,21 +1824,151 @@ Ints.range = function(start,stop,step) {
 	if(step < 0) while((j = start + step * ++i) > stop) range.push(j); else while((j = start + step * ++i) < stop) range.push(j);
 	return range;
 }
+Ints.sign = function(v) {
+	return v < 0?-1:1;
+}
+Ints.abs = function(a) {
+	return a < 0?-a:a;
+}
+Ints.min = function(a,b) {
+	return a < b?a:b;
+}
+Ints.max = function(a,b) {
+	return a > b?a:b;
+}
+Ints.wrap = function(v,min,max) {
+	return Math.round(Floats.wrap(v,min,max));
+}
+Ints.clamp = function(v,min,max) {
+	if(v < min) return min; else if(v > max) return max; else return v;
+}
+Ints.clampSym = function(v,max) {
+	if(v < -max) return -max; else if(v > max) return max; else return v;
+}
+Ints.interpolate = function(f,min,max,equation) {
+	if(max == null) max = 100.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	return Math.round(min + equation(f) * (max - min));
+}
+Ints.interpolatef = function(min,max,equation) {
+	if(max == null) max = 1.0;
+	if(min == null) min = 0.0;
+	if(null == equation) equation = thx.math.Equations.linear;
+	var d = max - min;
+	return function(f) {
+		return Math.round(min + equation(f) * d);
+	};
+}
 Ints.format = function(v,param,params,culture) {
 	return (Ints.formatf(param,params,culture))(v);
 }
 Ints.formatf = function(param,params,culture) {
 	return Floats.formatf(null,thx.culture.FormatParams.params(param,params,"I"),culture);
 }
+Ints.canParse = function(s) {
+	return Ints._reparse.match(s);
+}
+Ints.parse = function(s) {
+	if(HxOverrides.substr(s,0,1) == "+") s = HxOverrides.substr(s,1,null);
+	return Std.parseInt(s);
+}
+Ints.compare = function(a,b) {
+	return a - b;
+}
 var Iterables = function() { }
+$hxClasses["Iterables"] = Iterables;
 Iterables.__name__ = ["Iterables"];
+Iterables.count = function(it) {
+	return Iterators.count($iterator(it)());
+}
+Iterables.indexOf = function(it,v,f) {
+	return Iterators.indexOf($iterator(it)(),v,f);
+}
+Iterables.contains = function(it,v,f) {
+	return Iterators.contains($iterator(it)(),v,f);
+}
+Iterables.array = function(it) {
+	return Iterators.array($iterator(it)());
+}
+Iterables.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array($iterator(it)()).join(glue);
+}
+Iterables.map = function(it,f) {
+	return Iterators.map($iterator(it)(),f);
+}
+Iterables.each = function(it,f) {
+	return Iterators.each($iterator(it)(),f);
+}
+Iterables.filter = function(it,f) {
+	return Iterators.filter($iterator(it)(),f);
+}
+Iterables.reduce = function(it,f,initialValue) {
+	return Iterators.reduce($iterator(it)(),f,initialValue);
+}
+Iterables.random = function(it) {
+	return Arrays.random(Iterators.array($iterator(it)()));
+}
+Iterables.any = function(it,f) {
+	return Iterators.any($iterator(it)(),f);
+}
+Iterables.all = function(it,f) {
+	return Iterators.all($iterator(it)(),f);
+}
+Iterables.last = function(it) {
+	return Iterators.last($iterator(it)());
+}
+Iterables.lastf = function(it,f) {
+	return Iterators.lastf($iterator(it)(),f);
+}
+Iterables.first = function(it) {
+	return $iterator(it)().next();
+}
+Iterables.firstf = function(it,f) {
+	return Iterators.firstf($iterator(it)(),f);
+}
+Iterables.order = function(it,f) {
+	return Arrays.order(Iterators.array($iterator(it)()),f);
+}
 Iterables.isIterable = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"iterator")) return false;
 	return Reflect.isFunction(Reflect.field(v,"iterator"));
 }
 var Iterators = function() { }
+$hxClasses["Iterators"] = Iterators;
 Iterators.__name__ = ["Iterators"];
+Iterators.count = function(it) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var _ = it.next();
+		i++;
+	}
+	return i;
+}
+Iterators.indexOf = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return c; else c++;
+	}
+	return -1;
+}
+Iterators.contains = function(it,v,f) {
+	if(null == f) f = function(v2) {
+		return v == v2;
+	};
+	var c = 0;
+	while( it.hasNext() ) {
+		var i = it.next();
+		if(f(i)) return true;
+	}
+	return false;
+}
 Iterators.array = function(it) {
 	var result = [];
 	while( it.hasNext() ) {
@@ -793,6 +1976,25 @@ Iterators.array = function(it) {
 		result.push(v);
 	}
 	return result;
+}
+Iterators.join = function(it,glue) {
+	if(glue == null) glue = ", ";
+	return Iterators.array(it).join(glue);
+}
+Iterators.map = function(it,f) {
+	var result = [], i = 0;
+	while( it.hasNext() ) {
+		var v = it.next();
+		result.push(f(v,i++));
+	}
+	return result;
+}
+Iterators.each = function(it,f) {
+	var i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		f(o,i++);
+	}
 }
 Iterators.filter = function(it,f) {
 	var result = [];
@@ -802,13 +2004,99 @@ Iterators.filter = function(it,f) {
 	}
 	return result;
 }
+Iterators.reduce = function(it,f,initialValue) {
+	var accumulator = initialValue, i = 0;
+	while( it.hasNext() ) {
+		var o = it.next();
+		accumulator = f(accumulator,o,i++);
+	}
+	return accumulator;
+}
+Iterators.random = function(it) {
+	return Arrays.random(Iterators.array(it));
+}
+Iterators.any = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return true;
+	}
+	return false;
+}
+Iterators.all = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(!f(v)) return false;
+	}
+	return true;
+}
+Iterators.last = function(it) {
+	var o = null;
+	while(it.hasNext()) o = it.next();
+	return o;
+}
+Iterators.lastf = function(it,f) {
+	var rev = Iterators.array(it);
+	rev.reverse();
+	return Arrays.lastf(rev,f);
+}
+Iterators.first = function(it) {
+	return it.next();
+}
+Iterators.firstf = function(it,f) {
+	while( it.hasNext() ) {
+		var v = it.next();
+		if(f(v)) return v;
+	}
+	return null;
+}
+Iterators.order = function(it,f) {
+	return Arrays.order(Iterators.array(it),f);
+}
 Iterators.isIterator = function(v) {
 	var fields = Reflect.isObject(v) && null == Type.getClass(v)?Reflect.fields(v):Type.getInstanceFields(Type.getClass(v));
 	if(!Lambda.has(fields,"next") || !Lambda.has(fields,"hasNext")) return false;
 	return Reflect.isFunction(Reflect.field(v,"next")) && Reflect.isFunction(Reflect.field(v,"hasNext"));
 }
 var Lambda = function() { }
+$hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = new Array();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+}
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+}
+Lambda.map = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(x));
+	}
+	return l;
+}
+Lambda.mapi = function(it,f) {
+	var l = new List();
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(i++,x));
+	}
+	return l;
+}
 Lambda.has = function(it,elt,cmp) {
 	if(cmp == null) {
 		var $it0 = $iterator(it)();
@@ -825,10 +2113,141 @@ Lambda.has = function(it,elt,cmp) {
 	}
 	return false;
 }
-var List = function() { }
+Lambda.exists = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+}
+Lambda.foreach = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(!f(x)) return false;
+	}
+	return true;
+}
+Lambda.iter = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		f(x);
+	}
+}
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+}
+Lambda.fold = function(it,f,first) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		first = f(x,first);
+	}
+	return first;
+}
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var $it0 = $iterator(it)();
+		while( $it0.hasNext() ) {
+			var _ = $it0.next();
+			n++;
+		}
+	} else {
+		var $it1 = $iterator(it)();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+}
+Lambda.empty = function(it) {
+	return !$iterator(it)().hasNext();
+}
+Lambda.indexOf = function(it,v) {
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var v2 = $it0.next();
+		if(v == v2) return i;
+		i++;
+	}
+	return -1;
+}
+Lambda.concat = function(a,b) {
+	var l = new List();
+	var $it0 = $iterator(a)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(x);
+	}
+	var $it1 = $iterator(b)();
+	while( $it1.hasNext() ) {
+		var x = $it1.next();
+		l.add(x);
+	}
+	return l;
+}
+var List = function() {
+	this.length = 0;
+};
+$hxClasses["List"] = List;
 List.__name__ = ["List"];
 List.prototype = {
-	iterator: function() {
+	map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b += Std.string(sep);
+			s.b += Std.string(l[0]);
+			l = l[1];
+		}
+		return s.b;
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b += "{";
+		while(l != null) {
+			if(first) first = false; else s.b += ", ";
+			s.b += Std.string(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b += "}";
+		return s.b;
+	}
+	,iterator: function() {
 		return { h : this.h, hasNext : function() {
 			return this.h != null;
 		}, next : function() {
@@ -838,11 +2257,79 @@ List.prototype = {
 			return x;
 		}};
 	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
+			}
+			prev = l;
+			l = l[1];
+		}
+		return false;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,length: null
+	,q: null
 	,h: null
 	,__class__: List
 }
 var Objects = function() { }
+$hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
+Objects.field = function(o,fieldname,alt) {
+	return Reflect.hasField(o,fieldname)?Reflect.field(o,fieldname):alt;
+}
+Objects.keys = function(o) {
+	return Reflect.fields(o);
+}
+Objects.values = function(o) {
+	var arr = [];
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		arr.push(Reflect.field(o,key));
+	}
+	return arr;
+}
 Objects.entries = function(o) {
 	var arr = [];
 	var _g = 0, _g1 = Reflect.fields(o);
@@ -871,6 +2358,54 @@ Objects.map = function(o,handler) {
 	}
 	return results;
 }
+Objects["with"] = function(ob,f) {
+	f(ob);
+	return ob;
+}
+Objects.toHash = function(ob) {
+	var hash = new Hash();
+	return Objects.copyToHash(ob,hash);
+}
+Objects.copyToHash = function(ob,hash) {
+	var _g = 0, _g1 = Reflect.fields(ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		hash.set(field,Reflect.field(ob,field));
+	}
+	return hash;
+}
+Objects.interpolate = function(v,a,b,equation) {
+	return (Objects.interpolatef(a,b,equation))(v);
+}
+Objects.interpolatef = function(a,b,equation) {
+	var i = { }, c = { }, keys = Reflect.fields(a);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(Reflect.hasField(b,key)) {
+			var va = Reflect.field(a,key);
+			i[key] = Dynamics.interpolatef(va,Reflect.field(b,key));
+		} else c[key] = Reflect.field(a,key);
+	}
+	keys = Reflect.fields(b);
+	var _g = 0;
+	while(_g < keys.length) {
+		var key = keys[_g];
+		++_g;
+		if(!Reflect.hasField(a,key)) c[key] = Reflect.field(b,key);
+	}
+	return function(t) {
+		var _g = 0, _g1 = Reflect.fields(i);
+		while(_g < _g1.length) {
+			var k = _g1[_g];
+			++_g;
+			c[k] = Reflect.field(i,k).apply(i,[t]);
+		}
+		return c;
+	};
+}
 Objects.copyTo = function(src,dst) {
 	var _g = 0, _g1 = Reflect.fields(src);
 	while(_g < _g1.length) {
@@ -885,6 +2420,23 @@ Objects.copyTo = function(src,dst) {
 Objects.clone = function(src) {
 	var dst = { };
 	return Objects.copyTo(src,dst);
+}
+Objects.mergef = function(ob,new_ob,f) {
+	var _g = 0, _g1 = Reflect.fields(new_ob);
+	while(_g < _g1.length) {
+		var field = _g1[_g];
+		++_g;
+		var new_val = Reflect.field(new_ob,field);
+		if(Reflect.hasField(ob,field)) {
+			var old_val = Reflect.field(ob,field);
+			ob[field] = f(field,old_val,new_val);
+		} else ob[field] = new_val;
+	}
+}
+Objects.merge = function(ob,new_ob) {
+	Objects.mergef(ob,new_ob,function(key,old_v,new_v) {
+		return new_v;
+	});
 }
 Objects._flatten = function(src,cum,arr,levels,level) {
 	var _g = 0, _g1 = Reflect.fields(src);
@@ -926,7 +2478,50 @@ Objects.compare = function(a,b) {
 	}
 	return 0;
 }
+Objects.addFields = function(o,fields,values) {
+	var _g1 = 0, _g = fields.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Objects.addField(o,fields[i],values[i]);
+	}
+	return o;
+}
+Objects.addField = function(o,field,value) {
+	o[field] = value;
+	return o;
+}
+Objects.format = function(v,param,params,culture) {
+	return (Objects.formatf(param,params,culture))(v);
+}
+Objects.formatf = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"R");
+	var format = params.shift();
+	switch(format) {
+	case "O":
+		return function(v) {
+			return Std.string(v);
+		};
+	case "R":
+		return function(v) {
+			var buf = [];
+			var _g = 0, _g1 = Reflect.fields(v);
+			while(_g < _g1.length) {
+				var field = _g1[_g];
+				++_g;
+				buf.push(field + ":" + Dynamics.format(Reflect.field(v,field),null,null,null,culture));
+			}
+			return "{" + buf.join(",") + "}";
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("Unsupported number format: {0}",null,format,{ fileName : "Objects.hx", lineNumber : 242, className : "Objects", methodName : "formatf"});
+			return $r;
+		}(this));
+	}
+}
 var Reflect = function() { }
+$hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
 	return Object.prototype.hasOwnProperty.call(o,field);
@@ -938,6 +2533,20 @@ Reflect.field = function(o,field) {
 	} catch( e ) {
 	}
 	return v;
+}
+Reflect.setField = function(o,field,value) {
+	o[field] = value;
+}
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
+Reflect.callMethod = function(o,func,args) {
+	return func.apply(o,args);
 }
 Reflect.fields = function(o) {
 	var a = [];
@@ -952,6 +2561,9 @@ Reflect.fields = function(o) {
 Reflect.isFunction = function(f) {
 	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
 }
+Reflect.compare = function(a,b) {
+	return a == b?0:a > b?1:-1;
+}
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
 	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
@@ -962,10 +2574,38 @@ Reflect.isObject = function(v) {
 	var t = typeof(v);
 	return t == "string" || t == "object" && !v.__enum__ || t == "function" && (v.__name__ || v.__ename__);
 }
+Reflect.deleteField = function(o,f) {
+	if(!Reflect.hasField(o,f)) return false;
+	delete(o[f]);
+	return true;
+}
+Reflect.copy = function(o) {
+	var o2 = { };
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+}
+Reflect.makeVarArgs = function(f) {
+	return function() {
+		var a = Array.prototype.slice.call(arguments);
+		return f(a);
+	};
+}
 var Std = function() { }
+$hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
+Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+}
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
+}
+Std["int"] = function(x) {
+	return x | 0;
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
@@ -976,16 +2616,73 @@ Std.parseInt = function(x) {
 Std.parseFloat = function(x) {
 	return parseFloat(x);
 }
+Std.random = function(x) {
+	return x <= 0?0:Math.floor(Math.random() * x);
+}
 var StringBuf = function() {
 	this.b = "";
 };
+$hxClasses["StringBuf"] = StringBuf;
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
-	b: null
+	toString: function() {
+		return this.b;
+	}
+	,addSub: function(s,pos,len) {
+		this.b += HxOverrides.substr(s,pos,len);
+	}
+	,addChar: function(c) {
+		this.b += String.fromCharCode(c);
+	}
+	,add: function(x) {
+		this.b += Std.string(x);
+	}
+	,b: null
 	,__class__: StringBuf
 }
 var StringTools = function() { }
+$hxClasses["StringTools"] = StringTools;
 StringTools.__name__ = ["StringTools"];
+StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+}
+StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+}
+StringTools.htmlEscape = function(s,quotes) {
+	s = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	return quotes?s.split("\"").join("&quot;").split("'").join("&#039;"):s;
+}
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&quot;").join("\"").split("&#039;").join("'").split("&amp;").join("&");
+}
+StringTools.startsWith = function(s,start) {
+	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
+}
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
+}
+StringTools.isSpace = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c >= 9 && c <= 13 || c == 32;
+}
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
+}
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
+}
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+}
 StringTools.rpad = function(s,c,l) {
 	var sl = s.length;
 	var cl = c.length;
@@ -1025,8 +2722,116 @@ StringTools.hex = function(n,digits) {
 	if(digits != null) while(s.length < digits) s = "0" + s;
 	return s;
 }
+StringTools.fastCodeAt = function(s,index) {
+	return s.charCodeAt(index);
+}
+StringTools.isEOF = function(c) {
+	return c != c;
+}
 var Strings = function() { }
+$hxClasses["Strings"] = Strings;
 Strings.__name__ = ["Strings"];
+Strings.format = function(pattern,values,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	if(null == values || 0 == values.length) return pattern;
+	return (Strings.formatf(pattern,nullstring,culture))(values);
+}
+Strings.formatf = function(pattern,nullstring,culture) {
+	if(nullstring == null) nullstring = "null";
+	var buf = [];
+	while(true) {
+		if(!Strings._reFormat.match(pattern)) {
+			buf.push((function() {
+				return function(_) {
+					return pattern;
+				};
+			})());
+			break;
+		}
+		var pos = Std.parseInt(Strings._reFormat.matched(1));
+		var format = Strings._reFormat.matched(2);
+		if(format == "") format = null;
+		var p = null;
+		var params = [];
+		var _g = 3;
+		while(_g < 20) {
+			var i = _g++;
+			p = Strings._reFormat.matched(i);
+			if(p == null || p == "") break;
+			params.push(thx.culture.FormatParams.cleanQuotes(p));
+		}
+		var left = [Strings._reFormat.matchedLeft()];
+		buf.push((function(left) {
+			return function(_) {
+				return left[0];
+			};
+		})(left));
+		var df = [Dynamics.formatf(format,params,nullstring,culture)];
+		buf.push(((function() {
+			return function(f,i1) {
+				return (function() {
+					return function(v) {
+						return f(i1,v);
+					};
+				})();
+			};
+		})())((function(df) {
+			return function(i,v) {
+				return df[0](v[i]);
+			};
+		})(df),pos));
+		pattern = Strings._reFormat.matchedRight();
+	}
+	return function(values) {
+		if(null == values) values = [];
+		return buf.map(function(df,_) {
+			return df(values);
+		}).join("");
+	};
+}
+Strings.formatOne = function(v,param,params,culture) {
+	return (Strings.formatOnef(param,params,culture))(v);
+}
+Strings.formatOnef = function(param,params,culture) {
+	params = thx.culture.FormatParams.params(param,params,"S");
+	var format = params.shift();
+	switch(format) {
+	case "S":
+		return function(v) {
+			return v;
+		};
+	case "T":
+		var len = params.length < 1?20:Std.parseInt(params[0]);
+		var ellipsis = params.length < 2?"...":params[1];
+		return Strings.ellipsisf(len,ellipsis);
+	case "PR":
+		var len1 = params.length < 1?10:Std.parseInt(params[0]);
+		var pad = params.length < 2?" ":params[1];
+		return function(v) {
+			return StringTools.rpad(v,pad,len1);
+		};
+	case "PL":
+		var len2 = params.length < 1?10:Std.parseInt(params[0]);
+		var pad1 = params.length < 2?" ":params[1];
+		return function(v) {
+			return StringTools.lpad(v,pad1,len2);
+		};
+	default:
+		return (function($this) {
+			var $r;
+			throw "Unsupported string format: " + format;
+			return $r;
+		}(this));
+	}
+}
+Strings.upTo = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return HxOverrides.substr(value,0,pos);
+}
+Strings.startFrom = function(value,searchFor) {
+	var pos = value.indexOf(searchFor);
+	if(pos < 0) return value; else return HxOverrides.substr(value,pos + searchFor.length,null);
+}
 Strings.rtrim = function(value,charlist) {
 	var len = value.length;
 	while(len > 0) {
@@ -1045,10 +2850,230 @@ Strings.ltrim = function(value,charlist) {
 	}
 	return HxOverrides.substr(value,start,null);
 }
+Strings.trim = function(value,charlist) {
+	return Strings.rtrim(Strings.ltrim(value,charlist),charlist);
+}
+Strings.collapse = function(value) {
+	return Strings._reCollapse.replace(StringTools.trim(value)," ");
+}
+Strings.ucfirst = function(value) {
+	return value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null);
+}
+Strings.lcfirst = function(value) {
+	return value == null?null:value.charAt(0).toLowerCase() + HxOverrides.substr(value,1,null);
+}
+Strings.empty = function(value) {
+	return value == null || value == "";
+}
+Strings.isAlphaNum = function(value) {
+	return value == null?false:Strings.__alphaNumPattern.match(value);
+}
+Strings.digitsOnly = function(value) {
+	return value == null?false:Strings.__digitsPattern.match(value);
+}
+Strings.ucwords = function(value) {
+	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
+}
+Strings.ucwordsws = function(value) {
+	return Strings.__ucwordswsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
+}
+Strings.__upperMatch = function(re) {
+	return re.matched(0).toUpperCase();
+}
+Strings.humanize = function(s) {
+	return StringTools.replace(Strings.underscore(s),"_"," ");
+}
+Strings.capitalize = function(s) {
+	return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,null);
+}
+Strings.succ = function(s) {
+	return HxOverrides.substr(s,0,-1) + String.fromCharCode(HxOverrides.cca(HxOverrides.substr(s,-1,null),0) + 1);
+}
+Strings.underscore = function(s) {
+	s = new EReg("::","g").replace(s,"/");
+	s = new EReg("([A-Z]+)([A-Z][a-z])","g").replace(s,"$1_$2");
+	s = new EReg("([a-z\\d])([A-Z])","g").replace(s,"$1_$2");
+	s = new EReg("-","g").replace(s,"_");
+	return s.toLowerCase();
+}
+Strings.dasherize = function(s) {
+	return StringTools.replace(s,"_","-");
+}
+Strings.repeat = function(s,times) {
+	var b = [];
+	var _g = 0;
+	while(_g < times) {
+		var i = _g++;
+		b.push(s);
+	}
+	return b.join("");
+}
+Strings.wrapColumns = function(s,columns,indent,newline) {
+	if(newline == null) newline = "\n";
+	if(indent == null) indent = "";
+	if(columns == null) columns = 78;
+	var parts = Strings._reSplitWC.split(s);
+	var result = [];
+	var _g = 0;
+	while(_g < parts.length) {
+		var part = parts[_g];
+		++_g;
+		result.push(Strings._wrapColumns(StringTools.trim(Strings._reReduceWS.replace(part," ")),columns,indent,newline));
+	}
+	return result.join(newline);
+}
+Strings._wrapColumns = function(s,columns,indent,newline) {
+	var parts = [];
+	var pos = 0;
+	var len = s.length;
+	var ilen = indent.length;
+	columns -= ilen;
+	while(true) {
+		if(pos + columns >= len - ilen) {
+			parts.push(HxOverrides.substr(s,pos,null));
+			break;
+		}
+		var i = 0;
+		while(!StringTools.isSpace(s,pos + columns - i) && i < columns) i++;
+		if(i == columns) {
+			i = 0;
+			while(!StringTools.isSpace(s,pos + columns + i) && pos + columns + i < len) i++;
+			parts.push(HxOverrides.substr(s,pos,columns + i));
+			pos += columns + i + 1;
+		} else {
+			parts.push(HxOverrides.substr(s,pos,columns - i));
+			pos += columns - i + 1;
+		}
+	}
+	return indent + parts.join(newline + indent);
+}
+Strings.stripTags = function(s) {
+	return Strings._reStripTags.replace(s,"");
+}
+Strings.interpolate = function(v,a,b,equation) {
+	return (Strings.interpolatef(a,b,equation))(v);
+}
+Strings.interpolatef = function(a,b,equation) {
+	var extract = function(value,s,f) {
+		while(Strings._reInterpolateNumber.match(value)) {
+			var left = Strings._reInterpolateNumber.matchedLeft();
+			if(!Strings.empty(left)) {
+				s.push(left);
+				f.push(null);
+			}
+			s.push(null);
+			f.push(Std.parseFloat(Strings._reInterpolateNumber.matched(0)));
+			value = Strings._reInterpolateNumber.matchedRight();
+		}
+		if(!Strings.empty(value)) {
+			s.push(value);
+			f.push(null);
+		}
+	};
+	var decimals = function(v) {
+		var s = "" + v, p = s.indexOf(".");
+		if(p < 0) return 0;
+		return s.length - p - 1;
+	};
+	var sa = [], fa = [], sb = [], fb = [];
+	extract(a,sa,fa);
+	extract(b,sb,fb);
+	var functions = [], i = 0;
+	var min = Ints.min(sa.length,sb.length);
+	while(i < min) {
+		if(sa[i] != sb[i]) break;
+		if(null == sa[i]) {
+			if(fa[i] == fb[i]) {
+				var s1 = ["" + fa[i]];
+				functions.push((function(s1) {
+					return function(_) {
+						return s1[0];
+					};
+				})(s1));
+			} else {
+				var f1 = [Floats.interpolatef(fa[i],fb[i],equation)];
+				var dec = [Math.pow(10,Ints.max(decimals(fa[i]),decimals(fb[i])))];
+				functions.push((function(dec,f1) {
+					return function(t) {
+						return "" + Math.round(f1[0](t) * dec[0]) / dec[0];
+					};
+				})(dec,f1));
+			}
+		} else {
+			var s2 = [sa[i]];
+			functions.push((function(s2) {
+				return function(_) {
+					return s2[0];
+				};
+			})(s2));
+		}
+		i++;
+	}
+	var rest = "";
+	while(i < sb.length) {
+		if(null != sb[i]) rest += sb[i]; else rest += fb[i];
+		i++;
+	}
+	if("" != rest) functions.push(function(_) {
+		return rest;
+	});
+	return function(t1) {
+		return functions.map(function(f,_) {
+			return f(t1);
+		}).join("");
+	};
+}
+Strings.interpolateChars = function(v,a,b,equation) {
+	return (Strings.interpolateCharsf(a,b,equation))(v);
+}
+Strings.interpolateCharsf = function(a,b,equation) {
+	var aa = a.split(""), ab = b.split("");
+	while(aa.length > ab.length) ab.splice(0,0," ");
+	while(ab.length > aa.length) aa.splice(0,0," ");
+	var ai = [];
+	var _g1 = 0, _g = aa.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		ai[i] = Strings.interpolateCharf(aa[i],ab[i]);
+	}
+	return function(v) {
+		var r = [];
+		var _g1 = 0, _g = ai.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			r[i] = ai[i](v);
+		}
+		return StringTools.trim(r.join(""));
+	};
+}
+Strings.interpolateChar = function(v,a,b,equation) {
+	return (Strings.interpolateCharf(a,b,equation))(v);
+}
+Strings.interpolateCharf = function(a,b,equation) {
+	if(new EReg("^\\d","").match(b) && a == " ") a = "0";
+	var r = new EReg("^[^a-zA-Z0-9]","");
+	if(r.match(b) && a == " ") a = r.matched(0);
+	var ca = HxOverrides.cca(a,0), cb = HxOverrides.cca(b,0), i = Ints.interpolatef(ca,cb,equation);
+	return function(v) {
+		return String.fromCharCode(i(v));
+	};
+}
+Strings.ellipsis = function(s,maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	if(s.length > maxlen) return HxOverrides.substr(s,0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+}
+Strings.ellipsisf = function(maxlen,symbol) {
+	if(symbol == null) symbol = "...";
+	if(maxlen == null) maxlen = 20;
+	return function(s) {
+		if(s.length > maxlen) return HxOverrides.substr(s,0,Ints.max(symbol.length,maxlen - symbol.length)) + symbol; else return s;
+	};
+}
 Strings.compare = function(a,b) {
 	return a < b?-1:a > b?1:0;
 }
-var ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
 ValueType.TNull.__enum__ = ValueType;
@@ -1073,6 +3098,7 @@ ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
 var Type = function() { }
+$hxClasses["Type"] = Type;
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
@@ -1082,6 +3108,9 @@ Type.getEnum = function(o) {
 	if(o == null) return null;
 	return o.__enum__;
 }
+Type.getSuperClass = function(c) {
+	return c.__super__;
+}
 Type.getClassName = function(c) {
 	var a = c.__name__;
 	return a.join(".");
@@ -1090,9 +3119,59 @@ Type.getEnumName = function(e) {
 	var a = e.__ename__;
 	return a.join(".");
 }
+Type.resolveClass = function(name) {
+	var cl = $hxClasses[name];
+	if(cl == null || !cl.__name__) return null;
+	return cl;
+}
+Type.resolveEnum = function(name) {
+	var e = $hxClasses[name];
+	if(e == null || !e.__ename__) return null;
+	return e;
+}
+Type.createInstance = function(cl,args) {
+	switch(args.length) {
+	case 0:
+		return new cl();
+	case 1:
+		return new cl(args[0]);
+	case 2:
+		return new cl(args[0],args[1]);
+	case 3:
+		return new cl(args[0],args[1],args[2]);
+	case 4:
+		return new cl(args[0],args[1],args[2],args[3]);
+	case 5:
+		return new cl(args[0],args[1],args[2],args[3],args[4]);
+	case 6:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5]);
+	case 7:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+	case 8:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+	default:
+		throw "Too many arguments";
+	}
+	return null;
+}
 Type.createEmptyInstance = function(cl) {
 	function empty() {}; empty.prototype = cl.prototype;
 	return new empty();
+}
+Type.createEnum = function(e,constr,params) {
+	var f = Reflect.field(e,constr);
+	if(f == null) throw "No such constructor " + constr;
+	if(Reflect.isFunction(f)) {
+		if(params == null) throw "Constructor " + constr + " need parameters";
+		return f.apply(e,params);
+	}
+	if(params != null && params.length != 0) throw "Constructor " + constr + " does not need parameters";
+	return f;
+}
+Type.createEnumIndex = function(e,index,params) {
+	var c = e.__constructs__[index];
+	if(c == null) throw index + " is not a valid enum constructor index";
+	return Type.createEnum(e,c,params);
 }
 Type.getInstanceFields = function(c) {
 	var a = [];
@@ -1100,6 +3179,19 @@ Type.getInstanceFields = function(c) {
 	HxOverrides.remove(a,"__class__");
 	HxOverrides.remove(a,"__properties__");
 	return a;
+}
+Type.getClassFields = function(c) {
+	var a = Reflect.fields(c);
+	HxOverrides.remove(a,"__name__");
+	HxOverrides.remove(a,"__interfaces__");
+	HxOverrides.remove(a,"__properties__");
+	HxOverrides.remove(a,"__super__");
+	HxOverrides.remove(a,"prototype");
+	return a;
+}
+Type.getEnumConstructs = function(e) {
+	var a = e.__constructs__;
+	return a.slice();
 }
 Type["typeof"] = function(v) {
 	switch(typeof(v)) {
@@ -1126,8 +3218,52 @@ Type["typeof"] = function(v) {
 		return ValueType.TUnknown;
 	}
 }
+Type.enumEq = function(a,b) {
+	if(a == b) return true;
+	try {
+		if(a[0] != b[0]) return false;
+		var _g1 = 2, _g = a.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(!Type.enumEq(a[i],b[i])) return false;
+		}
+		var e = a.__enum__;
+		if(e != b.__enum__ || e == null) return false;
+	} catch( e ) {
+		return false;
+	}
+	return true;
+}
+Type.enumConstructor = function(e) {
+	return e[0];
+}
+Type.enumParameters = function(e) {
+	return e.slice(2);
+}
+Type.enumIndex = function(e) {
+	return e[1];
+}
+Type.allEnums = function(e) {
+	var all = [];
+	var cst = e.__constructs__;
+	var _g = 0;
+	while(_g < cst.length) {
+		var c = cst[_g];
+		++_g;
+		var v = Reflect.field(e,c);
+		if(!Reflect.isFunction(v)) all.push(v);
+	}
+	return all;
+}
 var Types = function() { }
+$hxClasses["Types"] = Types;
 Types.__name__ = ["Types"];
+Types.className = function(o) {
+	return Type.getClassName(Type.getClass(o)).split(".").pop();
+}
+Types.fullName = function(o) {
+	return Type.getClassName(Type.getClass(o));
+}
 Types.typeName = function(o) {
 	return (function($this) {
 		var $r;
@@ -1166,9 +3302,80 @@ Types.typeName = function(o) {
 		return $r;
 	}(this));
 }
+Types.hasSuperClass = function(type,sup) {
+	while(null != type) {
+		if(type == sup) return true;
+		type = Type.getSuperClass(type);
+	}
+	return false;
+}
+Types.isAnonymous = function(v) {
+	return Reflect.isObject(v) && null == Type.getClass(v);
+}
+Types["as"] = function(value,type) {
+	return js.Boot.__instanceof(value,type)?value:null;
+}
+Types.ifIs = function(value,type,handler) {
+	if(js.Boot.__instanceof(value,type)) handler(value);
+	return value;
+}
+Types.of = function(type,value) {
+	return js.Boot.__instanceof(value,type)?value:null;
+}
+Types.sameType = function(a,b) {
+	if(null == a && b == null) return true;
+	if(null == a || b == null) return false;
+	var tb = Type["typeof"](b);
+	var $e = (tb);
+	switch( $e[1] ) {
+	case 6:
+		var c = $e[2];
+		return js.Boot.__instanceof(a,c);
+	case 7:
+		var e = $e[2];
+		return js.Boot.__instanceof(a,e);
+	default:
+		return Type["typeof"](a) == tb;
+	}
+}
+Types.isPrimitive = function(v) {
+	return (function($this) {
+		var $r;
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			$r = true;
+			break;
+		case 5:
+		case 7:
+		case 4:
+		case 8:
+			$r = false;
+			break;
+		case 6:
+			var c = $e[2];
+			$r = Type.getClassName(c) == "String";
+			break;
+		}
+		return $r;
+	}(this));
+}
 var haxe = {}
+haxe.Log = function() { }
+$hxClasses["haxe.Log"] = haxe.Log;
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
 haxe.Md5 = function() {
 };
+$hxClasses["haxe.Md5"] = haxe.Md5;
 haxe.Md5.__name__ = ["haxe","Md5"];
 haxe.Md5.encode = function(s) {
 	return new haxe.Md5().doEncode(s);
@@ -1281,9 +3488,10 @@ haxe.Md5.prototype = {
 	,str2blks: function(str) {
 		var nblk = (str.length + 8 >> 6) + 1;
 		var blks = new Array();
-		var _g1 = 0, _g = nblk * 16;
-		while(_g1 < _g) {
-			var i = _g1++;
+		var blksSize = nblk * 16;
+		var _g = 0;
+		while(_g < blksSize) {
+			var i = _g++;
 			blks[i] = 0;
 		}
 		var i = 0;
@@ -1334,10 +3542,11 @@ haxe.Md5.prototype = {
 }
 haxe.Timer = function(time_ms) {
 	var me = this;
-	this.id = window.setInterval(function() {
+	this.id = setInterval(function() {
 		me.run();
 	},time_ms);
 };
+$hxClasses["haxe.Timer"] = haxe.Timer;
 haxe.Timer.__name__ = ["haxe","Timer"];
 haxe.Timer.delay = function(f,time_ms) {
 	var t = new haxe.Timer(time_ms);
@@ -1347,12 +3556,21 @@ haxe.Timer.delay = function(f,time_ms) {
 	};
 	return t;
 }
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return new Date().getTime() / 1000;
+}
 haxe.Timer.prototype = {
 	run: function() {
 	}
 	,stop: function() {
 		if(this.id == null) return;
-		window.clearInterval(this.id);
+		clearInterval(this.id);
 		this.id = null;
 	}
 	,id: null
@@ -1360,7 +3578,30 @@ haxe.Timer.prototype = {
 }
 var js = {}
 js.Boot = function() { }
+$hxClasses["js.Boot"] = js.Boot;
 js.Boot.__name__ = ["js","Boot"];
+js.Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+js.Boot.__trace = function(v,i) {
+	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
+	msg += js.Boot.__string_rec(v,"");
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+}
+js.Boot.__clear_trace = function() {
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML = "";
+}
+js.Boot.isClass = function(o) {
+	return o.__name__;
+}
+js.Boot.isEnum = function(e) {
+	return e.__ename__;
+}
+js.Boot.getClass = function(o) {
+	return o.__class__;
+}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -1469,10 +3710,14 @@ js.Boot.__instanceof = function(o,cl) {
 		return o.__enum__ == cl;
 	}
 }
+js.Boot.__cast = function(o,t) {
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
+}
 var rg = {}
 rg.app = {}
 rg.app.query = {}
 rg.app.query.JSBridge = function() { }
+$hxClasses["rg.app.query.JSBridge"] = rg.app.query.JSBridge;
 rg.app.query.JSBridge.__name__ = ["rg","app","query","JSBridge"];
 rg.app.query.JSBridge.createQuery = function(executor) {
 	var inst = rg.query.ReportGridQuery.create(executor);
@@ -1509,7 +3754,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.14.1679"};
+	r.info.query = { version : "1.3.16.1681"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -1544,8 +3789,12 @@ rg.app.query.JSBridge.main = function() {
 		r.cache.enable();
 	}};
 }
+rg.app.query.JSBridge.opt = function(ob) {
+	return null == ob?{ }:Objects.clone(ob);
+}
 rg.data = {}
 rg.data.IExecutorReportGrid = function() { }
+$hxClasses["rg.data.IExecutorReportGrid"] = rg.data.IExecutorReportGrid;
 rg.data.IExecutorReportGrid.__name__ = ["rg","data","IExecutorReportGrid"];
 rg.data.IExecutorReportGrid.prototype = {
 	events: null
@@ -1572,12 +3821,19 @@ rg.data.ReportGridExecutorCache = function(executor,storage,timeout) {
 	this.timeout = timeout;
 	this.cleanOld();
 };
+$hxClasses["rg.data.ReportGridExecutorCache"] = rg.data.ReportGridExecutorCache;
 rg.data.ReportGridExecutorCache.__name__ = ["rg","data","ReportGridExecutorCache"];
 rg.data.ReportGridExecutorCache.__interfaces__ = [rg.data.IExecutorReportGrid];
 rg.data.ReportGridExecutorCache.prototype = {
 	uidquery: function(method,path,options) {
 		var s = method + ":" + path + ":" + thx.json.Json.encode(options);
 		return haxe.Md5.encode(s);
+	}
+	,idValue: function(id) {
+		return rg.data.ReportGridExecutorCache.VALUE_PREFIX + id;
+	}
+	,idDate: function(id) {
+		return rg.data.ReportGridExecutorCache.DATE_PREFIX + id;
 	}
 	,getQueue: function(id) {
 		if(this.timeout < 0) return null;
@@ -1666,6 +3922,9 @@ rg.data.ReportGridExecutorCache.prototype = {
 		var q = this.getQueue(id);
 		if(null != q) q.push(success); else (Reflect.field(this.executor,name))(path,options,this.storageSuccess(id,success),error);
 	}
+	,setCacheTimeout: function(t) {
+		this.timeout = t;
+	}
 	,events: function(path,options,success,error) {
 		this.execute("events",path,options,success,error);
 	}
@@ -1723,6 +3982,7 @@ rg.query.BaseQuery = function(async,first) {
 	this._first = first;
 	this._store = new Hash();
 };
+$hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
 rg.query.BaseQuery.asyncTransform = function(t) {
 	return function(data,handler) {
@@ -2041,6 +4301,7 @@ rg.query.BaseQuery.prototype = {
 rg.query.Query = function() {
 	rg.query.BaseQuery.call(this,null,this);
 };
+$hxClasses["rg.query.Query"] = rg.query.Query;
 rg.query.Query.__name__ = ["rg","query","Query"];
 rg.query.Query.create = function() {
 	var start = new rg.query.Query(), query = start._createQuery(function(data,handler) {
@@ -2077,6 +4338,7 @@ rg.query.Query.prototype = $extend(rg.query.BaseQuery.prototype,{
 rg.query.ReportGridBaseQuery = function(async,first) {
 	rg.query.BaseQuery.call(this,async,first);
 };
+$hxClasses["rg.query.ReportGridBaseQuery"] = rg.query.ReportGridBaseQuery;
 rg.query.ReportGridBaseQuery.__name__ = ["rg","query","ReportGridBaseQuery"];
 rg.query.ReportGridBaseQuery._defaultOptions = function(params,options) {
 	if(null == options) options = { };
@@ -2391,6 +4653,7 @@ rg.query.ReportGridQuery = function(executor) {
 	rg.query.ReportGridBaseQuery.call(this,null,this);
 	this.executor = executor;
 };
+$hxClasses["rg.query.ReportGridQuery"] = rg.query.ReportGridQuery;
 rg.query.ReportGridQuery.__name__ = ["rg","query","ReportGridQuery"];
 rg.query.ReportGridQuery.create = function(executor) {
 	var start = new rg.query.ReportGridQuery(executor), query = start._createQuery(null,start);
@@ -2405,6 +4668,7 @@ rg.query.ReportGridQuery.prototype = $extend(rg.query.ReportGridBaseQuery.protot
 	,__class__: rg.query.ReportGridQuery
 });
 rg.query.ReportGridTransformers = function() { }
+$hxClasses["rg.query.ReportGridTransformers"] = rg.query.ReportGridTransformers;
 rg.query.ReportGridTransformers.__name__ = ["rg","query","ReportGridTransformers"];
 rg.query.ReportGridTransformers.childrenPath = function(arr,params,keep) {
 	var parent = params.parent, prefix = parent == "/"?"":parent;
@@ -2730,7 +4994,15 @@ rg.query.ReportGridTransformers._injectTime = function(o,value,periodicity,timez
 	} else if(null != timezone) {
 		if(timezone == 0) o["time:" + periodicity] = value.timestamp; else o["time:" + periodicity] = rg.query.ReportGridTransformers._parseTimeTZ(value.datetime);
 		o.timezone = timezone;
-	} else o["time:" + periodicity] = value.timestamp;
+	} else o["time:" + periodicity] = rg.query.ReportGridTransformers._fixDay(value.timestamp,periodicity);
+}
+rg.query.ReportGridTransformers._fixDay = function(timestamp,periodicity) {
+	switch(periodicity) {
+	case "day":
+		return Dates.snap(timestamp,periodicity,0);
+	default:
+		return timestamp;
+	}
 }
 rg.query.ReportGridTransformers._parseTimeTZ = function(s) {
 	var sign = 1, pos = s.lastIndexOf("+");
@@ -2741,7 +5013,11 @@ rg.query.ReportGridTransformers._parseTimeTZ = function(s) {
 	var d = HxOverrides.strDate(StringTools.replace(StringTools.replace(HxOverrides.substr(s,0,pos),"T"," "),".000","")), t = thx.date.DateParser.parseTime(HxOverrides.substr(s,pos + 1,null));
 	return d.getTime() + sign * (t.hour * 60 * 60 * 1000 + t.minute * 60 * 1000 + t.second * 1000 + t.millis);
 }
+rg.query.ReportGridTransformers._trimPrefix = function(v) {
+	return HxOverrides.substr(v,1,null);
+}
 rg.query.Transformers = function() { }
+$hxClasses["rg.query.Transformers"] = rg.query.Transformers;
 rg.query.Transformers.__name__ = ["rg","query","Transformers"];
 rg.query.Transformers.crossStack = function(data) {
 	if(data.length <= 1) return data;
@@ -3000,9 +5276,11 @@ rg.query.Transformers.rotate = function(matchingf) {
 }
 rg.storage = {}
 rg.storage.IStorage = function() { }
+$hxClasses["rg.storage.IStorage"] = rg.storage.IStorage;
 rg.storage.IStorage.__name__ = ["rg","storage","IStorage"];
 rg.storage.IStorage.prototype = {
-	remove: null
+	clear: null
+	,remove: null
 	,get: null
 	,set: null
 	,keys: null
@@ -3012,6 +5290,7 @@ rg.storage.BrowserStorage = function(api,kind) {
 	this.storage = api;
 	this.kind = kind;
 };
+$hxClasses["rg.storage.BrowserStorage"] = rg.storage.BrowserStorage;
 rg.storage.BrowserStorage.__name__ = ["rg","storage","BrowserStorage"];
 rg.storage.BrowserStorage.__interfaces__ = [rg.storage.IStorage];
 rg.storage.BrowserStorage.hasSessionStorage = function() {
@@ -3035,7 +5314,10 @@ rg.storage.BrowserStorage.localStorage = function() {
 	return new rg.storage.BrowserStorage(localStorage,"localStorage");
 }
 rg.storage.BrowserStorage.prototype = {
-	keys: function() {
+	toString: function() {
+		return "BrowserStorage[" + this.kind + "]";
+	}
+	,keys: function() {
 		var keys = [];
 		var _g1 = 0, _g = this.storage.length;
 		while(_g1 < _g) {
@@ -3046,6 +5328,9 @@ rg.storage.BrowserStorage.prototype = {
 	}
 	,remove: function(name) {
 		this.storage.removeItem(name);
+	}
+	,clear: function() {
+		this.storage.clear();
 	}
 	,get: function(name) {
 		var v = this.storage.getItem(name);
@@ -3061,14 +5346,21 @@ rg.storage.BrowserStorage.prototype = {
 rg.storage.MemoryStorage = function() {
 	this.storage = new Hash();
 };
+$hxClasses["rg.storage.MemoryStorage"] = rg.storage.MemoryStorage;
 rg.storage.MemoryStorage.__name__ = ["rg","storage","MemoryStorage"];
 rg.storage.MemoryStorage.__interfaces__ = [rg.storage.IStorage];
 rg.storage.MemoryStorage.prototype = {
-	keys: function() {
+	toString: function() {
+		return "MemoryStorage";
+	}
+	,keys: function() {
 		return this.storage.keys();
 	}
 	,remove: function(name) {
 		this.storage.remove(name);
+	}
+	,clear: function() {
+		this.storage = new Hash();
 	}
 	,get: function(name) {
 		return this.storage.get(name);
@@ -3081,6 +5373,7 @@ rg.storage.MemoryStorage.prototype = {
 }
 rg.util = {}
 rg.util.Periodicity = function() { }
+$hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
 rg.util.Periodicity.defaultPeriodicity = function(span) {
 	if(null == span || 0 == span) return "eternity";
@@ -3112,6 +5405,74 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 		return $r;
 	}(this));
 }
+rg.util.Periodicity.isValid = function(v) {
+	return Arrays.exists(rg.util.Periodicity.validPeriods,v);
+}
+rg.util.Periodicity.calculateBetween = function(a,b,disc) {
+	if(disc == null) disc = 2;
+	if(null == a || null == b) return "eternity";
+	var delta = Math.abs(b.getTime() - a.getTime());
+	if(delta >= DateTools.days(365 * disc)) return "year"; else if(delta >= DateTools.days(30 * disc)) return "month"; else if(delta >= DateTools.days(7 * disc)) return "week"; else if(delta >= DateTools.days(disc)) return "day"; else if(delta >= DateTools.hours(disc)) return "hour"; else return "minute";
+}
+rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":case "single":
+			$r = 1;
+			break;
+		case "minute":
+			$r = Math.floor((end - start) / 60000);
+			break;
+		case "hour":
+			$r = Math.floor((end - start) / 3600000);
+			break;
+		case "day":
+			$r = Math.floor((end - start) / 86400000);
+			break;
+		case "week":
+			$r = Math.floor((end - start) / 604800000);
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var s = (function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(start);
+					$r = d;
+					return $r;
+				}($this)), e = (function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(end);
+					$r = d;
+					return $r;
+				}($this)), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
+				$r = (ey - sy) * 12 + (em - sm);
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = Math.floor(rg.util.Periodicity.unitsBetween(start,end,"month") / 12);
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.units = function(value,periodicity) {
+	return rg.util.Periodicity.unitsBetween(0,value,periodicity) + (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "hour":
+			$r = 1;
+			break;
+		default:
+			$r = 0;
+		}
+		return $r;
+	}(this));
+}
 rg.util.Periodicity.range = function(start,end,periodicity) {
 	var step = 1000;
 	switch(periodicity) {
@@ -3124,8 +5485,13 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		step = 3600000;
 		break;
 	case "day":
-		step = 86400000;
-		break;
+		var s = Dates.snap(start,"day"), e = Dates.snap(end,"day");
+		var result = [];
+		while(s <= e) {
+			result.push(s);
+			s = Dates.snap(s + 86400000,"day");
+		}
+		return result;
 	case "week":
 		step = 604800000;
 		break;
@@ -3148,6 +5514,136 @@ rg.util.Periodicity.range = function(start,end,periodicity) {
 		return result;
 	}
 	return Floats.range(start,end + step,step);
+}
+rg.util.Periodicity.next = function(periodicity,date,step) {
+	if(step == null) step = 1;
+	if(null == date) date = new Date().getTime();
+	if(0 == step) return date;
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":case "single":
+			$r = date;
+			break;
+		case "minute":
+			$r = date + 60000 * step;
+			break;
+		case "hour":
+			$r = date + 3600000 * step;
+			break;
+		case "day":
+			$r = date + 86400000 * step;
+			break;
+		case "week":
+			$r = date + 604800000 * step;
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(date);
+					$r = d1;
+					return $r;
+				}($this)), y = d.getFullYear(), m = d.getMonth() + step;
+				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(date);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.minForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMin(arr,function(d) {
+		return Arrays.floatMin(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
+	return Arrays.floatMax(arr,function(d) {
+		return Arrays.floatMax(Reflect.fields(Reflect.field(d,periodicity)),function(d1) {
+			return Std.parseFloat(d1);
+		});
+	});
+}
+rg.util.Periodicity.formatf = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":
+			$r = function(_) {
+				return "all time";
+			};
+			break;
+		case "single":
+			$r = function(_) {
+				return "period";
+			};
+			break;
+		case "minute":case "hour":
+			$r = function(v) {
+				return thx.culture.FormatDate.timeShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "day":case "week":
+			$r = function(v) {
+				return thx.culture.FormatDate.dateShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "month":
+			$r = function(v) {
+				return thx.culture.FormatDate.yearMonth((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "year":
+			$r = function(v) {
+				return thx.culture.FormatDate.year((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		}
+		return $r;
+	}(this));
 }
 rg.util.Periodicity.format = function(periodicity,v) {
 	switch(periodicity) {
@@ -3199,8 +5695,180 @@ rg.util.Periodicity.format = function(periodicity,v) {
 		return periodicity + ": " + v;
 	}
 }
+rg.util.Periodicity.smartFormat = function(periodicity,v) {
+	switch(periodicity) {
+	case "eternity":case "single":
+		return "all time";
+	case "minute":
+		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this))); else return thx.culture.FormatDate.format("%i",(function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
+		break;
+	case "hour":
+		if(rg.util.Periodicity.firstInSeries("day",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.hourShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
+		break;
+	case "day":
+		if(rg.util.Periodicity.firstInSeries("month",v)) return thx.culture.FormatDate.format("%b %e",rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.format("%e",rg.util.Periodicity.dateUtc(v));
+		break;
+	case "week":
+		var d = rg.util.Periodicity.dateUtc(v);
+		if(d.getDate() <= 7) return thx.culture.FormatDate.format("%b %e",d); else return thx.culture.FormatDate.format("%e",d);
+		break;
+	case "month":
+		if(rg.util.Periodicity.firstInSeries("year",v)) return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(v)); else return thx.culture.FormatDate.format("%b",rg.util.Periodicity.dateUtc(v));
+		break;
+	case "year":
+		return thx.culture.FormatDate.year(rg.util.Periodicity.dateUtc(v));
+	default:
+		return periodicity + ": " + Std.string((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
+	}
+}
+rg.util.Periodicity.firstInSeries = function(periodicity,v) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "eternity":case "single":
+			$r = 0 == v;
+			break;
+		case "minute":
+			$r = 0 == v % 60000;
+			break;
+		case "hour":
+			$r = 0 == v % 3600000;
+			break;
+		case "day":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = 0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
+				return $r;
+			}($this));
+			break;
+		case "week":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = 0 == d.getDay();
+				return $r;
+			}($this));
+			break;
+		case "month":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = 1 == d.getDate();
+				return $r;
+			}($this));
+			break;
+		case "year":
+			$r = (function($this) {
+				var $r;
+				var d = (function($this) {
+					var $r;
+					var d1 = new Date();
+					d1.setTime(v);
+					$r = d1;
+					return $r;
+				}($this));
+				$r = 1 == d.getDate() && 0 == d.getMonth();
+				return $r;
+			}($this));
+			break;
+		default:
+			$r = false;
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.nextPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "day";
+			break;
+		case "day":case "week":
+			$r = "month";
+			break;
+		case "month":
+			$r = "year";
+			break;
+		default:
+			$r = "year";
+		}
+		return $r;
+	}(this));
+}
+rg.util.Periodicity.prevPeriodicity = function(periodicity) {
+	return (function($this) {
+		var $r;
+		switch(periodicity) {
+		case "minute":
+			$r = "hour";
+			break;
+		case "hour":
+			$r = "minute";
+			break;
+		case "day":
+			$r = "hour";
+			break;
+		case "week":case "month":
+			$r = "day";
+			break;
+		default:
+			$r = "minute";
+		}
+		return $r;
+	}(this));
+}
 rg.util.Periodicity.parsePair = function(start,end) {
 	return [thx.date.DateParser.parse(start).getTime(),thx.date.DateParser.parse(end).getTime()];
+}
+rg.util.Periodicity.timezoneOffset = function(d) {
+	return d.getTimezoneOffset();
 }
 rg.util.Periodicity.dateUtc = function(v) {
 	var d = (function($this) {
@@ -3219,12 +5887,19 @@ rg.util.Periodicity.dateUtc = function(v) {
 		return $r;
 	}(this));
 }
+rg.util.Periodicity.isValidGroupBy = function(value) {
+	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
+}
 var thx = {}
 thx.culture = {}
 thx.culture.Info = function() { }
+$hxClasses["thx.culture.Info"] = thx.culture.Info;
 thx.culture.Info.__name__ = ["thx","culture","Info"];
 thx.culture.Info.prototype = {
-	pluralRule: null
+	toString: function() {
+		return this["native"] + " (" + this.english + ")";
+	}
+	,pluralRule: null
 	,iso3: null
 	,iso2: null
 	,english: null
@@ -3233,19 +5908,36 @@ thx.culture.Info.prototype = {
 	,__class__: thx.culture.Info
 }
 thx.culture.Culture = function() { }
+$hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
-thx.culture.Culture.__properties__ = {get_cultures:"getCultures"}
-thx.culture.Culture.getCultures = function() {
+thx.culture.Culture.__properties__ = {set_defaultCulture:"set_defaultCulture",get_defaultCulture:"get_defaultCulture",get_cultures:"get_cultures"}
+thx.culture.Culture.cultures = null;
+thx.culture.Culture.get_cultures = function() {
 	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
 	return thx.culture.Culture.cultures;
 }
-thx.culture.Culture.getDefaultCulture = function() {
-	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.getCulture(); else return thx.culture.Culture._defaultCulture;
+thx.culture.Culture.get = function(name) {
+	return thx.culture.Culture.get_cultures().get(name.toLowerCase());
+}
+thx.culture.Culture.names = function() {
+	return thx.culture.Culture.get_cultures().keys();
+}
+thx.culture.Culture.exists = function(culture) {
+	return thx.culture.Culture.get_cultures().exists(culture.toLowerCase());
+}
+thx.culture.Culture._defaultCulture = null;
+thx.culture.Culture.get_defaultCulture = function() {
+	if(null == thx.culture.Culture._defaultCulture) return thx.cultures.EnUS.get_culture(); else return thx.culture.Culture._defaultCulture;
+}
+thx.culture.Culture.set_defaultCulture = function(culture) {
+	return thx.culture.Culture._defaultCulture = culture;
 }
 thx.culture.Culture.add = function(culture) {
 	if(null == thx.culture.Culture._defaultCulture) thx.culture.Culture._defaultCulture = culture;
 	var name = culture.name.toLowerCase();
-	if(!thx.culture.Culture.getCultures().exists(name)) thx.culture.Culture.getCultures().set(name,culture);
+	if(!thx.culture.Culture.get_cultures().exists(name)) thx.culture.Culture.get_cultures().set(name,culture);
+}
+thx.culture.Culture.loadAll = function() {
 }
 thx.culture.Culture.__super__ = thx.culture.Info;
 thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
@@ -3272,10 +5964,11 @@ thx.culture.Culture.prototype = $extend(thx.culture.Info.prototype,{
 	,__class__: thx.culture.Culture
 });
 thx.culture.FormatDate = function() { }
+$hxClasses["thx.culture.FormatDate"] = thx.culture.FormatDate;
 thx.culture.FormatDate.__name__ = ["thx","culture","FormatDate"];
 thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 	if(leadingspace == null) leadingspace = true;
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	var pos = 0;
 	var len = pattern.length;
 	var buf = new StringBuf();
@@ -3429,101 +6122,102 @@ thx.culture.FormatDate.getMHours = function(date) {
 	return v > 12?v - 12:v;
 }
 thx.culture.FormatDate.yearMonth = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternYearMonth,date,culture,false);
 }
 thx.culture.FormatDate.monthDay = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternMonthDay,date,culture,false);
 }
 thx.culture.FormatDate.date = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDate,date,culture,false);
 }
 thx.culture.FormatDate.dateShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateShort,date,culture,false);
 }
 thx.culture.FormatDate.dateRfc = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateRfc,date,culture,false);
 }
 thx.culture.FormatDate.dateTime = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternDateTime,date,culture,false);
 }
 thx.culture.FormatDate.universal = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternUniversal,date,culture,false);
 }
 thx.culture.FormatDate.sortable = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternSortable,date,culture,false);
 }
 thx.culture.FormatDate.time = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternTime,date,culture,false);
 }
 thx.culture.FormatDate.timeShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatDate.format(culture.date.patternTimeShort,date,culture,false);
 }
 thx.culture.FormatDate.hourShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	if(null == culture.date.am) return thx.culture.FormatDate.format("%H",date,culture,false); else return thx.culture.FormatDate.format("%l %p",date,culture,false);
 }
 thx.culture.FormatDate.year = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + date.getFullYear(),culture);
 }
 thx.culture.FormatDate.month = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + (date.getMonth() + 1),culture);
 }
 thx.culture.FormatDate.monthName = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.abbrMonths[date.getMonth()];
 }
 thx.culture.FormatDate.monthNameShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.months[date.getMonth()];
 }
 thx.culture.FormatDate.weekDay = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.digits("" + (date.getDay() + culture.date.firstWeekDay),culture);
 }
 thx.culture.FormatDate.weekDayName = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.abbrDays[date.getDay()];
 }
 thx.culture.FormatDate.weekDayNameShort = function(date,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return culture.date.days[date.getDay()];
 }
 thx.culture.FormatNumber = function() { }
+$hxClasses["thx.culture.FormatNumber"] = thx.culture.FormatNumber;
 thx.culture.FormatNumber.__name__ = ["thx","culture","FormatNumber"];
 thx.culture.FormatNumber.decimal = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.number.patternNegative,culture.number.patternPositive,culture,null,null);
 }
 thx.culture.FormatNumber.percent = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPercent);
 }
 thx.culture.FormatNumber.permille = function(v,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.percent,culture.percent.patternNegative,culture.percent.patternPositive,culture,"%",culture.symbolPermille);
 }
 thx.culture.FormatNumber.currency = function(v,symbol,decimals,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.crunch(v,decimals,culture.currency,culture.currency.patternNegative,culture.currency.patternPositive,culture,"$",symbol == null?culture.currencySymbol:symbol);
 }
 thx.culture.FormatNumber["int"] = function(v,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.decimal(v,0,culture);
 }
 thx.culture.FormatNumber.digits = function(v,culture) {
-	if(null == culture) culture = thx.culture.Culture.getDefaultCulture();
+	if(null == culture) culture = thx.culture.Culture.get_defaultCulture();
 	return thx.culture.FormatNumber.processDigits(v,culture.digits);
 }
 thx.culture.FormatNumber.crunch = function(v,decimals,info,negative,positive,culture,symbol,replace) {
@@ -3576,6 +6270,7 @@ thx.culture.FormatNumber.value = function(v,info,decimals,digits) {
 	} else return intpart;
 }
 thx.culture.FormatParams = function() { }
+$hxClasses["thx.culture.FormatParams"] = thx.culture.FormatParams;
 thx.culture.FormatParams.__name__ = ["thx","culture","FormatParams"];
 thx.culture.FormatParams.cleanQuotes = function(p) {
 	if(p.length <= 1) return p;
@@ -3594,14 +6289,22 @@ thx.culture.FormatParams.params = function(p,ps,alt) {
 	return ps;
 }
 thx.culture.Language = function() { }
+$hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
-thx.culture.Language.__properties__ = {get_languages:"getLanguages"}
-thx.culture.Language.getLanguages = function() {
+thx.culture.Language.__properties__ = {get_languages:"get_languages"}
+thx.culture.Language.languages = null;
+thx.culture.Language.get_languages = function() {
 	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
 	return thx.culture.Language.languages;
 }
+thx.culture.Language.get = function(name) {
+	return thx.culture.Language.get_languages().get(name.toLowerCase());
+}
+thx.culture.Language.names = function() {
+	return thx.culture.Language.get_languages().keys();
+}
 thx.culture.Language.add = function(language) {
-	if(!thx.culture.Language.getLanguages().exists(language.iso2)) thx.culture.Language.getLanguages().set(language.iso2,language);
+	if(!thx.culture.Language.get_languages().exists(language.iso2)) thx.culture.Language.get_languages().set(language.iso2,language);
 }
 thx.culture.Language.__super__ = thx.culture.Info;
 thx.culture.Language.prototype = $extend(thx.culture.Info.prototype,{
@@ -3630,6 +6333,7 @@ thx.culture.core.DateTimeInfo = function(months,abbrMonths,days,abbrDays,shortDa
 	this.patternTime = patternTime;
 	this.patternTimeShort = patternTimeShort;
 };
+$hxClasses["thx.culture.core.DateTimeInfo"] = thx.culture.core.DateTimeInfo;
 thx.culture.core.DateTimeInfo.__name__ = ["thx","culture","core","DateTimeInfo"];
 thx.culture.core.DateTimeInfo.prototype = {
 	patternTimeShort: null
@@ -3662,6 +6366,7 @@ thx.culture.core.NumberInfo = function(decimals,decimalsSeparator,groups,groupsS
 	this.patternNegative = patternNegative;
 	this.patternPositive = patternPositive;
 };
+$hxClasses["thx.culture.core.NumberInfo"] = thx.culture.core.NumberInfo;
 thx.culture.core.NumberInfo.__name__ = ["thx","culture","core","NumberInfo"];
 thx.culture.core.NumberInfo.prototype = {
 	patternPositive: null
@@ -3682,9 +6387,11 @@ thx.languages.En = function() {
 	this.pluralRule = 1;
 	thx.culture.Language.add(this);
 };
+$hxClasses["thx.languages.En"] = thx.languages.En;
 thx.languages.En.__name__ = ["thx","languages","En"];
-thx.languages.En.__properties__ = {get_language:"getLanguage"}
-thx.languages.En.getLanguage = function() {
+thx.languages.En.__properties__ = {get_language:"get_language"}
+thx.languages.En.language = null;
+thx.languages.En.get_language = function() {
 	if(null == thx.languages.En.language) thx.languages.En.language = new thx.languages.En();
 	return thx.languages.En.language;
 }
@@ -3694,7 +6401,7 @@ thx.languages.En.prototype = $extend(thx.culture.Language.prototype,{
 });
 thx.cultures = {}
 thx.cultures.EnUS = function() {
-	this.language = thx.languages.En.getLanguage();
+	this.language = thx.languages.En.get_language();
 	this.name = "en-US";
 	this.english = "English (United States)";
 	this["native"] = "English (United States)";
@@ -3721,9 +6428,11 @@ thx.cultures.EnUS = function() {
 	this.isMetric = false;
 	thx.culture.Culture.add(this);
 };
+$hxClasses["thx.cultures.EnUS"] = thx.cultures.EnUS;
 thx.cultures.EnUS.__name__ = ["thx","cultures","EnUS"];
-thx.cultures.EnUS.__properties__ = {get_culture:"getCulture"}
-thx.cultures.EnUS.getCulture = function() {
+thx.cultures.EnUS.__properties__ = {get_culture:"get_culture"}
+thx.cultures.EnUS.culture = null;
+thx.cultures.EnUS.get_culture = function() {
 	if(null == thx.cultures.EnUS.culture) thx.cultures.EnUS.culture = new thx.cultures.EnUS();
 	return thx.cultures.EnUS.culture;
 }
@@ -3733,9 +6442,11 @@ thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 });
 thx.data = {}
 thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
 thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
 thx.data.IDataHandler.prototype = {
-	valueBool: null
+	comment: null
+	,valueBool: null
 	,valueNull: null
 	,valueFloat: null
 	,valueInt: null
@@ -3756,6 +6467,7 @@ thx.data.IDataHandler.prototype = {
 thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
+$hxClasses["thx.data.ValueEncoder"] = thx.data.ValueEncoder;
 thx.data.ValueEncoder.__name__ = ["thx","data","ValueEncoder"];
 thx.data.ValueEncoder.prototype = {
 	encodeArray: function(a) {
@@ -3848,10 +6560,13 @@ thx.data.ValueEncoder.prototype = {
 }
 thx.data.ValueHandler = function() {
 };
+$hxClasses["thx.data.ValueHandler"] = thx.data.ValueHandler;
 thx.data.ValueHandler.__name__ = ["thx","data","ValueHandler"];
 thx.data.ValueHandler.__interfaces__ = [thx.data.IDataHandler];
 thx.data.ValueHandler.prototype = {
-	valueBool: function(b) {
+	comment: function(s) {
+	}
+	,valueBool: function(b) {
 		this._stack.push(b);
 	}
 	,valueNull: function() {
@@ -3908,6 +6623,7 @@ thx.data.ValueHandler.prototype = {
 }
 thx.date = {}
 thx.date.DateParser = function() { }
+$hxClasses["thx.date.DateParser"] = thx.date.DateParser;
 thx.date.DateParser.__name__ = ["thx","date","DateParser"];
 thx.date.DateParser.parse = function(s,d) {
 	var time = thx.date.DateParser.parseTime(s), v;
@@ -4139,9 +6855,21 @@ thx.util.Message = function(message,params,param) {
 	if(null == params) this.params = []; else this.params = params;
 	if(null != param) this.params.push(param);
 };
+$hxClasses["thx.util.Message"] = thx.util.Message;
 thx.util.Message.__name__ = ["thx","util","Message"];
 thx.util.Message.prototype = {
-	params: null
+	translate: function(translator,domain) {
+		if(null == domain) domain = translator.get_domain();
+		var culture = thx.culture.Culture.get(domain);
+		if(this.params.length == 1 && js.Boot.__instanceof(this.params[0],Int)) return Strings.format(translator.plural(null,this.message,this.params[0],domain),this.params,null,culture); else return Strings.format(translator.singular(this.message,domain),this.params,null,culture);
+	}
+	,translatef: function(translator) {
+		return Strings.format(translator(this.message),this.params);
+	}
+	,toString: function() {
+		return Strings.format(this.message,this.params);
+	}
+	,params: null
 	,message: null
 	,__class__: thx.util.Message
 }
@@ -4150,15 +6878,36 @@ thx.error.Error = function(message,params,param,pos) {
 	thx.util.Message.call(this,message,params,param);
 	this.pos = pos;
 };
+$hxClasses["thx.error.Error"] = thx.error.Error;
 thx.error.Error.__name__ = ["thx","error","Error"];
 thx.error.Error.__super__ = thx.util.Message;
 thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
-	pos: null
+	toString: function() {
+		try {
+			return Strings.format(this.message,this.params);
+		} catch( e ) {
+			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
+			return "";
+		}
+	}
+	,toStringError: function(pattern) {
+		var prefix = Strings.format(null == pattern?thx.error.Error.errorPositionPattern:pattern,[this.pos.className,this.pos.methodName,this.pos.lineNumber,this.pos.fileName,this.pos.customParams]);
+		return prefix + this.toString();
+	}
+	,setInner: function(inner) {
+		this.inner = inner;
+		return this;
+	}
+	,inner: null
+	,pos: null
 	,__class__: thx.error.Error
 });
 thx.json = {}
 thx.json.Json = function() { }
+$hxClasses["thx.json.Json"] = thx.json.Json;
 thx.json.Json.__name__ = ["thx","json","Json"];
+thx.json.Json.nativeEncoder = null;
+thx.json.Json.nativeDecoder = null;
 thx.json.Json.encode = function(value) {
 	if(null != thx.json.Json.nativeEncoder) return thx.json.Json.nativeEncoder(value);
 	var handler = new thx.json.JsonEncoder();
@@ -4176,6 +6925,7 @@ thx.json.JsonDecoder = function(handler,tabsize) {
 	this.handler = handler;
 	this.tabsize = tabsize;
 };
+$hxClasses["thx.json.JsonDecoder"] = thx.json.JsonDecoder;
 thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	error: function(msg) {
@@ -4436,12 +7186,13 @@ thx.json.JsonDecoder.prototype = {
 	,__class__: thx.json.JsonDecoder
 }
 thx.json._JsonDecoder = {}
-thx.json._JsonDecoder.StreamError = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
+thx.json._JsonDecoder.StreamError = $hxClasses["thx.json._JsonDecoder.StreamError"] = { __ename__ : ["thx","json","_JsonDecoder","StreamError"], __constructs__ : ["Eof"] }
 thx.json._JsonDecoder.StreamError.Eof = ["Eof",0];
 thx.json._JsonDecoder.StreamError.Eof.toString = $estr;
 thx.json._JsonDecoder.StreamError.Eof.__enum__ = thx.json._JsonDecoder.StreamError;
 thx.json.JsonEncoder = function() {
 };
+$hxClasses["thx.json.JsonEncoder"] = thx.json.JsonEncoder;
 thx.json.JsonEncoder.__name__ = ["thx","json","JsonEncoder"];
 thx.json.JsonEncoder.__interfaces__ = [thx.data.IDataHandler];
 thx.json.JsonEncoder.prototype = {
@@ -4450,6 +7201,8 @@ thx.json.JsonEncoder.prototype = {
 			var c = HxOverrides.cca(r.matched(0),0);
 			return c >= 32 && c <= 127?String.fromCharCode(c):"\\u" + StringTools.hex(c,4);
 		}) + "\"";
+	}
+	,comment: function(s) {
 	}
 	,valueBool: function(b) {
 		this.buf.b += Std.string(b?"true":"false");
@@ -4513,15 +7266,97 @@ thx.json.JsonEncoder.prototype = {
 	,__class__: thx.json.JsonEncoder
 }
 thx.math = {}
+thx.math.Equations = function() { }
+$hxClasses["thx.math.Equations"] = thx.math.Equations;
+thx.math.Equations.__name__ = ["thx","math","Equations"];
+thx.math.Equations.linear = function(v) {
+	return v;
+}
+thx.math.Equations.polynomial = function(t,e) {
+	return Math.pow(t,e);
+}
+thx.math.Equations.quadratic = function(t) {
+	return thx.math.Equations.polynomial(t,2);
+}
+thx.math.Equations.cubic = function(t) {
+	return thx.math.Equations.polynomial(t,3);
+}
+thx.math.Equations.sin = function(t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+thx.math.Equations.exponential = function(t) {
+	return t != 0?Math.pow(2,10 * (t - 1)) - 1e-3:0;
+}
+thx.math.Equations.circle = function(t) {
+	return 1 - Math.sqrt(1 - t * t);
+}
+thx.math.Equations.elastic = function(t,a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+}
+thx.math.Equations.elasticf = function(a,p) {
+	var s;
+	if(null == p) p = 0.45;
+	if(null == a) {
+		a = 1;
+		s = p / 4;
+	} else s = p / (2 * Math.PI) / Math.asin(1 / a);
+	return function(t) {
+		return 1 + a * Math.pow(2,10 * -t) * Math.sin((t - s) * 2 * Math.PI / p);
+	};
+}
+thx.math.Equations.back = function(t,s) {
+	if(null == s) s = 1.70158;
+	return t * t * ((s + 1) * t - s);
+}
+thx.math.Equations.backf = function(s) {
+	if(null == s) s = 1.70158;
+	return function(t) {
+		return t * t * ((s + 1) * t - s);
+	};
+}
+thx.math.Equations.bounce = function(t) {
+	return t < 1 / 2.75?7.5625 * t * t:t < 2 / 2.75?7.5625 * (t -= 1.5 / 2.75) * t + .75:t < 2.5 / 2.75?7.5625 * (t -= 2.25 / 2.75) * t + .9375:7.5625 * (t -= 2.625 / 2.75) * t + .984375;
+}
+thx.math.Equations.polynomialf = function(e) {
+	return function(t) {
+		thx.math.Equations.polynomial(t,e);
+	};
+}
 thx.math.Random = function(seed) {
 	if(seed == null) seed = 1;
 	this.seed = seed;
 };
+$hxClasses["thx.math.Random"] = thx.math.Random;
 thx.math.Random.__name__ = ["thx","math","Random"];
 thx.math.Random.prototype = {
-	seed: null
+	'float': function() {
+		return ((this.seed = this.seed * 16807 % 2147483647) & 1073741823) / 1073741823.0;
+	}
+	,'int': function() {
+		return (this.seed = this.seed * 16807 % 2147483647) & 1073741823;
+	}
+	,seed: null
 	,__class__: thx.math.Random
 }
+thx.translation = {}
+thx.translation.ITranslation = function() { }
+$hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
+thx.translation.ITranslation.__name__ = ["thx","translation","ITranslation"];
+thx.translation.ITranslation.prototype = {
+	plural: null
+	,singular: null
+	,__class__: thx.translation.ITranslation
+	,__properties__: {set_domain:"set_domain",get_domain:"get_domain"}
+}
+thx.util.MacroVersion = function() { }
+$hxClasses["thx.util.MacroVersion"] = thx.util.MacroVersion;
+thx.util.MacroVersion.__name__ = ["thx","util","MacroVersion"];
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; };
 var $_;
 function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
@@ -4590,27 +7425,28 @@ Math.__name__ = ["Math"];
 Math.NaN = Number.NaN;
 Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+$hxClasses.Math = Math;
 Math.isFinite = function(i) {
 	return isFinite(i);
 };
 Math.isNaN = function(i) {
 	return isNaN(i);
 };
-String.prototype.__class__ = String;
+String.prototype.__class__ = $hxClasses.String = String;
 String.__name__ = ["String"];
-Array.prototype.__class__ = Array;
+Array.prototype.__class__ = $hxClasses.Array = Array;
 Array.__name__ = ["Array"];
-Date.prototype.__class__ = Date;
+Date.prototype.__class__ = $hxClasses.Date = Date;
 Date.__name__ = ["Date"];
-var Int = { __name__ : ["Int"]};
-var Dynamic = { __name__ : ["Dynamic"]};
-var Float = Number;
+var Int = $hxClasses.Int = { __name__ : ["Int"]};
+var Dynamic = $hxClasses.Dynamic = { __name__ : ["Dynamic"]};
+var Float = $hxClasses.Float = Number;
 Float.__name__ = ["Float"];
-var Bool = Boolean;
+var Bool = $hxClasses.Bool = Boolean;
 Bool.__ename__ = ["Bool"];
-var Class = { __name__ : ["Class"]};
+var Class = $hxClasses.Class = { __name__ : ["Class"]};
 var Enum = { };
-var Void = { __ename__ : ["Void"]};
+var Void = $hxClasses.Void = { __ename__ : ["Void"]};
 var r = window.ReportGrid?window.ReportGrid:window.ReportGrid = { };
 r.$ = r.$ || { };
 r.$.pk = r.$.pk || { };
@@ -4621,26 +7457,44 @@ r.$ = r.$ || { };
 r.$.pk = r.$.pk || { };
 r.$.pk.rg_query_ReportGridBaseQuery = r.$.pk.rg_query_ReportGridBaseQuery || rg.query.ReportGridBaseQuery;
 r.$.pk.rg_query_ReportGridQuery = r.$.pk.rg_query_ReportGridQuery || rg.query.ReportGridQuery;
-thx.languages.En.getLanguage();
-thx.cultures.EnUS.getCulture();
+thx.languages.En.get_language();
+thx.cultures.EnUS.get_culture();
 var j;
 if(null != (j = window.JSON)) {
 	thx.json.Json.nativeDecoder = j.parse;
 	thx.json.Json.nativeEncoder = j.stringify;
 }
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
+Floats._reparse = new EReg("^[+\\-]?(?:0|[1-9]\\d*)(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?","");
+Floats._reparseStrict = new EReg("^[+\\-]?(?:0|[1-9]\\d*)(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?$","");
+Ints._reparse = new EReg("^([+-])?\\d+$","");
+Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
+Strings._reSplitWC = new EReg("(\r\n|\n\r|\n|\r)","g");
+Strings._reReduceWS = new EReg("\\s+","");
+Strings._reStripTags = new EReg("(<[a-z]+[^>/]*/?>|</[a-z]+>)","i");
+Strings._reFormat = new EReg("{(\\d+)(?::([a-zA-Z]+))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?(?:,([^\"',}]+|'[^']+'|\"[^\"]+\"))?}","m");
+Strings._reCollapse = new EReg("\\s+","g");
+Strings.__ucwordsPattern = new EReg("[^a-zA-Z]([a-z])","");
+Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
+Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
+Strings.__digitsPattern = new EReg("^[0-9]+$","");
+Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
 rg.data.ReportGridExecutorCache.DATE_PREFIX = "D:";
 rg.data.ReportGridExecutorCache.VALUE_PREFIX = "V:";
-thx.date.DateParser.months = thx.cultures.EnUS.getCulture().date.months.slice(0,-1).map(function(d,i) {
+rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
+rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
+thx.date.DateParser.daynumeric = "0?[1-9]|[1-2][0-9]|3[0-1]";
+thx.date.DateParser.months = thx.cultures.EnUS.get_culture().date.months.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.shortmonths = thx.cultures.EnUS.getCulture().date.abbrMonths.slice(0,-1).map(function(d,i) {
+thx.date.DateParser.shortmonths = thx.cultures.EnUS.get_culture().date.abbrMonths.slice(0,-1).map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.days = thx.cultures.EnUS.getCulture().date.days.map(function(d,i) {
+thx.date.DateParser.days = thx.cultures.EnUS.get_culture().date.days.map(function(d,i) {
 	return d.toLowerCase();
 });
-thx.date.DateParser.shortdays = thx.cultures.EnUS.getCulture().date.abbrDays.map(function(d,i) {
+thx.date.DateParser.shortdays = thx.cultures.EnUS.get_culture().date.abbrDays.map(function(d,i) {
 	return d.toLowerCase();
 });
 thx.date.DateParser.sfullmonths = thx.date.DateParser.months.join("|");
@@ -4661,5 +7515,6 @@ thx.date.DateParser.dateexp = new EReg("(?:(?:" + "\\b(" + thx.date.DateParser.s
 thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+second|tomorrow|yesterday)\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfullmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sfulldays + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortmonths + ")\\b" + ")|(?:" + "\\b(?:(next|last|this)\\s+)?(" + thx.date.DateParser.sshortdays + ")\\b" + "))","i");
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "(?:\\b|T)(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
+thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
 rg.app.query.JSBridge.main();
 })();
