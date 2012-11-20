@@ -18,3 +18,5 @@ charts/bin/js/reportgrid-charts.js.map
 QuirrelIDE/clierror
 
 .DS_Store
+
+query/project.sublime-workspace

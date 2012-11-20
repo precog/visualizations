@@ -12534,7 +12534,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.15.8959"};
+	r.info.charts = { version : "1.5.16.8975"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -15187,17 +15187,19 @@ rg.info.InfoBarChart = function() {
 	this.barPaddingAxis = 4;
 	this.barPaddingDataPoint = 2;
 	this.horizontal = false;
+	this.startat = null;
 };
 $hxClasses["rg.info.InfoBarChart"] = rg.info.InfoBarChart;
 rg.info.InfoBarChart.__name__ = ["rg","info","InfoBarChart"];
 rg.info.InfoBarChart.filters = function() {
 	return [rg.info.filter.FilterDescription.toBool("stacked"),rg.info.filter.FilterDescription.toBool("horizontal"),rg.info.filter.FilterDescription.simplified("effect",null,rg.svg.chart.GradientEffects.parse,rg.info.filter.ReturnMessageChainer.or(rg.info.filter.ReturnMessageIfNot.isString,rg.info.filter.ReturnMessageChainer.make(rg.svg.chart.GradientEffects.canParse,"invalid gradient effect: {0}"))),rg.info.filter.FilterDescription.toFloat("barpadding",["barPadding"]),rg.info.filter.FilterDescription.toFloat("barpaddingaxis",["barPaddingAxis"]),rg.info.filter.FilterDescription.toFloat("barpaddingdatapoint",["barPaddingDataPoint"]),rg.info.filter.FilterDescription.simplified("segmenton",["segment"],function(value) {
 		return rg.info.Info.feed(new rg.info.InfoSegment(),{ on : value});
-	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment)].concat(rg.info.InfoCartesianChart.filters());
+	},rg.info.filter.ReturnMessageIfNot.isString),rg.info.filter.FilterDescription.toInfo("segment",null,rg.info.InfoSegment),rg.info.filter.FilterDescription.toStr("startat")].concat(rg.info.InfoCartesianChart.filters());
 }
 rg.info.InfoBarChart.__super__ = rg.info.InfoCartesianChart;
 rg.info.InfoBarChart.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
-	segment: null
+	startat: null
+	,segment: null
 	,horizontal: null
 	,barPadding: null
 	,barPaddingAxis: null
@@ -17830,6 +17832,8 @@ rg.svg.chart.BarChart = function(panel) {
 	this.paddingAxis = 4;
 	this.paddingDataPoint = 2;
 	this.horizontal = false;
+	this.startat = null;
+	this.segmentProperty = null;
 };
 $hxClasses["rg.svg.chart.BarChart"] = rg.svg.chart.BarChart;
 rg.svg.chart.BarChart.__name__ = ["rg","svg","chart","BarChart"];
@@ -17856,7 +17860,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 	,onclick: function(stats,dp,_,i) {
 		this.click(dp,stats);
 	}
-	,datav: function(dps) {
+	,datav: function(dps,segments) {
 		var axisgs = new Hash(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
 		var getGroup = function(name,container) {
 			var gr = axisgs.get(name);
@@ -17886,8 +17890,12 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = prev, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height;
-					if(Math.isNaN(h)) h = 0;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:segments.indexOf(Reflect.field(dp,this.segmentProperty))),axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = this.startat == null?prev:yaxis.scale(ymin,ymax,Reflect.field(dp,this.startat)) * this.height, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height - (this.startat == null?0:y);
+					if(Math.isNaN(y)) continue;
+					if(h < 0) {
+						y += h;
+						h = -h;
+					} else if(Math.isNaN(h)) h = 0;
 					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](Math.max(this.stacked?dist:pad,1)).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
 							return f2(dp1,_,i1);
@@ -17896,13 +17904,13 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					bar.node().__dhx_data__ = dp;
 					rg.util.RGColors.storeColorForSelection(bar);
 					if(this.displayGradient) bar.eachNode($bind(this,this.applyGradient));
-					if(this.stacked) prev = y + h;
+					if(this.visuallyStacked()) prev = y + h;
 				}
 			}
 		}
 		this.ready.dispatch();
 	}
-	,datah: function(dps) {
+	,datah: function(dps,segments) {
 		var axisgs = new Hash(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
 		var getGroup = function(name,container) {
 			var gr = axisgs.get(name);
@@ -17932,7 +17940,12 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + k,axisg), x = prev, y = Math.max(this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)),1), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width;
+					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:segments.indexOf(Reflect.field(dp,this.segmentProperty))),axisg), x = this.startat == null?prev:xaxis.scale(xmin,xmax,Reflect.field(dp,this.startat)) * this.width, y = Math.max(this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)),1), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width - (this.startat == null?0:x);
+					if(Math.isNaN(x)) continue;
+					if(w < 0) {
+						x -= w;
+						w = -w;
+					} else if(Math.isNaN(w)) w = 0;
 					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](x).attr("y")["float"](this.height - (this.stacked?y - offset:y - offset - k * (pad + this.paddingDataPoint))).attr("height")["float"](this.stacked?dist:pad).attr("width")["float"](w).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
 							return f2(dp1,_,i1);
@@ -17941,16 +17954,19 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					bar.node().__dhx_data__ = dp;
 					rg.util.RGColors.storeColorForSelection(bar);
 					if(this.displayGradient) bar.eachNode($bind(this,this.applyGradient));
-					if(this.stacked) prev = x + w;
+					if(this.visuallyStacked()) prev = x + w;
 				}
 			}
 		}
 		this.ready.dispatch();
 	}
-	,data: function(dps) {
-		if(this.horizontal) this.datah(dps); else this.datav(dps);
+	,data: function(result) {
+		if(this.horizontal) this.datah(result.data,result.segments); else this.datav(result.data,result.segments);
 	}
-	,setVariables: function(variables,variableIndependents,variableDependents,data) {
+	,visuallyStacked: function() {
+		return this.stacked && this.startat == null;
+	}
+	,setVariables: function(variables,variableIndependents,variableDependents,result) {
 		if(this.horizontal) {
 			this.xVariable = variableDependents[0];
 			this.yVariables = variableIndependents;
@@ -17958,13 +17974,14 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			this.xVariable = variableIndependents[0];
 			this.yVariables = variableDependents;
 		}
-		if(this.stacked) {
+		if(this.visuallyStacked()) {
 			var _g = 0;
 			while(_g < variableDependents.length) {
 				var v = variableDependents[_g];
 				++_g;
 				v.meta.max = Math.NEGATIVE_INFINITY;
 			}
+			var data = result.data;
 			var _g1 = 0, _g = data.length;
 			while(_g1 < _g) {
 				var i = _g1++;
@@ -17982,6 +17999,8 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			}
 		}
 	}
+	,segmentProperty: null
+	,startat: null
 	,horizontal: null
 	,paddingDataPoint: null
 	,paddingAxis: null
@@ -23140,8 +23159,10 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 				results.push(axisresults);
 			}
 		}
+		var svalues = null;
 		if(null != this.infoBar.segment.on) {
-			var segmenton = this.infoBar.segment.on, svalues = new thx.collection.Set();
+			var segmenton = this.infoBar.segment.on;
+			svalues = new thx.collection.Set();
 			if(this.infoBar.segment.values.length != 0) {
 				var _g = 0, _g1 = this.infoBar.segment.values;
 				while(_g < _g1.length) {
@@ -23152,6 +23173,7 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 			} else dps.forEach(function(dp,_) {
 				svalues.add(Reflect.field(dp,segmenton));
 			});
+			var svalues1 = svalues.array();
 			var _g1 = 0, _g = values.length;
 			while(_g1 < _g) {
 				var i = _g1++;
@@ -23159,22 +23181,22 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 				while(_g3 < _g2) {
 					var j = _g3++;
 					var segment = results[i][j], replace = [], pos = 0;
-					var $it0 = svalues.iterator();
-					while( $it0.hasNext() ) {
-						var svalue = $it0.next();
-						if(svalue == Reflect.field(segment[pos],segmenton)) replace.push(segment[pos++]); else {
-							var ob = { };
-							ob[segmenton] = svalue;
-							ob[variable.type] = values[i];
-							ob[this.dependentVariables[j].type] = 0;
-							replace.push(ob);
+					var _g5 = 0, _g4 = svalues1.length;
+					while(_g5 < _g4) {
+						var k = _g5++;
+						var svalue = svalues1[k];
+						var _g7 = 0, _g6 = segment.length;
+						while(_g7 < _g6) {
+							var m = _g7++;
+							var seg = Reflect.field(segment[m],segmenton);
+							if(svalue == seg) replace.push(segment[m]);
 						}
 					}
 					results[i][j] = replace;
 				}
 			}
 		}
-		return results;
+		return { data : results, segments : null == svalues?null:svalues.array()};
 	}
 	,initChart: function() {
 		var _g = this;
@@ -23199,6 +23221,8 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 		chart.paddingAxis = this.infoBar.barPaddingAxis;
 		chart.paddingDataPoint = this.infoBar.barPaddingDataPoint;
 		chart.horizontal = this.infoBar.horizontal;
+		chart.startat = this.infoBar.startat;
+		chart.segmentProperty = this.infoBar.segment.on;
 		this.chart = chart;
 	}
 	,initAxes: function() {
