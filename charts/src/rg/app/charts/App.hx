@@ -109,6 +109,8 @@ class App
 			loader.onLoad.addOnce(function(data) {
 				jsoptions.datapoints = data;
 				legacy.display(jsoptions);
+				if (null != general.ready)
+					legacy.onReady(general.ready);
 			});
 		}
 

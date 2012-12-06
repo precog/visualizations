@@ -22,6 +22,12 @@ class RGLegacyRenderer
 		return StringTools.replace(serviceUrl, '{ext}', FORMAT);
 	}
 
+	var readyHandler : Void -> Void;
+	public function onReady(handler : Void -> Void)
+	{
+		readyHandler = handler;
+	}
+
 	public function display(params : Dynamic)
 	{
 		var size   = normalizeParams(params);
@@ -38,25 +44,31 @@ class RGLegacyRenderer
 		+ u + '" name="VIZ"><textarea name="html" style="width:40em;height:50%">'
 		+ h + '</textarea><textarea name="config" style="width:40em;height:50%">'
 		+ c + '</textarea><script type="text/javascript">
-document.VIZ.submit();
+setTimeout(function() { document.VIZ.submit(); }, 200);
 </script>
 </form>';
-		haxe.Timer.delay(function() writeToIframe(cast iframe.node(), content), 100);
+		haxe.Timer.delay(
+			function() {
+				writeToIframe(cast iframe.node(), content);
+				if(null != readyHandler) readyHandler();
+			}, 100);
 
 		if(isIE7orBelow()) {
 			var inode : js.Dom.Frame = cast iframe.node();
 			untyped inode.attachEvent("onload", function() {
 				var doc = getIframeDoc(inode);
-				doc.body.scroll = "no";
-				doc.body.style.overflow = "hidden";
-				/*
-				doc.body.frameBorder = "0";
-				doc.vspace = "0";
-				doc.body.hspace = "0";
-				*/
-				doc.body.style.border = 0;
-				doc.body.style.margin = 0;
-				doc.body.style.padding = 0;
+				if(null != doc) {
+					doc.body.scroll = "no";
+					doc.body.style.overflow = "hidden";
+					doc.body.frameBorder = "0";
+					/*
+					doc.vspace = "0";
+					doc.body.hspace = "0";
+					*/
+					doc.body.style.border = 0;
+					doc.body.style.margin = 0;
+					doc.body.style.padding = 0;
+				}
 			});
 		}
 	}
@@ -77,7 +89,7 @@ document.VIZ.submit();
 			.attr("marginheight").string("0")
 			.attr("hspace").string("0")
 			.attr("vspace").string("0")
-			.attr("style").string("width:100%; border:0; height:100%; overflow:auto;")
+			.attr("style").string("width:100%; border:0; height:100%; overflow:hidden;")
 			.attr("src").string(
 				isIE7orBelow()
 					? "javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\\'<script>document.domain=\\\\\""+js.Lib.document.domain+"\\\\\";<\\\\\\\\/script>\\\');document.close();};<\\/script>'"
@@ -100,15 +112,36 @@ document.VIZ.submit();
 	static function getIframeDoc(iframe : js.Dom.Frame)
 	{
 		var iframeDoc : Dynamic = null;
-		if (untyped iframe.contentDocument)
+
+		var attempts = [
+				function() {
+					if (untyped iframe.contentDocument)
+					{
+						iframeDoc = untyped iframe.contentDocument;
+					}
+				},
+				function() {
+					if (untyped iframe.contentWindow && iframe.contentWindow.document)
+					{
+						iframeDoc = untyped iframe.contentWindow.document;
+					}
+				},
+				function() {
+					if (null != js.Lib.window.frames[cast iframe.name])
+					{
+						iframeDoc = untyped js.Lib.window.frames[cast iframe.name].document;
+					}
+				}
+			];
+		for(attempt in attempts)
 		{
-			iframeDoc = untyped iframe.contentDocument;
-		} else if (untyped iframe.contentWindow) {
-			iframeDoc = untyped iframe.contentWindow.document;
-		} else if (null != js.Lib.window.frames[cast iframe.name]) {
-			iframeDoc = untyped js.Lib.window.frames[cast iframe.name].document;
+			try {
+				attempt();
+			} catch(e : Dynamic) { }
+			if(null != iframeDoc)
+				return iframeDoc;
 		}
-		return iframeDoc;
+		return null;
 	}
 
 	function normalizeParams(params : Dynamic)

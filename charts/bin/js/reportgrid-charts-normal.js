@@ -1575,7 +1575,7 @@ Dynamics.string = function(v) {
 	case 3:
 		return Bools.format(v);
 	case 4:
-		var keys = Reflect.fields(v);
+		var keys = Objects.keys(v);
 		var result = [];
 		var _g = 0;
 		while(_g < keys.length) {
@@ -1617,9 +1617,9 @@ Dynamics.compare = function(a,b) {
 	switch( $e[1] ) {
 	case 1:
 	case 2:
-		return a < b?-1:a > b?1:0;
+		return Floats.compare(a,b);
 	case 3:
-		return a == b?0:a?-1:1;
+		return Bools.compare(a,b);
 	case 4:
 		return Objects.compare(a,b);
 	case 6:
@@ -1631,7 +1631,7 @@ Dynamics.compare = function(a,b) {
 		case "String":
 			return Strings.compare(a,b);
 		case "Date":
-			return Floats.compare(a.getTime(),b.getTime());
+			return Dates.compare(a,b);
 		default:
 			return Strings.compare(Std.string(a),Std.string(b));
 		}
@@ -1863,9 +1863,9 @@ var Enums = function() { }
 $hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
-	var cons = e[0];
+	var cons = Type.enumConstructor(e);
 	var params = [];
-	var _g = 0, _g1 = e.slice(2);
+	var _g = 0, _g1 = Type.enumParameters(e);
 	while(_g < _g1.length) {
 		var param = _g1[_g];
 		++_g;
@@ -1875,8 +1875,8 @@ Enums.string = function(e) {
 }
 Enums.compare = function(a,b) {
 	var v;
-	if((v = a[1] - b[1]) != 0) return v;
-	return Arrays.compare(a.slice(2),b.slice(2));
+	if((v = Type.enumIndex(a) - Type.enumIndex(b)) != 0) return v;
+	return Arrays.compare(Type.enumParameters(a),Type.enumParameters(b));
 }
 var Floats = function() { }
 $hxClasses["Floats"] = Floats;
@@ -2485,16 +2485,16 @@ IntHashes.clear = function(hash) {
 		delete(_hash.h.__proto__);
 	}
 }
-var IntIter = function(min,max) {
+var IntIterator = function(min,max) {
 	this.min = min;
 	this.max = max;
 };
-$hxClasses["IntIter"] = IntIter;
-IntIter.__name__ = ["IntIter"];
-IntIter.prototype = {
+$hxClasses["IntIterator"] = IntIterator;
+IntIterator.__name__ = ["IntIterator"];
+IntIterator.prototype = {
 	max: null
 	,min: null
-	,__class__: IntIter
+	,__class__: IntIterator
 }
 var Ints = function() { }
 $hxClasses["Ints"] = Ints;
@@ -3002,6 +3002,9 @@ Reflect.field = function(o,field) {
 	}
 	return v;
 }
+Reflect.setField = function(o,field,value) {
+	o[field] = value;
+}
 Reflect.fields = function(o) {
 	var a = [];
 	if(o != null) {
@@ -3041,6 +3044,9 @@ $hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
+}
+Std["int"] = function(x) {
+	return x | 0;
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
@@ -3694,6 +3700,15 @@ Type.enumEq = function(a,b) {
 		return false;
 	}
 	return true;
+}
+Type.enumConstructor = function(e) {
+	return e[0];
+}
+Type.enumParameters = function(e) {
+	return e.slice(2);
+}
+Type.enumIndex = function(e) {
+	return e[1];
 }
 var Types = function() { }
 $hxClasses["Types"] = Types;
@@ -8096,7 +8111,7 @@ hscript.Interp.prototype = {
 		});
 		this.binops.set("=",$bind(this,this.assign));
 		this.binops.set("...",function(e1,e2) {
-			return new IntIter(me.expr(e1),me.expr(e2));
+			return new IntIterator(me.expr(e1),me.expr(e2));
 		});
 		this.assignOp("+=",function(v1,v2) {
 			return v1 + v2;
@@ -12397,6 +12412,7 @@ rg.app.charts.App.prototype = {
 			loader.onLoad.addOnce(function(data) {
 				jsoptions.datapoints = data;
 				legacy.display(jsoptions);
+				if(null != general.ready) legacy.onReady(general.ready);
 			});
 		}
 		if(!uselegacy && (null != download.position || null != download.handler)) {
@@ -12523,7 +12539,7 @@ rg.app.charts.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.humanize = function(v) {
-		if(js.Boot.__instanceof(v,String) && v.indexOf("time:") >= 0) return HxOverrides.substr(v,v.indexOf("time:") + "time:".length,null);
+		if(js.Boot.__instanceof(v,String) && rg.util.Properties.isTime(v)) return rg.util.Properties.periodicity(v);
 		return rg.util.RGStrings.humanize(v);
 	};
 	var rand = new thx.math.Random(666);
@@ -12534,7 +12550,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.16.8975"};
+	r.info.charts = { version : "1.5.23.8996"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -14061,7 +14077,7 @@ rg.html.chart.Leadeboard.prototype = {
 		return Floats.format(100 * Reflect.field(dp,stats.type) / (this.useMax?stats.max:stats.tot),"P:1");
 	}
 	,labelDataPoint: function(dp,stats) {
-		return rg.util.RGStrings.humanize(Reflect.field(dp,this.variableIndependent.type));
+		return rg.util.Properties.humanize(Reflect.field(dp,this.variableIndependent.type));
 	}
 	,stats: null
 	,_created: null
@@ -16206,7 +16222,7 @@ rg.info.filter.TransformerInt.prototype = {
 		case 1:
 			return rg.info.filter.TransformResult.Success(value);
 		case 2:
-			return rg.info.filter.TransformResult.Success(value | 0);
+			return rg.info.filter.TransformResult.Success(Std["int"](value));
 		default:
 			if(js.Boot.__instanceof(value,String) && Ints.canParse(value)) return rg.info.filter.TransformResult.Success(Ints.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into an integer value",[value]));
 		}
@@ -16479,8 +16495,24 @@ $hxClasses["rg.interactive.RGLegacyRenderer"] = rg.interactive.RGLegacyRenderer;
 rg.interactive.RGLegacyRenderer.__name__ = ["rg","interactive","RGLegacyRenderer"];
 rg.interactive.RGLegacyRenderer.getIframeDoc = function(iframe) {
 	var iframeDoc = null;
-	if(iframe.contentDocument) iframeDoc = iframe.contentDocument; else if(iframe.contentWindow) iframeDoc = iframe.contentWindow.document; else if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
-	return iframeDoc;
+	var attempts = [function() {
+		if(iframe.contentDocument) iframeDoc = iframe.contentDocument;
+	},function() {
+		if(iframe.contentWindow && iframe.contentWindow.document) iframeDoc = iframe.contentWindow.document;
+	},function() {
+		if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
+	}];
+	var _g = 0;
+	while(_g < attempts.length) {
+		var attempt = attempts[_g];
+		++_g;
+		try {
+			attempt();
+		} catch( e ) {
+		}
+		if(null != iframeDoc) return iframeDoc;
+	}
+	return null;
 }
 rg.interactive.RGLegacyRenderer.isIE7orBelow = function() {
 	return document.all && !document.querySelector;
@@ -16558,7 +16590,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	}
 	,createIframe: function(width,height) {
 		var id = "rgiframe" + ++rg.interactive.RGLegacyRenderer.nextframeid;
-		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameBorder").string("0").attr("scrolling").string("no").attr("width").string(width + "").attr("height").string(height + "").attr("marginwidth").string("0").attr("marginheight").string("0").attr("hspace").string("0").attr("vspace").string("0").attr("style").string("width:100%; border:0; height:100%; overflow:auto;").attr("src").string(rg.interactive.RGLegacyRenderer.isIE7orBelow()?"javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\'<script>document.domain=\\\\\"" + js.Lib.document.domain + "\\\\\";<\\\\\\\\/script>\\');document.close();};<\\/script>'":"about:blank");
+		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameBorder").string("0").attr("scrolling").string("no").attr("width").string(width + "").attr("height").string(height + "").attr("marginwidth").string("0").attr("marginheight").string("0").attr("hspace").string("0").attr("vspace").string("0").attr("style").string("width:100%; border:0; height:100%; overflow:hidden;").attr("src").string(rg.interactive.RGLegacyRenderer.isIE7orBelow()?"javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\'<script>document.domain=\\\\\"" + js.Lib.document.domain + "\\\\\";<\\\\\\\\/script>\\');document.close();};<\\/script>'":"about:blank");
 	}
 	,display: function(params) {
 		var _g = this;
@@ -16568,22 +16600,30 @@ rg.interactive.RGLegacyRenderer.prototype = {
 		var u = this.url();
 		var h = this.html(id,params,size);
 		var c = this.config(size);
-		var content = "<form method=\"post\" action=\"" + u + "\" name=\"VIZ\"><textarea name=\"html\" style=\"width:40em;height:50%\">" + h + "</textarea><textarea name=\"config\" style=\"width:40em;height:50%\">" + c + "</textarea><script type=\"text/javascript\">\ndocument.VIZ.submit();\n</script>\n</form>";
+		var content = "<form method=\"post\" action=\"" + u + "\" name=\"VIZ\"><textarea name=\"html\" style=\"width:40em;height:50%\">" + h + "</textarea><textarea name=\"config\" style=\"width:40em;height:50%\">" + c + "</textarea><script type=\"text/javascript\">\nsetTimeout(function() { document.VIZ.submit(); }, 200);\n</script>\n</form>";
 		haxe.Timer.delay(function() {
 			_g.writeToIframe(iframe.node(),content);
+			if(null != _g.readyHandler) _g.readyHandler();
 		},100);
 		if(rg.interactive.RGLegacyRenderer.isIE7orBelow()) {
 			var inode = iframe.node();
 			inode.attachEvent("onload",function() {
 				var doc = rg.interactive.RGLegacyRenderer.getIframeDoc(inode);
-				doc.body.scroll = "no";
-				doc.body.style.overflow = "hidden";
-				doc.body.style.border = 0;
-				doc.body.style.margin = 0;
-				doc.body.style.padding = 0;
+				if(null != doc) {
+					doc.body.scroll = "no";
+					doc.body.style.overflow = "hidden";
+					doc.body.frameBorder = "0";
+					doc.body.style.border = 0;
+					doc.body.style.margin = 0;
+					doc.body.style.padding = 0;
+				}
 			});
 		}
 	}
+	,onReady: function(handler) {
+		this.readyHandler = handler;
+	}
+	,readyHandler: null
 	,url: function() {
 		return StringTools.replace(this.serviceUrl,"{ext}",rg.interactive.RGLegacyRenderer.FORMAT);
 	}
@@ -17375,7 +17415,7 @@ rg.query.BaseQuery.prototype = {
 			while(_g < pairs.length) {
 				var pair = pairs[_g];
 				++_g;
-				out[pair.dst] = Reflect.field(src,pair.src);
+				Reflect.setField(out,pair.dst,Reflect.field(src,pair.src));
 			}
 			return out;
 		});
@@ -17890,7 +17930,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:segments.indexOf(Reflect.field(dp,this.segmentProperty))),axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = this.startat == null?prev:yaxis.scale(ymin,ymax,Reflect.field(dp,this.startat)) * this.height, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height - (this.startat == null?0:y);
+					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:Arrays.indexOf(segments,Reflect.field(dp,this.segmentProperty))),axisg), x = this.width * xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)), y = this.startat == null?prev:yaxis.scale(ymin,ymax,Reflect.field(dp,this.startat)) * this.height, h = yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)) * this.height - (this.startat == null?0:y);
 					if(Math.isNaN(y)) continue;
 					if(h < 0) {
 						y += h;
@@ -17940,7 +17980,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 				var _g5 = 0, _g4 = axisdps.length;
 				while(_g5 < _g4) {
 					var k = _g5++;
-					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:segments.indexOf(Reflect.field(dp,this.segmentProperty))),axisg), x = this.startat == null?prev:xaxis.scale(xmin,xmax,Reflect.field(dp,this.startat)) * this.width, y = Math.max(this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)),1), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width - (this.startat == null?0:x);
+					var dp = axisdps[k], seggroup = getGroup("fill-" + (this.segmentProperty == null?k:Arrays.indexOf(segments,Reflect.field(dp,this.segmentProperty))),axisg), x = this.startat == null?prev:xaxis.scale(xmin,xmax,Reflect.field(dp,this.startat)) * this.width, y = Math.max(this.height * yaxis.scale(ymin,ymax,Reflect.field(dp,ytype)),1), w = xaxis.scale(xmin,xmax,Reflect.field(dp,xtype)) * this.width - (this.startat == null?0:x);
 					if(Math.isNaN(x)) continue;
 					if(w < 0) {
 						x -= w;
@@ -18575,10 +18615,10 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		this.ready.dispatch();
 	}
 	,y: function(dp,i) {
-		return this.height - (1 + this.yrange.indexOf(Reflect.field(dp,this.yVariables[0].type))) * this.h;
+		return this.height - (1 + Arrays.indexOf(this.yrange,Reflect.field(dp,this.yVariables[0].type))) * this.h;
 	}
 	,x: function(dp,i) {
-		return this.xrange.indexOf(Reflect.field(dp,this.xVariable.type)) * this.w;
+		return Arrays.indexOf(this.xrange,Reflect.field(dp,this.xVariable.type)) * this.w;
 	}
 	,stats: null
 	,h: null
@@ -27286,7 +27326,7 @@ thx.json.Json.encode = function(value) {
 thx.json.Json.decode = function(value) {
 	if(null != thx.json.Json.nativeDecoder) return thx.json.Json.nativeDecoder(value);
 	var handler = new thx.data.ValueHandler();
-	var r = new thx.json.JsonDecoder(handler).decode(value);
+	new thx.json.JsonDecoder(handler).decode(value);
 	return handler.value;
 }
 thx.json.JsonDecoder = function(handler,tabsize) {
@@ -27299,7 +27339,7 @@ thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	error: function(msg) {
 		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + HxOverrides.substr(this.src,this.pos,null) + "...";
-		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
+		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 357, className : "thx.json.JsonDecoder", methodName : "error"});
 	}
 	,parseDigits: function(atleast) {
 		if(atleast == null) atleast = 0;
@@ -27490,17 +27530,20 @@ thx.json.JsonDecoder.prototype = {
 		case "{":
 			this.col++;
 			this.ignoreWhiteSpace();
-			return this.parseObject();
+			this.parseObject();
+			break;
 		case "[":
 			this.col++;
 			this.ignoreWhiteSpace();
-			return this.parseArray();
+			this.parseArray();
+			break;
 		case "\"":
 			this["char"] = c;
-			return this.parseString();
+			this.parseString();
+			break;
 		default:
 			this["char"] = c;
-			return this.parseValue();
+			this.parseValue();
 		}
 	}
 	,ignoreWhiteSpace: function() {
@@ -27532,10 +27575,9 @@ thx.json.JsonDecoder.prototype = {
 		this["char"] = null;
 		this.pos = 0;
 		this.ignoreWhiteSpace();
-		var p = null;
 		this.handler.start();
 		try {
-			p = this.parse();
+			this.parse();
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
 				this.error("unexpected end of stream");
