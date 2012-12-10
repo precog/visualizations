@@ -318,7 +318,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 		return null;
 	}
 
-	function onmouseover(n : js.Dom.HtmlDom)
+	function onmouseover(n : js.html.Element)
 	{
 		var dp = Access.getData(n),
 			stats = getStats(dp),
@@ -327,14 +327,14 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 			tooltip.hide();
 		else
 		{
-			var sel = dhx.Dom.selectNode(n.parentNode),
+			var sel = dhx.Dom.selectNode(cast n.parentNode),
 				coords = Coords.fromTransform(sel.attr("transform").get());
 			tooltip.html(text.split("\n").join("<br>"));
 			moveTooltip(coords[0], coords[1], RGColors.extractColor(n));
 		}
 	}
 
-	function onclick(n : js.Dom.HtmlDom)
+	function onclick(n : js.html.Element)
 	{
 		var dp = Access.getData(n),
 			stats = getStats(dp);

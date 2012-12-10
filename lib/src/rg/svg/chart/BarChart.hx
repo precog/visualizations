@@ -273,7 +273,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 		click(dp, stats);
 	}
 
-	function onmouseover(stats : Stats<Dynamic>, n : js.Dom.HtmlDom, i : Int)
+	function onmouseover(stats : Stats<Dynamic>, n : js.html.Element, i : Int)
 	{
 		var dp = Access.getData(n),
 			text = labelDataPointOver(dp, stats);

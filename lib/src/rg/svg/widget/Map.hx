@@ -20,7 +20,7 @@ import thx.svg.PathGeoJson;
 import thx.json.Json;
 import rg.info.InfoMap;
 import rg.axis.Stats;
-import js.Dom;
+import js.html.Element;
 using Arrays;
 
 class Map
@@ -139,7 +139,7 @@ class Map
 		}
 		onReady.dispatch();
 	}
-//	var currentNode : js.Dom.HtmlDom;
+//	var currentNode : Element;
 	function onMouseOver(dp : Dynamic, n, i : Int)
 	{
 //		currentNode = n;
@@ -147,7 +147,7 @@ class Map
 	}
 	function onClick(dp : Dynamic, _, i) handlerClick(dp, click)
 
-	public var handlerDataPointOver : HtmlDom -> Dynamic -> (Dynamic -> Stats<Dynamic> -> String) -> Void;
+	public var handlerDataPointOver : Element -> Dynamic -> (Dynamic -> Stats<Dynamic> -> String) -> Void;
 	public var handlerClick : Dynamic -> (Dynamic -> Stats<Dynamic> -> Void) -> Void;
 
 	function set_className(cls : String)

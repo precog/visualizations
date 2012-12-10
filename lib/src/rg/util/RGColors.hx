@@ -30,12 +30,12 @@ class RGColors
 			: Hsl.darker(color, (1 - t) * (1 - lightness));
 	}
 
-	public static function extractColor(n : js.Dom.HtmlDom) : String
+	public static function extractColor(n : js.html.Element) : String
 	{
 		return untyped n.__rgcolor__;
 	}
 
-	public static function storeColor(n : js.Dom.HtmlDom, color)
+	public static function storeColor(n : js.html.Element, color)
 	{
 		untyped n.__rgcolor__ = color;
 	}

@@ -5052,7 +5052,7 @@ dhx.Access.getData = function(d) {
 dhx.Access.setData = function(d,v) {
 	d.__dhx_data__ = v;
 }
-dhx.Access.emptyHtmlDom = function(v) {
+dhx.Access.emptyElement = function(v) {
 	return { __dhx_data__ : v};
 }
 dhx.Access.eventName = function(event) {
@@ -5175,7 +5175,7 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 			var q = this.qname;
 			this.selection.eachNode(function(node,i) {
 				var s = v(Reflect.field(node,"__dhx_data__"),i);
-				if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,"" + s);
+				if(null == s) node.removeAttributeNS(q.space,q.local); else node.setAttributeNS(q.space,q.local,"" + s);
 			});
 		}
 		return this.selection;
@@ -5191,7 +5191,7 @@ dhx.AccessDataAttribute.prototype = $extend(dhx.AccessAttribute.prototype,{
 			var q = this.qname;
 			this.selection.eachNode(function(node,i) {
 				var s = v(Reflect.field(node,"__dhx_data__"),i);
-				if(null == s) node.removeAttributeNS(n); else node.setAttributeNS(q.space,q.local,s);
+				if(null == s) node.removeAttributeNS(q.space,q.local); else node.setAttributeNS(q.space,q.local,s);
 			});
 		}
 		return this.selection;
@@ -5471,7 +5471,7 @@ dhx.AccessStyle.setStyleProperty = function(node,key,value,priority) {
 }
 dhx.AccessStyle.removeStyleProperty = function(node,key) {
 	if('removeProperty' in node.style) dhx.AccessStyle.removeStyleProperty = function(node1,key1) {
-		node1.style.removeProperty(key1,value);
+		node1.style.removeProperty(key1);
 	}; else dhx.AccessStyle.removeStyleProperty = function(node1,key1) {
 		var style = node1.style;
 		if(null == Reflect.field(style,key1)) key1 = dhx.AccessStyle._getPropertyName(key1);
@@ -6189,7 +6189,7 @@ dhx.BaseSelection.isChild = function(parent,child) {
 	return false;
 }
 dhx.BaseSelection.addEvent = function(target,typo,handler,capture) {
-	if(target.addEventListener != null) dhx.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
+	if($bind(target,target.addEventListener) != null) dhx.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
 		target1.addEventListener(typo1,handler1,capture1);
 	}; else if(target.attachEvent != null) dhx.BaseSelection.addEvent = function(target1,typo1,handler1,capture1) {
 		target1.attachEvent(typo1,handler1);
@@ -6197,7 +6197,7 @@ dhx.BaseSelection.addEvent = function(target,typo,handler,capture) {
 	dhx.BaseSelection.addEvent(target,typo,handler,capture);
 }
 dhx.BaseSelection.removeEvent = function(target,typo,type,capture) {
-	if(target.removeEventListener != null) dhx.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
+	if($bind(target,target.removeEventListener) != null) dhx.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
 		target1.removeEventListener(typo1,Reflect.field(target1,"__dhx_on__" + type1),false);
 	}; else if(target.attachEvent != null) dhx.BaseSelection.removeEvent = function(target1,typo1,type1,capture1) {
 		target1.detachEvent(typo1,Reflect.field(target1,"__dhx_on__" + type1));
@@ -6205,14 +6205,14 @@ dhx.BaseSelection.removeEvent = function(target,typo,type,capture) {
 	dhx.BaseSelection.removeEvent(target,typo,type,capture);
 }
 dhx.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
-	var n = group.nodes.length, m = groupData.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
+	var n = group.nodes.length, m = groupData.length, updateElements = [], exitElements = [], enterElements = [], node, nodeData;
 	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
 	var _g = 0;
 	while(_g < n) {
 		var i = _g++;
 		node = group.nodes[i];
 		key = join(Reflect.field(node,"__dhx_data__"),i);
-		if(nodeByKey.exists(key)) exitHtmlDoms[j++] = node; else nodeByKey.set(key,node);
+		if(nodeByKey.exists(key)) exitElements[j++] = node; else nodeByKey.set(key,node);
 		keys.push(key);
 	}
 	var _g = 0;
@@ -6221,32 +6221,32 @@ dhx.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 		node = nodeByKey.get(key = join(nodeData = groupData[i],i));
 		if(null != node) {
 			node.__dhx_data__ = nodeData;
-			updateHtmlDoms[i] = node;
-			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
+			updateElements[i] = node;
+			enterElements[i] = exitElements[i] = null;
 		} else {
 			node = { __dhx_data__ : nodeData};
-			enterHtmlDoms[i] = node;
-			updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+			enterElements[i] = node;
+			updateElements[i] = exitElements[i] = null;
 		}
 		nodeByKey.remove(key);
 	}
 	var _g = 0;
 	while(_g < n) {
 		var i = _g++;
-		if(nodeByKey.exists(keys[i])) exitHtmlDoms[i] = group.nodes[i];
+		if(nodeByKey.exists(keys[i])) exitElements[i] = group.nodes[i];
 	}
-	var enterGroup = new dhx.Group(enterHtmlDoms);
+	var enterGroup = new dhx.Group(enterElements);
 	enterGroup.parentNode = group.parentNode;
 	enter.push(enterGroup);
-	var updateGroup = new dhx.Group(updateHtmlDoms);
+	var updateGroup = new dhx.Group(updateElements);
 	updateGroup.parentNode = group.parentNode;
 	update.push(updateGroup);
-	var exitGroup = new dhx.Group(exitHtmlDoms);
+	var exitGroup = new dhx.Group(exitElements);
 	exitGroup.parentNode = group.parentNode;
 	exit.push(exitGroup);
 }
 dhx.BaseSelection.bind = function(group,groupData,update,enter,exit) {
-	var n0 = group.nodes.length, n1 = group.nodes.length, updateHtmlDoms = [], exitHtmlDoms = [], enterHtmlDoms = [], node, nodeData;
+	var n0 = group.nodes.length, n1 = group.nodes.length, updateElements = [], exitElements = [], enterElements = [], node, nodeData;
 	if(n0 > groupData.length) n0 = groupData.length;
 	if(n1 < groupData.length) n1 = groupData.length;
 	var _g = 0;
@@ -6256,33 +6256,33 @@ dhx.BaseSelection.bind = function(group,groupData,update,enter,exit) {
 		nodeData = groupData[i];
 		if(null != node) {
 			node.__dhx_data__ = nodeData;
-			updateHtmlDoms[i] = node;
-			enterHtmlDoms[i] = exitHtmlDoms[i] = null;
+			updateElements[i] = node;
+			enterElements[i] = exitElements[i] = null;
 		} else {
-			enterHtmlDoms[i] = { __dhx_data__ : nodeData};
-			updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+			enterElements[i] = { __dhx_data__ : nodeData};
+			updateElements[i] = exitElements[i] = null;
 		}
 	}
 	var _g1 = n0, _g = groupData.length;
 	while(_g1 < _g) {
 		var i = _g1++;
 		node = { __dhx_data__ : groupData[i]};
-		enterHtmlDoms[i] = node;
-		updateHtmlDoms[i] = exitHtmlDoms[i] = null;
+		enterElements[i] = node;
+		updateElements[i] = exitElements[i] = null;
 	}
 	var _g = groupData.length;
 	while(_g < n1) {
 		var i = _g++;
-		exitHtmlDoms[i] = group.nodes[i];
-		enterHtmlDoms[i] = updateHtmlDoms[i] = null;
+		exitElements[i] = group.nodes[i];
+		enterElements[i] = updateElements[i] = null;
 	}
-	var enterGroup = new dhx.Group(enterHtmlDoms);
+	var enterGroup = new dhx.Group(enterElements);
 	enterGroup.parentNode = group.parentNode;
 	enter.push(enterGroup);
-	var updateGroup = new dhx.Group(updateHtmlDoms);
+	var updateGroup = new dhx.Group(updateElements);
 	updateGroup.parentNode = group.parentNode;
 	update.push(updateGroup);
-	var exitGroup = new dhx.Group(exitHtmlDoms);
+	var exitGroup = new dhx.Group(exitElements);
 	exitGroup.parentNode = group.parentNode;
 	exit.push(exitGroup);
 }
@@ -6591,9 +6591,12 @@ dhx.NativeSelectorEngine.supported = function() {
 	return 'undefined' != typeof document.querySelector;
 }
 dhx.NativeSelectorEngine.prototype = {
-	selectAll: function(selector,node) {
-		if(null == node) node = js.Lib.document;
-		var s = node.querySelectorAll(selector);
+	selectAll: function(selector,node,doc) {
+		var s;
+		if(null != node) s = node.querySelectorAll(selector); else {
+			if(null == doc) doc = js.Lib.document;
+			s = doc.querySelectorAll(selector);
+		}
 		var r = [];
 		var _g1 = 0, _g = s.length;
 		while(_g1 < _g) {
@@ -6602,9 +6605,10 @@ dhx.NativeSelectorEngine.prototype = {
 		}
 		return r;
 	}
-	,select: function(selector,node) {
-		if(null == node) node = js.Lib.document;
-		return node.querySelector(selector);
+	,select: function(selector,node,doc) {
+		if(null != node) return node.querySelector(selector);
+		if(null == doc) doc = js.Lib.document;
+		return doc.querySelector(selector);
 	}
 	,__class__: dhx.NativeSelectorEngine
 }
@@ -6620,11 +6624,11 @@ dhx.SizzleEngine.getSizzle = function() {
 	return (('undefined' != typeof Sizzle && Sizzle) || (('undefined' != typeof jQuery) && jQuery.find) || (('undefined' != typeof $) && $.find));
 }
 dhx.SizzleEngine.prototype = {
-	selectAll: function(selector,node) {
-		return dhx.Sizzle.uniqueSort(dhx.Sizzle.select(selector,node));
+	selectAll: function(selector,node,doc) {
+		return dhx.Sizzle.uniqueSort(dhx.Sizzle.select(selector,node || doc));
 	}
-	,select: function(selector,node) {
-		return dhx.Sizzle.select(selector,node)[0];
+	,select: function(selector,node,doc) {
+		return dhx.Sizzle.select(selector,node || doc)[0];
 	}
 	,__class__: dhx.SizzleEngine
 }
@@ -8322,10 +8326,7 @@ haxe.Http.prototype = {
 			}(this));
 			if(s == undefined) s = null;
 			if(s != null) me.onStatus(s);
-			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else switch(s) {
-			case null: case undefined:
-				me.onError("Failed to connect or resolve host");
-				break;
+			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else if(s == null) me.onError("Failed to connect or resolve host"); else switch(s) {
 			case 12029:
 				me.onError("Failed to connect to host");
 				break;
@@ -12550,9 +12551,29 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.23.8996"};
+	r.info.charts = { version : "1.5.24.9004"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
+	};
+	r.request = function(url,usejsonp) {
+		if(usejsonp == null) usejsonp = true;
+		var execute;
+		var error = function(e) {
+			throw "unable to load data from: " + url + " because " + e;
+		};
+		if(usejsonp) execute = function(handler) {
+			rg.util.Jsonp.get(url,handler,function(i,e) {
+				error(e);
+			},{ },{ });
+		}; else execute = function(handler1) {
+			var http = new haxe.Http(url);
+			http.onData = function(data) {
+				handler1(thx.json.Json.decode(data));
+			};
+			http.onError = error;
+			http.request(false);
+		};
+		return { execute : execute};
 	};
 }
 rg.app.charts.JSBridge.createQuery = function() {
@@ -12574,7 +12595,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 194, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 216, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {

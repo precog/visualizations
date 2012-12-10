@@ -1,6 +1,6 @@
 package rg.html.widget;
 
-import js.Dom;
+import js.html.Element;
 import dhx.Selection;
 
 class Tooltip
@@ -27,7 +27,7 @@ class Tooltip
 	var anchordistance : Int;
 
 	public var visible(default, null) : Bool;
-	public function new(?el : HtmlDom)
+	public function new(?el : Element)
 	{
 		visible = false;
 		el = null == el ? js.Lib.document.body : el;

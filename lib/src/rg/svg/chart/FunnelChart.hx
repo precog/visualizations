@@ -94,7 +94,7 @@ class FunnelChart extends Chart
 	var stats : Stats<Dynamic>;
 	var topheight : Float;
 	var h : Float;
-	var currentNode : js.Dom.HtmlDom;
+	var currentNode : js.html.Element;
 	function scale(value : Dynamic)
 	{
 		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), value);

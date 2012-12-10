@@ -2,7 +2,7 @@ package rg.util;
 
 import js.Dom;
 
-class Js 
+class Js
 {
 	/**
 	* fragment can be both a String or a JS regular expression
@@ -15,17 +15,17 @@ class Js
 		var scripts = js.Lib.document.getElementsByTagName('SCRIPT');
 		if(untyped __js__('typeof fragment == "string"'))
 		{
-			for (i in 0...scripts.length) 
+			for (i in 0...scripts.length)
 			{
-				var script = scripts[i],
+				var script : js.html.ScriptElement = cast scripts[i],
 					src : String = script.getAttribute('src');
 				if (null != src && src.indexOf(fragment) >= 0)
 					return script;
 			}
 		} else {
-			for (i in 0...scripts.length) 
+			for (i in 0...scripts.length)
 			{
-				var script = scripts[i],
+				var script : js.html.ScriptElement = cast scripts[i],
 					src : String = script.getAttribute('src');
 				if (null != src && untyped src.match(fragment))
 					return script;

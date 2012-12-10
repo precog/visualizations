@@ -4,7 +4,7 @@
  */
 
 package rg.svg.widget;
-import js.Dom;
+import js.html.Element;
 import dhx.Selection;
 import dhx.Timer;
 import thx.math.Equations;
@@ -44,7 +44,7 @@ class Balloon
 		{
 			var parent = container.node();
 			while (null != parent && parent.nodeName != "svg")
-				parent = parent.parentNode;
+				parent = cast parent.parentNode;
 			this.container = null == parent ? container : dhx.Dom.selectNode(parent);
 		} else
 			this.container = container;
@@ -537,7 +537,7 @@ class Balloon
 			pad = padding;
 */
 /*
-		function calculateLineWidth(n : HtmlDom, i : Int)
+		function calculateLineWidth(n : Element, i : Int)
 		{
 			var v : Float = untyped n.getBBox().width;
 			if (v > linewidth)

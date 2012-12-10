@@ -23,7 +23,7 @@ import rg.svg.util.RGCss;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import rg.svg.panel.Panels;
-import js.Dom;
+import js.html.Element;
 using Arrays;
 
 class Geo extends Chart
@@ -98,7 +98,7 @@ class Geo extends Chart
 		}
 	}
 
-	public function handlerDataPointOver(n : HtmlDom, dp : Dynamic, f)
+	public function handlerDataPointOver(n : Element, dp : Dynamic, f)
 	{
 		var text = f(dp, variableDependent.stats);
 		if (null == text)

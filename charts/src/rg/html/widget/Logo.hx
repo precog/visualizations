@@ -1,7 +1,7 @@
 package rg.html.widget;
 
 import haxe.Timer;
-import js.Dom;
+import js.html.Element;
 import dhx.Dom;
 import dhx.Selection;
 
@@ -187,7 +187,7 @@ class Logo
 		];
 	}
 
-	static function position(el : HtmlDom)
+	static function position(el : Element)
 	{
 		var p = { x : untyped el.offsetLeft || 0, y : untyped el.offsetTop || 0 };
         while (null != (el = el.offsetParent)) {

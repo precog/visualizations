@@ -176,7 +176,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 		return map;
 	}
 
-	var currentNode : js.Dom.HtmlDom;
+	var currentNode : js.html.Element;
 	function drawSquares()
 	{
 		var choice = g.selectAll("rect").data(dps);

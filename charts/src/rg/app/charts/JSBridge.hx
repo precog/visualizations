@@ -16,6 +16,7 @@ import rg.app.charts.MVPOptions;
 //import thx.svg.Symbol;
 import rg.svg.util.SymbolCache;
 import thx.util.MacroVersion;
+import rg.util.Jsonp;
 
 class JSBridge
 {
@@ -160,6 +161,27 @@ class JSBridge
 		r.getTooltip = function() {
 			return rg.html.widget.Tooltip.instance;
 		};
+		r.request = function(url : String, ?usejsonp = true) {
+			var execute : (Array<Dynamic> -> Void) -> Void;
+			function error(e) {
+				throw "unable to load data from: " + url + " because " + e;
+			}
+ 			if(usejsonp) {
+				execute = function(handler) {
+					Jsonp.get(url, handler, function(i, e) error(e), {}, {});
+				}
+			} else {
+				execute = function(handler) {
+					var http = new haxe.Http(url);
+					http.onData = function(data) handler(thx.json.Json.decode(data));
+					http.onError = error;
+					http.request(false);
+				}
+			}
+			return {
+				execute : execute
+			}
+		}
 
 //		untyped JsExport.property(rg.util.ChainedExecutor.prototype, "execute", rg.util.ChainedExecutor.prototype.execute);
 	}

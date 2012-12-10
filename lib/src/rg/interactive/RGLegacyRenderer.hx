@@ -127,9 +127,9 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 					}
 				},
 				function() {
-					if (null != js.Lib.window.frames[cast iframe.name])
+					if (null != untyped js.Lib.window.frames[iframe.name])
 					{
-						iframeDoc = untyped js.Lib.window.frames[cast iframe.name].document;
+						iframeDoc = untyped js.Lib.window.frames[iframe.name].document;
 					}
 				}
 			];

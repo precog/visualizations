@@ -5,7 +5,7 @@ import rg.svg.panel.Panel;
 
 class Sensible
 {
-	public static function sensibleZone(container : Selection, panel : Panel, click : js.Dom.HtmlDom -> Void, datapointover : js.Dom.HtmlDom -> Void, radius : Float)
+	public static function sensibleZone(container : Selection, panel : Panel, click : js.html.Element -> Void, datapointover : js.html.Element -> Void, radius : Float)
 	{
 		if(null == click && null == datapointover)
 			return;
@@ -62,7 +62,7 @@ class Sensible
 	public static function findDataNodeNearMouse(context : Selection, distance : Float)
 	{
 		var e = dhx.Dom.event;
-		return findDataNodesNear({ x : e.clientX, y : e.clientY }, context, distance);
+		return findDataNodesNear({ x : untyped e.clientX, y : untyped e.clientY }, context, distance);
 	}
 
 	public static function findDataNodesNear(coords : { x : Int, y : Int }, context : Selection, distance : Float)
@@ -70,7 +70,7 @@ class Sensible
 		var nodes = context.selectAll(".rgdata"),
 			result = [],
 			distancep = distance * distance;
-		nodes.eachNode(function(n : js.Dom.HtmlDom, i) {
+		nodes.eachNode(function(n : js.html.Element, i) {
 			var rect : Dynamic<Float> = untyped n.getBoundingClientRect();
 			var x = coords.x - (rect.left + rect.width / 2),
 				y = coords.y - (rect.top + rect.height / 2);

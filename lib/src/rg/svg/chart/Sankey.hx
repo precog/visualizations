@@ -859,27 +859,27 @@ class Sankey extends Chart
 		};
 	}
 
-	function nodeclick(node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function nodeclick(node : GNode<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		click(node.data.dp, dependentVariable.stats);
 	}
 
-	function edgeclick(data : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float }, el : js.Dom.HtmlDom, i : Int)
+	function edgeclick(data : { head : Dynamic, tail : Dynamic, edgeweight : Float, nodeweight : Float }, el : js.html.Element, i : Int)
 	{
 		clickEdge(data, dependentVariable.stats);
 	}
 
-	function edgeClickWithEdge(edge : GEdge<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function edgeClickWithEdge(edge : GEdge<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		edgeclick(edgeData(edge), el, i);
 	}
 
-	function edgeClickWithNode(node : GNode<NodeData, Dynamic>, out : Bool, el : js.Dom.HtmlDom, i : Int)
+	function edgeClickWithNode(node : GNode<NodeData, Dynamic>, out : Bool, el : js.html.Element, i : Int)
 	{
 		edgeclick(edgeDataWithNode(node, out), el, i);
 	}
 
-	function onmouseovernode(node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseovernode(node : GNode<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		highlight(node.id, "node");
 		if(isdummy(node))
@@ -924,7 +924,7 @@ class Sankey extends Chart
 		}
 	}
 
-	function onmouseoveredge(x : Float, y : Float, edge : GEdge<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseoveredge(x : Float, y : Float, edge : GEdge<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		highlight(edge.id, "edge");
 		if(null == labelEdgeOver)
@@ -940,7 +940,7 @@ class Sankey extends Chart
 		}
 	}
 
-	function onmouseoverentry(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseoverentry(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		highlight(node.id, "node");
 		if(null == labelEdgeOver)
@@ -956,7 +956,7 @@ class Sankey extends Chart
 		}
 	}
 
-	function onmouseoverexit(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.Dom.HtmlDom, i : Int)
+	function onmouseoverexit(x : Float, y : Float, node : GNode<NodeData, Dynamic>, el : js.html.Element, i : Int)
 	{
 		highlight(node.id, "node");
 		if(null == labelEdgeOver)

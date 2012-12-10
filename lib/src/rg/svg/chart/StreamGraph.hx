@@ -22,6 +22,7 @@ import thx.color.Rgb;
 import dhx.Svg;
 import dhx.Access;
 import rg.util.RGColors;
+import js.html.Element;
 using Arrays;
 
 
@@ -98,27 +99,27 @@ class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 		ready.dispatch();
 	}
 
-	function getDataAtNode(n, i)
+	function getDataAtNode(n : Element, i)
 	{
 		var px = Svg.mouse(n)[0],
 			x = Floats.uninterpolatef(transformedData[i].first().coord.x, transformedData[i].last().coord.x)(px / width);
 
-		var data : Array<TransformedData> = Access.getData(n);
+		var data : Array<TransformedData> = Access.getData(cast n);
 
 		return Arrays.nearest(transformedData[i], x, function(d) return d.coord.x);
 	}
 
-	function onover(n, i)
+	function onover(n : Element, i)
 	{
 		if (null == labelDataPointOver)
 			return;
 		var dp = getDataAtNode(n, i);
 		tooltip.html(labelDataPointOver(dp.dp, stats).split("\n").join("<br>"));
 //		tooltip.show();
-		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy, RGColors.extractColor(n));
+		moveTooltip(dp.coord.x * width, height - (dp.coord.y + dp.coord.y0) * height / maxy, RGColors.extractColor(cast n));
 	}
 
-	function onclick(n, i)
+	function onclick(n : Element, i)
 	{
 		if (null == this.click)
 			return;

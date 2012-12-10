@@ -7,11 +7,11 @@ package rg.util;
 
 import thx.json.Json;
 
-class Jsonp 
+class Jsonp
 {
 	public static function get<T>(path, success : T -> Void, failure : Null<Int -> String -> Void>, query : {}, headers : {})
 	{
-		var api : String -> { success : T -> Void, failure : Null<Int -> String -> Void> } -> {} -> {} -> Void = 
+		var api : String -> { success : T -> Void, failure : Null<Int -> String -> Void> } -> {} -> {} -> Void =
 
 #if reportgridapi
 		untyped __js__("ReportGrid.$.Http.Jsonp.get");
@@ -23,7 +23,7 @@ class Jsonp
 
 	public static function post<T>(path, content : {}, success : T -> Void, failure : Null<Int -> String -> Void>, query : {}, headers : {})
 	{
-		var api : String -> {} -> { success : T -> Void, failure : Null<Int -> String -> Void> } -> {} -> {} -> Void = 
+		var api : String -> {} -> { success : T -> Void, failure : Null<Int -> String -> Void> } -> {} -> {} -> Void =
 #if reportgridapi
 		untyped __js__("ReportGrid.$.Http.Jsonp.post");
 #else
