@@ -136,7 +136,7 @@ class Logo
 
 	function updateAnchor()
 	{
-		var body = js.Lib.document.body,
+		var body = js.Browser.document.body,
 			len = body.childNodes.length;
 		if(Dom.select("body :last-child").node() != anchor.node())
 		{

@@ -246,7 +246,8 @@ Arrays.exists = function(arr,value,f) {
 Arrays.format = function(v,param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"J");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "J":
 		if(v.length == 0) {
 			var empty = null == params[1]?"[]":params[1];
@@ -272,7 +273,8 @@ Arrays.format = function(v,param,params,culture) {
 Arrays.formatf = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"J");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "J":
 		return function(v) {
 			if(v.length == 0) {
@@ -577,7 +579,8 @@ Bools.format = function(v,param,params,culture) {
 Bools.formatf = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"B");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "B":
 		return function(v) {
 			return v?"true":"false";
@@ -624,87 +627,103 @@ DateTools.__name__ = ["DateTools"];
 DateTools.__format_get = function(d,e) {
 	return (function($this) {
 		var $r;
-		switch(e) {
-		case "%":
-			$r = "%";
-			break;
-		case "C":
-			$r = StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
-			break;
-		case "d":
-			$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
-			break;
-		case "D":
-			$r = DateTools.__format(d,"%m/%d/%y");
-			break;
-		case "e":
-			$r = Std.string(d.getDate());
-			break;
-		case "H":case "k":
-			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
-			break;
-		case "I":case "l":
-			$r = (function($this) {
-				var $r;
-				var hour = d.getHours() % 12;
-				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
-				return $r;
-			}($this));
-			break;
-		case "m":
-			$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
-			break;
-		case "M":
-			$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
-			break;
-		case "n":
-			$r = "\n";
-			break;
-		case "p":
-			$r = d.getHours() > 11?"PM":"AM";
-			break;
-		case "r":
-			$r = DateTools.__format(d,"%I:%M:%S %p");
-			break;
-		case "R":
-			$r = DateTools.__format(d,"%H:%M");
-			break;
-		case "s":
-			$r = Std.string(d.getTime() / 1000 | 0);
-			break;
-		case "S":
-			$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
-			break;
-		case "t":
-			$r = "\t";
-			break;
-		case "T":
-			$r = DateTools.__format(d,"%H:%M:%S");
-			break;
-		case "u":
-			$r = (function($this) {
-				var $r;
-				var t = d.getDay();
-				$r = t == 0?"7":Std.string(t);
-				return $r;
-			}($this));
-			break;
-		case "w":
-			$r = Std.string(d.getDay());
-			break;
-		case "y":
-			$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
-			break;
-		case "Y":
-			$r = Std.string(d.getFullYear());
-			break;
-		default:
-			$r = (function($this) {
-				var $r;
-				throw "Date.format %" + e + "- not implemented yet.";
-				return $r;
-			}($this));
-		}
+		var _g = e;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "%":
+				$r = "%";
+				break;
+			case "C":
+				$r = StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
+				break;
+			case "d":
+				$r = StringTools.lpad(Std.string(d.getDate()),"0",2);
+				break;
+			case "D":
+				$r = DateTools.__format(d,"%m/%d/%y");
+				break;
+			case "e":
+				$r = Std.string(d.getDate());
+				break;
+			case "H":
+				$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+				break;
+			case "k":
+				$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+				break;
+			case "I":
+				$r = (function($this) {
+					var $r;
+					var hour = d.getHours() % 12;
+					$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+					return $r;
+				}($this));
+				break;
+			case "l":
+				$r = (function($this) {
+					var $r;
+					var hour = d.getHours() % 12;
+					$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+					return $r;
+				}($this));
+				break;
+			case "m":
+				$r = StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+				break;
+			case "M":
+				$r = StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+				break;
+			case "n":
+				$r = "\n";
+				break;
+			case "p":
+				$r = d.getHours() > 11?"PM":"AM";
+				break;
+			case "r":
+				$r = DateTools.__format(d,"%I:%M:%S %p");
+				break;
+			case "R":
+				$r = DateTools.__format(d,"%H:%M");
+				break;
+			case "s":
+				$r = Std.string(d.getTime() / 1000 | 0);
+				break;
+			case "S":
+				$r = StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+				break;
+			case "t":
+				$r = "\t";
+				break;
+			case "T":
+				$r = DateTools.__format(d,"%H:%M:%S");
+				break;
+			case "u":
+				$r = (function($this) {
+					var $r;
+					var t = d.getDay();
+					$r = t == 0?"7":Std.string(t);
+					return $r;
+				}($this));
+				break;
+			case "w":
+				$r = Std.string(d.getDay());
+				break;
+			case "y":
+				$r = StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+				break;
+			case "Y":
+				$r = Std.string(d.getFullYear());
+				break;
+			default:
+				$r = (function($this) {
+					var $r;
+					throw "Date.format %" + e + "- not implemented yet.";
+					return $r;
+				}($this));
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -769,14 +788,29 @@ $hxClasses["EReg"] = EReg;
 EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	customReplace: function(s,f) {
+		var old = this.r.global;
+		this.r.global = true;
+		var ret = this.map(s,f);
+		this.r.global = old;
+		return ret;
+	}
+	,map: function(s,f) {
+		var offset = 0;
 		var buf = new StringBuf();
-		while(true) {
-			if(!this.match(s)) break;
-			buf.b += Std.string(this.matchedLeft());
+		do {
+			if(offset >= s.length) break; else if(!this.matchSub(s,offset)) {
+				buf.b += Std.string(HxOverrides.substr(s,offset,null));
+				break;
+			}
+			var p = this.matchedPos();
+			buf.b += Std.string(HxOverrides.substr(s,offset,p.pos - offset));
 			buf.b += Std.string(f(this));
-			s = this.matchedRight();
-		}
-		buf.b += Std.string(s);
+			if(p.len == 0) {
+				buf.b += Std.string(HxOverrides.substr(s,p.pos,1));
+				offset = p.pos + 1;
+			} else offset = p.pos + p.len;
+		} while(this.r.global);
+		if(!this.r.global && offset < s.length) buf.b += Std.string(HxOverrides.substr(s,offset,null));
 		return buf.b;
 	}
 	,replace: function(s,by) {
@@ -785,6 +819,27 @@ EReg.prototype = {
 	,split: function(s) {
 		var d = "#__delim__#";
 		return s.replace(this.r,d).split(d);
+	}
+	,matchSub: function(s,pos,len) {
+		if(len == null) len = -1;
+		return this.r.global?(function($this) {
+			var $r;
+			$this.r.lastIndex = pos;
+			$this.r.m = $this.r.exec(len < 0?s:HxOverrides.substr(s,0,pos + len));
+			var b = $this.r.m != null;
+			if(b) $this.r.s = s;
+			$r = b;
+			return $r;
+		}(this)):(function($this) {
+			var $r;
+			var b = $this.match(len < 0?HxOverrides.substr(s,pos,null):HxOverrides.substr(s,pos,len));
+			if(b) {
+				$this.r.s = s;
+				$this.r.m.index += pos;
+			}
+			$r = b;
+			return $r;
+		}(this));
 	}
 	,matchedPos: function() {
 		if(this.r.m == null) throw "No string matched";
@@ -824,7 +879,8 @@ Dates.format = function(d,param,params,culture) {
 Dates.formatf = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"D");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "D":
 		return function(d) {
 			return thx.culture.FormatDate.date(d,culture);
@@ -934,120 +990,129 @@ Dates.interpolatef = function(a,b,equation) {
 }
 Dates.snap = function(time,period,mode) {
 	if(mode == null) mode = 0;
-	if(mode < 0) switch(period) {
-	case "second":
-		return Math.floor(time / 1000.0) * 1000.0;
-	case "minute":
-		return Math.floor(time / 60000.0) * 60000.0;
-	case "hour":
-		return Math.floor(time / 3600000.0) * 3600000.0;
-	case "day":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0).getTime();
-	case "week":
-		return Math.floor(time / 604800000.) * 604800000.;
-	case "month":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
-	case "year":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear(),0,1,0,0,0).getTime();
-	default:
-		return 0;
-	} else if(mode > 0) switch(period) {
-	case "second":
-		return Math.ceil(time / 1000.0) * 1000.0;
-	case "minute":
-		return Math.ceil(time / 60000.0) * 60000.0;
-	case "hour":
-		return Math.ceil(time / 3600000.0) * 3600000.0;
-	case "day":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + 1,0,0,0).getTime();
-	case "week":
-		return Math.ceil(time / 604800000.) * 604800000.;
-	case "month":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear(),d.getMonth() + 1,1,0,0,0).getTime();
-	case "year":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this));
-		return new Date(d.getFullYear() + 1,0,1,0,0,0).getTime();
-	default:
-		return 0;
-	} else switch(period) {
-	case "second":
-		return Math.round(time / 1000.0) * 1000.0;
-	case "minute":
-		return Math.round(time / 60000.0) * 60000.0;
-	case "hour":
-		return Math.round(time / 3600000.0) * 3600000.0;
-	case "day":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this)), mod = d.getHours() >= 12?1:0;
-		return new Date(d.getFullYear(),d.getMonth(),d.getDate() + mod,0,0,0).getTime();
-	case "week":
-		return Math.round(time / 604800000.) * 604800000.;
-	case "month":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this)), mod = d.getDate() > Math.round(DateTools.getMonthDays(d) / 2)?1:0;
-		return new Date(d.getFullYear(),d.getMonth() + mod,1,0,0,0).getTime();
-	case "year":
-		var d = (function($this) {
-			var $r;
-			var d1 = new Date();
-			d1.setTime(time);
-			$r = d1;
-			return $r;
-		}(this)), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
-		return new Date(d.getFullYear() + mod,0,1,0,0,0).getTime();
-	default:
-		return 0;
+	if(mode < 0) {
+		var _g = period;
+		switch(_g) {
+		case "second":
+			return Math.floor(time / 1000.0) * 1000.0;
+		case "minute":
+			return Math.floor(time / 60000.0) * 60000.0;
+		case "hour":
+			return Math.floor(time / 3600000.0) * 3600000.0;
+		case "day":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0).getTime();
+		case "week":
+			return Math.floor(time / 604800000.) * 604800000.;
+		case "month":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).getTime();
+		case "year":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear(),0,1,0,0,0).getTime();
+		default:
+			return 0;
+		}
+	} else if(mode > 0) {
+		var _g = period;
+		switch(_g) {
+		case "second":
+			return Math.ceil(time / 1000.0) * 1000.0;
+		case "minute":
+			return Math.ceil(time / 60000.0) * 60000.0;
+		case "hour":
+			return Math.ceil(time / 3600000.0) * 3600000.0;
+		case "day":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear(),d.getMonth(),d.getDate() + 1,0,0,0).getTime();
+		case "week":
+			return Math.ceil(time / 604800000.) * 604800000.;
+		case "month":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear(),d.getMonth() + 1,1,0,0,0).getTime();
+		case "year":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this));
+			return new Date(d.getFullYear() + 1,0,1,0,0,0).getTime();
+		default:
+			return 0;
+		}
+	} else {
+		var _g = period;
+		switch(_g) {
+		case "second":
+			return Math.round(time / 1000.0) * 1000.0;
+		case "minute":
+			return Math.round(time / 60000.0) * 60000.0;
+		case "hour":
+			return Math.round(time / 3600000.0) * 3600000.0;
+		case "day":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this)), mod = d.getHours() >= 12?1:0;
+			return new Date(d.getFullYear(),d.getMonth(),d.getDate() + mod,0,0,0).getTime();
+		case "week":
+			return Math.round(time / 604800000.) * 604800000.;
+		case "month":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this)), mod = d.getDate() > Math.round(DateTools.getMonthDays(d) / 2)?1:0;
+			return new Date(d.getFullYear(),d.getMonth() + mod,1,0,0,0).getTime();
+		case "year":
+			var d = (function($this) {
+				var $r;
+				var d1 = new Date();
+				d1.setTime(time);
+				$r = d1;
+				return $r;
+			}(this)), mod = time > new Date(d.getFullYear(),6,2,0,0,0).getTime()?1:0;
+			return new Date(d.getFullYear() + mod,0,1,0,0,0).getTime();
+		default:
+			return 0;
+		}
 	}
 }
 Dates.snapToWeekDay = function(time,day) {
@@ -1059,7 +1124,8 @@ Dates.snapToWeekDay = function(time,day) {
 		return $r;
 	}(this))).getDay();
 	var s = 0;
-	switch(day.toLowerCase()) {
+	var _g = day.toLowerCase();
+	switch(_g) {
 	case "sunday":
 		s = 0;
 		break;
@@ -1113,7 +1179,8 @@ Dynamics.format = function(v,param,params,nullstring,culture) {
 Dynamics.formatf = function(param,params,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
 	return function(v) {
-		var $e = (Type["typeof"](v));
+		var _g = Type["typeof"](v);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
 			return nullstring;
@@ -1124,8 +1191,8 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 		case 3:
 			return Bools.format(v,param,params,culture);
 		case 6:
-			var c = $e[2];
-			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
+			var _g_s0 = $e[2];
+			if(_g_s0 == String) return Strings.formatOne(v,param,params,culture); else if(_g_s0 == Array) return Arrays.format(v,param,params,culture); else if(_g_s0 == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
 			break;
 		case 4:
 			return Objects.format(v,param,params,culture);
@@ -1147,7 +1214,8 @@ Dynamics.interpolatef = function(a,b,equation) {
 	var ta = Type["typeof"](a);
 	var tb = Type["typeof"](b);
 	if(!((js.Boot.__instanceof(a,Float) || js.Boot.__instanceof(a,Int)) && (js.Boot.__instanceof(b,Float) || js.Boot.__instanceof(b,Int))) && !Type.enumEq(ta,tb)) throw new thx.error.Error("arguments a ({0}) and b ({0}) have different types",[a,b],null,{ fileName : "Dynamics.hx", lineNumber : 59, className : "Dynamics", methodName : "interpolatef"});
-	var $e = (ta);
+	var _g = ta;
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 0:
 		return function(_) {
@@ -1163,9 +1231,10 @@ Dynamics.interpolatef = function(a,b,equation) {
 	case 4:
 		return Objects.interpolatef(a,b,equation);
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
-		switch(name) {
+		var _g_s0 = $e[2];
+		var name = Type.getClassName(_g_s0);
+		var _g1 = name;
+		switch(_g1) {
 		case "String":
 			return Strings.interpolatef(a,b,equation);
 		case "Date":
@@ -1179,7 +1248,8 @@ Dynamics.interpolatef = function(a,b,equation) {
 	}
 }
 Dynamics.string = function(v) {
-	var $e = (Type["typeof"](v));
+	var _g = Type["typeof"](v);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 0:
 		return "null";
@@ -1190,19 +1260,20 @@ Dynamics.string = function(v) {
 	case 3:
 		return Bools.format(v);
 	case 4:
-		var keys = Reflect.fields(v);
+		var keys = Objects.keys(v);
 		var result = [];
-		var _g = 0;
-		while(_g < keys.length) {
-			var key = keys[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < keys.length) {
+			var key = keys[_g1];
+			++_g1;
 			result.push(key + " : " + Dynamics.string(Reflect.field(v,key)));
 		}
 		return "{" + result.join(", ") + "}";
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
-		switch(name) {
+		var _g_s0 = $e[2];
+		var name = Type.getClassName(_g_s0);
+		var _g1 = name;
+		switch(_g1) {
 		case "Array":
 			return Arrays.string(v);
 		case "String":
@@ -1216,7 +1287,7 @@ Dynamics.string = function(v) {
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_s0 = $e[2];
 		return Enums.string(v);
 	case 8:
 		return "<unknown>";
@@ -1228,40 +1299,45 @@ Dynamics.compare = function(a,b) {
 	if(null == a && null == b) return 0;
 	if(null == a) return -1;
 	if(null == b) return 1;
-	var $e = (Type["typeof"](a));
+	var _g = Type["typeof"](a);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 1:
+		return Floats.compare(a,b);
 	case 2:
-		return a < b?-1:a > b?1:0;
+		return Floats.compare(a,b);
 	case 3:
-		return a == b?0:a?-1:1;
+		return Bools.compare(a,b);
 	case 4:
 		return Objects.compare(a,b);
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
-		switch(name) {
+		var _g_s0 = $e[2];
+		var name = Type.getClassName(_g_s0);
+		var _g1 = name;
+		switch(_g1) {
 		case "Array":
 			return Arrays.compare(a,b);
 		case "String":
 			return Strings.compare(a,b);
 		case "Date":
-			return Floats.compare(a.getTime(),b.getTime());
+			return Dates.compare(a,b);
 		default:
 			return Strings.compare(Std.string(a),Std.string(b));
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_s0 = $e[2];
 		return Enums.compare(a,b);
 	default:
 		return 0;
 	}
 }
 Dynamics.comparef = function(sample) {
-	var $e = (Type["typeof"](sample));
+	var _g = Type["typeof"](sample);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 1:
+		return Floats.compare;
 	case 2:
 		return Floats.compare;
 	case 3:
@@ -1269,9 +1345,10 @@ Dynamics.comparef = function(sample) {
 	case 4:
 		return Objects.compare;
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
-		switch(name) {
+		var _g_s0 = $e[2];
+		var name = Type.getClassName(_g_s0);
+		var _g1 = name;
+		switch(_g1) {
 		case "Array":
 			return Arrays.compare;
 		case "String":
@@ -1285,7 +1362,7 @@ Dynamics.comparef = function(sample) {
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_s0 = $e[2];
 		return Enums.compare;
 	default:
 		return Dynamics.compare;
@@ -1293,15 +1370,22 @@ Dynamics.comparef = function(sample) {
 }
 Dynamics.clone = function(v,cloneInstances) {
 	if(cloneInstances == null) cloneInstances = false;
-	var $e = (Type["typeof"](v));
+	var _g = Type["typeof"](v);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 0:
 		return null;
 	case 1:
+		return v;
 	case 2:
+		return v;
 	case 3:
+		return v;
 	case 7:
+		var _g_s0 = $e[2];
+		return v;
 	case 8:
+		return v;
 	case 5:
 		return v;
 	case 4:
@@ -1309,27 +1393,30 @@ Dynamics.clone = function(v,cloneInstances) {
 		Objects.copyTo(v,o);
 		return o;
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
-		switch(name) {
+		var _g_s0 = $e[2];
+		var name = Type.getClassName(_g_s0);
+		var _g1 = name;
+		switch(_g1) {
 		case "Array":
 			var src = v, a = [];
-			var _g = 0;
-			while(_g < src.length) {
-				var i = src[_g];
-				++_g;
+			var _g2 = 0;
+			while(_g2 < src.length) {
+				var i = src[_g2];
+				++_g2;
 				a.push(Dynamics.clone(i));
 			}
 			return a;
-		case "String":case "Date":
+		case "String":
+			return v;
+		case "Date":
 			return v;
 		default:
 			if(cloneInstances) {
-				var o = Type.createEmptyInstance(c);
-				var _g = 0, _g1 = Reflect.fields(v);
-				while(_g < _g1.length) {
-					var field = _g1[_g];
-					++_g;
+				var o = Type.createEmptyInstance(_g_s0);
+				var _g2 = 0, _g3 = Reflect.fields(v);
+				while(_g2 < _g3.length) {
+					var field = _g3[_g2];
+					++_g2;
 					o[field] = Dynamics.clone(Reflect.field(v,field));
 				}
 				return o;
@@ -1341,27 +1428,30 @@ Dynamics.clone = function(v,cloneInstances) {
 Dynamics.same = function(a,b) {
 	var ta = Types.typeName(a), tb = Types.typeName(b);
 	if(ta != tb) return false;
-	var $e = (Type["typeof"](a));
+	var _g = Type["typeof"](a);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 2:
 		return Floats.equals(a,b);
 	case 0:
+		return a == b;
 	case 1:
+		return a == b;
 	case 3:
 		return a == b;
 	case 5:
 		return Reflect.compareMethods(a,b);
 	case 6:
-		var c = $e[2];
-		var ca = Type.getClassName(c), cb = Type.getClassName(Type.getClass(b));
+		var _g_s0 = $e[2];
+		var ca = Type.getClassName(_g_s0), cb = Type.getClassName(Type.getClass(b));
 		if(ca != cb) return false;
 		if(js.Boot.__instanceof(a,String) && a != b) return false;
 		if(js.Boot.__instanceof(a,Array)) {
 			var aa = a, ab = b;
 			if(aa.length != ab.length) return false;
-			var _g1 = 0, _g = aa.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = aa.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(aa[i],ab[i])) return false;
 			}
 			return true;
@@ -1371,10 +1461,10 @@ Dynamics.same = function(a,b) {
 			var ha = a, hb = b;
 			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
 			if(ka.length != kb.length) return false;
-			var _g = 0;
-			while(_g < ka.length) {
-				var key = ka[_g];
-				++_g;
+			var _g1 = 0;
+			while(_g1 < ka.length) {
+				var key = ka[_g1];
+				++_g1;
 				if(!hb.exists(key) || !Dynamics.same(ha.get(key),hb.get(key))) return false;
 			}
 			return true;
@@ -1383,18 +1473,18 @@ Dynamics.same = function(a,b) {
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
 			var va = t?Iterators.array(a):Iterators.array($iterator(a)()), vb = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(va.length != vb.length) return false;
-			var _g1 = 0, _g = va.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = va.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(va[i],vb[i])) return false;
 			}
 			return true;
 		}
 		var fields = Type.getInstanceFields(Type.getClass(a));
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < fields.length) {
+			var field = fields[_g1];
+			++_g1;
 			var va = Reflect.field(a,field);
 			if(Reflect.isFunction(va)) continue;
 			var vb = Reflect.field(b,field);
@@ -1402,23 +1492,23 @@ Dynamics.same = function(a,b) {
 		}
 		return true;
 	case 7:
-		var e = $e[2];
-		var ea = Type.getEnumName(e), teb = Type.getEnum(b), eb = Type.getEnumName(teb);
+		var _g_s0 = $e[2];
+		var ea = Type.getEnumName(_g_s0), teb = Type.getEnum(b), eb = Type.getEnumName(teb);
 		if(ea != eb) return false;
 		if(a[1] != b[1]) return false;
 		var pa = a.slice(2), pb = b.slice(2);
-		var _g1 = 0, _g = pa.length;
-		while(_g1 < _g) {
-			var i = _g1++;
+		var _g2 = 0, _g1 = pa.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
 			if(!Dynamics.same(pa[i],pb[i])) return false;
 		}
 		return true;
 	case 4:
 		var fa = Reflect.fields(a), fb = Reflect.fields(b);
-		var _g = 0;
-		while(_g < fa.length) {
-			var field = fa[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < fa.length) {
+			var field = fa[_g1];
+			++_g1;
 			HxOverrides.remove(fb,field);
 			if(!Reflect.hasField(b,field)) return false;
 			var va = Reflect.field(a,field);
@@ -1434,9 +1524,9 @@ Dynamics.same = function(a,b) {
 			var aa = t?Iterators.array(a):Iterators.array($iterator(a)());
 			var ab = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(aa.length != ab.length) return false;
-			var _g1 = 0, _g = aa.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = aa.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(aa[i],ab[i])) return false;
 			}
 			return true;
@@ -1462,9 +1552,9 @@ var Enums = function() { }
 $hxClasses["Enums"] = Enums;
 Enums.__name__ = ["Enums"];
 Enums.string = function(e) {
-	var cons = e[0];
+	var cons = Type.enumConstructor(e);
 	var params = [];
-	var _g = 0, _g1 = e.slice(2);
+	var _g = 0, _g1 = Type.enumParameters(e);
 	while(_g < _g1.length) {
 		var param = _g1[_g];
 		++_g;
@@ -1474,8 +1564,8 @@ Enums.string = function(e) {
 }
 Enums.compare = function(a,b) {
 	var v;
-	if((v = a[1] - b[1]) != 0) return v;
-	return Arrays.compare(a.slice(2),b.slice(2));
+	if((v = Type.enumIndex(a) - Type.enumIndex(b)) != 0) return v;
+	return Arrays.compare(Type.enumParameters(a),Type.enumParameters(b));
 }
 var Floats = function() { }
 $hxClasses["Floats"] = Floats;
@@ -1556,7 +1646,8 @@ Floats.formatf = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"D");
 	var format = params.shift();
 	var decimals = params.length > 0?Std.parseInt(params[0]):null;
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "D":
 		return function(v) {
 			return thx.culture.FormatNumber.decimal(v,decimals,culture);
@@ -1687,7 +1778,8 @@ HxOverrides.dateStr = function(date) {
 	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
 }
 HxOverrides.strDate = function(s) {
-	switch(s.length) {
+	var _g = s.length;
+	switch(_g) {
 	case 8:
 		var k = s.split(":");
 		var d = new Date();
@@ -1793,13 +1885,13 @@ IntHash.prototype = {
 	,h: null
 	,__class__: IntHash
 }
-var IntIter = function(min,max) {
+var IntIterator = function(min,max) {
 	this.min = min;
 	this.max = max;
 };
-$hxClasses["IntIter"] = IntIter;
-IntIter.__name__ = ["IntIter"];
-IntIter.prototype = {
+$hxClasses["IntIterator"] = IntIterator;
+IntIterator.__name__ = ["IntIterator"];
+IntIterator.prototype = {
 	next: function() {
 		return this.min++;
 	}
@@ -1808,7 +1900,7 @@ IntIter.prototype = {
 	}
 	,max: null
 	,min: null
-	,__class__: IntIter
+	,__class__: IntIterator
 }
 var Ints = function() { }
 $hxClasses["Ints"] = Ints;
@@ -2496,7 +2588,8 @@ Objects.format = function(v,param,params,culture) {
 Objects.formatf = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"R");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "O":
 		return function(v) {
 			return Std.string(v);
@@ -2504,10 +2597,10 @@ Objects.formatf = function(param,params,culture) {
 	case "R":
 		return function(v) {
 			var buf = [];
-			var _g = 0, _g1 = Reflect.fields(v);
-			while(_g < _g1.length) {
-				var field = _g1[_g];
-				++_g;
+			var _g1 = 0, _g2 = Reflect.fields(v);
+			while(_g1 < _g2.length) {
+				var field = _g2[_g1];
+				++_g1;
 				buf.push(field + ":" + Dynamics.format(Reflect.field(v,field),null,null,null,culture));
 			}
 			return "{" + buf.join(",") + "}";
@@ -2795,7 +2888,8 @@ Strings.formatOne = function(v,param,params,culture) {
 Strings.formatOnef = function(param,params,culture) {
 	params = thx.culture.FormatParams.params(param,params,"S");
 	var format = params.shift();
-	switch(format) {
+	var _g = format;
+	switch(_g) {
 	case "S":
 		return function(v) {
 			return v;
@@ -3130,7 +3224,8 @@ Type.resolveEnum = function(name) {
 	return e;
 }
 Type.createInstance = function(cl,args) {
-	switch(args.length) {
+	var _g = args.length;
+	switch(_g) {
 	case 0:
 		return new cl();
 	case 1:
@@ -3194,7 +3289,8 @@ Type.getEnumConstructs = function(e) {
 	return a.slice();
 }
 Type["typeof"] = function(v) {
-	switch(typeof(v)) {
+	var _g = typeof(v);
+	switch(_g) {
 	case "boolean":
 		return ValueType.TBool;
 	case "string":
@@ -3267,38 +3363,43 @@ Types.fullName = function(o) {
 Types.typeName = function(o) {
 	return (function($this) {
 		var $r;
-		var $e = (Type["typeof"](o));
-		switch( $e[1] ) {
-		case 0:
-			$r = "null";
-			break;
-		case 1:
-			$r = "Int";
-			break;
-		case 2:
-			$r = "Float";
-			break;
-		case 3:
-			$r = "Bool";
-			break;
-		case 5:
-			$r = "function";
-			break;
-		case 6:
-			var c = $e[2];
-			$r = Type.getClassName(c);
-			break;
-		case 7:
-			var e = $e[2];
-			$r = Type.getEnumName(e);
-			break;
-		case 4:
-			$r = "Object";
-			break;
-		case 8:
-			$r = "Unknown";
-			break;
-		}
+		var _g = Type["typeof"](o);
+		$r = (function($this) {
+			var $r;
+			var $e = (_g);
+			switch( $e[1] ) {
+			case 0:
+				$r = "null";
+				break;
+			case 1:
+				$r = "Int";
+				break;
+			case 2:
+				$r = "Float";
+				break;
+			case 3:
+				$r = "Bool";
+				break;
+			case 5:
+				$r = "function";
+				break;
+			case 6:
+				var _g_s0 = $e[2];
+				$r = Type.getClassName(_g_s0);
+				break;
+			case 7:
+				var _g_s0 = $e[2];
+				$r = Type.getEnumName(_g_s0);
+				break;
+			case 4:
+				$r = "Object";
+				break;
+			case 8:
+				$r = "Unknown";
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -3326,14 +3427,15 @@ Types.sameType = function(a,b) {
 	if(null == a && b == null) return true;
 	if(null == a || b == null) return false;
 	var tb = Type["typeof"](b);
-	var $e = (tb);
+	var _g = tb;
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 6:
-		var c = $e[2];
-		return js.Boot.__instanceof(a,c);
+		var _g_s0 = $e[2];
+		return js.Boot.__instanceof(a,_g_s0);
 	case 7:
-		var e = $e[2];
-		return js.Boot.__instanceof(a,e);
+		var _g_s0 = $e[2];
+		return js.Boot.__instanceof(a,_g_s0);
 	default:
 		return Type["typeof"](a) == tb;
 	}
@@ -3341,29 +3443,150 @@ Types.sameType = function(a,b) {
 Types.isPrimitive = function(v) {
 	return (function($this) {
 		var $r;
-		var $e = (Type["typeof"](v));
-		switch( $e[1] ) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-			$r = true;
-			break;
-		case 5:
-		case 7:
-		case 4:
-		case 8:
-			$r = false;
-			break;
-		case 6:
-			var c = $e[2];
-			$r = Type.getClassName(c) == "String";
-			break;
-		}
+		var _g = Type["typeof"](v);
+		$r = (function($this) {
+			var $r;
+			var $e = (_g);
+			switch( $e[1] ) {
+			case 0:
+				$r = true;
+				break;
+			case 1:
+				$r = true;
+				break;
+			case 2:
+				$r = true;
+				break;
+			case 3:
+				$r = true;
+				break;
+			case 5:
+				$r = false;
+				break;
+			case 7:
+				var _g_s0 = $e[2];
+				$r = false;
+				break;
+			case 4:
+				$r = false;
+				break;
+			case 8:
+				$r = false;
+				break;
+			case 6:
+				var _g_s0 = $e[2];
+				$r = Type.getClassName(_g_s0) == "String";
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 var haxe = {}
+haxe.Http = function(url) {
+	this.url = url;
+	this.headers = new Hash();
+	this.params = new Hash();
+	this.async = true;
+};
+$hxClasses["haxe.Http"] = haxe.Http;
+haxe.Http.__name__ = ["haxe","Http"];
+haxe.Http.requestUrl = function(url) {
+	var h = new haxe.Http(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw e;
+	};
+	h.request(false);
+	return r;
+}
+haxe.Http.prototype = {
+	onStatus: function(status) {
+	}
+	,onError: function(msg) {
+	}
+	,onData: function(data) {
+	}
+	,request: function(post) {
+		var me = this;
+		var r = js.Browser.createXMLHttpRequest();
+		var onreadystatechange = function(_) {
+			if(r.readyState != 4) return;
+			var s = (function($this) {
+				var $r;
+				try {
+					$r = r.status;
+				} catch( e ) {
+					$r = null;
+				}
+				return $r;
+			}(this));
+			if(s == undefined) s = null;
+			if(s != null) me.onStatus(s);
+			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else if(s == null) me.onError("Failed to connect or resolve host"); else {
+				var _g = s;
+				switch(_g) {
+				case 12029:
+					me.onError("Failed to connect to host");
+					break;
+				case 12007:
+					me.onError("Unknown host");
+					break;
+				default:
+					me.onError("Http Error #" + r.status);
+				}
+			}
+		};
+		if(this.async) r.onreadystatechange = onreadystatechange;
+		var uri = this.postData;
+		if(uri != null) post = true; else {
+			var $it0 = this.params.keys();
+			while( $it0.hasNext() ) {
+				var p = $it0.next();
+				if(uri == null) uri = ""; else uri += "&";
+				uri += StringTools.urlEncode(p) + "=" + StringTools.urlEncode(this.params.get(p));
+			}
+		}
+		try {
+			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
+				var question = this.url.split("?").length <= 1;
+				r.open("GET",this.url + (question?"?":"&") + uri,this.async);
+				uri = null;
+			} else r.open("GET",this.url,this.async);
+		} catch( e ) {
+			this.onError(e.toString());
+			return;
+		}
+		if(this.headers.get("Content-Type") == null && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var $it1 = this.headers.keys();
+		while( $it1.hasNext() ) {
+			var h = $it1.next();
+			r.setRequestHeader(h,this.headers.get(h));
+		}
+		r.send(uri);
+		if(!this.async) onreadystatechange(null);
+	}
+	,setPostData: function(data) {
+		this.postData = data;
+	}
+	,setParameter: function(param,value) {
+		this.params.set(param,value);
+	}
+	,setHeader: function(header,value) {
+		this.headers.set(header,value);
+	}
+	,params: null
+	,headers: null
+	,postData: null
+	,async: null
+	,url: null
+	,__class__: haxe.Http
+}
 haxe.Log = function() { }
 $hxClasses["haxe.Log"] = haxe.Log;
 haxe.Log.__name__ = ["haxe","Log"];
@@ -3607,16 +3830,17 @@ js.Boot.__string_rec = function(o,s) {
 	if(s.length >= 5) return "<...>";
 	var t = typeof(o);
 	if(t == "function" && (o.__name__ || o.__ename__)) t = "object";
-	switch(t) {
+	var _g = t;
+	switch(_g) {
 	case "object":
 		if(o instanceof Array) {
 			if(o.__enum__) {
 				if(o.length == 2) return o[0];
 				var str = o[0] + "(";
 				s += "\t";
-				var _g1 = 2, _g = o.length;
-				while(_g1 < _g) {
-					var i = _g1++;
+				var _g2 = 2, _g1 = o.length;
+				while(_g2 < _g1) {
+					var i = _g2++;
 					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
 				}
 				return str + ")";
@@ -3625,9 +3849,9 @@ js.Boot.__string_rec = function(o,s) {
 			var i;
 			var str = "[";
 			s += "\t";
-			var _g = 0;
-			while(_g < l) {
-				var i1 = _g++;
+			var _g1 = 0;
+			while(_g1 < l) {
+				var i1 = _g1++;
 				str += (i1 > 0?",":"") + js.Boot.__string_rec(o[i1],s);
 			}
 			str += "]";
@@ -3692,7 +3916,8 @@ js.Boot.__instanceof = function(o,cl) {
 	} catch( e ) {
 		if(cl == null) return false;
 	}
-	switch(cl) {
+	var _g = cl;
+	switch(_g) {
 	case Int:
 		return Math.ceil(o%2147483648.0) === o;
 	case Float:
@@ -3712,6 +3937,32 @@ js.Boot.__instanceof = function(o,cl) {
 }
 js.Boot.__cast = function(o,t) {
 	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
+}
+js.Browser = function() { }
+$hxClasses["js.Browser"] = js.Browser;
+js.Browser.__name__ = ["js","Browser"];
+js.Browser.getLocalStorage = function() {
+	try {
+		var s = js.Browser.window.localStorage;
+		s.getItem("");
+		return s;
+	} catch( e ) {
+		return null;
+	}
+}
+js.Browser.getSessionStorage = function() {
+	try {
+		var s = js.Browser.window.sessionStorage;
+		s.getItem("");
+		return s;
+	} catch( e ) {
+		return null;
+	}
+}
+js.Browser.createXMLHttpRequest = function() {
+	if(typeof XMLHttpRequest != "undefined") return new XMLHttpRequest();
+	if(typeof ActiveXObject != "undefined") return new ActiveXObject("Microsoft.XMLHTTP");
+	throw "Unable to create XMLHttpRequest object.";
 }
 var rg = {}
 rg.app = {}
@@ -3754,7 +4005,7 @@ rg.app.query.JSBridge.main = function() {
 		return rg.util.Periodicity.format(periodicity,d);
 	}, parse : thx.date.DateParser.parse, snap : Dates.snap};
 	r.info = null != r.info?r.info:{ };
-	r.info.query = { version : "1.3.16.1681"};
+	r.info.query = { version : "1.3.19.1686"};
 	var rand = new thx.math.Random(666);
 	r.math = { setRandomSeed : function(s) {
 		rand = new thx.math.Random(s);
@@ -4256,7 +4507,7 @@ rg.query.BaseQuery.prototype = {
 			while(_g < pairs.length) {
 				var pair = pairs[_g];
 				++_g;
-				out[pair.dst] = Reflect.field(src,pair.src);
+				Reflect.setField(out,pair.dst,Reflect.field(src,pair.src));
 			}
 			return out;
 		});
@@ -4284,9 +4535,74 @@ rg.query.BaseQuery.prototype = {
 			h(stack);
 		});
 	}
-	,load: function(handler) {
+	,request: function(url,options) {
+		if(null == options) options = { type : "application/json", useJsonp : false}; else {
+			if(null == options.type) options.type = "application/json";
+			if(null == options.useJsonp) options.useJsonp = false;
+		}
+		var dataHandler = null;
+		var _g = options.type.toLowerCase(), _g1 = options.useJsonp;
+		switch(_g) {
+		case "json":
+			switch(_g1) {
+			case true:
+				dataHandler = function(data) {
+					return data;
+				};
+				break;
+			case false:
+				dataHandler = function(data) {
+					return thx.json.Json.decode(data);
+				};
+				break;
+			}
+			break;
+		case "application/json":
+			switch(_g1) {
+			case true:
+				dataHandler = function(data) {
+					return data;
+				};
+				break;
+			case false:
+				dataHandler = function(data) {
+					return thx.json.Json.decode(data);
+				};
+				break;
+			}
+			break;
+		case "csv":
+			dataHandler = function(data) {
+				return thx.csv.Csv.decode(data);
+			};
+			break;
+		case "text/csv":
+			dataHandler = function(data) {
+				return thx.csv.Csv.decode(data);
+			};
+			break;
+		default:
+			throw "invalid type format \"" + options.type + "\"";
+		}
+		var stackHandler = function(stack,h) {
+			return function(data) {
+				stack.push(dataHandler(data));
+				h(stack);
+			};
+		}, async = true == options.useJsonp?function(stack,h) {
+			rg.util.Jsonp.get(url,stackHandler(stack,h),function(i,e) {
+			},{ },{ });
+		}:function(stack,h) {
+			var http = new haxe.Http(url);
+			http.async = true;
+			http.onData = stackHandler(stack,h);
+			http.request(false);
+		};
+		return this.stackAsync(async);
+	}
+	,load: function(loader) {
 		return this.stackAsync(function(stack,h) {
-			handler(function(data) {
+			loader(function(data) {
 				stack.push(data);
 				h(stack);
 			});
@@ -4545,7 +4861,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		});
 	}
 	,summarySeries: function(p,keep) {
-		var _g = this;
+		var _g1 = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			if(null == params.type) params.type = "mean";
@@ -4554,15 +4870,16 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 			var tranform = null != params.tag?rg.query.ReportGridTransformers.propertySummarySeriesTagGroupedBy:rg.query.ReportGridTransformers.propertySummarySeries;
 			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			switch(params.type.toLowerCase()) {
+			var _g = params.type.toLowerCase();
+			switch(_g) {
 			case "mean":
-				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				_g1.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			case "standarddeviation":
-				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				_g1.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			case "sum":
-				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
+				_g1.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(tranform,params,keep,handler));
 				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
@@ -4570,7 +4887,7 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 		});
 	}
 	,summary: function(p,keep) {
-		var _g = this;
+		var _g1 = this;
 		keep = null == keep?[]:js.Boot.__instanceof(keep,String)?[keep]:keep;
 		return this.data(null == p?[{ }]:js.Boot.__instanceof(p,Array)?p:[p]).stackCross().asyncEach(function(params,handler) {
 			if(null == params.type) params.type = "mean";
@@ -4579,15 +4896,16 @@ rg.query.ReportGridBaseQuery.prototype = $extend(rg.query.BaseQuery.prototype,{
 			options.property = params.event + rg.query.ReportGridBaseQuery._prefixProperty(params.property);
 			options.periodicity = "single";
 			if(null != params.where) options.where = rg.query.ReportGridBaseQuery._where(params.event,params.where);
-			switch(params.type.toLowerCase()) {
+			var _g = params.type.toLowerCase();
+			switch(_g) {
 			case "mean":
-				_g.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				_g1.executor.propertyMeans(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
 			case "standarddeviation":
-				_g.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				_g1.executor.propertyStandardDeviations(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
 			case "sum":
-				_g.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
+				_g1.executor.propertySums(params.path,options,rg.query.ReportGridBaseQuery._complete(rg.query.ReportGridTransformers.propertySummary,params,keep,handler));
 				break;
 			default:
 				rg.query.ReportGridBaseQuery._error("invalid summary type: '" + params.type + "'");
@@ -4997,7 +5315,8 @@ rg.query.ReportGridTransformers._injectTime = function(o,value,periodicity,timez
 	} else o["time:" + periodicity] = rg.query.ReportGridTransformers._fixDay(value.timestamp,periodicity);
 }
 rg.query.ReportGridTransformers._fixDay = function(timestamp,periodicity) {
-	switch(periodicity) {
+	var _g = periodicity;
+	switch(_g) {
 	case "day":
 		return Dates.snap(timestamp,periodicity,0);
 	default:
@@ -5372,6 +5691,49 @@ rg.storage.MemoryStorage.prototype = {
 	,__class__: rg.storage.MemoryStorage
 }
 rg.util = {}
+rg.util.Jsonp = function() { }
+$hxClasses["rg.util.Jsonp"] = rg.util.Jsonp;
+rg.util.Jsonp.__name__ = ["rg","util","Jsonp"];
+rg.util.Jsonp.get = function(path,success,failure,query,headers) {
+	var api = rg.util.Jsonp.get_api;
+	api(path,{ success : success, failure : failure},query,headers);
+}
+rg.util.Jsonp.post = function(path,content,success,failure,query,headers) {
+	var api = rg.util.Jsonp.post_api;
+	api(path,content,{ success : success, failure : failure},query,headers);
+}
+rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) {
+	if(null == query) query = { };
+	path = rg.util.Urls.addQueryParameters(path,query);
+	if(null == headers) headers = { };
+	var success = actions.success, failure = null == actions.failure?function(_,_1) {
+	}:actions.failure;
+	var random = Math.random() * 214748363 | 0, funcName = "ReportGridChartsJsonpCallback" + random, head = js.Browser.document.head;
+	if(null == head) head = js.Browser.document.getElementsByTagName("head")[0];
+	js.Browser.window[funcName] = function(content1,meta) {
+		if(meta.status.code == 200 || meta.status.code == "OK") success(content1); else failure(meta.status.code,meta.status.reason);
+		head.removeChild(js.Browser.document.getElementById(funcName));
+		js.Browser.window[funcName] = undefined;
+		try{ delete window[funcName]; }catch(e){}
+	};
+	var extraQuery = { };
+	extraQuery.method = method;
+	if(Reflect.fields(headers).length > 0) extraQuery.headers = thx.json.Json.encode(headers);
+	extraQuery.callback = funcName;
+	if(content != null) extraQuery.content = thx.json.Json.encode(content);
+	var fullUrl = rg.util.Urls.addQueryParameters(path,extraQuery);
+	var script = js.Browser.document.createElement("SCRIPT");
+	script.setAttribute("type","text/javascript");
+	script.setAttribute("src",fullUrl);
+	script.setAttribute("id",funcName);
+	head.appendChild(script);
+}
+rg.util.Jsonp.get_api = function(path,actions,query,headers) {
+	rg.util.Jsonp.request_api("GET",path,null,actions,query,headers);
+}
+rg.util.Jsonp.post_api = function(path,content,actions,query,headers) {
+	rg.util.Jsonp.request_api("POST",path,content,actions,query,headers);
+}
 rg.util.Periodicity = function() { }
 $hxClasses["rg.util.Periodicity"] = rg.util.Periodicity;
 rg.util.Periodicity.__name__ = ["rg","util","Periodicity"];
@@ -5382,26 +5744,34 @@ rg.util.Periodicity.defaultPeriodicity = function(span) {
 rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "eternity":case "single":
-			$r = [0.0,0.0];
-			break;
-		case "minute":
-			$r = rg.util.Periodicity.parsePair("6 hours ago","now");
-			break;
-		case "hour":
-			$r = rg.util.Periodicity.parsePair("2 days ago","now");
-			break;
-		case "day":
-			$r = rg.util.Periodicity.parsePair("14 days ago","today");
-			break;
-		case "month":
-			$r = rg.util.Periodicity.parsePair("6 months ago","today");
-			break;
-		case "year":
-			$r = rg.util.Periodicity.parsePair("6 years ago","today");
-			break;
-		}
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "eternity":
+				$r = [0.0,0.0];
+				break;
+			case "single":
+				$r = [0.0,0.0];
+				break;
+			case "minute":
+				$r = rg.util.Periodicity.parsePair("6 hours ago","now");
+				break;
+			case "hour":
+				$r = rg.util.Periodicity.parsePair("2 days ago","now");
+				break;
+			case "day":
+				$r = rg.util.Periodicity.parsePair("14 days ago","today");
+				break;
+			case "month":
+				$r = rg.util.Periodicity.parsePair("6 months ago","today");
+				break;
+			case "year":
+				$r = rg.util.Periodicity.parsePair("6 years ago","today");
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -5417,66 +5787,82 @@ rg.util.Periodicity.calculateBetween = function(a,b,disc) {
 rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "eternity":case "single":
-			$r = 1;
-			break;
-		case "minute":
-			$r = Math.floor((end - start) / 60000);
-			break;
-		case "hour":
-			$r = Math.floor((end - start) / 3600000);
-			break;
-		case "day":
-			$r = Math.floor((end - start) / 86400000);
-			break;
-		case "week":
-			$r = Math.floor((end - start) / 604800000);
-			break;
-		case "month":
-			$r = (function($this) {
-				var $r;
-				var s = (function($this) {
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "eternity":
+				$r = 1;
+				break;
+			case "single":
+				$r = 1;
+				break;
+			case "minute":
+				$r = Math.floor((end - start) / 60000);
+				break;
+			case "hour":
+				$r = Math.floor((end - start) / 3600000);
+				break;
+			case "day":
+				$r = Math.floor((end - start) / 86400000);
+				break;
+			case "week":
+				$r = Math.floor((end - start) / 604800000);
+				break;
+			case "month":
+				$r = (function($this) {
 					var $r;
-					var d = new Date();
-					d.setTime(start);
-					$r = d;
+					var s = (function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(start);
+						$r = d;
+						return $r;
+					}($this)), e = (function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(end);
+						$r = d;
+						return $r;
+					}($this)), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
+					$r = (ey - sy) * 12 + (em - sm);
 					return $r;
-				}($this)), e = (function($this) {
-					var $r;
-					var d = new Date();
-					d.setTime(end);
-					$r = d;
-					return $r;
-				}($this)), sy = s.getFullYear(), ey = e.getFullYear(), sm = s.getMonth(), em = e.getMonth();
-				$r = (ey - sy) * 12 + (em - sm);
-				return $r;
-			}($this));
-			break;
-		case "year":
-			$r = Math.floor(rg.util.Periodicity.unitsBetween(start,end,"month") / 12);
-			break;
-		}
+				}($this));
+				break;
+			case "year":
+				$r = Math.floor(rg.util.Periodicity.unitsBetween(start,end,"month") / 12);
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.util.Periodicity.units = function(value,periodicity) {
 	return rg.util.Periodicity.unitsBetween(0,value,periodicity) + (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "hour":
-			$r = 1;
-			break;
-		default:
-			$r = 0;
-		}
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "hour":
+				$r = 1;
+				break;
+			default:
+				$r = 0;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.util.Periodicity.range = function(start,end,periodicity) {
 	var step = 1000;
-	switch(periodicity) {
-	case "eternity":case "single":
+	var _g = periodicity;
+	switch(_g) {
+	case "eternity":
+		return [0.0];
+	case "single":
 		return [0.0];
 	case "minute":
 		step = 60000;
@@ -5521,51 +5907,59 @@ rg.util.Periodicity.next = function(periodicity,date,step) {
 	if(0 == step) return date;
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "eternity":case "single":
-			$r = date;
-			break;
-		case "minute":
-			$r = date + 60000 * step;
-			break;
-		case "hour":
-			$r = date + 3600000 * step;
-			break;
-		case "day":
-			$r = date + 86400000 * step;
-			break;
-		case "week":
-			$r = date + 604800000 * step;
-			break;
-		case "month":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "eternity":
+				$r = date;
+				break;
+			case "single":
+				$r = date;
+				break;
+			case "minute":
+				$r = date + 60000 * step;
+				break;
+			case "hour":
+				$r = date + 3600000 * step;
+				break;
+			case "day":
+				$r = date + 86400000 * step;
+				break;
+			case "week":
+				$r = date + 604800000 * step;
+				break;
+			case "month":
+				$r = (function($this) {
 					var $r;
-					var d1 = new Date();
-					d1.setTime(date);
-					$r = d1;
-					return $r;
-				}($this)), y = d.getFullYear(), m = d.getMonth() + step;
-				$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
-				return $r;
-			}($this));
-			break;
-		case "year":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
-					var $r;
-					var d1 = new Date();
-					d1.setTime(date);
-					$r = d1;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(date);
+						$r = d1;
+						return $r;
+					}($this)), y = d.getFullYear(), m = d.getMonth() + step;
+					$r = new Date(y,m,d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
 					return $r;
 				}($this));
-				$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
-				return $r;
-			}($this));
-			break;
-		}
+				break;
+			case "year":
+				$r = (function($this) {
+					var $r;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(date);
+						$r = d1;
+						return $r;
+					}($this));
+					$r = new Date(d.getFullYear() + step,d.getMonth(),d.getDay(),d.getHours(),d.getMinutes(),d.getSeconds()).getTime();
+					return $r;
+				}($this));
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -5586,67 +5980,95 @@ rg.util.Periodicity.maxForPeriodicityInSeries = function(arr,periodicity) {
 rg.util.Periodicity.formatf = function(periodicity) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "eternity":
-			$r = function(_) {
-				return "all time";
-			};
-			break;
-		case "single":
-			$r = function(_) {
-				return "period";
-			};
-			break;
-		case "minute":case "hour":
-			$r = function(v) {
-				return thx.culture.FormatDate.timeShort((function($this) {
-					var $r;
-					var d = new Date();
-					d.setTime(v);
-					$r = d;
-					return $r;
-				}(this)));
-			};
-			break;
-		case "day":case "week":
-			$r = function(v) {
-				return thx.culture.FormatDate.dateShort((function($this) {
-					var $r;
-					var d = new Date();
-					d.setTime(v);
-					$r = d;
-					return $r;
-				}(this)));
-			};
-			break;
-		case "month":
-			$r = function(v) {
-				return thx.culture.FormatDate.yearMonth((function($this) {
-					var $r;
-					var d = new Date();
-					d.setTime(v);
-					$r = d;
-					return $r;
-				}(this)));
-			};
-			break;
-		case "year":
-			$r = function(v) {
-				return thx.culture.FormatDate.year((function($this) {
-					var $r;
-					var d = new Date();
-					d.setTime(v);
-					$r = d;
-					return $r;
-				}(this)));
-			};
-			break;
-		}
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "eternity":
+				$r = function(_) {
+					return "all time";
+				};
+				break;
+			case "single":
+				$r = function(_) {
+					return "period";
+				};
+				break;
+			case "minute":
+				$r = function(v) {
+					return thx.culture.FormatDate.timeShort((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			case "hour":
+				$r = function(v) {
+					return thx.culture.FormatDate.timeShort((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			case "day":
+				$r = function(v) {
+					return thx.culture.FormatDate.dateShort((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			case "week":
+				$r = function(v) {
+					return thx.culture.FormatDate.dateShort((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			case "month":
+				$r = function(v) {
+					return thx.culture.FormatDate.yearMonth((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			case "year":
+				$r = function(v) {
+					return thx.culture.FormatDate.year((function($this) {
+						var $r;
+						var d = new Date();
+						d.setTime(v);
+						$r = d;
+						return $r;
+					}(this)));
+				};
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.util.Periodicity.format = function(periodicity,v) {
-	switch(periodicity) {
+	var _g = periodicity;
+	switch(_g) {
 	case "eternity":
 		return "all time";
 	case "single":
@@ -5667,7 +6089,15 @@ rg.util.Periodicity.format = function(periodicity,v) {
 			$r = d;
 			return $r;
 		}(this)));
-	case "day":case "week":
+	case "day":
+		return thx.culture.FormatDate.dateShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
+	case "week":
 		return thx.culture.FormatDate.dateShort((function($this) {
 			var $r;
 			var d = new Date();
@@ -5696,8 +6126,11 @@ rg.util.Periodicity.format = function(periodicity,v) {
 	}
 }
 rg.util.Periodicity.smartFormat = function(periodicity,v) {
-	switch(periodicity) {
-	case "eternity":case "single":
+	var _g = periodicity;
+	switch(_g) {
+	case "eternity":
+		return "all time";
+	case "single":
 		return "all time";
 	case "minute":
 		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort((function($this) {
@@ -5748,119 +6181,143 @@ rg.util.Periodicity.smartFormat = function(periodicity,v) {
 rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "eternity":case "single":
-			$r = 0 == v;
-			break;
-		case "minute":
-			$r = 0 == v % 60000;
-			break;
-		case "hour":
-			$r = 0 == v % 3600000;
-			break;
-		case "day":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "eternity":
+				$r = 0 == v;
+				break;
+			case "single":
+				$r = 0 == v;
+				break;
+			case "minute":
+				$r = 0 == v % 60000;
+				break;
+			case "hour":
+				$r = 0 == v % 3600000;
+				break;
+			case "day":
+				$r = (function($this) {
 					var $r;
-					var d1 = new Date();
-					d1.setTime(v);
-					$r = d1;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(v);
+						$r = d1;
+						return $r;
+					}($this));
+					$r = 0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
 					return $r;
 				}($this));
-				$r = 0 == d.getHours() && 0 == d.getMinutes() && 0 == d.getSeconds();
-				return $r;
-			}($this));
-			break;
-		case "week":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
+				break;
+			case "week":
+				$r = (function($this) {
 					var $r;
-					var d1 = new Date();
-					d1.setTime(v);
-					$r = d1;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(v);
+						$r = d1;
+						return $r;
+					}($this));
+					$r = 0 == d.getDay();
 					return $r;
 				}($this));
-				$r = 0 == d.getDay();
-				return $r;
-			}($this));
-			break;
-		case "month":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
+				break;
+			case "month":
+				$r = (function($this) {
 					var $r;
-					var d1 = new Date();
-					d1.setTime(v);
-					$r = d1;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(v);
+						$r = d1;
+						return $r;
+					}($this));
+					$r = 1 == d.getDate();
 					return $r;
 				}($this));
-				$r = 1 == d.getDate();
-				return $r;
-			}($this));
-			break;
-		case "year":
-			$r = (function($this) {
-				var $r;
-				var d = (function($this) {
+				break;
+			case "year":
+				$r = (function($this) {
 					var $r;
-					var d1 = new Date();
-					d1.setTime(v);
-					$r = d1;
+					var d = (function($this) {
+						var $r;
+						var d1 = new Date();
+						d1.setTime(v);
+						$r = d1;
+						return $r;
+					}($this));
+					$r = 1 == d.getDate() && 0 == d.getMonth();
 					return $r;
 				}($this));
-				$r = 1 == d.getDate() && 0 == d.getMonth();
-				return $r;
-			}($this));
-			break;
-		default:
-			$r = false;
-		}
+				break;
+			default:
+				$r = false;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.util.Periodicity.nextPeriodicity = function(periodicity) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "minute":
-			$r = "hour";
-			break;
-		case "hour":
-			$r = "day";
-			break;
-		case "day":case "week":
-			$r = "month";
-			break;
-		case "month":
-			$r = "year";
-			break;
-		default:
-			$r = "year";
-		}
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "minute":
+				$r = "hour";
+				break;
+			case "hour":
+				$r = "day";
+				break;
+			case "day":
+				$r = "month";
+				break;
+			case "week":
+				$r = "month";
+				break;
+			case "month":
+				$r = "year";
+				break;
+			default:
+				$r = "year";
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.util.Periodicity.prevPeriodicity = function(periodicity) {
 	return (function($this) {
 		var $r;
-		switch(periodicity) {
-		case "minute":
-			$r = "hour";
-			break;
-		case "hour":
-			$r = "minute";
-			break;
-		case "day":
-			$r = "hour";
-			break;
-		case "week":case "month":
-			$r = "day";
-			break;
-		default:
-			$r = "minute";
-		}
+		var _g = periodicity;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "minute":
+				$r = "hour";
+				break;
+			case "hour":
+				$r = "minute";
+				break;
+			case "day":
+				$r = "hour";
+				break;
+			case "week":
+				$r = "day";
+				break;
+			case "month":
+				$r = "day";
+				break;
+			default:
+				$r = "minute";
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -5890,7 +6347,301 @@ rg.util.Periodicity.dateUtc = function(v) {
 rg.util.Periodicity.isValidGroupBy = function(value) {
 	return Arrays.exists(rg.util.Periodicity.validGroupValues,value);
 }
+rg.util.Urls = function() { }
+$hxClasses["rg.util.Urls"] = rg.util.Urls;
+rg.util.Urls.__name__ = ["rg","util","Urls"];
+rg.util.Urls.addQueryParameters = function(url,query) {
+	var suffix = url.indexOf("?") < 0?"?":"&", queries = [];
+	var _g = 0, _g1 = Reflect.fields(query);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		var value = Std.string(Reflect.field(query,key));
+		queries.push(key + "=" + StringTools.urlEncode(value));
+	}
+	if(queries.length == 0) return url; else return url + suffix + queries.join("&");
+}
+rg.util.Urls.parseQueryParameters = function(url) {
+	var index = url.indexOf("?");
+	if(index < 0) return { };
+	var query = HxOverrides.substr(url,index + 1,null), keyValuePairs = query.split("&"), parameters = { };
+	var _g = 0;
+	while(_g < keyValuePairs.length) {
+		var pair = keyValuePairs[_g];
+		++_g;
+		var split = pair.split("="), key = split[0], value = null == split[1]?null:StringTools.urlDecode(split[1]);
+		parameters[key] = value;
+	}
+	return parameters;
+}
 var thx = {}
+thx.csv = {}
+thx.csv.Csv = function() { }
+$hxClasses["thx.csv.Csv"] = thx.csv.Csv;
+thx.csv.Csv.__name__ = ["thx","csv","Csv"];
+thx.csv.Csv.encode = function(value,delimiter,nulltoempty,newline) {
+	var handler = new thx.csv.CsvEncoder(delimiter,nulltoempty,newline);
+	new thx.data.ValueEncoder(handler).encode(value);
+	return handler.encodedString;
+}
+thx.csv.Csv.decode = function(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace) {
+	var handler = new thx.data.ValueHandler();
+	new thx.csv.CsvDecoder(handler,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace).decode(value);
+	return handler.value;
+}
+thx.csv.Csv.decodeObjects = function(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace) {
+	var values = thx.csv.Csv.decode(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace), headers = values.shift().map(function(v,_) {
+		return "" + v;
+	}), len = headers.length;
+	return values.map(function(arr,_) {
+		var ob = { };
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			ob[headers[i]] = arr[i];
+		}
+		return ob;
+	});
+}
+thx.csv.CsvDecoder = function(handler,check_type,delimiter,emptytonull,newline,quote,doublequotations,trim_whitespace) {
+	if(trim_whitespace == null) trim_whitespace = true;
+	if(doublequotations == null) doublequotations = true;
+	if(quote == null) quote = "\"";
+	if(newline == null) newline = "\r\n|\n|\r";
+	if(emptytonull == null) emptytonull = false;
+	if(delimiter == null) delimiter = ",";
+	if(check_type == null) check_type = true;
+	this.handler = handler;
+	this.delimiter = delimiter;
+	this.emptytonull = emptytonull;
+	this.quote = quote;
+	this.doublequotations = doublequotations;
+	this.trim_whitespace = trim_whitespace;
+	this.check_type = check_type;
+	if(newline != "\r\n|\n|\r") newline = thx.text.ERegs.escapeERegChars(newline);
+	this.newline = newline;
+	this._end = new EReg("(" + thx.text.ERegs.escapeERegChars(delimiter) + "|" + newline + "|$)","");
+};
+$hxClasses["thx.csv.CsvDecoder"] = thx.csv.CsvDecoder;
+thx.csv.CsvDecoder.__name__ = ["thx","csv","CsvDecoder"];
+thx.csv.CsvDecoder.prototype = {
+	typeString: function(s) {
+		this.handler.arrayItemStart();
+		if(s == "" && this.emptytonull) this.handler.valueNull(); else this.handler.valueString(s);
+		this.handler.arrayItemEnd();
+	}
+	,typeDate: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueDate(Dates.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeBool: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueBool(Bools.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeFloat: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueFloat(Floats.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeCultureFloat: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueFloat(thx.number.NumberParser.parse(s,thx.culture.Culture.get_defaultCulture()));
+		this.handler.arrayItemEnd();
+	}
+	,typeInt: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueInt(Ints.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeToken: function(s) {
+		if(!this.check_type) this.typeString(s); else if(Ints.canParse(s)) this.typeInt(s); else if(Floats.canParse(s)) this.typeFloat(s); else if(Bools.canParse(s)) this.typeBool(s); else if(Dates.canParse(s)) this.typeDate(s); else this.typeString(s);
+	}
+	,getTyper: function(s) {
+		var typer = this._typers[this.column];
+		if(null == typer) {
+			if(s == "") return $bind(this,this.typeToken);
+			if(!this.check_type) typer = this._typers[this.column] = $bind(this,this.typeString); else if(Ints.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeInt); else if(thx.number.NumberParser.canParse(s,thx.culture.Culture.get_defaultCulture())) typer = this._typers[this.column] = $bind(this,this.typeCultureFloat); else if(Floats.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeFloat); else if(Bools.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeBool); else if(Dates.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeDate); else typer = this._typers[this.column] = $bind(this,this.typeString);
+		}
+		return typer;
+	}
+	,error: function(e) {
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("invalid string value '{0}' at line {1}, column {2}",[Strings.ellipsis(e,50),$this.line,$this.column],null,{ fileName : "CsvDecoder.hx", lineNumber : 128, className : "thx.csv.CsvDecoder", methodName : "error"});
+			return $r;
+		}(this));
+	}
+	,parseValue: function() {
+		if(HxOverrides.substr(this._s,0,1) == this.quote) {
+			var pos = this._s.indexOf(this.quote,1);
+			if(pos != -1) {
+				if(this.doublequotations) while(HxOverrides.substr(this._s,pos + 1,1) == this.quote) {
+					pos = this._s.indexOf(this.quote,pos + 2);
+					if(pos == -1) {
+						pos = this._s.length;
+						break;
+					}
+				}
+			} else pos = this._s.length;
+			var v = HxOverrides.substr(this._s,1,pos - 1);
+			this._s = HxOverrides.substr(this._s,pos + 1,null);
+			this.typeString(StringTools.replace(v,this.quote + this.quote,this.quote));
+			if(!this._end.match(this._s)) this.error(this._s);
+			this._s = this._end.matchedRight();
+			return this._end.matched(0) == this.delimiter;
+		}
+		if(!this._end.match(this._s)) this.error(this._s);
+		this._s = this._end.matchedRight();
+		if(this.line == 1) {
+			var v = this._end.matchedLeft();
+			if(this.trim_whitespace) v = StringTools.trim(v);
+			this.typeToken(v);
+		} else {
+			var v = this._end.matchedLeft();
+			if(this.trim_whitespace) v = StringTools.trim(v);
+			(this.getTyper(v))(v);
+		}
+		if(this._end.matched(0) == this.delimiter) return true; else {
+			this._s = StringTools.ltrim(this._s);
+			return false;
+		}
+	}
+	,parseLine: function() {
+		this.handler.arrayItemStart();
+		this.column = 1;
+		this.handler.arrayStart();
+		while(this.parseValue()) this.column++;
+		this.handler.arrayEnd();
+		this.line++;
+		this.handler.arrayItemEnd();
+	}
+	,decode: function(s) {
+		this._s = s;
+		this._typers = [];
+		this.line = 1;
+		this.handler.start();
+		this.handler.arrayStart();
+		while(this._s.length > 0) this.parseLine();
+		this.handler.arrayEnd();
+		this.handler.end();
+	}
+	,_typers: null
+	,_end: null
+	,_s: null
+	,handler: null
+	,check_type: null
+	,column: null
+	,line: null
+	,trim_whitespace: null
+	,doublequotations: null
+	,quote: null
+	,newline: null
+	,emptytonull: null
+	,delimiter: null
+	,__class__: thx.csv.CsvDecoder
+}
+thx.data = {}
+thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
+thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
+thx.data.IDataHandler.prototype = {
+	comment: null
+	,valueBool: null
+	,valueNull: null
+	,valueFloat: null
+	,valueInt: null
+	,valueString: null
+	,valueDate: null
+	,arrayEnd: null
+	,arrayItemEnd: null
+	,arrayItemStart: null
+	,arrayStart: null
+	,objectEnd: null
+	,objectFieldEnd: null
+	,objectFieldStart: null
+	,objectStart: null
+	,end: null
+	,start: null
+	,__class__: thx.data.IDataHandler
+}
+thx.csv.CsvEncoder = function(delimiter,nulltoempty,newline) {
+	if(newline == null) newline = "\n";
+	if(nulltoempty == null) nulltoempty = true;
+	if(delimiter == null) delimiter = ",";
+	this.delimiter = delimiter;
+	this.nulltoempty = nulltoempty;
+	this.newline = newline;
+	this.re = new EReg("(" + thx.text.ERegs.escapeERegChars(delimiter) + "|\n\r|\n|\r|\")","");
+};
+$hxClasses["thx.csv.CsvEncoder"] = thx.csv.CsvEncoder;
+thx.csv.CsvEncoder.__name__ = ["thx","csv","CsvEncoder"];
+thx.csv.CsvEncoder.__interfaces__ = [thx.data.IDataHandler];
+thx.csv.CsvEncoder.prototype = {
+	comment: function(s) {
+	}
+	,valueBool: function(b) {
+		this.buf.b += Std.string(b?"true":"false");
+	}
+	,valueNull: function() {
+		if(!this.nulltoempty) this.buf.b += "null";
+	}
+	,valueFloat: function(f) {
+		this.buf.b += Std.string(f);
+	}
+	,valueInt: function(i) {
+		this.buf.b += Std.string(i);
+	}
+	,valueString: function(s) {
+		if(this.re.match(s)) this.buf.b += Std.string("\"" + StringTools.replace(s,"\"","\"\"") + "\""); else this.buf.b += Std.string(s);
+	}
+	,valueDate: function(d) {
+		if(d.getSeconds() == 0 && d.getMinutes() == 0 && d.getHours() == 0) this.buf.b += Std.string(Dates.format(d,"C",["%Y-%m-%d"])); else this.buf.b += Std.string(Dates.format(d,"C",["%Y-%m-%d %H:%M:%S"]));
+	}
+	,arrayEnd: function() {
+		if(!this.lineContext) this.lineContext = true;
+	}
+	,arrayItemEnd: function() {
+	}
+	,arrayItemStart: function() {
+		if(this.lineContext) {
+			this.lineContext = false;
+			this.firstValue = true;
+			if(this.firstLine) this.firstLine = false; else this.buf.b += Std.string(this.newline);
+		} else if(this.firstValue) this.firstValue = false; else this.buf.b += Std.string(this.delimiter);
+	}
+	,arrayStart: function() {
+	}
+	,objectEnd: function() {
+	}
+	,objectFieldEnd: function() {
+	}
+	,objectFieldStart: function(name) {
+	}
+	,objectStart: function() {
+		throw new thx.error.Error("objects cannot be encoded to CSV",null,null,{ fileName : "CsvEncoder.hx", lineNumber : 48, className : "thx.csv.CsvEncoder", methodName : "objectStart"});
+	}
+	,end: function() {
+		this.encodedString = this.buf.b;
+	}
+	,start: function() {
+		this.buf = new StringBuf();
+		this.firstLine = true;
+		this.lineContext = true;
+	}
+	,firstValue: null
+	,firstLine: null
+	,valueContext: null
+	,lineContext: null
+	,buf: null
+	,re: null
+	,encodedString: null
+	,newline: null
+	,nulltoempty: null
+	,delimiter: null
+	,__class__: thx.csv.CsvEncoder
+}
 thx.culture = {}
 thx.culture.Info = function() { }
 $hxClasses["thx.culture.Info"] = thx.culture.Info;
@@ -5982,14 +6733,18 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 		}
 		pos++;
 		c = pattern.charAt(pos);
-		switch(c) {
+		var _g = c;
+		switch(_g) {
 		case "a":
 			buf.b += Std.string(info.abbrDays[date.getDay()]);
 			break;
 		case "A":
 			buf.b += Std.string(info.days[date.getDay()]);
 			break;
-		case "b":case "h":
+		case "b":
+			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
+			break;
+		case "h":
 			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
 			break;
 		case "B":
@@ -6440,30 +7195,6 @@ thx.cultures.EnUS.__super__ = thx.culture.Culture;
 thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 	__class__: thx.cultures.EnUS
 });
-thx.data = {}
-thx.data.IDataHandler = function() { }
-$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
-thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
-thx.data.IDataHandler.prototype = {
-	comment: null
-	,valueBool: null
-	,valueNull: null
-	,valueFloat: null
-	,valueInt: null
-	,valueString: null
-	,valueDate: null
-	,arrayEnd: null
-	,arrayItemEnd: null
-	,arrayItemStart: null
-	,arrayStart: null
-	,objectEnd: null
-	,objectFieldEnd: null
-	,objectFieldStart: null
-	,objectStart: null
-	,end: null
-	,start: null
-	,__class__: thx.data.IDataHandler
-}
 thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
@@ -6517,7 +7248,8 @@ thx.data.ValueEncoder.prototype = {
 		this.handler.objectEnd();
 	}
 	,encodeValue: function(o) {
-		var $e = (Type["typeof"](o));
+		var _g = Type["typeof"](o);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
 			this.handler.valueNull();
@@ -6538,12 +7270,12 @@ thx.data.ValueEncoder.prototype = {
 			throw new thx.error.Error("unable to encode TFunction type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 39, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 6:
-			var c = $e[2];
-			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			var _g_s0 = $e[2];
+			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(_g_s0),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
-			var e = $e[2];
-			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(e),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			var _g_s0 = $e[2];
+			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(_g_s0),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 8:
 			throw new thx.error.Error("unable to encode TUnknown type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 57, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
@@ -6680,20 +7412,30 @@ thx.date.DateParser.parse = function(s,d) {
 		year = d.getFullYear();
 		month = d.getMonth();
 		day = d.getDate();
-		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) switch(v.toLowerCase()) {
-		case "now":case "this second":
-			if(null == time.matched) {
-				time.hour = d.getHours();
-				time.minute = d.getMinutes();
-				time.second = d.getSeconds();
+		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) {
+			var _g = v.toLowerCase();
+			switch(_g) {
+			case "now":
+				if(null == time.matched) {
+					time.hour = d.getHours();
+					time.minute = d.getMinutes();
+					time.second = d.getSeconds();
+				}
+				break;
+			case "this second":
+				if(null == time.matched) {
+					time.hour = d.getHours();
+					time.minute = d.getMinutes();
+					time.second = d.getSeconds();
+				}
+				break;
+			case "tomorrow":
+				day += 1;
+				break;
+			case "yesterday":
+				day -= 1;
+				break;
 			}
-			break;
-		case "tomorrow":
-			day += 1;
-			break;
-		case "yesterday":
-			day -= 1;
-			break;
 		} else if(null != (v = thx.date.DateParser.absdateexp.matched(3))) {
 			var t = thx.date.DateParser.absdateexp.matched(2), v1 = thx.date.DateParser.months.indexOf(v.toLowerCase());
 			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
@@ -6733,15 +7475,42 @@ thx.date.DateParser.parse = function(s,d) {
 			dir = null != (v = thx.date.DateParser.relexp.matched(6))?v:"after";
 		}
 		dir = dir.toLowerCase();
-		switch(dir) {
-		case "plus":case "+":case "from":case "hence":case "after":
+		var _g = dir;
+		switch(_g) {
+		case "plus":
 			break;
-		case "minus":case "-":case "before":case "ago":
+		case "+":
+			break;
+		case "from":
+			break;
+		case "hence":
+			break;
+		case "after":
+			break;
+		case "minus":
+			qt = -qt;
+			break;
+		case "-":
+			qt = -qt;
+			break;
+		case "before":
+			qt = -qt;
+			break;
+		case "ago":
 			qt = -qt;
 			break;
 		}
-		switch(dir) {
-		case "ago":case "in":
+		var _g1 = dir;
+		switch(_g1) {
+		case "ago":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+				time.matched = "x";
+			}
+			break;
+		case "in":
 			if(null == time.matched) {
 				time.hour = d.getHours();
 				time.minute = d.getMinutes();
@@ -6750,26 +7519,48 @@ thx.date.DateParser.parse = function(s,d) {
 			}
 			break;
 		}
-		switch(period.toLowerCase()) {
-		case "second":case "seconds":
+		var _g2 = period.toLowerCase();
+		switch(_g2) {
+		case "second":
 			time.second += qt;
 			break;
-		case "minute":case "minutes":
+		case "seconds":
+			time.second += qt;
+			break;
+		case "minute":
 			time.minute += qt;
 			break;
-		case "hour":case "hours":
+		case "minutes":
+			time.minute += qt;
+			break;
+		case "hour":
 			time.hour += qt;
 			break;
-		case "day":case "days":
+		case "hours":
+			time.hour += qt;
+			break;
+		case "day":
 			day += qt;
 			break;
-		case "week":case "weeks":
+		case "days":
+			day += qt;
+			break;
+		case "week":
 			day += qt * 7;
 			break;
-		case "month":case "months":
+		case "weeks":
+			day += qt * 7;
+			break;
+		case "month":
 			month += qt;
 			break;
-		case "year":case "years":
+		case "months":
+			month += qt;
+			break;
+		case "year":
+			year += qt;
+			break;
+		case "years":
 			year += qt;
 			break;
 		}
@@ -6799,31 +7590,52 @@ thx.date.DateParser.parseTime = function(s) {
 	} else if(null != (v = thx.date.DateParser.timeexp.matched(8))) {
 		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(10));
 		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(9));
-	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) switch(v.toLowerCase()) {
-	case "evening":
-		result.hour = 17;
-		break;
-	case "morning":
-		result.hour = 8;
-		break;
-	case "afternoon":
-		result.hour = 14;
-		break;
-	case "sunsrise":case "dawn":
-		result.hour = 6;
-		break;
-	case "sunset":case "dusk":
-		result.hour = 19;
-		break;
-	case "noon":case "midday":case "mid-day":
-		result.hour = 12;
-		break;
-	case "mid-night":case "midnight":
-		result.hour = 23;
-		result.minute = 59;
-		result.second = 59;
-		result.millis = 0.999;
-		break;
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) {
+		var _g = v.toLowerCase();
+		switch(_g) {
+		case "evening":
+			result.hour = 17;
+			break;
+		case "morning":
+			result.hour = 8;
+			break;
+		case "afternoon":
+			result.hour = 14;
+			break;
+		case "sunsrise":
+			result.hour = 6;
+			break;
+		case "dawn":
+			result.hour = 6;
+			break;
+		case "sunset":
+			result.hour = 19;
+			break;
+		case "dusk":
+			result.hour = 19;
+			break;
+		case "noon":
+			result.hour = 12;
+			break;
+		case "midday":
+			result.hour = 12;
+			break;
+		case "mid-day":
+			result.hour = 12;
+			break;
+		case "mid-night":
+			result.hour = 23;
+			result.minute = 59;
+			result.second = 59;
+			result.millis = 0.999;
+			break;
+		case "midnight":
+			result.hour = 23;
+			result.minute = 59;
+			result.second = 59;
+			result.millis = 0.999;
+			break;
+		}
 	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 406, className : "thx.date.DateParser", methodName : "parseTime"});
 	return result;
 }
@@ -6839,13 +7651,24 @@ thx.date.DateParser.next = function(s) {
 thx.date.DateParser.plusPm = function(s) {
 	if(null == s) return 0; else return (function($this) {
 		var $r;
-		switch(s.toLowerCase()) {
-		case "pm":case "evening":case "afternoon":
-			$r = 12;
-			break;
-		default:
-			$r = 0;
-		}
+		var _g = s.toLowerCase();
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "pm":
+				$r = 12;
+				break;
+			case "evening":
+				$r = 12;
+				break;
+			case "afternoon":
+				$r = 12;
+				break;
+			default:
+				$r = 0;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -6917,7 +7740,7 @@ thx.json.Json.encode = function(value) {
 thx.json.Json.decode = function(value) {
 	if(null != thx.json.Json.nativeDecoder) return thx.json.Json.nativeDecoder(value);
 	var handler = new thx.data.ValueHandler();
-	var r = new thx.json.JsonDecoder(handler).decode(value);
+	new thx.json.JsonDecoder(handler).decode(value);
 	return handler.value;
 }
 thx.json.JsonDecoder = function(handler,tabsize) {
@@ -6930,7 +7753,7 @@ thx.json.JsonDecoder.__name__ = ["thx","json","JsonDecoder"];
 thx.json.JsonDecoder.prototype = {
 	error: function(msg) {
 		var context = this.pos == this.src.length?"":"\nrest: " + (null != this["char"]?this["char"]:"") + HxOverrides.substr(this.src,this.pos,null) + "...";
-		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 358, className : "thx.json.JsonDecoder", methodName : "error"});
+		throw new thx.error.Error("error at L {0} C {1}: {2}{3}",[this.line,this.col,msg,context],null,{ fileName : "JsonDecoder.hx", lineNumber : 357, className : "thx.json.JsonDecoder", methodName : "error"});
 	}
 	,parseDigits: function(atleast) {
 		if(atleast == null) atleast = 0;
@@ -7014,7 +7837,8 @@ thx.json.JsonDecoder.prototype = {
 				var c = this.readChar();
 				this.col++;
 				if(esc) {
-					switch(c) {
+					var _g = c;
+					switch(_g) {
 					case "\"":
 						buf += "\"";
 						break;
@@ -7046,15 +7870,18 @@ thx.json.JsonDecoder.prototype = {
 						this.error("unexpected char " + c);
 					}
 					esc = false;
-				} else switch(c) {
-				case "\\":
-					esc = true;
-					break;
-				case "\"":
-					throw "__break__";
-					break;
-				default:
-					buf += c;
+				} else {
+					var _g = c;
+					switch(_g) {
+					case "\\":
+						esc = true;
+						break;
+					case "\"":
+						throw "__break__";
+						break;
+					default:
+						buf += c;
+					}
 				}
 			}
 		} catch( e ) { if( e != "__break__" ) throw e; }
@@ -7117,27 +7944,32 @@ thx.json.JsonDecoder.prototype = {
 	}
 	,parse: function() {
 		var c = this.readChar();
-		switch(c) {
+		var _g = c;
+		switch(_g) {
 		case "{":
 			this.col++;
 			this.ignoreWhiteSpace();
-			return this.parseObject();
+			this.parseObject();
+			break;
 		case "[":
 			this.col++;
 			this.ignoreWhiteSpace();
-			return this.parseArray();
+			this.parseArray();
+			break;
 		case "\"":
 			this["char"] = c;
-			return this.parseString();
+			this.parseString();
+			break;
 		default:
 			this["char"] = c;
-			return this.parseValue();
+			this.parseValue();
 		}
 	}
 	,ignoreWhiteSpace: function() {
 		while(this.pos < this.src.length) {
 			var c = this.readChar();
-			switch(c) {
+			var _g = c;
+			switch(_g) {
 			case " ":
 				this.col++;
 				break;
@@ -7163,10 +7995,9 @@ thx.json.JsonDecoder.prototype = {
 		this["char"] = null;
 		this.pos = 0;
 		this.ignoreWhiteSpace();
-		var p = null;
 		this.handler.start();
 		try {
-			p = this.parse();
+			this.parse();
 		} catch( e ) {
 			if( js.Boot.__instanceof(e,thx.json._JsonDecoder.StreamError) ) {
 				this.error("unexpected end of stream");
@@ -7344,6 +8175,80 @@ thx.math.Random.prototype = {
 	,seed: null
 	,__class__: thx.math.Random
 }
+thx.number = {}
+thx.number.NumberParser = function() { }
+$hxClasses["thx.number.NumberParser"] = thx.number.NumberParser;
+thx.number.NumberParser.__name__ = ["thx","number","NumberParser"];
+thx.number.NumberParser.parse = function(val,cul) {
+	if(cul == null) cul = thx.culture.Culture.get_defaultCulture();
+	var reg = thx.number.NumberParser.cultureNumberEReg(cul);
+	var fval = val;
+	var nval = Math.NaN;
+	var ni = cul.number;
+	var gsep = thx.text.ERegs.escapeERegChars(ni.groupsSeparator);
+	var dsep = thx.text.ERegs.escapeERegChars(ni.decimalsSeparator);
+	if(thx.number.NumberParser.canParse(val,cul)) {
+		fval = new EReg(gsep,"gi").replace(fval,"");
+		fval = new EReg(dsep,"gi").replace(fval,".");
+		nval = Std.parseFloat(fval);
+		if(new EReg(thx.text.ERegs.escapeERegChars(cul.signNeg),"").match(val)) {
+			if(nval > 0) nval *= -1;
+		}
+	}
+	return nval;
+}
+thx.number.NumberParser.cultureNumberEReg = function(cul) {
+	var ni = cul.number;
+	var groups = ni.groups.slice();
+	var digits = "";
+	var gsep = thx.text.ERegs.escapeERegChars(ni.groupsSeparator);
+	var dsep = thx.text.ERegs.escapeERegChars(ni.decimalsSeparator);
+	if(cul.digits != null) throw "unsupported digit characters"; else digits = "[0-9]";
+	var regex = new StringBuf();
+	regex.b += "(";
+	var group_length = 0;
+	if(groups.length > 2) throw "too many groups!";
+	if(groups.length == 2) {
+		if(groups[1] == 0) regex.b += Std.string("(" + digits + "*" + gsep + ")"); else {
+			regex.b += Std.string("((" + digits + "{1," + groups[1] + "}" + gsep + ")");
+			regex.b += Std.string("(" + digits + "{" + groups[1] + "}" + gsep + ")*" + digits + "{" + groups[0] + "})|");
+		}
+		if(groups[0] == 0) regex.b += Std.string("(" + digits + "*" + gsep + ")"); else regex.b += Std.string("(" + digits + "+)");
+	}
+	if(groups.length == 1) {
+		group_length = groups[0];
+		regex.b += Std.string("((" + digits + "{1," + groups[0] + "})");
+		regex.b += Std.string("(" + gsep + digits + "{" + groups[0] + "}" + ")+)|");
+		regex.b += Std.string("(" + digits + "+)");
+	}
+	regex.b += ")";
+	var last_group = 0;
+	regex.b += Std.string("(" + dsep + digits + "*)?");
+	regex.b += "([eE][+\\-]?\\d+)?";
+	var reg_string = regex.b;
+	var negative = false;
+	if(ni.patternNegative != "-n") {
+		var neg_match = new EReg("([^n]+)","g").replace(thx.text.ERegs.escapeERegChars(ni.patternNegative),"($1)?");
+		reg_string = new EReg("n","").replace(neg_match,reg_string);
+	} else reg_string = "[+-]?" + reg_string;
+	reg_string = "^" + reg_string + "$";
+	var reg = new EReg(reg_string,"gi");
+	return reg;
+}
+thx.number.NumberParser.canParse = function(val,cul) {
+	if(cul == null) cul = thx.culture.Culture.get_defaultCulture();
+	var reg = thx.number.NumberParser.cultureNumberEReg(cul);
+	if(reg.match(val)) return true; else return false;
+}
+thx.text = {}
+thx.text.ERegs = function() { }
+$hxClasses["thx.text.ERegs"] = thx.text.ERegs;
+thx.text.ERegs.__name__ = ["thx","text","ERegs"];
+thx.text.ERegs.escapeERegChars = function(s) {
+	return thx.text.ERegs._escapePattern.customReplace(s,function(e) {
+		return "\\" + e.matched(0);
+	});
+}
 thx.translation = {}
 thx.translation.ITranslation = function() { }
 $hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
@@ -7480,6 +8385,10 @@ Strings.__ucwordswsPattern = new EReg("\\s([a-z])","");
 Strings.__alphaNumPattern = new EReg("^[a-z0-9]+$","i");
 Strings.__digitsPattern = new EReg("^[0-9]+$","");
 Strings._reInterpolateNumber = new EReg("[-+]?(?:\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)(?:[eE][-]?\\d+)?","");
+js.Browser.window = typeof window != "undefined" ? window : null;
+js.Browser.document = typeof window != "undefined" ? window.document : null;
+js.Browser.location = typeof window != "undefined" ? window.location : null;
+js.Browser.navigator = typeof window != "undefined" ? window.navigator : null;
 rg.data.ReportGridExecutorCache.DATE_PREFIX = "D:";
 rg.data.ReportGridExecutorCache.VALUE_PREFIX = "V:";
 rg.util.Periodicity.validPeriods = ["minute","hour","day","week","month","year","eternity"];
@@ -7516,5 +8425,6 @@ thx.date.DateParser.absdateexp = new EReg("(?:(?:" + "\\b(today|now|this\\s+seco
 thx.date.DateParser.relexp = new EReg("(?:(?:" + "\\b(plus\\s+|minus\\s|\\+|-|in)\\s*(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\b" + ")|(?:" + "\\b(\\d+)?\\s+(" + thx.date.DateParser.period + ")\\s+(from|before|hence|after|ago)?\\b" + "))","i");
 thx.date.DateParser.timeexp = new EReg("(?:\\bat\\s+)?" + "(?:(?:" + "\\b(" + thx.date.DateParser.hohour + "):(" + thx.date.DateParser.minsec + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "(?:\\b|T)(" + thx.date.DateParser.hour + "):(" + thx.date.DateParser.minsec + ")(?:[:](" + thx.date.DateParser.minsec + ")(?:\\.(\\d+))?)?\\b" + ")|(?:" + "(?:^|\\s+)(" + thx.date.DateParser.hhour + ")(" + thx.date.DateParser.fminsec + ")\\s*" + thx.date.DateParser.ampm + "?(?:\\s+|$)" + ")|(?:" + "\\b(" + thx.date.DateParser.hohour + ")\\s*" + thx.date.DateParser.ampm + "\\b" + ")|(?:" + "\\b" + thx.date.DateParser.daypart + "\\b" + "))","i");
 thx.error.Error.errorPositionPattern = "{0}.{1}({2}): ";
+thx.text.ERegs._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 rg.app.query.JSBridge.main();
 })();

@@ -4,7 +4,7 @@
  */
 
 package rg.html.widget;
-import js.Lib;
+import js.Browser;
 import dhx.Dom;
 import dhx.Selection;
 
@@ -83,7 +83,7 @@ class DownloaderMenu
 			},
 			function(e) {
 				menu.classed().remove("downloading");
-				js.Lib.alert("ERROR: " + e);
+				js.Browser.window.alert("ERROR: " + e);
 			}
 		);
 	}

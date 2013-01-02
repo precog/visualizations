@@ -436,7 +436,7 @@ class TransformerString implements ITransformer<Dynamic, String>
 				return TransformResult.Success(value ? "true" : "false");
 			case TInt, TFloat:
 				return TransformResult.Success("" + value);
-			case TClass(cls):
+			case TClass(_):
 				return TransformResult.Success(Std.string(value));
 			default:
 				return TransformResult.Failure(new Message("unable to tranform {0} into a string value", [value]));

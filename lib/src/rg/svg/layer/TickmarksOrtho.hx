@@ -270,7 +270,7 @@ class TickmarksOrtho extends Layer
 						case Bottom, Right:
 							labelAnchor = GridAnchor.Bottom;
 					}
-				case FixedAngle(a):
+				case FixedAngle(_):
 			}
 		}
 

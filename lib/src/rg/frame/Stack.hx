@@ -116,7 +116,7 @@ class Stack
 				case Fixed(before, after, size):
 					required += size + before + after;
 					values.push(size + before + after);
-				case Floating(x, y, w, h):
+				case Floating(_, _, _, _):
 					values.push(0);
 			}
 			i++;

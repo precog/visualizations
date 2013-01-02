@@ -119,10 +119,7 @@ class Map
 					Reflect.setField(dp, "$data", feature.properties);
 					if (null != feature.id)
 					{
-						map.set(id(feature.id), {
-							svg : p,
-							dp : dp
-						} );
+						map.set(id(feature.id), { svg : p, dp : dp });
 					}
 					if (null != labelDataPointOver)
 					{
@@ -139,10 +136,9 @@ class Map
 		}
 		onReady.dispatch();
 	}
-//	var currentNode : Element;
+
 	function onMouseOver(dp : Dynamic, n, i : Int)
 	{
-//		currentNode = n;
 		handlerDataPointOver(n, dp, labelDataPointOver);
 	}
 	function onClick(dp : Dynamic, _, i) handlerClick(dp, click)

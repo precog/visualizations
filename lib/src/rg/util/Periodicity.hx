@@ -44,6 +44,8 @@ class Periodicity
 				parsePair("6 months ago", "today");
 			case "year":
 				parsePair("6 years ago", "today");
+			case _:
+				throw "invalid periodicity: " + periodicity;
 		}
 	}
 
@@ -91,6 +93,8 @@ class Periodicity
 				(ey - sy) * 12 + (em - sm);
 			case "year":
 				Math.floor(unitsBetween(start, end, "month") / 12);
+			case _:
+				throw "invalid periodicity: " + periodicity;
 		}
 	}
 
@@ -177,6 +181,8 @@ class Periodicity
 			case "year":
 				var d = Date.fromTime(date);
 				new Date(d.getFullYear() + step, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds()).getTime();
+			case _:
+				throw "invalid periodicity: " + periodicity;
 		}
 	}
 
@@ -204,6 +210,8 @@ class Periodicity
 			case "day", "week": function(v : Float) return FormatDate.dateShort(Date.fromTime(v));
 			case "month": function(v : Float) return FormatDate.yearMonth(Date.fromTime(v));
 			case "year": function(v : Float) return FormatDate.year(Date.fromTime(v));
+			case _:
+				throw "invalid periodicity: " + periodicity;
 		}
 	}
 

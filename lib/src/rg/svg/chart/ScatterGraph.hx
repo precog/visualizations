@@ -18,6 +18,7 @@ import thx.svg.LineInterpolator;
 import dhx.Access;
 import thx.svg.Area;
 import rg.svg.widget.Label;
+import rg.svg.util.SVGSymbolBuilder;
 using Arrays;
 
 // TODO transition animation
@@ -113,11 +114,7 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 			if (null != labelDataPointOver)
 				enter.onNode("mouseover", onmouseover);
 
-			var spath = enter.append("svg:path")
-				.attr("d").stringf(function(dp, _) return symbol(dp, stats));
-
-			if (null != symbolStyle)
-				spath.attr("style").stringf(function(dp, _) return symbolStyle(dp, stats));
+			SVGSymbolBuilder.generate(enter, stats, symbol, symbolStyle);
 
 			if (null != labelDataPoint)
 			{

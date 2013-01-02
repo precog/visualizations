@@ -46,18 +46,18 @@ class Jsonp
 
 		var random = Std.int(Math.random() * 214748363),
 			funcName = 'ReportGridChartsJsonpCallback' + random,
-			head = untyped js.Lib.document.head;
+			head = untyped js.Browser.document.head;
 		if (null == head)
-			head = js.Lib.document.getElementsByTagName('head')[0];
-		Reflect.setField(js.Lib.window, funcName, function(content, meta) {
-			if (meta.status.code == 200) {
+			head = js.Browser.document.getElementsByTagName('head')[0];
+		Reflect.setField(js.Browser.window, funcName, function(content, meta) {
+			if (untyped meta.status.code == 200 || meta.status.code == "OK") {
 				success(content);
 			} else {
 				failure(meta.status.code, meta.status.reason);
 			}
-			head.removeChild(js.Lib.document.getElementById(funcName));
+			head.removeChild(js.Browser.document.getElementById(funcName));
 
-			Reflect.setField(js.Lib.window, funcName, untyped __js__("undefined"));
+			Reflect.setField(js.Browser.window, funcName, untyped __js__("undefined"));
 			untyped __js__("try{ delete window[funcName]; }catch(e){}");
 		});
 
@@ -79,7 +79,7 @@ class Jsonp
 
 		var fullUrl = Urls.addQueryParameters(path, extraQuery);
 
-		var script = js.Lib.document.createElement('SCRIPT');
+		var script = js.Browser.document.createElement('SCRIPT');
 
 		script.setAttribute('type', 'text/javascript');
 		script.setAttribute('src',  fullUrl);

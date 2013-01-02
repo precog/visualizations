@@ -1009,10 +1009,21 @@ DateTools.__format_get = function(d,e) {
 		case "e":
 			$r = Std.string(d.getDate());
 			break;
-		case "H":case "k":
+		case "H":
 			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
 			break;
-		case "I":case "l":
+		case "k":
+			$r = StringTools.lpad(Std.string(d.getHours()),e == "H"?"0":" ",2);
+			break;
+		case "I":
+			$r = (function($this) {
+				var $r;
+				var hour = d.getHours() % 12;
+				$r = StringTools.lpad(Std.string(hour == 0?12:hour),e == "I"?"0":" ",2);
+				return $r;
+			}($this));
+			break;
+		case "l":
 			$r = (function($this) {
 				var $r;
 				var hour = d.getHours() % 12;
@@ -1444,7 +1455,8 @@ Dates.snapToWeekDay = function(time,day) {
 		return $r;
 	}(this))).getDay();
 	var s = 0;
-	switch(day.toLowerCase()) {
+	var _g = day.toLowerCase();
+	switch(_g) {
 	case "sunday":
 		s = 0;
 		break;
@@ -1498,7 +1510,8 @@ Dynamics.format = function(v,param,params,nullstring,culture) {
 Dynamics.formatf = function(param,params,nullstring,culture) {
 	if(nullstring == null) nullstring = "null";
 	return function(v) {
-		var $e = (Type["typeof"](v));
+		var _g = Type["typeof"](v);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
 			return nullstring;
@@ -1509,8 +1522,8 @@ Dynamics.formatf = function(param,params,nullstring,culture) {
 		case 3:
 			return Bools.format(v,param,params,culture);
 		case 6:
-			var c = $e[2];
-			if(c == String) return Strings.formatOne(v,param,params,culture); else if(c == Array) return Arrays.format(v,param,params,culture); else if(c == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
+			var _g_eTClass_0 = $e[2];
+			if(_g_eTClass_0 == String) return Strings.formatOne(v,param,params,culture); else if(_g_eTClass_0 == Array) return Arrays.format(v,param,params,culture); else if(_g_eTClass_0 == Date) return Dates.format(v,param,params,culture); else return Objects.format(v,param,params,culture);
 			break;
 		case 4:
 			return Objects.format(v,param,params,culture);
@@ -1548,8 +1561,8 @@ Dynamics.interpolatef = function(a,b,equation) {
 	case 4:
 		return Objects.interpolatef(a,b,equation);
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
+		var ta_eTClass_0 = $e[2];
+		var name = Type.getClassName(ta_eTClass_0);
 		switch(name) {
 		case "String":
 			return Strings.interpolatef(a,b,equation);
@@ -1564,7 +1577,8 @@ Dynamics.interpolatef = function(a,b,equation) {
 	}
 }
 Dynamics.string = function(v) {
-	var $e = (Type["typeof"](v));
+	var _g = Type["typeof"](v);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 0:
 		return "null";
@@ -1577,16 +1591,16 @@ Dynamics.string = function(v) {
 	case 4:
 		var keys = Objects.keys(v);
 		var result = [];
-		var _g = 0;
-		while(_g < keys.length) {
-			var key = keys[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < keys.length) {
+			var key = keys[_g1];
+			++_g1;
 			result.push(key + " : " + Dynamics.string(Reflect.field(v,key)));
 		}
 		return "{" + result.join(", ") + "}";
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
+		var _g_eTClass_0 = $e[2];
+		var name = Type.getClassName(_g_eTClass_0);
 		switch(name) {
 		case "Array":
 			return Arrays.string(v);
@@ -1601,7 +1615,7 @@ Dynamics.string = function(v) {
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_eTEnum_0 = $e[2];
 		return Enums.string(v);
 	case 8:
 		return "<unknown>";
@@ -1613,9 +1627,11 @@ Dynamics.compare = function(a,b) {
 	if(null == a && null == b) return 0;
 	if(null == a) return -1;
 	if(null == b) return 1;
-	var $e = (Type["typeof"](a));
+	var _g = Type["typeof"](a);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 1:
+		return Floats.compare(a,b);
 	case 2:
 		return Floats.compare(a,b);
 	case 3:
@@ -1623,8 +1639,8 @@ Dynamics.compare = function(a,b) {
 	case 4:
 		return Objects.compare(a,b);
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
+		var _g_eTClass_0 = $e[2];
+		var name = Type.getClassName(_g_eTClass_0);
 		switch(name) {
 		case "Array":
 			return Arrays.compare(a,b);
@@ -1637,16 +1653,18 @@ Dynamics.compare = function(a,b) {
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_eTEnum_0 = $e[2];
 		return Enums.compare(a,b);
 	default:
 		return 0;
 	}
 }
 Dynamics.comparef = function(sample) {
-	var $e = (Type["typeof"](sample));
+	var _g = Type["typeof"](sample);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 1:
+		return Floats.compare;
 	case 2:
 		return Floats.compare;
 	case 3:
@@ -1654,8 +1672,8 @@ Dynamics.comparef = function(sample) {
 	case 4:
 		return Objects.compare;
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
+		var _g_eTClass_0 = $e[2];
+		var name = Type.getClassName(_g_eTClass_0);
 		switch(name) {
 		case "Array":
 			return Arrays.compare;
@@ -1670,7 +1688,7 @@ Dynamics.comparef = function(sample) {
 		}
 		break;
 	case 7:
-		var e = $e[2];
+		var _g_eTEnum_0 = $e[2];
 		return Enums.compare;
 	default:
 		return Dynamics.compare;
@@ -1678,15 +1696,22 @@ Dynamics.comparef = function(sample) {
 }
 Dynamics.clone = function(v,cloneInstances) {
 	if(cloneInstances == null) cloneInstances = false;
-	var $e = (Type["typeof"](v));
+	var _g = Type["typeof"](v);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 0:
 		return null;
 	case 1:
+		return v;
 	case 2:
+		return v;
 	case 3:
+		return v;
 	case 7:
+		var _g_eTEnum_0 = $e[2];
+		return v;
 	case 8:
+		return v;
 	case 5:
 		return v;
 	case 4:
@@ -1694,27 +1719,29 @@ Dynamics.clone = function(v,cloneInstances) {
 		Objects.copyTo(v,o);
 		return o;
 	case 6:
-		var c = $e[2];
-		var name = Type.getClassName(c);
+		var _g_eTClass_0 = $e[2];
+		var name = Type.getClassName(_g_eTClass_0);
 		switch(name) {
 		case "Array":
 			var src = v, a = [];
-			var _g = 0;
-			while(_g < src.length) {
-				var i = src[_g];
-				++_g;
+			var _g1 = 0;
+			while(_g1 < src.length) {
+				var i = src[_g1];
+				++_g1;
 				a.push(Dynamics.clone(i));
 			}
 			return a;
-		case "String":case "Date":
+		case "String":
+			return v;
+		case "Date":
 			return v;
 		default:
 			if(cloneInstances) {
-				var o = Type.createEmptyInstance(c);
-				var _g = 0, _g1 = Reflect.fields(v);
-				while(_g < _g1.length) {
-					var field = _g1[_g];
-					++_g;
+				var o = Type.createEmptyInstance(_g_eTClass_0);
+				var _g1 = 0, _g2 = Reflect.fields(v);
+				while(_g1 < _g2.length) {
+					var field = _g2[_g1];
+					++_g1;
 					o[field] = Dynamics.clone(Reflect.field(v,field));
 				}
 				return o;
@@ -1726,27 +1753,30 @@ Dynamics.clone = function(v,cloneInstances) {
 Dynamics.same = function(a,b) {
 	var ta = Types.typeName(a), tb = Types.typeName(b);
 	if(ta != tb) return false;
-	var $e = (Type["typeof"](a));
+	var _g = Type["typeof"](a);
+	var $e = (_g);
 	switch( $e[1] ) {
 	case 2:
 		return Floats.equals(a,b);
 	case 0:
+		return a == b;
 	case 1:
+		return a == b;
 	case 3:
 		return a == b;
 	case 5:
 		return Reflect.compareMethods(a,b);
 	case 6:
-		var c = $e[2];
-		var ca = Type.getClassName(c), cb = Type.getClassName(Type.getClass(b));
+		var _g_eTClass_0 = $e[2];
+		var ca = Type.getClassName(_g_eTClass_0), cb = Type.getClassName(Type.getClass(b));
 		if(ca != cb) return false;
 		if(js.Boot.__instanceof(a,String) && a != b) return false;
 		if(js.Boot.__instanceof(a,Array)) {
 			var aa = a, ab = b;
 			if(aa.length != ab.length) return false;
-			var _g1 = 0, _g = aa.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = aa.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(aa[i],ab[i])) return false;
 			}
 			return true;
@@ -1756,10 +1786,10 @@ Dynamics.same = function(a,b) {
 			var ha = a, hb = b;
 			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
 			if(ka.length != kb.length) return false;
-			var _g = 0;
-			while(_g < ka.length) {
-				var key = ka[_g];
-				++_g;
+			var _g1 = 0;
+			while(_g1 < ka.length) {
+				var key = ka[_g1];
+				++_g1;
 				if(!hb.exists(key) || !Dynamics.same(ha.get(key),hb.get(key))) return false;
 			}
 			return true;
@@ -1768,18 +1798,18 @@ Dynamics.same = function(a,b) {
 		if((t = Iterators.isIterator(a)) || Iterables.isIterable(a)) {
 			var va = t?Iterators.array(a):Iterators.array($iterator(a)()), vb = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(va.length != vb.length) return false;
-			var _g1 = 0, _g = va.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = va.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(va[i],vb[i])) return false;
 			}
 			return true;
 		}
 		var fields = Type.getInstanceFields(Type.getClass(a));
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < fields.length) {
+			var field = fields[_g1];
+			++_g1;
 			var va = Reflect.field(a,field);
 			if(Reflect.isFunction(va)) continue;
 			var vb = Reflect.field(b,field);
@@ -1787,23 +1817,23 @@ Dynamics.same = function(a,b) {
 		}
 		return true;
 	case 7:
-		var e = $e[2];
-		var ea = Type.getEnumName(e), teb = Type.getEnum(b), eb = Type.getEnumName(teb);
+		var _g_eTEnum_0 = $e[2];
+		var ea = Type.getEnumName(_g_eTEnum_0), teb = Type.getEnum(b), eb = Type.getEnumName(teb);
 		if(ea != eb) return false;
 		if(a[1] != b[1]) return false;
 		var pa = a.slice(2), pb = b.slice(2);
-		var _g1 = 0, _g = pa.length;
-		while(_g1 < _g) {
-			var i = _g1++;
+		var _g2 = 0, _g1 = pa.length;
+		while(_g2 < _g1) {
+			var i = _g2++;
 			if(!Dynamics.same(pa[i],pb[i])) return false;
 		}
 		return true;
 	case 4:
 		var fa = Reflect.fields(a), fb = Reflect.fields(b);
-		var _g = 0;
-		while(_g < fa.length) {
-			var field = fa[_g];
-			++_g;
+		var _g1 = 0;
+		while(_g1 < fa.length) {
+			var field = fa[_g1];
+			++_g1;
 			HxOverrides.remove(fb,field);
 			if(!Reflect.hasField(b,field)) return false;
 			var va = Reflect.field(a,field);
@@ -1819,9 +1849,9 @@ Dynamics.same = function(a,b) {
 			var aa = t?Iterators.array(a):Iterators.array($iterator(a)());
 			var ab = t?Iterators.array(b):Iterators.array($iterator(b)());
 			if(aa.length != ab.length) return false;
-			var _g1 = 0, _g = aa.length;
-			while(_g1 < _g) {
-				var i = _g1++;
+			var _g2 = 0, _g1 = aa.length;
+			while(_g2 < _g1) {
+				var i = _g2++;
 				if(!Dynamics.same(aa[i],ab[i])) return false;
 			}
 			return true;
@@ -3661,7 +3691,8 @@ Type.getInstanceFields = function(c) {
 	return a;
 }
 Type["typeof"] = function(v) {
-	switch(typeof(v)) {
+	var _g = typeof(v);
+	switch(_g) {
 	case "boolean":
 		return ValueType.TBool;
 	case "string":
@@ -3722,38 +3753,43 @@ Types.fullName = function(o) {
 Types.typeName = function(o) {
 	return (function($this) {
 		var $r;
-		var $e = (Type["typeof"](o));
-		switch( $e[1] ) {
-		case 0:
-			$r = "null";
-			break;
-		case 1:
-			$r = "Int";
-			break;
-		case 2:
-			$r = "Float";
-			break;
-		case 3:
-			$r = "Bool";
-			break;
-		case 5:
-			$r = "function";
-			break;
-		case 6:
-			var c = $e[2];
-			$r = Type.getClassName(c);
-			break;
-		case 7:
-			var e = $e[2];
-			$r = Type.getEnumName(e);
-			break;
-		case 4:
-			$r = "Object";
-			break;
-		case 8:
-			$r = "Unknown";
-			break;
-		}
+		var _g = Type["typeof"](o);
+		$r = (function($this) {
+			var $r;
+			var $e = (_g);
+			switch( $e[1] ) {
+			case 0:
+				$r = "null";
+				break;
+			case 1:
+				$r = "Int";
+				break;
+			case 2:
+				$r = "Float";
+				break;
+			case 3:
+				$r = "Bool";
+				break;
+			case 5:
+				$r = "function";
+				break;
+			case 6:
+				var _g_eTClass_0 = $e[2];
+				$r = Type.getClassName(_g_eTClass_0);
+				break;
+			case 7:
+				var _g_eTEnum_0 = $e[2];
+				$r = Type.getEnumName(_g_eTEnum_0);
+				break;
+			case 4:
+				$r = "Object";
+				break;
+			case 8:
+				$r = "Unknown";
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -3784,11 +3820,11 @@ Types.sameType = function(a,b) {
 	var $e = (tb);
 	switch( $e[1] ) {
 	case 6:
-		var c = $e[2];
-		return js.Boot.__instanceof(a,c);
+		var tb_eTClass_0 = $e[2];
+		return js.Boot.__instanceof(a,tb_eTClass_0);
 	case 7:
-		var e = $e[2];
-		return js.Boot.__instanceof(a,e);
+		var tb_eTEnum_0 = $e[2];
+		return js.Boot.__instanceof(a,tb_eTEnum_0);
 	default:
 		return Type["typeof"](a) == tb;
 	}
@@ -3796,25 +3832,43 @@ Types.sameType = function(a,b) {
 Types.isPrimitive = function(v) {
 	return (function($this) {
 		var $r;
-		var $e = (Type["typeof"](v));
-		switch( $e[1] ) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-			$r = true;
-			break;
-		case 5:
-		case 7:
-		case 4:
-		case 8:
-			$r = false;
-			break;
-		case 6:
-			var c = $e[2];
-			$r = Type.getClassName(c) == "String";
-			break;
-		}
+		var _g = Type["typeof"](v);
+		$r = (function($this) {
+			var $r;
+			var $e = (_g);
+			switch( $e[1] ) {
+			case 0:
+				$r = true;
+				break;
+			case 1:
+				$r = true;
+				break;
+			case 2:
+				$r = true;
+				break;
+			case 3:
+				$r = true;
+				break;
+			case 5:
+				$r = false;
+				break;
+			case 7:
+				var _g_eTEnum_0 = $e[2];
+				$r = false;
+				break;
+			case 4:
+				$r = false;
+				break;
+			case 8:
+				$r = false;
+				break;
+			case 6:
+				var _g_eTClass_0 = $e[2];
+				$r = Type.getClassName(_g_eTClass_0) == "String";
+				break;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -4197,17 +4251,28 @@ chx.formats.Base64.__name__ = ["chx","formats","Base64"];
 chx.formats.Base64.encode = function(bytes) {
 	var ext = (function($this) {
 		var $r;
-		switch(bytes.length % 3) {
-		case 1:
-			$r = "==";
-			break;
-		case 2:
-			$r = "=";
-			break;
-		case 0:
-			$r = "";
-			break;
-		}
+		var _g = bytes.length % 3;
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case 1:
+				$r = "==";
+				break;
+			case 2:
+				$r = "=";
+				break;
+			case 0:
+				$r = "";
+				break;
+			default:
+				$r = (function($this) {
+					var $r;
+					throw "invalid length: " + _g;
+					return $r;
+				}($this));
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
@@ -4848,13 +4913,71 @@ chx.text.Sprintf.format = function(format,args) {
 						precision = 0;
 					} else fieldOutcome = "** sprintf: \".\" came too late **";
 					break;
-				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+				case 48:
 					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
 						fieldCount = 1;
 						length = length * 10 + (ch - 48);
 					} else precision = precision * 10 + (ch - 48);
 					break;
-				case 100:case 105:
+				case 49:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 50:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 51:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 52:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 53:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 54:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 55:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 56:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 57:
+					if(ch == 48 && fieldCount == 0) properties |= 1; else if(fieldCount == 3) fieldOutcome = "** sprintf: shouldn't have a digit after h,l,L **"; else if(fieldCount < 2) {
+						fieldCount = 1;
+						length = length * 10 + (ch - 48);
+					} else precision = precision * 10 + (ch - 48);
+					break;
+				case 100:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatD(value,properties,length,precision);
+					break;
+				case 105:
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatD(value,properties,length,precision);
 					break;
@@ -4862,11 +4985,19 @@ chx.text.Sprintf.format = function(format,args) {
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatO(value,properties,length,precision);
 					break;
-				case 120:case 88:
+				case 120:
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatX(value,properties,length,precision,ch == 88);
 					break;
-				case 101:case 69:
+				case 88:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatX(value,properties,length,precision,ch == 88);
+					break;
+				case 101:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatE(value,properties,length,precision,ch == 69);
+					break;
+				case 69:
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatE(value,properties,length,precision,ch == 69);
 					break;
@@ -4874,11 +5005,30 @@ chx.text.Sprintf.format = function(format,args) {
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatF(value,properties,length,precision);
 					break;
-				case 103:case 71:
+				case 103:
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatG(value,properties,length,precision,ch == 71);
 					break;
-				case 99:case 67:case 115:case 83:
+				case 71:
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatG(value,properties,length,precision,ch == 71);
+					break;
+				case 99:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 67:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 115:
+					if(ch == 99 || ch == 67) precision = 1;
+					fieldOutcome = true;
+					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
+					break;
+				case 83:
 					if(ch == 99 || ch == 67) precision = 1;
 					fieldOutcome = true;
 					destString += chx.text.Sprintf.formatS(value,properties,length,precision);
@@ -5445,13 +5595,13 @@ dhx.AccessStyle = function(name,selection) {
 $hxClasses["dhx.AccessStyle"] = dhx.AccessStyle;
 dhx.AccessStyle.__name__ = ["dhx","AccessStyle"];
 dhx.AccessStyle._getPropertyName = function(key) {
-	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Lib.document.body.cssFloat == null?"styleFloat":"cssFloat";
+	if(key == "float" || key == "cssFloat" || key == "styleFloat") return js.Browser.document.body.cssFloat == null?"styleFloat":"cssFloat";
 	if(key.indexOf("-") >= 0) key = Strings.ucwords(key);
 	return key;
 }
 dhx.AccessStyle.getComputedStyleValue = function(node,key) {
 	if('getComputedStyle' in window) dhx.AccessStyle.getComputedStyleValue = function(node1,key1) {
-		return js.Lib.window.getComputedStyle(node1,null).getPropertyValue(key1);
+		return js.Browser.window.getComputedStyle(node1,null).getPropertyValue(key1);
 	}; else dhx.AccessStyle.getComputedStyleValue = function(node1,key1) {
 		var style = node1.currentStyle;
 		if(null == Reflect.field(style,key1)) key1 = dhx.AccessStyle._getPropertyName(key1);
@@ -6039,51 +6189,82 @@ dhx.ClientHost.__name__ = ["dhx","ClientHost"];
 dhx.ClientHost.isIE = function() {
 	return (function($this) {
 		var $r;
-		switch( (dhx.ClientHost.host)[1] ) {
-		case 2:
-			$r = true;
-			break;
-		default:
-			$r = false;
-		}
+		var _g = dhx.ClientHost;
+		$r = (function($this) {
+			var $r;
+			var $e = (_g.host);
+			switch( $e[1] ) {
+			case 2:
+				var _g_fhost_eIE_0 = $e[2];
+				$r = true;
+				break;
+			default:
+				$r = false;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 dhx.ClientHost.hostVersion = function() {
 	return (function($this) {
 		var $r;
-		var $e = (dhx.ClientHost.host);
-		switch( $e[1] ) {
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
+		var _g = dhx.ClientHost;
+		$r = (function($this) {
+			var $r;
+			var $e = (_g.host);
+			switch( $e[1] ) {
+			case 2:
+				var _g_fhost_eIE_0 = $e[2];
+				$r = _g_fhost_eIE_0;
+				break;
+			case 3:
+				var _g_fhost_eFirefox_0 = $e[2];
+				$r = _g_fhost_eFirefox_0;
+				break;
+			case 4:
+				var _g_fhost_eSafari_0 = $e[2];
+				$r = _g_fhost_eSafari_0;
+				break;
+			case 5:
+				var _g_fhost_eChrome_0 = $e[2];
+				$r = _g_fhost_eChrome_0;
+				break;
+			case 6:
+				var _g_fhost_eOpera_0 = $e[2];
+				$r = _g_fhost_eOpera_0;
+				break;
+			default:
+				$r = null;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 dhx.ClientHost.hostString = function() {
 	return (function($this) {
 		var $r;
-		switch( (dhx.ClientHost.host)[1] ) {
-		case 0:
-			$r = "unknown_server";
-			break;
-		case 7:
-			$r = "unknown";
-			break;
-		case 1:
-			$r = "nodejs";
-			break;
-		default:
-			$r = dhx.ClientHost.host[0];
-		}
+		var _g = dhx.ClientHost;
+		$r = (function($this) {
+			var $r;
+			var $e = (_g.host);
+			switch( $e[1] ) {
+			case 0:
+				$r = "unknown_server";
+				break;
+			case 7:
+				var _g_fhost_eUnknown_0 = $e[2];
+				$r = "unknown";
+				break;
+			case 1:
+				$r = "nodejs";
+				break;
+			default:
+				$r = dhx.ClientHost.host[0];
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -6093,15 +6274,20 @@ dhx.ClientHost.osString = function() {
 dhx.ClientHost.osVersion = function() {
 	return (function($this) {
 		var $r;
-		var $e = (dhx.ClientHost.os);
-		switch( $e[1] ) {
-		case 0:
-			var v = $e[2];
-			$r = v;
-			break;
-		default:
-			$r = null;
-		}
+		var _g = dhx.ClientHost;
+		$r = (function($this) {
+			var $r;
+			var $e = (_g.os);
+			switch( $e[1] ) {
+			case 0:
+				var _g_fos_eWindows_0 = $e[2];
+				$r = _g_fos_eWindows_0;
+				break;
+			default:
+				$r = null;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -6115,11 +6301,13 @@ dhx.ClientHost.hasNavigator = function() {
 	return typeof navigator !== 'undefined';
 }
 var js = {}
-js.Lib = function() { }
-$hxClasses["js.Lib"] = js.Lib;
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.alert = function(v) {
-	alert(js.Boot.__string_rec(v,""));
+js.Browser = function() { }
+$hxClasses["js.Browser"] = js.Browser;
+js.Browser.__name__ = ["js","Browser"];
+js.Browser.createXMLHttpRequest = function() {
+	if(typeof XMLHttpRequest != "undefined") return new XMLHttpRequest();
+	if(typeof ActiveXObject != "undefined") return new ActiveXObject("Microsoft.XMLHTTP");
+	throw "Unable to create XMLHttpRequest object.";
 }
 dhx.Group = function(nodes) {
 	this.nodes = nodes;
@@ -6442,12 +6630,12 @@ dhx.BaseSelection.prototype = {
 	,insert: function(name,before,beforeSelector) {
 		var qname = dhx.Namespace.qualify(name);
 		var insertDom = function(node) {
-			var n = js.Lib.document.createElement(name);
+			var n = js.Browser.document.createElement(name);
 			node.insertBefore(n,null != before?before:dhx.Dom.select(beforeSelector).node());
 			return n;
 		};
 		var insertNsDom = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local);
+			var n = js.js.Browser.document.createElementNS(qname.space,qname.local);
 			node.insertBefore(n,null != before?before:dhx.Dom.select(beforeSelector).node());
 			return n;
 		};
@@ -6471,12 +6659,12 @@ dhx.BaseSelection.prototype = {
 	,append: function(name) {
 		var qname = dhx.Namespace.qualify(name);
 		var append = function(node) {
-			var n = js.Lib.document.createElement(name);
+			var n = js.Browser.document.createElement(name);
 			node.appendChild(n);
 			return n;
 		};
 		var appendNS = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local);
+			var n = js.Browser.document.createElementNS(qname.space,qname.local);
 			node.appendChild(n);
 			return n;
 		};
@@ -6594,7 +6782,7 @@ dhx.NativeSelectorEngine.prototype = {
 	selectAll: function(selector,node,doc) {
 		var s;
 		if(null != node) s = node.querySelectorAll(selector); else {
-			if(null == doc) doc = js.Lib.document;
+			if(null == doc) doc = js.Browser.document;
 			s = doc.querySelectorAll(selector);
 		}
 		var r = [];
@@ -6607,7 +6795,7 @@ dhx.NativeSelectorEngine.prototype = {
 	}
 	,select: function(selector,node,doc) {
 		if(null != node) return node.querySelector(selector);
-		if(null == doc) doc = js.Lib.document;
+		if(null == doc) doc = js.Browser.document;
 		return doc.querySelector(selector);
 	}
 	,__class__: dhx.NativeSelectorEngine
@@ -6886,12 +7074,12 @@ dhx.PreEnterSelection.prototype = {
 	,insert: function(name,before,beforeSelector) {
 		var qname = dhx.Namespace.qualify(name);
 		var insertDom = function(node) {
-			var n = js.Lib.document.createElement(name), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			var n = js.Browser.document.createElement(name), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
 		var insertNsDom = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
+			var n = js.js.Browser.document.createElementNS(qname.space,qname.local), bf = null != before?before:dhx.Dom.selectNode(node).select(beforeSelector).node();
 			node.insertBefore(n,bf);
 			return n;
 		};
@@ -6900,12 +7088,12 @@ dhx.PreEnterSelection.prototype = {
 	,append: function(name) {
 		var qname = dhx.Namespace.qualify(name);
 		var append = function(node) {
-			var n = js.Lib.document.createElement(name);
+			var n = js.Browser.document.createElement(name);
 			node.appendChild(n);
 			return n;
 		};
 		var appendNS = function(node) {
-			var n = js.Lib.document.createElementNS(qname.space,qname.local);
+			var n = js.Browser.document.createElementNS(qname.space,qname.local);
 			node.appendChild(n);
 			return n;
 		};
@@ -6960,8 +7148,8 @@ $hxClasses["dhx.Svg"] = dhx.Svg;
 dhx.Svg.__name__ = ["dhx","Svg"];
 dhx.Svg.mouse = function(dom) {
 	var point = (null != dom.ownerSVGElement?dom.ownerSVGElement:dom).createSVGPoint();
-	if(dhx.Svg._usepage && (js.Lib.window.scrollX || js.Lib.window.scrollY)) {
-		var svg = dhx.Dom.selectNode(js.Lib.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
+	if(dhx.Svg._usepage && (js.Browser.window.scrollX || js.Browser.window.scrollY)) {
+		var svg = dhx.Dom.selectNode(js.Browser.document.body).append("svg:svg").style("position").string("absolute").style("top")["float"](0).style("left")["float"](0);
 		var ctm = svg.node().getScreenCTM();
 		dhx.Svg._usepage = !(ctm.f || ctm.e);
 		svg.remove();
@@ -7343,14 +7531,13 @@ erazor.Parser.prototype = {
 		var i = -1;
 		while(++i < len) {
 			var $char = template.charAt(i);
-			switch($char) {
-			case erazor.Parser.at:
+			if($char == erazor.Parser.at) {
 				if(len > i + 1 && template.charAt(i + 1) != erazor.Parser.at) return { block : erazor.TBlock.literal(this.escapeLiteral(HxOverrides.substr(template,0,i))), length : i, start : this.pos};
 				++i;
-				break;
-			case "}":
+			} else if($char == "}") {
 				if(this.bracketStack.length > 0) {
-					switch( (this.bracketStack[this.bracketStack.length - 1])[1] ) {
+					var _g = this.bracketStack[this.bracketStack.length - 1];
+					switch( (_g)[1] ) {
 					case 1:
 						return { block : erazor.TBlock.literal(this.escapeLiteral(HxOverrides.substr(template,0,i))), length : i, start : this.pos};
 					case 0:
@@ -7358,11 +7545,7 @@ erazor.Parser.prototype = {
 						break;
 					}
 				} else throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
-				break;
-			case "{":
-				this.bracketStack.push(erazor._Parser.ParseContext.literal);
-				break;
-			}
+			} else if($char == "{") this.bracketStack.push(erazor._Parser.ParseContext.literal);
 		}
 		return { block : erazor.TBlock.literal(this.escapeLiteral(template)), length : len, start : this.pos};
 	}
@@ -7373,7 +7556,8 @@ erazor.Parser.prototype = {
 		while(++i < str.length) {
 			var $char = str.charAt(i);
 			if(!insideDoubleQuote && !insideSingleQuote) {
-				switch( (modifier($char))[1] ) {
+				var _g = modifier($char);
+				switch( (_g)[1] ) {
 				case 1:
 					return HxOverrides.substr(str,0,i + 1);
 				case 2:
@@ -7395,13 +7579,18 @@ erazor.Parser.prototype = {
 			}
 			if((function($this) {
 				var $r;
-				switch( ($this.bracketStack.pop())[1] ) {
-				case 1:
-					$r = --$this.conditionalStack < 0;
-					break;
-				default:
-					$r = true;
-				}
+				var _g = $this.bracketStack.pop();
+				$r = (function($this) {
+					var $r;
+					switch( (_g)[1] ) {
+					case 1:
+						$r = --$this.conditionalStack < 0;
+						break;
+					default:
+						$r = true;
+					}
+					return $r;
+				}($this));
 				return $r;
 			}(this))) throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
 			return { block : erazor.TBlock.codeBlock("}"), length : 1, start : this.pos};
@@ -7479,7 +7668,8 @@ erazor.Parser.prototype = {
 	,parseContext: function(template) {
 		if(this.peek(template) == erazor.Parser.at && this.peek(template,1) != erazor.Parser.at) return erazor._Parser.ParseContext.code;
 		if(this.conditionalStack > 0 && this.peek(template) == "}") {
-			switch( (this.bracketStack[this.bracketStack.length - 1])[1] ) {
+			var _g = this.bracketStack[this.bracketStack.length - 1];
+			switch( (_g)[1] ) {
 			case 1:
 				return erazor._Parser.ParseContext.code;
 			default:
@@ -7494,24 +7684,23 @@ erazor.Parser.prototype = {
 		var i = -1;
 		while(++i < template.length) {
 			var $char = template.charAt(i);
-			if(!insideDoubleQuote && !insideSingleQuote) switch($char) {
-			case startBrace:
-				++stack;
-				break;
-			case endBrace:
-				--stack;
-				if(stack == 0) return HxOverrides.substr(template,0,i + 1);
-				if(stack < 0) throw new erazor.error.ParserError("Unbalanced braces for block: ",this.pos,HxOverrides.substr(template,0,100));
-				break;
-			case "\"":
-				insideDoubleQuote = true;
-				break;
-			case "'":
-				insideSingleQuote = true;
-				break;
+			if(!insideDoubleQuote && !insideSingleQuote) {
+				if($char == startBrace) ++stack; else if($char == endBrace) {
+					--stack;
+					if(stack == 0) return HxOverrides.substr(template,0,i + 1);
+					if(stack < 0) return (function($this) {
+						var $r;
+						throw new erazor.error.ParserError("Unbalanced braces for block: ",$this.pos,HxOverrides.substr(template,0,100));
+						return $r;
+					}(this));
+				} else if($char == "\"") insideDoubleQuote = true; else if($char == "'") insideSingleQuote = true;
 			} else if(insideDoubleQuote && $char == "\"" && template.charAt(i - 1) != "\\") insideDoubleQuote = false; else if(insideSingleQuote && $char == "'" && template.charAt(i - 1) != "\\") insideSingleQuote = false;
 		}
-		throw new erazor.error.ParserError("Failed to find a closing delimiter for the script block: ",this.pos,HxOverrides.substr(template,0,100));
+		return (function($this) {
+			var $r;
+			throw new erazor.error.ParserError("Failed to find a closing delimiter for the script block: ",$this.pos,HxOverrides.substr(template,0,100));
+			return $r;
+		}(this));
 	}
 	,pos: null
 	,conditionalStack: null
@@ -7532,14 +7721,14 @@ erazor.ScriptBuilder.prototype = {
 		var $e = (block);
 		switch( $e[1] ) {
 		case 0:
-			var s = $e[2];
-			return this.context + ".add('" + StringTools.replace(s,"'","\\'") + "');\n";
+			var block_eliteral_0 = $e[2];
+			return this.context + ".add('" + StringTools.replace(block_eliteral_0,"'","\\'") + "');\n";
 		case 1:
-			var s = $e[2];
-			return s + "\n";
+			var block_ecodeBlock_0 = $e[2];
+			return block_ecodeBlock_0 + "\n";
 		case 2:
-			var s = $e[2];
-			return this.context + ".add(" + s + ");\n";
+			var block_eprintBlock_0 = $e[2];
+			return this.context + ".add(" + block_eprintBlock_0 + ");\n";
 		}
 	}
 	,build: function(blocks) {
@@ -7671,13 +7860,15 @@ hscript.Interp.prototype = {
 					this.expr(e);
 				} catch( err ) {
 					if( js.Boot.__instanceof(err,hscript._Interp.Stop) ) {
-						switch( (err)[1] ) {
+						var $e = (err);
+						switch( $e[1] ) {
 						case 1:
 							break;
 						case 0:
 							throw "__break__";
 							break;
 						case 2:
+							var err_eSReturn_0 = $e[2];
 							throw err;
 							break;
 						}
@@ -7702,13 +7893,15 @@ hscript.Interp.prototype = {
 				this.expr(e);
 			} catch( err ) {
 				if( js.Boot.__instanceof(err,hscript._Interp.Stop) ) {
-					switch( (err)[1] ) {
+					var $e = (err);
+					switch( $e[1] ) {
 					case 1:
 						break;
 					case 0:
 						throw "__break__";
 						break;
 					case 2:
+						var err_eSReturn_0 = $e[2];
 						throw err;
 						break;
 					}
@@ -7721,105 +7914,105 @@ hscript.Interp.prototype = {
 		var $e = (e);
 		switch( $e[1] ) {
 		case 0:
-			var c = $e[2];
-			var $e = (c);
+			var e_eEConst_0 = $e[2];
+			var $e = (e_eEConst_0);
 			switch( $e[1] ) {
 			case 0:
-				var v = $e[2];
-				return v;
+				var c_eCInt_0 = $e[2];
+				return c_eCInt_0;
 			case 1:
-				var f = $e[2];
-				return f;
+				var c_eCFloat_0 = $e[2];
+				return c_eCFloat_0;
 			case 2:
-				var s = $e[2];
-				return s;
+				var c_eCString_0 = $e[2];
+				return c_eCString_0;
 			case 3:
-				var v = $e[2];
-				return v;
+				var c_eCInt32_0 = $e[2];
+				return c_eCInt32_0;
 			}
 			break;
 		case 1:
-			var id = $e[2];
-			var l = this.locals.get(id);
+			var e_eEIdent_0 = $e[2];
+			var l = this.locals.get(e_eEIdent_0);
 			if(l != null) return l.r;
-			var v = this.variables.get(id);
-			if(v == null && !this.variables.exists(id)) throw hscript.Error.EUnknownVariable(id);
+			var v = this.variables.get(e_eEIdent_0);
+			if(v == null && !this.variables.exists(e_eEIdent_0)) throw hscript.Error.EUnknownVariable(e_eEIdent_0);
 			return v;
 		case 2:
-			var e1 = $e[4], n = $e[2];
-			this.declared.push({ n : n, old : this.locals.get(n)});
-			this.locals.set(n,{ r : e1 == null?null:this.expr(e1)});
+			var e_eEVar_2 = $e[4], e_eEVar_1 = $e[3], e_eEVar_0 = $e[2];
+			this.declared.push({ n : e_eEVar_0, old : this.locals.get(e_eEVar_0)});
+			this.locals.set(e_eEVar_0,{ r : e_eEVar_2 == null?null:this.expr(e_eEVar_2)});
 			return null;
 		case 3:
-			var e1 = $e[2];
-			return this.expr(e1);
+			var e_eEParent_0 = $e[2];
+			return this.expr(e_eEParent_0);
 		case 4:
-			var exprs = $e[2];
+			var e_eEBlock_0 = $e[2];
 			var old = this.declared.length;
 			var v = null;
 			var _g = 0;
-			while(_g < exprs.length) {
-				var e1 = exprs[_g];
+			while(_g < e_eEBlock_0.length) {
+				var e1 = e_eEBlock_0[_g];
 				++_g;
 				v = this.expr(e1);
 			}
 			this.restore(old);
 			return v;
 		case 5:
-			var f = $e[3], e1 = $e[2];
-			return this.get(this.expr(e1),f);
+			var e_eEField_1 = $e[3], e_eEField_0 = $e[2];
+			return this.get(this.expr(e_eEField_0),e_eEField_1);
 		case 6:
-			var e2 = $e[4], e1 = $e[3], op = $e[2];
-			var fop = this.binops.get(op);
-			if(fop == null) throw hscript.Error.EInvalidOp(op);
-			return fop(e1,e2);
+			var e_eEBinop_2 = $e[4], e_eEBinop_1 = $e[3], e_eEBinop_0 = $e[2];
+			var fop = this.binops.get(e_eEBinop_0);
+			if(fop == null) throw hscript.Error.EInvalidOp(e_eEBinop_0);
+			return fop(e_eEBinop_1,e_eEBinop_2);
 		case 7:
-			var e1 = $e[4], prefix = $e[3], op = $e[2];
-			switch(op) {
+			var e_eEUnop_2 = $e[4], e_eEUnop_1 = $e[3], e_eEUnop_0 = $e[2];
+			switch(e_eEUnop_0) {
 			case "!":
-				return this.expr(e1) != true;
+				return this.expr(e_eEUnop_2) != true;
 			case "-":
-				return -this.expr(e1);
+				return -this.expr(e_eEUnop_2);
 			case "++":
-				return this.increment(e1,prefix,1);
+				return this.increment(e_eEUnop_2,e_eEUnop_1,1);
 			case "--":
-				return this.increment(e1,prefix,-1);
+				return this.increment(e_eEUnop_2,e_eEUnop_1,-1);
 			case "~":
-				return ~this.expr(e1);
+				return ~this.expr(e_eEUnop_2);
 			default:
-				throw hscript.Error.EInvalidOp(op);
+				throw hscript.Error.EInvalidOp(e_eEUnop_0);
 			}
 			break;
 		case 8:
-			var params = $e[3], e1 = $e[2];
+			var e_eECall_1 = $e[3], e_eECall_0 = $e[2];
 			var args = new Array();
 			var _g = 0;
-			while(_g < params.length) {
-				var p = params[_g];
+			while(_g < e_eECall_1.length) {
+				var p = e_eECall_1[_g];
 				++_g;
 				args.push(this.expr(p));
 			}
-			var $e = (e1);
+			var $e = (e_eECall_0);
 			switch( $e[1] ) {
 			case 5:
-				var f = $e[3], e2 = $e[2];
-				var obj = this.expr(e2);
-				if(obj == null) throw hscript.Error.EInvalidAccess(f);
-				return this.call(obj,Reflect.field(obj,f),args);
+				var e_eEField_1 = $e[3], e_eEField_0 = $e[2];
+				var obj = this.expr(e_eEField_0);
+				if(obj == null) throw hscript.Error.EInvalidAccess(e_eEField_1);
+				return this.call(obj,Reflect.field(obj,e_eEField_1),args);
 			default:
-				return this.call(null,this.expr(e1),args);
+				return this.call(null,this.expr(e_eECall_0),args);
 			}
 			break;
 		case 9:
-			var e2 = $e[4], e1 = $e[3], econd = $e[2];
-			return this.expr(econd) == true?this.expr(e1):e2 == null?null:this.expr(e2);
+			var e_eEIf_2 = $e[4], e_eEIf_1 = $e[3], e_eEIf_0 = $e[2];
+			return this.expr(e_eEIf_0) == true?this.expr(e_eEIf_1):e_eEIf_2 == null?null:this.expr(e_eEIf_2);
 		case 10:
-			var e1 = $e[3], econd = $e[2];
-			this.whileLoop(econd,e1);
+			var e_eEWhile_1 = $e[3], e_eEWhile_0 = $e[2];
+			this.whileLoop(e_eEWhile_0,e_eEWhile_1);
 			return null;
 		case 11:
-			var e1 = $e[4], it = $e[3], v = $e[2];
-			this.forLoop(v,it,e1);
+			var e_eEFor_2 = $e[4], e_eEFor_1 = $e[3], e_eEFor_0 = $e[2];
+			this.forLoop(e_eEFor_0,e_eEFor_1,e_eEFor_2);
 			return null;
 		case 12:
 			throw hscript._Interp.Stop.SBreak;
@@ -7828,25 +8021,25 @@ hscript.Interp.prototype = {
 			throw hscript._Interp.Stop.SContinue;
 			break;
 		case 15:
-			var e1 = $e[2];
-			throw hscript._Interp.Stop.SReturn(e1 == null?null:this.expr(e1));
+			var e_eEReturn_0 = $e[2];
+			throw hscript._Interp.Stop.SReturn(e_eEReturn_0 == null?null:this.expr(e_eEReturn_0));
 			break;
 		case 14:
-			var name = $e[4], fexpr = $e[3], params1 = $e[2];
+			var e_eEFunction_3 = $e[5], e_eEFunction_2 = $e[4], e_eEFunction_1 = $e[3], e_eEFunction_0 = $e[2];
 			var capturedLocals = this.duplicate(this.locals);
 			var me = this;
 			var f = function(args) {
-				if(args.length != params1.length) throw "Invalid number of parameters";
+				if(args.length != e_eEFunction_0.length) throw "Invalid number of parameters";
 				var old = me.locals;
 				me.locals = me.duplicate(capturedLocals);
-				var _g1 = 0, _g = params1.length;
+				var _g1 = 0, _g = e_eEFunction_0.length;
 				while(_g1 < _g) {
 					var i = _g1++;
-					me.locals.set(params1[i].name,{ r : args[i]});
+					me.locals.set(e_eEFunction_0[i].name,{ r : args[i]});
 				}
 				var r = null;
 				try {
-					r = me.exprReturn(fexpr);
+					r = me.exprReturn(e_eEFunction_1);
 				} catch( e1 ) {
 					me.locals = old;
 					throw e1;
@@ -7855,40 +8048,40 @@ hscript.Interp.prototype = {
 				return r;
 			};
 			var f1 = Reflect.makeVarArgs(f);
-			if(name != null) this.variables.set(name,f1);
+			if(e_eEFunction_2 != null) this.variables.set(e_eEFunction_2,f1);
 			return f1;
 		case 17:
-			var arr = $e[2];
+			var e_eEArrayDecl_0 = $e[2];
 			var a = new Array();
 			var _g = 0;
-			while(_g < arr.length) {
-				var e1 = arr[_g];
+			while(_g < e_eEArrayDecl_0.length) {
+				var e1 = e_eEArrayDecl_0[_g];
 				++_g;
 				a.push(this.expr(e1));
 			}
 			return a;
 		case 16:
-			var index = $e[3], e1 = $e[2];
-			return this.expr(e1)[this.expr(index)];
+			var e_eEArray_1 = $e[3], e_eEArray_0 = $e[2];
+			return this.expr(e_eEArray_0)[this.expr(e_eEArray_1)];
 		case 18:
-			var params = $e[3], cl = $e[2];
+			var e_eENew_1 = $e[3], e_eENew_0 = $e[2];
 			var a = new Array();
 			var _g = 0;
-			while(_g < params.length) {
-				var e1 = params[_g];
+			while(_g < e_eENew_1.length) {
+				var e1 = e_eENew_1[_g];
 				++_g;
 				a.push(this.expr(e1));
 			}
-			return this.cnew(cl,a);
+			return this.cnew(e_eENew_0,a);
 		case 19:
-			var e1 = $e[2];
-			throw this.expr(e1);
+			var e_eEThrow_0 = $e[2];
+			throw this.expr(e_eEThrow_0);
 			break;
 		case 20:
-			var ecatch = $e[5], n = $e[3], e1 = $e[2];
+			var e_eETry_3 = $e[5], e_eETry_2 = $e[4], e_eETry_1 = $e[3], e_eETry_0 = $e[2];
 			var old = this.declared.length;
 			try {
-				var v = this.expr(e1);
+				var v = this.expr(e_eETry_0);
 				this.restore(old);
 				return v;
 			} catch( $e0 ) {
@@ -7898,27 +8091,27 @@ hscript.Interp.prototype = {
 				} else {
 				var err = $e0;
 				this.restore(old);
-				this.declared.push({ n : n, old : this.locals.get(n)});
-				this.locals.set(n,{ r : err});
-				var v = this.expr(ecatch);
+				this.declared.push({ n : e_eETry_1, old : this.locals.get(e_eETry_1)});
+				this.locals.set(e_eETry_1,{ r : err});
+				var v = this.expr(e_eETry_3);
 				this.restore(old);
 				return v;
 				}
 			}
 			break;
 		case 21:
-			var fl = $e[2];
+			var e_eEObject_0 = $e[2];
 			var o = { };
 			var _g = 0;
-			while(_g < fl.length) {
-				var f = fl[_g];
+			while(_g < e_eEObject_0.length) {
+				var f = e_eEObject_0[_g];
 				++_g;
 				this.set(o,f.name,this.expr(f.e));
 			}
 			return o;
 		case 22:
-			var e2 = $e[4], e1 = $e[3], econd = $e[2];
-			return this.expr(econd) == true?this.expr(e1):this.expr(e2);
+			var e_eETernary_2 = $e[4], e_eETernary_1 = $e[3], e_eETernary_0 = $e[2];
+			return this.expr(e_eETernary_0) == true?this.expr(e_eETernary_1):this.expr(e_eETernary_2);
 		}
 		return null;
 	}
@@ -7951,8 +8144,8 @@ hscript.Interp.prototype = {
 					throw "Invalid continue";
 					break;
 				case 2:
-					var v = $e[2];
-					return v;
+					var e_eSReturn_0 = $e[2];
+					return e_eSReturn_0;
 				}
 			} else throw(e1);
 		}
@@ -7966,32 +8159,32 @@ hscript.Interp.prototype = {
 		var $e = (e);
 		switch( $e[1] ) {
 		case 1:
-			var id = $e[2];
-			var l = this.locals.get(id);
-			var v = l == null?this.variables.get(id):l.r;
+			var e_eEIdent_0 = $e[2];
+			var l = this.locals.get(e_eEIdent_0);
+			var v = l == null?this.variables.get(e_eEIdent_0):l.r;
 			if(prefix) {
 				v += delta;
-				if(l == null) this.variables.set(id,v); else l.r = v;
-			} else if(l == null) this.variables.set(id,v + delta); else l.r = v + delta;
+				if(l == null) this.variables.set(e_eEIdent_0,v); else l.r = v;
+			} else if(l == null) this.variables.set(e_eEIdent_0,v + delta); else l.r = v + delta;
 			return v;
 		case 5:
-			var f = $e[3], e1 = $e[2];
-			var obj = this.expr(e1);
-			var v = this.get(obj,f);
+			var e_eEField_1 = $e[3], e_eEField_0 = $e[2];
+			var obj = this.expr(e_eEField_0);
+			var v = this.get(obj,e_eEField_1);
 			if(prefix) {
 				v += delta;
-				this.set(obj,f,v);
-			} else this.set(obj,f,v + delta);
+				this.set(obj,e_eEField_1,v);
+			} else this.set(obj,e_eEField_1,v + delta);
 			return v;
 		case 16:
-			var index = $e[3], e1 = $e[2];
-			var arr = this.expr(e1);
-			var index1 = this.expr(index);
-			var v = arr[index1];
+			var e_eEArray_1 = $e[3], e_eEArray_0 = $e[2];
+			var arr = this.expr(e_eEArray_0);
+			var index = this.expr(e_eEArray_1);
+			var v = arr[index];
 			if(prefix) {
 				v += delta;
-				arr[index1] = v;
-			} else arr[index1] = v + delta;
+				arr[index] = v;
+			} else arr[index] = v + delta;
 			return v;
 		default:
 			throw hscript.Error.EInvalidOp(delta > 0?"++":"--");
@@ -8002,23 +8195,23 @@ hscript.Interp.prototype = {
 		var $e = (e1);
 		switch( $e[1] ) {
 		case 1:
-			var id = $e[2];
-			var l = this.locals.get(id);
+			var e1_eEIdent_0 = $e[2];
+			var l = this.locals.get(e1_eEIdent_0);
 			v = fop(this.expr(e1),this.expr(e2));
-			if(l == null) this.variables.set(id,v); else l.r = v;
+			if(l == null) this.variables.set(e1_eEIdent_0,v); else l.r = v;
 			break;
 		case 5:
-			var f = $e[3], e = $e[2];
-			var obj = this.expr(e);
-			v = fop(this.get(obj,f),this.expr(e2));
-			v = this.set(obj,f,v);
+			var e1_eEField_1 = $e[3], e1_eEField_0 = $e[2];
+			var obj = this.expr(e1_eEField_0);
+			v = fop(this.get(obj,e1_eEField_1),this.expr(e2));
+			v = this.set(obj,e1_eEField_1,v);
 			break;
 		case 16:
-			var index = $e[3], e = $e[2];
-			var arr = this.expr(e);
-			var index1 = this.expr(index);
-			v = fop(arr[index1],this.expr(e2));
-			arr[index1] = v;
+			var e1_eEArray_1 = $e[3], e1_eEArray_0 = $e[2];
+			var arr = this.expr(e1_eEArray_0);
+			var index = this.expr(e1_eEArray_1);
+			v = fop(arr[index],this.expr(e2));
+			arr[index] = v;
 			break;
 		default:
 			throw hscript.Error.EInvalidOp(op);
@@ -8036,17 +8229,17 @@ hscript.Interp.prototype = {
 		var $e = (e1);
 		switch( $e[1] ) {
 		case 1:
-			var id = $e[2];
-			var l = this.locals.get(id);
-			if(l == null) this.variables.set(id,v); else l.r = v;
+			var e1_eEIdent_0 = $e[2];
+			var l = this.locals.get(e1_eEIdent_0);
+			if(l == null) this.variables.set(e1_eEIdent_0,v); else l.r = v;
 			break;
 		case 5:
-			var f = $e[3], e = $e[2];
-			v = this.set(this.expr(e),f,v);
+			var e1_eEField_1 = $e[3], e1_eEField_0 = $e[2];
+			v = this.set(this.expr(e1_eEField_0),e1_eEField_1,v);
 			break;
 		case 16:
-			var index = $e[3], e = $e[2];
-			this.expr(e)[this.expr(index)] = v;
+			var e1_eEArray_1 = $e[3], e1_eEArray_0 = $e[2];
+			this.expr(e1_eEArray_0)[this.expr(e1_eEArray_1)] = v;
 			break;
 		default:
 			throw hscript.Error.EInvalidOp("=");
@@ -8312,8 +8505,8 @@ haxe.Http.prototype = {
 	}
 	,request: function(post) {
 		var me = this;
-		var r = new js.XMLHttpRequest();
-		var onreadystatechange = function() {
+		var r = js.Browser.createXMLHttpRequest();
+		var onreadystatechange = function(_) {
 			if(r.readyState != 4) return;
 			var s = (function($this) {
 				var $r;
@@ -8364,7 +8557,7 @@ haxe.Http.prototype = {
 			r.setRequestHeader(h,this.headers.get(h));
 		}
 		r.send(uri);
-		if(!this.async) onreadystatechange();
+		if(!this.async) onreadystatechange(null);
 	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
@@ -8926,16 +9119,16 @@ hscript.Parser.prototype = {
 				$r = "<eof>";
 				break;
 			case 1:
-				var c = $e[2];
-				$r = $this.constString(c);
+				var t_eTConst_0 = $e[2];
+				$r = $this.constString(t_eTConst_0);
 				break;
 			case 2:
-				var s = $e[2];
-				$r = s;
+				var t_eTId_0 = $e[2];
+				$r = t_eTId_0;
 				break;
 			case 3:
-				var s = $e[2];
-				$r = s;
+				var t_eTOp_0 = $e[2];
+				$r = t_eTOp_0;
 				break;
 			case 4:
 				$r = "(";
@@ -8980,20 +9173,20 @@ hscript.Parser.prototype = {
 			var $e = (c);
 			switch( $e[1] ) {
 			case 0:
-				var v = $e[2];
-				$r = Std.string(v);
+				var c_eCInt_0 = $e[2];
+				$r = Std.string(c_eCInt_0);
 				break;
 			case 1:
-				var f = $e[2];
-				$r = Std.string(f);
+				var c_eCFloat_0 = $e[2];
+				$r = Std.string(c_eCFloat_0);
 				break;
 			case 2:
-				var s = $e[2];
-				$r = s;
+				var c_eCString_0 = $e[2];
+				$r = c_eCString_0;
 				break;
 			case 3:
-				var v = $e[2];
-				$r = Std.string(v);
+				var c_eCInt32_0 = $e[2];
+				$r = Std.string(c_eCInt32_0);
 				break;
 			}
 			return $r;
@@ -9041,19 +9234,50 @@ hscript.Parser.prototype = {
 			switch($char) {
 			case 0:
 				return hscript.Token.TEof;
-			case 32:case 9:case 13:
+			case 32:
+				break;
+			case 9:
+				break;
+			case 13:
 				break;
 			case 10:
 				this.line++;
 				break;
-			case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+			case 48:
 				var n = ($char - 48) * 1.0;
 				var exp = 0.;
 				while(true) {
 					$char = this.readChar();
 					exp *= 10;
 					switch($char) {
-					case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
 						n = n * 10 + ($char - 48);
 						break;
 					case 46:
@@ -9073,13 +9297,1393 @@ hscript.Parser.prototype = {
 						while(true) {
 							$char = this.readChar();
 							switch($char) {
-							case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+							case 48:
 								n1 = (n1 << 4) + ($char - 48) | 0;
 								break;
-							case 65:case 66:case 67:case 68:case 69:case 70:
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
 								n1 = (n1 << 4) + ($char - 55) | 0;
 								break;
-							case 97:case 98:case 99:case 100:case 101:case 102:
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 49:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 50:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 51:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 52:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 53:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 54:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 55:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 56:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							default:
+								this["char"] = $char;
+								var v = (function($this) {
+									var $r;
+									try {
+										$r = hscript.Const.CInt((function($this) {
+											var $r;
+											if((n1 >> 30 & 1) != n1 >>> 31) throw "Overflow " + Std.string(n1);
+											$r = n1;
+											return $r;
+										}($this)));
+									} catch( e ) {
+										$r = hscript.Const.CInt32(n1);
+									}
+									return $r;
+								}(this));
+								return hscript.Token.TConst(v);
+							}
+						}
+						break;
+					default:
+						this["char"] = $char;
+						var i = n | 0;
+						return hscript.Token.TConst(exp > 0?hscript.Const.CFloat(n * 10 / exp):i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+					}
+				}
+				break;
+			case 57:
+				var n = ($char - 48) * 1.0;
+				var exp = 0.;
+				while(true) {
+					$char = this.readChar();
+					exp *= 10;
+					switch($char) {
+					case 48:
+						n = n * 10 + ($char - 48);
+						break;
+					case 49:
+						n = n * 10 + ($char - 48);
+						break;
+					case 50:
+						n = n * 10 + ($char - 48);
+						break;
+					case 51:
+						n = n * 10 + ($char - 48);
+						break;
+					case 52:
+						n = n * 10 + ($char - 48);
+						break;
+					case 53:
+						n = n * 10 + ($char - 48);
+						break;
+					case 54:
+						n = n * 10 + ($char - 48);
+						break;
+					case 55:
+						n = n * 10 + ($char - 48);
+						break;
+					case 56:
+						n = n * 10 + ($char - 48);
+						break;
+					case 57:
+						n = n * 10 + ($char - 48);
+						break;
+					case 46:
+						if(exp > 0) {
+							if(exp == 10 && this.readChar() == 46) {
+								this.tokens.add(hscript.Token.TOp("..."));
+								var i = n | 0;
+								return hscript.Token.TConst(i == n?hscript.Const.CInt(i):hscript.Const.CFloat(n));
+							}
+							this.invalidChar($char);
+						}
+						exp = 1.;
+						break;
+					case 120:
+						if(n > 0 || exp > 0) this.invalidChar($char);
+						var n1 = 0 | 0;
+						while(true) {
+							$char = this.readChar();
+							switch($char) {
+							case 48:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 49:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 50:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 51:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 52:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 53:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 54:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 55:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 56:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 57:
+								n1 = (n1 << 4) + ($char - 48) | 0;
+								break;
+							case 65:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 66:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 67:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 68:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 69:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 70:
+								n1 = (n1 << 4) + ($char - 55) | 0;
+								break;
+							case 97:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 98:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 99:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 100:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 101:
+								n1 = (n1 << 4) + ($char - 87) | 0;
+								break;
+							case 102:
 								n1 = (n1 << 4) + ($char - 87) | 0;
 								break;
 							default:
@@ -9120,14 +10724,428 @@ hscript.Parser.prototype = {
 			case 46:
 				$char = this.readChar();
 				switch($char) {
-				case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+				case 48:
 					var n = $char - 48;
 					var exp = 1;
 					while(true) {
 						$char = this.readChar();
 						exp *= 10;
 						switch($char) {
-						case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 49:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 50:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 51:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 52:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 53:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 54:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 55:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 56:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
+							n = n * 10 + ($char - 48);
+							break;
+						default:
+							this["char"] = $char;
+							return hscript.Token.TConst(hscript.Const.CFloat(n / exp));
+						}
+					}
+					break;
+				case 57:
+					var n = $char - 48;
+					var exp = 1;
+					while(true) {
+						$char = this.readChar();
+						exp *= 10;
+						switch($char) {
+						case 48:
+							n = n * 10 + ($char - 48);
+							break;
+						case 49:
+							n = n * 10 + ($char - 48);
+							break;
+						case 50:
+							n = n * 10 + ($char - 48);
+							break;
+						case 51:
+							n = n * 10 + ($char - 48);
+							break;
+						case 52:
+							n = n * 10 + ($char - 48);
+							break;
+						case 53:
+							n = n * 10 + ($char - 48);
+							break;
+						case 54:
+							n = n * 10 + ($char - 48);
+							break;
+						case 55:
+							n = n * 10 + ($char - 48);
+							break;
+						case 56:
+							n = n * 10 + ($char - 48);
+							break;
+						case 57:
 							n = n * 10 + ($char - 48);
 							break;
 						default:
@@ -9216,7 +11234,13 @@ hscript.Parser.prototype = {
 				case 116:
 					b.writeByte(9);
 					break;
-				case 39:case 34:case 92:
+				case 39:
+					b.writeByte(c);
+					break;
+				case 34:
+					b.writeByte(c);
+					break;
+				case 92:
 					b.writeByte(c);
 					break;
 				case 47:
@@ -9238,13 +11262,70 @@ hscript.Parser.prototype = {
 						k <<= 4;
 						var $char = HxOverrides.cca(code,i);
 						switch($char) {
-						case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+						case 48:
 							k += $char - 48;
 							break;
-						case 65:case 66:case 67:case 68:case 69:case 70:
+						case 49:
+							k += $char - 48;
+							break;
+						case 50:
+							k += $char - 48;
+							break;
+						case 51:
+							k += $char - 48;
+							break;
+						case 52:
+							k += $char - 48;
+							break;
+						case 53:
+							k += $char - 48;
+							break;
+						case 54:
+							k += $char - 48;
+							break;
+						case 55:
+							k += $char - 48;
+							break;
+						case 56:
+							k += $char - 48;
+							break;
+						case 57:
+							k += $char - 48;
+							break;
+						case 65:
 							k += $char - 55;
 							break;
-						case 97:case 98:case 99:case 100:case 101:case 102:
+						case 66:
+							k += $char - 55;
+							break;
+						case 67:
+							k += $char - 55;
+							break;
+						case 68:
+							k += $char - 55;
+							break;
+						case 69:
+							k += $char - 55;
+							break;
+						case 70:
+							k += $char - 55;
+							break;
+						case 97:
+							k += $char - 87;
+							break;
+						case 98:
+							k += $char - 87;
+							break;
+						case 99:
+							k += $char - 87;
+							break;
+						case 100:
+							k += $char - 87;
+							break;
+						case 101:
+							k += $char - 87;
+							break;
+						case 102:
 							k += $char - 87;
 							break;
 						default:
@@ -9308,8 +11389,8 @@ hscript.Parser.prototype = {
 		var $e = (tk);
 		switch( $e[1] ) {
 		case 3:
-			var op = $e[2];
-			if(op != "->") {
+			var tk_eTOp_0 = $e[2];
+			if(tk_eTOp_0 != "->") {
 				this.tokens.add(tk);
 				return t;
 			}
@@ -9322,8 +11403,8 @@ hscript.Parser.prototype = {
 		var $e = (t2);
 		switch( $e[1] ) {
 		case 1:
-			var ret = $e[3], args = $e[2];
-			args.unshift(t);
+			var t2_eCTFun_1 = $e[3], t2_eCTFun_0 = $e[2];
+			t2_eCTFun_0.unshift(t);
 			return t2;
 		default:
 			return hscript.CType.CTFun([t],t2);
@@ -9334,8 +11415,8 @@ hscript.Parser.prototype = {
 		var $e = (t);
 		switch( $e[1] ) {
 		case 2:
-			var v = $e[2];
-			var path = [v];
+			var t_eTId_0 = $e[2];
+			var path = [t_eTId_0];
 			while(true) {
 				t = this.token();
 				if(t != hscript.Token.TDot) break;
@@ -9343,8 +11424,8 @@ hscript.Parser.prototype = {
 				var $e = (t);
 				switch( $e[1] ) {
 				case 2:
-					var v1 = $e[2];
-					path.push(v1);
+					var t_eTId_01 = $e[2];
+					path.push(t_eTId_01);
 					break;
 				default:
 					this.unexpected(t);
@@ -9354,8 +11435,8 @@ hscript.Parser.prototype = {
 			var $e = (t);
 			switch( $e[1] ) {
 			case 3:
-				var op = $e[2];
-				if(op == "<") {
+				var t_eTOp_0 = $e[2];
+				if(t_eTOp_0 == "<") {
 					params = [];
 					try {
 						while(true) {
@@ -9367,8 +11448,8 @@ hscript.Parser.prototype = {
 								continue;
 								break;
 							case 3:
-								var op1 = $e[2];
-								if(op1 == ">") throw "__break__";
+								var t_eTOp_01 = $e[2];
+								if(t_eTOp_01 == ">") throw "__break__";
 								break;
 							default:
 							}
@@ -9396,9 +11477,9 @@ hscript.Parser.prototype = {
 						throw "__break__";
 						break;
 					case 2:
-						var name = $e[2];
+						var t_eTId_0 = $e[2];
 						this.ensure(hscript.Token.TDoubleDot);
-						fields.push({ name : name, t : this.parseType()});
+						fields.push({ name : t_eTId_0, t : this.parseType()});
 						t = this.token();
 						switch( (t)[1] ) {
 						case 9:
@@ -9425,12 +11506,14 @@ hscript.Parser.prototype = {
 		var $e = (tk);
 		switch( $e[1] ) {
 		case 3:
-			var op = $e[2];
-			if(this.unops.get(op)) {
+			var tk_eTOp_0 = $e[2];
+			if(this.unops.get(tk_eTOp_0)) {
 				if(this.isBlock(e1) || (function($this) {
 					var $r;
-					switch( (e1)[1] ) {
+					var $e = (e1);
+					switch( $e[1] ) {
 					case 3:
+						var e1_eEParent_0 = $e[2];
 						$r = true;
 						break;
 					default:
@@ -9441,17 +11524,17 @@ hscript.Parser.prototype = {
 					this.tokens.add(tk);
 					return e1;
 				}
-				return this.parseExprNext(hscript.Expr.EUnop(op,false,e1));
+				return this.parseExprNext(hscript.Expr.EUnop(tk_eTOp_0,false,e1));
 			}
-			return this.makeBinop(op,e1,this.parseExpr());
+			return this.makeBinop(tk_eTOp_0,e1,this.parseExpr());
 		case 8:
 			tk = this.token();
 			var field = null;
 			var $e = (tk);
 			switch( $e[1] ) {
 			case 2:
-				var id = $e[2];
-				field = id;
+				var tk_eTId_0 = $e[2];
+				field = tk_eTId_0;
 				break;
 			default:
 				this.unexpected(tk);
@@ -9505,8 +11588,8 @@ hscript.Parser.prototype = {
 					var $e = (tk);
 					switch( $e[1] ) {
 					case 2:
-						var id1 = $e[2];
-						ident = id1;
+						var tk_eTId_0 = $e[2];
+						ident = tk_eTId_0;
 						break;
 					default:
 						$this.unexpected(tk);
@@ -9541,8 +11624,8 @@ hscript.Parser.prototype = {
 					var $e = (tk);
 					switch( $e[1] ) {
 					case 2:
-						var id1 = $e[2];
-						vname = id1;
+						var tk_eTId_0 = $e[2];
+						vname = tk_eTId_0;
 						break;
 					default:
 						$this.unexpected(tk);
@@ -9573,8 +11656,8 @@ hscript.Parser.prototype = {
 					var $e = (tk);
 					switch( $e[1] ) {
 					case 2:
-						var id1 = $e[2];
-						name = id1;
+						var tk_eTId_0 = $e[2];
+						name = tk_eTId_0;
 						break;
 					default:
 						$this.tokens.add(tk);
@@ -9589,8 +11672,8 @@ hscript.Parser.prototype = {
 							var $e = (tk);
 							switch( $e[1] ) {
 							case 2:
-								var id1 = $e[2];
-								name1 = id1;
+								var tk_eTId_0 = $e[2];
+								name1 = tk_eTId_0;
 								break;
 							default:
 								$this.unexpected(tk);
@@ -9642,8 +11725,8 @@ hscript.Parser.prototype = {
 					var $e = (tk);
 					switch( $e[1] ) {
 					case 2:
-						var id1 = $e[2];
-						a.push(id1);
+						var tk_eTId_0 = $e[2];
+						a.push(tk_eTId_0);
 						break;
 					default:
 						$this.unexpected(tk);
@@ -9657,8 +11740,8 @@ hscript.Parser.prototype = {
 							var $e = (tk);
 							switch( $e[1] ) {
 							case 2:
-								var id1 = $e[2];
-								a.push(id1);
+								var tk_eTId_0 = $e[2];
+								a.push(tk_eTId_0);
 								break;
 							default:
 								$this.unexpected(tk);
@@ -9697,8 +11780,8 @@ hscript.Parser.prototype = {
 						var $e = (tk);
 						switch( $e[1] ) {
 						case 2:
-							var id1 = $e[2];
-							$r = id1;
+							var tk_eTId_0 = $e[2];
+							$r = tk_eTId_0;
 							break;
 						default:
 							$r = $this.unexpected(tk);
@@ -9729,12 +11812,12 @@ hscript.Parser.prototype = {
 			var $e = (e);
 			switch( $e[1] ) {
 			case 6:
-				var e3 = $e[4], e2 = $e[3], op2 = $e[2];
-				$r = $this.opPriority.get(op) <= $this.opPriority.get(op2) && !$this.opRightAssoc.exists(op)?hscript.Expr.EBinop(op2,$this.makeBinop(op,e1,e2),e3):hscript.Expr.EBinop(op,e1,e);
+				var e_eEBinop_2 = $e[4], e_eEBinop_1 = $e[3], e_eEBinop_0 = $e[2];
+				$r = $this.opPriority.get(op) <= $this.opPriority.get(e_eEBinop_0) && !$this.opRightAssoc.exists(op)?hscript.Expr.EBinop(e_eEBinop_0,$this.makeBinop(op,e1,e_eEBinop_1),e_eEBinop_2):hscript.Expr.EBinop(op,e1,e);
 				break;
 			case 22:
-				var e4 = $e[4], e3 = $e[3], e2 = $e[2];
-				$r = $this.opRightAssoc.exists(op)?hscript.Expr.EBinop(op,e1,e):hscript.Expr.ETernary($this.makeBinop(op,e1,e2),e3,e4);
+				var e_eETernary_2 = $e[4], e_eETernary_1 = $e[3], e_eETernary_0 = $e[2];
+				$r = $this.opRightAssoc.exists(op)?hscript.Expr.EBinop(op,e1,e):hscript.Expr.ETernary($this.makeBinop(op,e1,e_eETernary_0),e_eETernary_1,e_eETernary_2);
 				break;
 			default:
 				$r = hscript.Expr.EBinop(op,e1,e);
@@ -9748,12 +11831,12 @@ hscript.Parser.prototype = {
 			var $e = (e);
 			switch( $e[1] ) {
 			case 6:
-				var e2 = $e[4], e1 = $e[3], bop = $e[2];
-				$r = hscript.Expr.EBinop(bop,$this.makeUnop(op,e1),e2);
+				var e_eEBinop_2 = $e[4], e_eEBinop_1 = $e[3], e_eEBinop_0 = $e[2];
+				$r = hscript.Expr.EBinop(e_eEBinop_0,$this.makeUnop(op,e_eEBinop_1),e_eEBinop_2);
 				break;
 			case 22:
-				var e3 = $e[4], e2 = $e[3], e1 = $e[2];
-				$r = hscript.Expr.ETernary($this.makeUnop(op,e1),e2,e3);
+				var e_eETernary_2 = $e[4], e_eETernary_1 = $e[3], e_eETernary_0 = $e[2];
+				$r = hscript.Expr.ETernary($this.makeUnop(op,e_eETernary_0),e_eETernary_1,e_eETernary_2);
 				break;
 			default:
 				$r = hscript.Expr.EUnop(op,true,e);
@@ -9766,13 +11849,13 @@ hscript.Parser.prototype = {
 		var $e = (tk);
 		switch( $e[1] ) {
 		case 2:
-			var id = $e[2];
-			var e = this.parseStructure(id);
-			if(e == null) e = hscript.Expr.EIdent(id);
+			var tk_eTId_0 = $e[2];
+			var e = this.parseStructure(tk_eTId_0);
+			if(e == null) e = hscript.Expr.EIdent(tk_eTId_0);
 			return this.parseExprNext(e);
 		case 1:
-			var c = $e[2];
-			return this.parseExprNext(hscript.Expr.EConst(c));
+			var tk_eTConst_0 = $e[2];
+			return this.parseExprNext(hscript.Expr.EConst(tk_eTConst_0));
 		case 4:
 			var e = this.parseExpr();
 			this.ensure(hscript.Token.TPClose);
@@ -9784,7 +11867,7 @@ hscript.Parser.prototype = {
 			case 7:
 				return this.parseExprNext(hscript.Expr.EObject([]));
 			case 2:
-				var id = $e[2];
+				var tk_eTId_0 = $e[2];
 				var tk2 = this.token();
 				this.tokens.add(tk2);
 				this.tokens.add(tk);
@@ -9795,10 +11878,12 @@ hscript.Parser.prototype = {
 				}
 				break;
 			case 1:
-				var c = $e[2];
+				var tk_eTConst_0 = $e[2];
 				if(this.allowJSON) {
-					switch( (c)[1] ) {
+					var $e = (tk_eTConst_0);
+					switch( $e[1] ) {
 					case 2:
+						var c_eCString_0 = $e[2];
 						var tk2 = this.token();
 						this.tokens.add(tk2);
 						this.tokens.add(tk);
@@ -9825,8 +11910,8 @@ hscript.Parser.prototype = {
 			}
 			return hscript.Expr.EBlock(a);
 		case 3:
-			var op = $e[2];
-			if(this.unops.exists(op)) return this.makeUnop(op,this.parseExpr());
+			var tk_eTOp_0 = $e[2];
+			if(this.unops.exists(tk_eTOp_0)) return this.makeUnop(tk_eTOp_0,this.parseExpr());
 			return this.unexpected(tk);
 		case 11:
 			var a = new Array();
@@ -9851,17 +11936,17 @@ hscript.Parser.prototype = {
 				var $e = (tk);
 				switch( $e[1] ) {
 				case 2:
-					var i = $e[2];
-					id = i;
+					var tk_eTId_0 = $e[2];
+					id = tk_eTId_0;
 					break;
 				case 1:
-					var c = $e[2];
+					var tk_eTConst_0 = $e[2];
 					if(!this.allowJSON) this.unexpected(tk);
-					var $e = (c);
+					var $e = (tk_eTConst_0);
 					switch( $e[1] ) {
 					case 2:
-						var s = $e[2];
-						id = s;
+						var c_eCString_0 = $e[2];
+						id = c_eCString_0;
 						break;
 					default:
 						this.unexpected(tk);
@@ -9903,40 +11988,44 @@ hscript.Parser.prototype = {
 			var $e = (e);
 			switch( $e[1] ) {
 			case 4:
+				var e_eEBlock_0 = $e[2];
+				$r = true;
+				break;
 			case 21:
+				var e_eEObject_0 = $e[2];
 				$r = true;
 				break;
 			case 14:
-				var e1 = $e[3];
-				$r = $this.isBlock(e1);
+				var e_eEFunction_3 = $e[5], e_eEFunction_2 = $e[4], e_eEFunction_1 = $e[3], e_eEFunction_0 = $e[2];
+				$r = $this.isBlock(e_eEFunction_1);
 				break;
 			case 2:
-				var e1 = $e[4];
-				$r = e1 != null && $this.isBlock(e1);
+				var e_eEVar_2 = $e[4], e_eEVar_1 = $e[3], e_eEVar_0 = $e[2];
+				$r = e_eEVar_2 != null && $this.isBlock(e_eEVar_2);
 				break;
 			case 9:
-				var e2 = $e[4], e1 = $e[3];
-				$r = e2 != null?$this.isBlock(e2):$this.isBlock(e1);
+				var e_eEIf_2 = $e[4], e_eEIf_1 = $e[3], e_eEIf_0 = $e[2];
+				$r = e_eEIf_2 != null?$this.isBlock(e_eEIf_2):$this.isBlock(e_eEIf_1);
 				break;
 			case 6:
-				var e1 = $e[4];
-				$r = $this.isBlock(e1);
+				var e_eEBinop_2 = $e[4], e_eEBinop_1 = $e[3], e_eEBinop_0 = $e[2];
+				$r = $this.isBlock(e_eEBinop_2);
 				break;
 			case 7:
-				var e1 = $e[4], prefix = $e[3];
-				$r = !prefix && $this.isBlock(e1);
+				var e_eEUnop_2 = $e[4], e_eEUnop_1 = $e[3], e_eEUnop_0 = $e[2];
+				$r = !e_eEUnop_1 && $this.isBlock(e_eEUnop_2);
 				break;
 			case 10:
-				var e1 = $e[3];
-				$r = $this.isBlock(e1);
+				var e_eEWhile_1 = $e[3], e_eEWhile_0 = $e[2];
+				$r = $this.isBlock(e_eEWhile_1);
 				break;
 			case 11:
-				var e1 = $e[4];
-				$r = $this.isBlock(e1);
+				var e_eEFor_2 = $e[4], e_eEFor_1 = $e[3], e_eEFor_0 = $e[2];
+				$r = $this.isBlock(e_eEFor_2);
 				break;
 			case 15:
-				var e1 = $e[2];
-				$r = e1 != null && $this.isBlock(e1);
+				var e_eEReturn_0 = $e[2];
+				$r = e_eEReturn_0 != null && $this.isBlock(e_eEReturn_0);
 				break;
 			default:
 				$r = false;
@@ -10307,7 +12396,8 @@ math.BigInteger = function() {
 	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
 	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
 	this.chunks = new Array();
-	switch(math.BigInteger.defaultAm) {
+	var _g = math.BigInteger;
+	switch(_g.defaultAm) {
 	case 1:
 		this.am = $bind(this,this.am1);
 		break;
@@ -12389,7 +14479,8 @@ rg.app.charts.App.prototype = {
 			new rg.data.DependentVariableProcessor().process(data,dvariables);
 		});
 		if(!uselegacy) {
-			switch( (rg.info.Info.feed(new rg.info.InfoDomType(),params.options).kind)[1] ) {
+			var _g1 = rg.info.Info.feed(new rg.info.InfoDomType(),params.options);
+			switch( (_g1.kind)[1] ) {
 			case 1:
 				var layout = this.getLayout(id,params.options,el,infoviz.replace);
 				visualization = new rg.factory.FactorySvgVisualization().create(infoviz.type,layout,params.options);
@@ -12450,8 +14541,8 @@ rg.app.charts.JSBridge.log = function(msg) {
 }
 rg.app.charts.JSBridge.getInternetExplorerVersion = function() {
 	var rv = -1.0;
-	if(js.Lib.window.navigator.appName == "Microsoft Internet Explorer") {
-		var ua = js.Lib.window.navigator.userAgent;
+	if(js.Browser.window.navigator.appName == "Microsoft Internet Explorer") {
+		var ua = js.Browser.window.navigator.userAgent;
 		var re = new EReg("MSIE ([0-9]{1,}[\\.0-9]{0,})","");
 		if(re.match(ua) != null) rv = Std.parseFloat(re.matched(1));
 	}
@@ -12551,29 +14642,9 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.24.9004"};
+	r.info.charts = { version : "1.5.30.9072"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
-	};
-	r.request = function(url,usejsonp) {
-		if(usejsonp == null) usejsonp = true;
-		var execute;
-		var error = function(e) {
-			throw "unable to load data from: " + url + " because " + e;
-		};
-		if(usejsonp) execute = function(handler) {
-			rg.util.Jsonp.get(url,handler,function(i,e) {
-				error(e);
-			},{ },{ });
-		}; else execute = function(handler1) {
-			var http = new haxe.Http(url);
-			http.onData = function(data) {
-				handler1(thx.json.Json.decode(data));
-			};
-			http.onError = error;
-			http.request(false);
-		};
-		return { execute : execute};
 	};
 }
 rg.app.charts.JSBridge.createQuery = function() {
@@ -12595,7 +14666,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 216, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 193, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -12618,7 +14689,7 @@ rg.app.charts.MVPOptions.a1 = function(params,handler) {
 		authcode = Reflect.field(args,"authCode");
 	}
 	if(null != authcode) {
-		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Lib.window.location.hostname;
+		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Browser.window.location.hostname;
 		if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
 			var parts = host.split(".");
 			if(parts.length == 3 && parts[0] == "www") parts.shift();
@@ -12681,7 +14752,10 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 			++_g;
 			if(axis.variable == "dependent") {
 			} else switch(params.options.visualization) {
-			case "barchart":case "pivottable":
+			case "barchart":
+				if(null == axis.scalemode) axis.scalemode = "fit";
+				break;
+			case "pivottable":
 				if(null == axis.scalemode) axis.scalemode = "fit";
 				break;
 			}
@@ -12691,13 +14765,31 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	chain.addAction(function(params1,handler1) {
 		if(null == params1.options.label) params1.options.label = { };
 		switch(params1.options.visualization) {
-		case "linechart":case "barchart":case "streamgraph":
+		case "linechart":
 			var type = params1.axes[0].type;
 			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				return (null != params1.options.segmenton?rg.util.Properties.formatValue(params1.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
 			};
 			break;
-		case "scattergraph":case "heatgrid":
+		case "barchart":
+			var type = params1.axes[0].type;
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
+				return (null != params1.options.segmenton?rg.util.Properties.formatValue(params1.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			};
+			break;
+		case "streamgraph":
+			var type = params1.axes[0].type;
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
+				return (null != params1.options.segmenton?rg.util.Properties.formatValue(params1.options.segmenton,dp) + ", ":"") + rg.util.Properties.formatValue(type,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			};
+			break;
+		case "scattergraph":
+			var type1 = params1.axes[0].type;
+			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
+				return rg.util.Properties.formatValue(type1,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
+			};
+			break;
+		case "heatgrid":
 			var type1 = params1.axes[0].type;
 			if(null == params1.options.label.datapointover) params1.options.label.datapointover = function(dp,stats) {
 				return rg.util.Properties.formatValue(type1,dp) + ": " + rg.util.Properties.formatValue(stats.type,dp);
@@ -12874,7 +14966,13 @@ rg.axis.AxisGroupByTime.valuesByGroup = function(groupby) {
 }
 rg.axis.AxisGroupByTime.defaultMin = function(periodicity) {
 	switch(periodicity) {
-	case "minute":case "hour":case "week":case "month":
+	case "minute":
+		return 0;
+	case "hour":
+		return 0;
+	case "week":
+		return 0;
+	case "month":
 		return 0;
 	case "day":
 		return 1;
@@ -12995,7 +15093,8 @@ rg.axis.AxisTime.prototype = {
 		return this.scaleDistribution = v;
 	}
 	,scale: function(start,end,v) {
-		switch( (this.scaleDistribution)[1] ) {
+		var _g = this;
+		switch( (_g.scaleDistribution)[1] ) {
 		case 1:
 			return (v - start) / (end - start);
 		default:
@@ -13014,7 +15113,8 @@ rg.axis.AxisTime.prototype = {
 		return rg.axis.Tickmarks.bound(range,upperBound);
 	}
 	,isMajor: function(units,value) {
-		switch(this.periodicity) {
+		var _g = this;
+		switch(_g.periodicity) {
 		case "day":
 			if(units <= 31) return true;
 			if(units < 121) {
@@ -13040,10 +15140,10 @@ rg.axis.AxisTime.prototype = {
 		default:
 			var series = Reflect.field(rg.axis.AxisTime.snapping,this.periodicity), unit = rg.util.Periodicity.units(value,this.periodicity);
 			if(null == series) return true;
-			var _g = 0;
-			while(_g < series.length) {
-				var item = series[_g];
-				++_g;
+			var _g1 = 0;
+			while(_g1 < series.length) {
+				var item = series[_g1];
+				++_g1;
 				if(units > item.to) continue;
 				return 0 == unit % item.s;
 			}
@@ -13486,7 +15586,8 @@ $hxClasses["rg.factory.FactoryGeoProjection"] = rg.factory.FactoryGeoProjection;
 rg.factory.FactoryGeoProjection.__name__ = ["rg","factory","FactoryGeoProjection"];
 rg.factory.FactoryGeoProjection.prototype = {
 	create: function(info) {
-		switch(info.projection.toLowerCase()) {
+		var _g = info.projection.toLowerCase();
+		switch(_g) {
 		case "mercator":
 			var projection = new thx.geo.Mercator();
 			if(null != info.scale) projection.set_scale(info.scale);
@@ -13796,64 +15897,74 @@ rg.frame.Stack.prototype = {
 	,reflow: function() {
 		var available = (function($this) {
 			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 0:
-				$r = $this.height;
-				break;
-			case 1:
-				$r = $this.width;
-				break;
-			}
+			var _g = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g.orientation)[1] ) {
+				case 0:
+					$r = $this.height;
+					break;
+				case 1:
+					$r = $this.width;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this)), otherdimension = (function($this) {
 			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 0:
-				$r = $this.width;
-				break;
-			case 1:
-				$r = $this.height;
-				break;
-			}
+			var _g1 = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g1.orientation)[1] ) {
+				case 0:
+					$r = $this.width;
+					break;
+				case 1:
+					$r = $this.height;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this));
 		var required = 0, values = [], variables = [], i = 0, variablespace = 0;
-		var _g = 0, _g1 = this.children;
-		while(_g < _g1.length) {
-			var child = _g1[_g];
-			++_g;
+		var _g2 = 0, _g3 = this.children;
+		while(_g2 < _g3.length) {
+			var child = _g3[_g2];
+			++_g2;
 			var $e = (child.disposition);
 			switch( $e[1] ) {
 			case 0:
-				var max = $e[5], min = $e[4], after = $e[3], before = $e[2];
-				if(null == min) min = 0;
-				if(null == max) max = available;
-				required += min + before + after;
-				variablespace += variables[i] = max - min;
-				values.push(min + before + after);
+				var child_fdisposition_eFill_3 = $e[5], child_fdisposition_eFill_2 = $e[4], child_fdisposition_eFill_1 = $e[3], child_fdisposition_eFill_0 = $e[2];
+				if(null == child_fdisposition_eFill_2) child_fdisposition_eFill_2 = 0;
+				if(null == child_fdisposition_eFill_3) child_fdisposition_eFill_3 = available;
+				required += child_fdisposition_eFill_2 + child_fdisposition_eFill_0 + child_fdisposition_eFill_1;
+				variablespace += variables[i] = child_fdisposition_eFill_3 - child_fdisposition_eFill_2;
+				values.push(child_fdisposition_eFill_2 + child_fdisposition_eFill_0 + child_fdisposition_eFill_1);
 				break;
 			case 1:
-				var max = $e[6], min = $e[5], percent = $e[4], after = $e[3], before = $e[2];
-				var size = Math.round(percent * available);
-				if(null != min && size < min) size = min;
-				if(null != max && size > max) size = max;
-				required += size + before + after;
-				values.push(size + before + after);
+				var child_fdisposition_eFillPercent_4 = $e[6], child_fdisposition_eFillPercent_3 = $e[5], child_fdisposition_eFillPercent_2 = $e[4], child_fdisposition_eFillPercent_1 = $e[3], child_fdisposition_eFillPercent_0 = $e[2];
+				var size = Math.round(child_fdisposition_eFillPercent_2 * available);
+				if(null != child_fdisposition_eFillPercent_3 && size < child_fdisposition_eFillPercent_3) size = child_fdisposition_eFillPercent_3;
+				if(null != child_fdisposition_eFillPercent_4 && size > child_fdisposition_eFillPercent_4) size = child_fdisposition_eFillPercent_4;
+				required += size + child_fdisposition_eFillPercent_0 + child_fdisposition_eFillPercent_1;
+				values.push(size + child_fdisposition_eFillPercent_0 + child_fdisposition_eFillPercent_1);
 				break;
 			case 2:
-				var ratio = $e[4], after = $e[3], before = $e[2];
-				if(null == ratio) ratio = 1;
-				var size = Math.round(otherdimension * ratio);
-				required += size + before + after;
-				values.push(size + before + after);
+				var child_fdisposition_eFillRatio_2 = $e[4], child_fdisposition_eFillRatio_1 = $e[3], child_fdisposition_eFillRatio_0 = $e[2];
+				if(null == child_fdisposition_eFillRatio_2) child_fdisposition_eFillRatio_2 = 1;
+				var size = Math.round(otherdimension * child_fdisposition_eFillRatio_2);
+				required += size + child_fdisposition_eFillRatio_0 + child_fdisposition_eFillRatio_1;
+				values.push(size + child_fdisposition_eFillRatio_0 + child_fdisposition_eFillRatio_1);
 				break;
 			case 3:
-				var size = $e[4], after = $e[3], before = $e[2];
-				required += size + before + after;
-				values.push(size + before + after);
+				var child_fdisposition_eFixed_2 = $e[4], child_fdisposition_eFixed_1 = $e[3], child_fdisposition_eFixed_0 = $e[2];
+				required += child_fdisposition_eFixed_2 + child_fdisposition_eFixed_0 + child_fdisposition_eFixed_1;
+				values.push(child_fdisposition_eFixed_2 + child_fdisposition_eFixed_0 + child_fdisposition_eFixed_1);
 				break;
 			case 4:
-				var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
+				var child_fdisposition_eFloating_3 = $e[5], child_fdisposition_eFloating_2 = $e[4], child_fdisposition_eFloating_1 = $e[3], child_fdisposition_eFloating_0 = $e[2];
 				values.push(0);
 				break;
 			}
@@ -13862,12 +15973,14 @@ rg.frame.Stack.prototype = {
 		available -= required;
 		if(available > 0) {
 			i = 0;
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				switch( (child.disposition)[1] ) {
+			var _g2 = 0, _g3 = this.children;
+			while(_g2 < _g3.length) {
+				var child = _g3[_g2];
+				++_g2;
+				var $e = (child.disposition);
+				switch( $e[1] ) {
 				case 0:
+					var child_fdisposition_eFill_3 = $e[5], child_fdisposition_eFill_2 = $e[4], child_fdisposition_eFill_1 = $e[3], child_fdisposition_eFill_0 = $e[2];
 					var size = Math.round(variables[i] / variablespace * available);
 					values[i] += size;
 					break;
@@ -13879,48 +15992,67 @@ rg.frame.Stack.prototype = {
 		i = 0;
 		var sizeable;
 		var pos = 0;
-		switch( (this.orientation)[1] ) {
+		var _g2 = this;
+		switch( (_g2.orientation)[1] ) {
 		case 0:
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
+			var _g3 = 0, _g4 = this.children;
+			while(_g3 < _g4.length) {
+				var child = _g4[_g3];
+				++_g3;
 				sizeable = child;
 				var $e = (child.disposition);
 				switch( $e[1] ) {
 				case 4:
-					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.set_layout(x,y,w,h);
+					var child_fdisposition_eFloating_3 = $e[5], child_fdisposition_eFloating_2 = $e[4], child_fdisposition_eFloating_1 = $e[3], child_fdisposition_eFloating_0 = $e[2];
+					sizeable.set_layout(child_fdisposition_eFloating_0,child_fdisposition_eFloating_1,child_fdisposition_eFloating_2,child_fdisposition_eFloating_3);
 					break;
 				case 3:
+					var child_fdisposition_eFixed_2 = $e[4], child_fdisposition_eFixed_1 = $e[3], child_fdisposition_eFixed_0 = $e[2];
+					sizeable.set_layout(0,pos + child_fdisposition_eFixed_0,this.width,values[i] - child_fdisposition_eFixed_1 - child_fdisposition_eFixed_0);
+					break;
 				case 0:
+					var child_fdisposition_eFill_3 = $e[5], child_fdisposition_eFill_2 = $e[4], child_fdisposition_eFill_1 = $e[3], child_fdisposition_eFill_0 = $e[2];
+					sizeable.set_layout(0,pos + child_fdisposition_eFill_0,this.width,values[i] - child_fdisposition_eFill_1 - child_fdisposition_eFill_0);
+					break;
 				case 1:
+					var child_fdisposition_eFillPercent_4 = $e[6], child_fdisposition_eFillPercent_3 = $e[5], child_fdisposition_eFillPercent_2 = $e[4], child_fdisposition_eFillPercent_1 = $e[3], child_fdisposition_eFillPercent_0 = $e[2];
+					sizeable.set_layout(0,pos + child_fdisposition_eFillPercent_0,this.width,values[i] - child_fdisposition_eFillPercent_1 - child_fdisposition_eFillPercent_0);
+					break;
 				case 2:
-					var after = $e[3], before = $e[2];
-					sizeable.set_layout(0,pos + before,this.width,values[i] - after - before);
+					var child_fdisposition_eFillRatio_2 = $e[4], child_fdisposition_eFillRatio_1 = $e[3], child_fdisposition_eFillRatio_0 = $e[2];
+					sizeable.set_layout(0,pos + child_fdisposition_eFillRatio_0,this.width,values[i] - child_fdisposition_eFillRatio_1 - child_fdisposition_eFillRatio_0);
 					break;
 				}
 				pos += values[i++];
 			}
 			break;
 		case 1:
-			var _g = 0, _g1 = this.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
+			var _g3 = 0, _g4 = this.children;
+			while(_g3 < _g4.length) {
+				var child = _g4[_g3];
+				++_g3;
 				sizeable = child;
 				var $e = (child.disposition);
 				switch( $e[1] ) {
 				case 4:
-					var h = $e[5], w = $e[4], y = $e[3], x = $e[2];
-					sizeable.set_layout(x,y,w,h);
+					var child_fdisposition_eFloating_3 = $e[5], child_fdisposition_eFloating_2 = $e[4], child_fdisposition_eFloating_1 = $e[3], child_fdisposition_eFloating_0 = $e[2];
+					sizeable.set_layout(child_fdisposition_eFloating_0,child_fdisposition_eFloating_1,child_fdisposition_eFloating_2,child_fdisposition_eFloating_3);
 					break;
 				case 3:
+					var child_fdisposition_eFixed_2 = $e[4], child_fdisposition_eFixed_1 = $e[3], child_fdisposition_eFixed_0 = $e[2];
+					sizeable.set_layout(pos + child_fdisposition_eFixed_0,0,values[i] - child_fdisposition_eFixed_1 - child_fdisposition_eFixed_0,this.height);
+					break;
 				case 0:
+					var child_fdisposition_eFill_3 = $e[5], child_fdisposition_eFill_2 = $e[4], child_fdisposition_eFill_1 = $e[3], child_fdisposition_eFill_0 = $e[2];
+					sizeable.set_layout(pos + child_fdisposition_eFill_0,0,values[i] - child_fdisposition_eFill_1 - child_fdisposition_eFill_0,this.height);
+					break;
 				case 1:
+					var child_fdisposition_eFillPercent_4 = $e[6], child_fdisposition_eFillPercent_3 = $e[5], child_fdisposition_eFillPercent_2 = $e[4], child_fdisposition_eFillPercent_1 = $e[3], child_fdisposition_eFillPercent_0 = $e[2];
+					sizeable.set_layout(pos + child_fdisposition_eFillPercent_0,0,values[i] - child_fdisposition_eFillPercent_1 - child_fdisposition_eFillPercent_0,this.height);
+					break;
 				case 2:
-					var after = $e[3], before = $e[2];
-					sizeable.set_layout(pos + before,0,values[i] - after - before,this.height);
+					var child_fdisposition_eFillRatio_2 = $e[4], child_fdisposition_eFillRatio_1 = $e[3], child_fdisposition_eFillRatio_0 = $e[2];
+					sizeable.set_layout(pos + child_fdisposition_eFillRatio_0,0,values[i] - child_fdisposition_eFillRatio_1 - child_fdisposition_eFillRatio_0,this.height);
 					break;
 				}
 				pos += values[i++];
@@ -14773,7 +16905,7 @@ rg.html.widget.DownloaderMenu.prototype = {
 			return true;
 		},function(e) {
 			_g.menu.classed().remove("downloading");
-			js.Lib.alert("ERROR: " + e);
+			js.Browser.window.alert("ERROR: " + e);
 		});
 	}
 	,createMenu: function(container) {
@@ -14803,8 +16935,8 @@ rg.html.widget.DownloaderMenu.prototype = {
 			this.menu.classed().add("bottom").classed().add("right");
 			break;
 		case 0:
-			var selector = $e[2];
-			dhx.Dom.select(selector).node().appendChild(el);
+			var position_eElementSelector_0 = $e[2];
+			dhx.Dom.select(position_eElementSelector_0).node().appendChild(el);
 			break;
 		case 1:
 			this.menu.classed().add("top").classed().add("left");
@@ -14845,10 +16977,13 @@ rg.html.widget.DownloaderPositions = function() { }
 $hxClasses["rg.html.widget.DownloaderPositions"] = rg.html.widget.DownloaderPositions;
 rg.html.widget.DownloaderPositions.__name__ = ["rg","html","widget","DownloaderPositions"];
 rg.html.widget.DownloaderPositions.parse = function(v) {
-	switch(v.toLowerCase()) {
+	var _g = v.toLowerCase();
+	switch(_g) {
 	case "topleft":
 		return rg.html.widget.DownloaderPosition.TopLeft;
-	case "topright":case "auto":
+	case "topright":
+		return rg.html.widget.DownloaderPosition.TopRight;
+	case "auto":
 		return rg.html.widget.DownloaderPosition.TopRight;
 	case "bottomleft":
 		return rg.html.widget.DownloaderPosition.BottomLeft;
@@ -14913,7 +17048,7 @@ rg.html.widget.Logo.prototype = {
 		this.setStyle(this.image,"width",194 + "px");
 	}
 	,updateAnchor: function() {
-		var body = js.Lib.document.body, len = body.childNodes.length;
+		var body = js.Browser.document.body, len = body.childNodes.length;
 		if(dhx.Dom.select("body :last-child").node() != this.anchor.node()) body.appendChild(this.anchor.node());
 		var pos = rg.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
 		this.setAttr(this.anchor,"title","Powered by ReportGrid");
@@ -14983,7 +17118,7 @@ rg.html.widget.Logo.prototype = {
 }
 rg.html.widget.Tooltip = function(el) {
 	this.visible = false;
-	el = null == el?js.Lib.document.body:el;
+	el = null == el?js.Browser.document.body:el;
 	this.tooltip = dhx.Dom.selectNode(el).append("div").style("display").string("none").style("position").string("absolute").style("opacity")["float"](0).style("left").string("0px").style("top").string("0px").attr("class").string("rg tooltip").style("z-index").string("1000000");
 	this._anchor = this.tooltip.append("div").style("display").string("block").style("position").string("absolute");
 	this.setAnchorClass("");
@@ -15010,26 +17145,62 @@ rg.html.widget.Tooltip.prototype = {
 		var width = this.container.style("width").getFloat(), height = this.container.style("height").getFloat();
 		var type = this.anchortype;
 		switch(type) {
-		case "top":case "bottom":case "center":
+		case "top":
 			this.container.style("left").string(-width / 2 + "px");
 			break;
-		case "left":case "topleft":case "bottomleft":
+		case "bottom":
+			this.container.style("left").string(-width / 2 + "px");
+			break;
+		case "center":
+			this.container.style("left").string(-width / 2 + "px");
+			break;
+		case "left":
 			this.container.style("left").string(this.anchordistance + "px");
 			break;
-		case "right":case "topright":case "bottomright":
+		case "topleft":
+			this.container.style("left").string(this.anchordistance + "px");
+			break;
+		case "bottomleft":
+			this.container.style("left").string(this.anchordistance + "px");
+			break;
+		case "right":
+			this.container.style("left").string(-this.anchordistance - width + "px");
+			break;
+		case "topright":
+			this.container.style("left").string(-this.anchordistance - width + "px");
+			break;
+		case "bottomright":
 			this.container.style("left").string(-this.anchordistance - width + "px");
 			break;
 		default:
 			throw new thx.error.Error("invalid anchor point: {" + this.anchortype + "}",null,null,{ fileName : "Tooltip.hx", lineNumber : 157, className : "rg.html.widget.Tooltip", methodName : "reanchor"});
 		}
 		switch(type) {
-		case "top":case "topleft":case "topright":
+		case "top":
 			this.container.style("top").string(this.anchordistance + "px");
 			break;
-		case "left":case "center":case "right":
+		case "topleft":
+			this.container.style("top").string(this.anchordistance + "px");
+			break;
+		case "topright":
+			this.container.style("top").string(this.anchordistance + "px");
+			break;
+		case "left":
 			this.container.style("top").string(-height / 2 + "px");
 			break;
-		case "bottom":case "bottomleft":case "bottomright":
+		case "center":
+			this.container.style("top").string(-height / 2 + "px");
+			break;
+		case "right":
+			this.container.style("top").string(-height / 2 + "px");
+			break;
+		case "bottom":
+			this.container.style("top").string(-this.anchordistance - height + "px");
+			break;
+		case "bottomleft":
+			this.container.style("top").string(-this.anchordistance - height + "px");
+			break;
+		case "bottomright":
 			this.container.style("top").string(-this.anchordistance - height + "px");
 			break;
 		}
@@ -15098,19 +17269,20 @@ rg.info.Info.feed = function(info,ob) {
 		++_g;
 		if(Reflect.hasField(ob,description.name)) {
 			value = Reflect.field(ob,description.name);
-			var $e = (description.transformer.transform(value));
+			var _g1 = description.transformer.transform(value);
+			var $e = (_g1);
 			switch( $e[1] ) {
 			case 0:
-				var pairs = $e[2];
-				var $it0 = pairs.iterator();
+				var _g1_eSuccess_0 = $e[2];
+				var $it0 = _g1_eSuccess_0.iterator();
 				while( $it0.hasNext() ) {
 					var pair = $it0.next();
 					info[pair.name] = pair.value;
 				}
 				break;
 			case 1:
-				var reasons = $e[2];
-				rg.info.Info.warn(description.name,reasons);
+				var _g1_eFailure_0 = $e[2];
+				rg.info.Info.warn(description.name,_g1_eFailure_0);
 				break;
 			}
 		}
@@ -15475,7 +17647,13 @@ rg.info.InfoLayout.filters = function() {
 		return rg.info.filter.TransformResult.Success((function($this) {
 			var $r;
 			switch(value) {
-			case "alt":case "alternate":case "alternating":
+			case "alt":
+				$r = rg.layout.ScalePattern.ScalesAlternating;
+				break;
+			case "alternate":
+				$r = rg.layout.ScalePattern.ScalesAlternating;
+				break;
+			case "alternating":
 				$r = rg.layout.ScalePattern.ScalesAlternating;
 				break;
 			case "right":
@@ -15619,22 +17797,30 @@ rg.info.TemplateTransformer.prototype = {
 		value = null == value?"":"" + Std.string(value);
 		return (function($this) {
 			var $r;
-			switch(value.toLowerCase()) {
-			case "world":case "world-countries":
-				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["mercator",rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"]));
-				break;
-			case "usa-states":
-				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"]));
-				break;
-			case "usa-state-centroids":
-				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"]));
-				break;
-			case "usa-counties":
-				$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"]));
-				break;
-			default:
-				$r = rg.info.filter.TransformResult.Failure(new thx.util.Message("{0} is not a valid map template",[value]));
-			}
+			var _g = value.toLowerCase();
+			$r = (function($this) {
+				var $r;
+				switch(_g) {
+				case "world":
+					$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["mercator",rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"]));
+					break;
+				case "world-countries":
+					$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["mercator",rg.RGConst.BASE_URL_GEOJSON + "world-countries.json.js"]));
+					break;
+				case "usa-states":
+					$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-states.json.js"]));
+					break;
+				case "usa-state-centroids":
+					$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-state-centroids.json.js"]));
+					break;
+				case "usa-counties":
+					$r = rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(["projection","url"],["albersusa",rg.RGConst.BASE_URL_GEOJSON + "usa-counties.json.js"]));
+					break;
+				default:
+					$r = rg.info.filter.TransformResult.Failure(new thx.util.Message("{0} is not a valid map template",[value]));
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this));
 	}
@@ -16148,14 +18334,15 @@ $hxClasses["rg.info.filter.TransformerChainer"] = rg.info.filter.TransformerChai
 rg.info.filter.TransformerChainer.__name__ = ["rg","info","filter","TransformerChainer"];
 rg.info.filter.TransformerChainer.onResult = function(src,success,failure) {
 	return function(value) {
-		var $e = (src(value));
+		var _g = src(value);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
-			var out = $e[2];
-			return success(out,value);
+			var _g_eSuccess_0 = $e[2];
+			return success(_g_eSuccess_0,value);
 		case 1:
-			var msg = $e[2];
-			return failure(value,msg);
+			var _g_eFailure_0 = $e[2];
+			return failure(value,_g_eFailure_0);
 		}
 	};
 }
@@ -16188,15 +18375,17 @@ rg.info.filter.TransformerString.__name__ = ["rg","info","filter","TransformerSt
 rg.info.filter.TransformerString.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerString.prototype = {
 	transform: function(value) {
-		var $e = (Type["typeof"](value));
+		var _g = Type["typeof"](value);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 3:
 			return rg.info.filter.TransformResult.Success(value?"true":"false");
 		case 1:
+			return rg.info.filter.TransformResult.Success("" + Std.string(value));
 		case 2:
 			return rg.info.filter.TransformResult.Success("" + Std.string(value));
 		case 6:
-			var cls = $e[2];
+			var _g_eTClass_0 = $e[2];
 			return rg.info.filter.TransformResult.Success(Std.string(value));
 		default:
 			return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform {0} into a string value",[value]));
@@ -16211,16 +18400,18 @@ rg.info.filter.TransformerBool.__name__ = ["rg","info","filter","TransformerBool
 rg.info.filter.TransformerBool.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerBool.prototype = {
 	transform: function(value) {
-		var $e = (Type["typeof"](value));
+		var _g = Type["typeof"](value);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 3:
 			return rg.info.filter.TransformResult.Success(value);
 		case 1:
+			return rg.info.filter.TransformResult.Success(value != 0);
 		case 2:
 			return rg.info.filter.TransformResult.Success(value != 0);
 		case 6:
-			var cls = $e[2];
-			if("String" == Type.getClassName(cls)) {
+			var _g_eTClass_0 = $e[2];
+			if("String" == Type.getClassName(_g_eTClass_0)) {
 				if(Bools.canParse(value)) return rg.info.filter.TransformResult.Success(Bools.parse(value)); else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform the string '{0}'' into a boolean value",[value]));
 			} else return rg.info.filter.TransformResult.Failure(new thx.util.Message("unable to tranform the instance of {0} into a boolean value",[value]));
 			break;
@@ -16237,7 +18428,8 @@ rg.info.filter.TransformerInt.__name__ = ["rg","info","filter","TransformerInt"]
 rg.info.filter.TransformerInt.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerInt.prototype = {
 	transform: function(value) {
-		switch( (Type["typeof"](value))[1] ) {
+		var _g = Type["typeof"](value);
+		switch( (_g)[1] ) {
 		case 3:
 			return rg.info.filter.TransformResult.Success(value?1:0);
 		case 1:
@@ -16257,10 +18449,12 @@ rg.info.filter.TransformerFloat.__name__ = ["rg","info","filter","TransformerFlo
 rg.info.filter.TransformerFloat.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerFloat.prototype = {
 	transform: function(value) {
-		switch( (Type["typeof"](value))[1] ) {
+		var _g = Type["typeof"](value);
+		switch( (_g)[1] ) {
 		case 3:
 			return rg.info.filter.TransformResult.Success(value?1.0:0.0);
 		case 1:
+			return rg.info.filter.TransformResult.Success(value);
 		case 2:
 			return rg.info.filter.TransformResult.Success(value);
 		default:
@@ -16384,16 +18578,17 @@ rg.info.filter.PairTransformer.__name__ = ["rg","info","filter","PairTransformer
 rg.info.filter.PairTransformer.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.PairTransformer.prototype = {
 	transform: function(value) {
-		var $e = (this.valueTransformer.transform(value));
+		var _g = this.valueTransformer.transform(value);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
-			var v = $e[2];
+			var _g_eSuccess_0 = $e[2];
 			return rg.info.filter.TransformResult.Success(new rg.info.filter.Pairs(this.names,this.names.map(function(_,_1) {
-				return v;
+				return _g_eSuccess_0;
 			})));
 		case 1:
-			var reason = $e[2];
-			return rg.info.filter.TransformResult.Failure(reason);
+			var _g_eFailure_0 = $e[2];
+			return rg.info.filter.TransformResult.Failure(_g_eFailure_0);
 		}
 	}
 	,valueTransformer: null
@@ -16450,7 +18645,7 @@ rg.interactive.RGDownloader.prototype = {
 			var url = Reflect.field(ob.service,this.format);
 			if(null != this.tokenId) url = rg.interactive.RGDownloader.appendArgument(url,"tokenId",this.tokenId);
 			url = rg.interactive.RGDownloader.appendArgument(url,"forceDownload","true");
-			js.Lib.window.location.href = url;
+			js.Browser.window.location.href = url;
 		}
 	}
 	,config: function() {
@@ -16482,7 +18677,7 @@ rg.interactive.RGDownloader.prototype = {
 		});
 	}
 	,download: function(format,backgroundcolor,success,error) {
-		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 33, className : "rg.interactive.RGDownloader", methodName : "download"});
+		if(!Arrays.exists(rg.interactive.RGDownloader.ALLOWED_FORMATS,format)) throw new thx.error.Error("The download format '{0}' is not correct",[format],null,{ fileName : "RGDownloader.hx", lineNumber : 32, className : "rg.interactive.RGDownloader", methodName : "download"});
 		this.format = format;
 		var http = new haxe.Http(this.url(format));
 		http.setHeader("Accept","application/json");
@@ -16521,7 +18716,7 @@ rg.interactive.RGLegacyRenderer.getIframeDoc = function(iframe) {
 	},function() {
 		if(iframe.contentWindow && iframe.contentWindow.document) iframeDoc = iframe.contentWindow.document;
 	},function() {
-		if(null != js.Lib.window.frames[iframe.name]) iframeDoc = js.Lib.window.frames[iframe.name].document;
+		if(null != js.Browser.window.frames[iframe.name]) iframeDoc = js.Browser.window.frames[iframe.name].document;
 	}];
 	var _g = 0;
 	while(_g < attempts.length) {
@@ -16611,7 +18806,7 @@ rg.interactive.RGLegacyRenderer.prototype = {
 	}
 	,createIframe: function(width,height) {
 		var id = "rgiframe" + ++rg.interactive.RGLegacyRenderer.nextframeid;
-		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameBorder").string("0").attr("scrolling").string("no").attr("width").string(width + "").attr("height").string(height + "").attr("marginwidth").string("0").attr("marginheight").string("0").attr("hspace").string("0").attr("vspace").string("0").attr("style").string("width:100%; border:0; height:100%; overflow:hidden;").attr("src").string(rg.interactive.RGLegacyRenderer.isIE7orBelow()?"javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\'<script>document.domain=\\\\\"" + js.Lib.document.domain + "\\\\\";<\\\\\\\\/script>\\');document.close();};<\\/script>'":"about:blank");
+		return this.container.append("iframe").attr("name").string(id).attr("id").string(id).attr("frameBorder").string("0").attr("scrolling").string("no").attr("width").string(width + "").attr("height").string(height + "").attr("marginwidth").string("0").attr("marginheight").string("0").attr("hspace").string("0").attr("vspace").string("0").attr("style").string("width:100%; border:0; height:100%; overflow:hidden;").attr("src").string(rg.interactive.RGLegacyRenderer.isIE7orBelow()?"javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\'<script>document.domain=\\\\\"" + js.Browser.document.domain + "\\\\\";<\\\\\\\\/script>\\');document.close();};<\\/script>'":"about:blank");
 	}
 	,display: function(params) {
 		var _g = this;
@@ -16689,20 +18884,20 @@ rg.layout.Layout.prototype = {
 		var $e = (stackitem.disposition);
 		switch( $e[1] ) {
 		case 0:
-			var max = $e[5], min = $e[4], a = $e[3], b = $e[2];
-			stackitem.set_disposition(rg.frame.FrameLayout.Fill(null == before?b:before,null == after?a:after,min,max));
+			var stackitem_fdisposition_eFill_3 = $e[5], stackitem_fdisposition_eFill_2 = $e[4], stackitem_fdisposition_eFill_1 = $e[3], stackitem_fdisposition_eFill_0 = $e[2];
+			stackitem.set_disposition(rg.frame.FrameLayout.Fill(null == before?stackitem_fdisposition_eFill_0:before,null == after?stackitem_fdisposition_eFill_1:after,stackitem_fdisposition_eFill_2,stackitem_fdisposition_eFill_3));
 			break;
 		case 1:
-			var max = $e[6], min = $e[5], percent = $e[4], a = $e[3], b = $e[2];
-			stackitem.set_disposition(rg.frame.FrameLayout.FillPercent(null == before?b:before,null == after?a:after,percent,min,max));
+			var stackitem_fdisposition_eFillPercent_4 = $e[6], stackitem_fdisposition_eFillPercent_3 = $e[5], stackitem_fdisposition_eFillPercent_2 = $e[4], stackitem_fdisposition_eFillPercent_1 = $e[3], stackitem_fdisposition_eFillPercent_0 = $e[2];
+			stackitem.set_disposition(rg.frame.FrameLayout.FillPercent(null == before?stackitem_fdisposition_eFillPercent_0:before,null == after?stackitem_fdisposition_eFillPercent_1:after,stackitem_fdisposition_eFillPercent_2,stackitem_fdisposition_eFillPercent_3,stackitem_fdisposition_eFillPercent_4));
 			break;
 		case 2:
-			var ratio = $e[4], a = $e[3], b = $e[2];
-			stackitem.set_disposition(rg.frame.FrameLayout.FillRatio(null == before?b:before,null == after?a:after,ratio));
+			var stackitem_fdisposition_eFillRatio_2 = $e[4], stackitem_fdisposition_eFillRatio_1 = $e[3], stackitem_fdisposition_eFillRatio_0 = $e[2];
+			stackitem.set_disposition(rg.frame.FrameLayout.FillRatio(null == before?stackitem_fdisposition_eFillRatio_0:before,null == after?stackitem_fdisposition_eFillRatio_1:after,stackitem_fdisposition_eFillRatio_2));
 			break;
 		case 3:
-			var size = $e[4], a = $e[3], b = $e[2];
-			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(null == before?b:before,null == after?a:after,size));
+			var stackitem_fdisposition_eFixed_2 = $e[4], stackitem_fdisposition_eFixed_1 = $e[3], stackitem_fdisposition_eFixed_0 = $e[2];
+			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(null == before?stackitem_fdisposition_eFixed_0:before,null == after?stackitem_fdisposition_eFixed_1:after,stackitem_fdisposition_eFixed_2));
 			break;
 		default:
 		}
@@ -16713,8 +18908,8 @@ rg.layout.Layout.prototype = {
 		var $e = (stackitem.disposition);
 		switch( $e[1] ) {
 		case 3:
-			var a = $e[3], b = $e[2];
-			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(b,a,size));
+			var stackitem_fdisposition_eFixed_2 = $e[4], stackitem_fdisposition_eFixed_1 = $e[3], stackitem_fdisposition_eFixed_0 = $e[2];
+			stackitem.set_disposition(rg.frame.FrameLayout.Fixed(stackitem_fdisposition_eFixed_0,stackitem_fdisposition_eFixed_1,size));
 			break;
 		default:
 		}
@@ -16867,7 +19062,14 @@ rg.layout.LayoutCartesian.prototype = $extend(rg.layout.Layout.prototype,{
 		}
 		rg.layout.Layout.prototype.suggestSize.call(this,name,size);
 		switch(name) {
-		case "x":case "xtitle":
+		case "x":
+			var size1 = 0, c = this.getPanel("x");
+			if(null != c) size1 += c.frame.height;
+			c = this.getPanel("xtitle");
+			if(null != c) size1 += c.frame.height;
+			rg.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
+			break;
+		case "xtitle":
 			var size1 = 0, c = this.getPanel("x");
 			if(null != c) size1 += c.frame.height;
 			c = this.getPanel("xtitle");
@@ -17090,7 +19292,14 @@ rg.layout.LayoutX.prototype = $extend(rg.layout.Layout.prototype,{
 	,suggestSize: function(name,size) {
 		rg.layout.Layout.prototype.suggestSize.call(this,name,size);
 		switch(name) {
-		case "x":case "xtitle":
+		case "x":
+			var size1 = 0, c = this.getPanel("x");
+			if(null != c) size1 += c.frame.height;
+			c = this.getPanel("xtitle");
+			if(null != c) size1 += c.frame.height;
+			rg.layout.Layout.prototype.suggestSize.call(this,"xtickmarks",size1);
+			break;
+		case "xtitle":
 			var size1 = 0, c = this.getPanel("x");
 			if(null != c) size1 += c.frame.height;
 			c = this.getPanel("xtitle");
@@ -17464,9 +19673,74 @@ rg.query.BaseQuery.prototype = {
 			h(stack);
 		});
 	}
-	,load: function(handler) {
+	,request: function(url,options) {
+		if(null == options) options = { type : "application/json", useJsonp : false}; else {
+			if(null == options.type) options.type = "application/json";
+			if(null == options.useJsonp) options.useJsonp = false;
+		}
+		var dataHandler = null;
+		var _g = options.type.toLowerCase();
+		switch(_g) {
+		case "json":
+			switch(options.useJsonp) {
+			case true:
+				dataHandler = function(data) {
+					return data;
+				};
+				break;
+			case false:
+				dataHandler = function(data) {
+					return thx.json.Json.decode(data);
+				};
+				break;
+			}
+			break;
+		case "application/json":
+			switch(options.useJsonp) {
+			case true:
+				dataHandler = function(data) {
+					return data;
+				};
+				break;
+			case false:
+				dataHandler = function(data) {
+					return thx.json.Json.decode(data);
+				};
+				break;
+			}
+			break;
+		case "csv":
+			dataHandler = function(data) {
+				return thx.csv.Csv.decode(data);
+			};
+			break;
+		case "text/csv":
+			dataHandler = function(data) {
+				return thx.csv.Csv.decode(data);
+			};
+			break;
+		default:
+			throw "invalid type format \"" + options.type + "\"";
+		}
+		var stackHandler = function(stack,h) {
+			return function(data) {
+				stack.push(dataHandler(data));
+				h(stack);
+			};
+		}, async = true == options.useJsonp?function(stack,h) {
+			rg.util.Jsonp.get(url,stackHandler(stack,h),function(i,e) {
+			},{ },{ });
+		}:function(stack,h) {
+			var http = new haxe.Http(url);
+			http.async = true;
+			http.onData = stackHandler(stack,h);
+			http.request(false);
+		};
+		return this.stackAsync(async);
+	}
+	,load: function(loader) {
 		return this.stackAsync(function(stack,h) {
-			handler(function(data) {
+			loader(function(data) {
 				stack.push(data);
 				h(stack);
 			});
@@ -18100,18 +20374,29 @@ rg.svg.chart.ColorScaleModes.createFromDynamic = function(v) {
 		return $r;
 	}(this));
 	var s = (js.Boot.__cast(v , String)).split(":");
-	switch(s[0].toLowerCase()) {
+	var _g = s[0].toLowerCase();
+	switch(_g) {
 	case "css":
 		return rg.svg.chart.ColorScaleMode.FromCss(null == s[1]?null:Std.parseInt(s[1]));
-	case "i":case "interpolated":
+	case "i":
 		return rg.svg.chart.ColorScaleMode.Interpolation(s[1].split(",").map(function(d,i) {
 			return thx.color.Colors.parse(d);
 		}));
-	case "s":case "sequence":
+	case "interpolated":
+		return rg.svg.chart.ColorScaleMode.Interpolation(s[1].split(",").map(function(d,i) {
+			return thx.color.Colors.parse(d);
+		}));
+	case "s":
 		return rg.svg.chart.ColorScaleMode.Sequence(s[1].split(",").map(function(d,i) {
 			return thx.color.Colors.parse(d);
 		}));
-	case "f":case "fixed":
+	case "sequence":
+		return rg.svg.chart.ColorScaleMode.Sequence(s[1].split(",").map(function(d,i) {
+			return thx.color.Colors.parse(d);
+		}));
+	case "f":
+		return rg.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[1]));
+	case "fixed":
 		return rg.svg.chart.ColorScaleMode.Fixed(thx.color.Colors.parse(s[1]));
 	default:
 		if(s[0].indexOf(",") >= 0) return rg.svg.chart.ColorScaleMode.Sequence(s[0].split(",").map(function(d,i) {
@@ -18340,14 +20625,15 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 		this.g.classed().add("geo");
 	}
 	,set_colorMode: function(v) {
-		var _g = this;
-		var $e = (this.colorMode = v);
+		var _g1 = this;
+		var _g = this.colorMode = v;
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
-			var g = $e[2];
-			if(null == g) g = 1;
+			var _g_eFromCssInterpolation_0 = $e[2];
+			if(null == _g_eFromCssInterpolation_0) _g_eFromCssInterpolation_0 = 1;
 			var colors = rg.svg.util.RGCss.colorsInCss();
-			if(colors.length > g) colors = colors.slice(0,g);
+			if(colors.length > _g_eFromCssInterpolation_0) colors = colors.slice(0,_g_eFromCssInterpolation_0);
 			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
 			colors.reverse();
 			this.set_colorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
@@ -18355,46 +20641,46 @@ rg.svg.chart.Geo.prototype = $extend(rg.svg.chart.Chart.prototype,{
 			})));
 			break;
 		case 1:
-			var g1 = $e[2];
-			if(null == g1) g1 = rg.svg.util.RGCss.numberOfColorsInCss();
+			var _g_eFromCss_0 = $e[2];
+			if(null == _g_eFromCss_0) _g_eFromCss_0 = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g1 * t);
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type)), index = Math.floor(_g_eFromCss_0 * t);
 				svg.attr("class").string("fill-" + index);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 3:
-			var c = $e[2];
-			var colors1 = c.map(function(d,_) {
+			var _g_eSequence_0 = $e[2];
+			var colors1 = _g_eSequence_0.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors1.length * t);
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type)), index = Math.floor(colors1.length * t);
 				svg.style("fill").string(colors1[index]);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 2:
-			var colors = $e[2];
-			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
+			var _g_eInterpolation_0 = $e[2];
+			var interpolator = thx.color.Rgb.interpolateStepsf(_g_eInterpolation_0);
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type));
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 4:
-			var c = $e[2];
-			var color = c.hex("#");
+			var _g_eFixed_0 = $e[2];
+			var color = _g_eFixed_0.hex("#");
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(color);
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
 		case 5:
-			var f = $e[2];
+			var _g_eFun_0 = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,_g.variableDependent.stats));
+				svg.style("fill").string(_g_eFun_0(dp,_g1.variableDependent.stats));
 				rg.util.RGColors.storeColorForSelection(svg);
 			};
 			break;
@@ -18484,19 +20770,34 @@ rg.svg.chart.GradientEffects.canParse = function(s) {
 	var parts = s.toLowerCase().split(":");
 	return (function($this) {
 		var $r;
-		switch(parts[0]) {
-		case "gradient":case "noeffect":case "none":case "flat":
-			$r = true;
-			break;
-		default:
-			$r = false;
-		}
+		var _g = parts[0];
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "gradient":
+				$r = true;
+				break;
+			case "noeffect":
+				$r = true;
+				break;
+			case "none":
+				$r = true;
+				break;
+			case "flat":
+				$r = true;
+				break;
+			default:
+				$r = false;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
 rg.svg.chart.GradientEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
+	var _g = parts.shift();
+	switch(_g) {
 	case "gradient":
 		var lightness = 0.75, parameters = parts.pop();
 		if(null != parameters) lightness = Std.parseFloat(parameters.split(",").shift());
@@ -18515,14 +20816,15 @@ rg.svg.chart.HeatGrid.__name__ = ["rg","svg","chart","HeatGrid"];
 rg.svg.chart.HeatGrid.__super__ = rg.svg.chart.CartesianChart;
 rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,{
 	set_colorMode: function(v) {
-		var _g = this;
-		var $e = (this.colorMode = v);
+		var _g1 = this;
+		var _g = this.colorMode = v;
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
-			var g = $e[2];
-			if(null == g) g = 1;
+			var _g_eFromCssInterpolation_0 = $e[2];
+			if(null == _g_eFromCssInterpolation_0) _g_eFromCssInterpolation_0 = 1;
 			var colors = rg.svg.util.RGCss.colorsInCss();
-			if(colors.length > g) colors = colors.slice(0,g);
+			if(colors.length > _g_eFromCssInterpolation_0) colors = colors.slice(0,_g_eFromCssInterpolation_0);
 			if(colors.length == 1) colors.push(thx.color.Hsl.lighter(thx.color.Hsl.toHsl(thx.color.Colors.parse(colors[0])),0.9).hex("#"));
 			colors.reverse();
 			this.set_colorMode(rg.svg.chart.ColorScaleMode.Interpolation(colors.map(function(s,_) {
@@ -18530,42 +20832,42 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			})));
 			break;
 		case 1:
-			var g1 = $e[2];
-			if(null == g1) g1 = rg.svg.util.RGCss.numberOfColorsInCss();
+			var _g_eFromCss_0 = $e[2];
+			if(null == _g_eFromCss_0) _g_eFromCss_0 = rg.svg.util.RGCss.numberOfColorsInCss();
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(g1 * t);
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type)), index = Math.floor(_g_eFromCss_0 * t);
 				svg.attr("class").string("fill-" + index);
 			};
 			break;
 		case 3:
-			var c = $e[2];
-			var colors1 = c.map(function(d,_) {
+			var _g_eSequence_0 = $e[2];
+			var colors1 = _g_eSequence_0.map(function(d,_) {
 				return d.hex("#");
 			});
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type)), index = Math.floor(colors1.length * t);
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type)), index = Math.floor(colors1.length * t);
 				svg.style("fill").string(colors1[index]);
 			};
 			break;
 		case 2:
-			var colors = $e[2];
-			var interpolator = thx.color.Rgb.interpolateStepsf(colors);
+			var _g_eInterpolation_0 = $e[2];
+			var interpolator = thx.color.Rgb.interpolateStepsf(_g_eInterpolation_0);
 			this.stylefeature = function(svg,dp) {
-				var t = _g.variableDependent.axis.scale(_g.variableDependent.min(),_g.variableDependent.max(),Reflect.field(dp,_g.variableDependent.type));
+				var t = _g1.variableDependent.axis.scale(_g1.variableDependent.min(),_g1.variableDependent.max(),Reflect.field(dp,_g1.variableDependent.type));
 				svg.style("fill").string(interpolator(t).hex("#"));
 			};
 			break;
 		case 4:
-			var c = $e[2];
-			var color = c.hex("#");
+			var _g_eFixed_0 = $e[2];
+			var color = _g_eFixed_0.hex("#");
 			this.stylefeature = function(svg,dp) {
 				svg.style("fill").string(color);
 			};
 			break;
 		case 5:
-			var f = $e[2];
+			var _g_eFun_0 = $e[2];
 			this.stylefeature = function(svg,dp) {
-				svg.style("fill").string(f(dp,_g.variableDependent.stats));
+				svg.style("fill").string(_g_eFun_0(dp,_g1.variableDependent.stats));
 			};
 			break;
 		}
@@ -18750,45 +21052,50 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 				gi.selectAll("path.area").data(this.segments).enter().append("svg:path").attr("class").stringf(this.classff(i2[0],"area area-" + i2[0])).attr("d").stringf($bind(area,area.shape));
 			}
 			var segmentgroup = gi.selectAll("path.main").data(this.segments);
-			var $e = (this.lineEffect);
+			var _g21 = this;
+			var $e = (_g21.lineEffect);
 			switch( $e[1] ) {
 			case 1:
-				var levels = $e[3], lightness = $e[2];
-				var levels1 = [levels];
-				var lightness1 = [lightness];
+				var _g2_flineEffect_eGradient_1 = $e[3], _g2_flineEffect_eGradient_0 = $e[2];
+				var _g2_flineEffect_eGradient_11 = [_g2_flineEffect_eGradient_1];
+				var _g2_flineEffect_eGradient_01 = [_g2_flineEffect_eGradient_0];
 				var fs = [[]];
-				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i2[0],"line")).eachNode((function(fs,lightness1) {
+				segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i2[0],"line")).eachNode((function(_g2_flineEffect_eGradient_01,fs) {
 					return function(n,i) {
-						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(dhx.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,lightness1[0]);
+						var start = thx.color.Hsl.toHsl(rg.util.RGColors.parse(dhx.Dom.selectNode(n).style("stroke").get(),"#000000")), end = rg.util.RGColors.applyLightness(start,_g2_flineEffect_eGradient_01[0]);
 						fs[0][i] = thx.color.Hsl.interpolatef(end,start);
 					};
-				})(fs,lightness1)).remove();
-				var _g21 = 0;
-				while(_g21 < levels1[0]) {
-					var j = [_g21++];
-					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (levels1[0] - j[0] - 1)).style("stroke").stringf((function(j,fs,levels1) {
+				})(_g2_flineEffect_eGradient_01,fs)).remove();
+				var _g3 = 0;
+				while(_g3 < _g2_flineEffect_eGradient_11[0]) {
+					var j = [_g3++];
+					segmentgroup.enter().append("svg:path").attr("class").string("line grad-" + (_g2_flineEffect_eGradient_11[0] - j[0] - 1)).style("stroke").stringf((function(_g2_flineEffect_eGradient_11,j,fs) {
 						return function(_,i) {
-							return fs[0][i](j[0] / levels1[0]).hex("#");
+							return fs[0][i](j[0] / _g2_flineEffect_eGradient_11[0]).hex("#");
 						};
-					})(j,fs,levels1)).attr("d").stringf(this.linePathShape[i2[0]]);
+					})(_g2_flineEffect_eGradient_11,j,fs)).attr("d").stringf(this.linePathShape[i2[0]]);
 				}
 				break;
 			case 2:
-				var levels = $e[4], oy = $e[3], ox = $e[2];
-				var _g21 = 0;
-				while(_g21 < levels) {
-					var j = _g21++;
-					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * ox + "," + (1 + j) * oy + ")").attr("class").stringf(this.classsf(i2[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i2[0]]);
+				var _g2_flineEffect_eDropShadow_2 = $e[4], _g2_flineEffect_eDropShadow_1 = $e[3], _g2_flineEffect_eDropShadow_0 = $e[2];
+				var _g3 = 0;
+				while(_g3 < _g2_flineEffect_eDropShadow_2) {
+					var j = _g3++;
+					segmentgroup.enter().append("svg:path").attr("transform").string("translate(" + (1 + j) * _g2_flineEffect_eDropShadow_0 + "," + (1 + j) * _g2_flineEffect_eDropShadow_1 + ")").attr("class").stringf(this.classsf(i2[0],"line shadow shadow-" + j)).attr("d").stringf(this.linePathShape[i2[0]]);
 				}
 				break;
 			default:
 			}
 			var path = segmentgroup.enter().append("svg:path").attr("class").stringf(this.classsf(i2[0],"line")).attr("d").stringf(this.linePathShape[i2[0]]);
-			switch( (this.lineEffect)[1] ) {
+			var _g3 = this;
+			var $e = (_g3.lineEffect);
+			switch( $e[1] ) {
 			case 1:
+				var _g3_flineEffect_eGradient_1 = $e[3], _g3_flineEffect_eGradient_0 = $e[2];
 				path.classed().add("gradient");
 				break;
 			case 2:
+				var _g3_flineEffect_eDropShadow_2 = $e[4], _g3_flineEffect_eDropShadow_1 = $e[3], _g3_flineEffect_eDropShadow_0 = $e[2];
 				path.classed().add("dropshadow");
 				break;
 			case 0:
@@ -18807,23 +21114,7 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			var circle = gsymbol.append("svg:circle").attr("r")["float"](6).attr("opacity")["float"](0.0).style("fill").string("#000000");
 			if(null != this.labelDataPointOver) circle.classed().add("rgdata");
 			rg.util.RGColors.storeColorForSelection(circle,"stroke");
-			if(null != this.symbol) {
-				var sp = [this.symbol];
-				var spath = gsymbol.append("svg:path").attr("d").stringf((function(sp,i2) {
-					return function(dp,_) {
-						return sp[0](dp,_g2.stats[i2[0]]);
-					};
-				})(sp,i2));
-				rg.util.RGColors.storeColorForSelection(spath,"stroke");
-				if(null != this.symbolStyle) {
-					var ss = [this.symbolStyle];
-					spath.attr("style").stringf((function(ss,i2) {
-						return function(dp,_) {
-							return ss[0](dp,_g2.stats[i2[0]]);
-						};
-					})(ss,i2));
-				}
-			}
+			rg.svg.util.SVGSymbolBuilder.generate(gsymbol,this.stats[i2[0]],this.symbol,this.symbolStyle);
 			if(null != this.labelDataPoint) {
 				var f = [this.labelDataPoint];
 				gsymbol.eachNode((function(f,i2) {
@@ -18938,7 +21229,8 @@ $hxClasses["rg.svg.chart.LineEffects"] = rg.svg.chart.LineEffects;
 rg.svg.chart.LineEffects.__name__ = ["rg","svg","chart","LineEffects"];
 rg.svg.chart.LineEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
+	var _g = parts.shift();
+	switch(_g) {
 	case "dropshadow":
 		var offsetx = 0.5, offsety = 0.5, levels = 2, parameters = parts.pop();
 		if(null != parameters) {
@@ -19052,8 +21344,11 @@ rg.svg.chart.PieChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	,appendLabel: function(dom,i) {
 		var n = dhx.Dom.selectNode(dom), label = new rg.svg.widget.Label(n,this.labelDontFlip,true,true), d = Reflect.field(dom,"__dhx_data__"), r = this.radius * this.labelRadius, a = d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
 		label.set_orientation(this.labelOrientation);
-		switch( (this.labelOrientation)[1] ) {
+		var _g = this;
+		var $e = (_g.labelOrientation);
+		switch( $e[1] ) {
 		case 0:
+			var _g_flabelOrientation_eFixedAngle_0 = $e[2];
 			label.set_anchor(rg.svg.widget.GridAnchor.Center);
 			break;
 		case 1:
@@ -19842,7 +22137,6 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		};
 	}
 	,redraw: function() {
-		var _g2 = this;
 		if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
 		var axisgroup = this.chart.selectAll("g.group").data(this.dps);
 		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
@@ -19873,16 +22167,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
 			if(null != this.click) enter.on("click",onclick);
 			if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
-			var spath = enter.append("svg:path").attr("d").stringf((function(stats) {
-				return function(dp,_) {
-					return _g2.symbol(dp,stats[0]);
-				};
-			})(stats));
-			if(null != this.symbolStyle) spath.attr("style").stringf((function(stats) {
-				return function(dp,_) {
-					return _g2.symbolStyle(dp,stats[0]);
-				};
-			})(stats));
+			rg.svg.util.SVGSymbolBuilder.generate(enter,stats[0],this.symbol,this.symbolStyle);
 			if(null != this.labelDataPoint) {
 				var f2 = [this.labelDataPoint];
 				enter.eachNode((function(f2,stats) {
@@ -19945,10 +22230,21 @@ rg.svg.chart.StreamEffects.getLightness = function(p,alt) {
 }
 rg.svg.chart.StreamEffects.parse = function(s) {
 	var parts = s.toLowerCase().split(":");
-	switch(parts.shift()) {
-	case "gradient":case "gradientv":case "gradientvert":case "gradientvertical":
+	var _g = parts.shift();
+	switch(_g) {
+	case "gradient":
 		return rg.svg.chart.StreamEffect.GradientVertical(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
-	case "gradienth":case "gradienthoriz":case "gradienthorizontal":
+	case "gradientv":
+		return rg.svg.chart.StreamEffect.GradientVertical(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradientvert":
+		return rg.svg.chart.StreamEffect.GradientVertical(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradientvertical":
+		return rg.svg.chart.StreamEffect.GradientVertical(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradienth":
+		return rg.svg.chart.StreamEffect.GradientHorizontal(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradienthoriz":
+		return rg.svg.chart.StreamEffect.GradientHorizontal(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
+	case "gradienthorizontal":
 		return rg.svg.chart.StreamEffect.GradientHorizontal(rg.svg.chart.StreamEffects.getLightness(parts.pop(),0.75));
 	default:
 		return rg.svg.chart.StreamEffect.NoEffect;
@@ -20156,7 +22452,8 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		}
 	}
 	,initf: function() {
-		switch( (this.orientation)[1] ) {
+		var _g = this;
+		switch( (_g.orientation)[1] ) {
 		case 1:
 			this.translate = $bind(this,this.translateHorizontal);
 			this.x1 = $bind(this,this.x1Horizontal);
@@ -20192,21 +22489,27 @@ rg.svg.layer.RulesOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,maxTicks: function() {
 		var size = (function($this) {
 			var $r;
-			switch( ($this.orientation)[1] ) {
-			case 1:
-				$r = $this.width;
-				break;
-			case 0:
-				$r = $this.height;
-				break;
-			}
+			var _g = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g.orientation)[1] ) {
+				case 1:
+					$r = $this.width;
+					break;
+				case 0:
+					$r = $this.height;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this));
 		return Math.round(size / 2.5);
 	}
 	,updateAnchorLine: function() {
 		var line = this.g.select("line.anchor-line");
-		switch( (this.orientation)[1] ) {
+		var _g = this;
+		switch( (_g.orientation)[1] ) {
 		case 1:
 			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](0).attr("y2")["float"](this.height);
 			break;
@@ -20334,7 +22637,8 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		}
 	}
 	,initf: function() {
-		switch( (this.anchor)[1] ) {
+		var _g = this;
+		switch( (_g.anchor)[1] ) {
 		case 0:
 			this.translate = $bind(this,this.translateTop);
 			this.x1 = $bind(this,this.x1Top);
@@ -20365,50 +22669,67 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 			break;
 		}
 		if(null == this.labelOrientation) {
-			switch( (this.anchor)[1] ) {
+			var _g1 = this;
+			switch( (_g1.anchor)[1] ) {
 			case 0:
+				this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
+				break;
 			case 1:
 				this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
 				break;
 			case 2:
+				this.labelOrientation = rg.svg.widget.LabelOrientation.Aligned;
+				break;
 			case 3:
 				this.labelOrientation = rg.svg.widget.LabelOrientation.Aligned;
 				break;
 			}
 		} else if(null == this.labelAnchor) {
-			var $e = (this.labelOrientation);
+			var _g1 = this;
+			var $e = (_g1.labelOrientation);
 			switch( $e[1] ) {
 			case 1:
-				switch( (this.anchor)[1] ) {
+				var _g2 = this;
+				switch( (_g2.anchor)[1] ) {
 				case 0:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Left;
+					break;
 				case 2:
 					this.labelAnchor = rg.svg.widget.GridAnchor.Left;
 					break;
 				case 1:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Right;
+					break;
 				case 3:
 					this.labelAnchor = rg.svg.widget.GridAnchor.Right;
 					break;
 				}
 				break;
 			case 2:
-				switch( (this.anchor)[1] ) {
+				var _g2 = this;
+				switch( (_g2.anchor)[1] ) {
 				case 0:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Top;
+					break;
 				case 2:
 					this.labelAnchor = rg.svg.widget.GridAnchor.Top;
 					break;
 				case 1:
+					this.labelAnchor = rg.svg.widget.GridAnchor.Bottom;
+					break;
 				case 3:
 					this.labelAnchor = rg.svg.widget.GridAnchor.Bottom;
 					break;
 				}
 				break;
 			case 0:
-				var a = $e[2];
+				var _g1_flabelOrientation_eFixedAngle_0 = $e[2];
 				break;
 			}
 		}
 		if(null == this.labelAnchor) {
-			switch( (this.anchor)[1] ) {
+			var _g1 = this;
+			switch( (_g1.anchor)[1] ) {
 			case 0:
 				this.labelAnchor = rg.svg.widget.GridAnchor.Top;
 				break;
@@ -20424,7 +22745,8 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 			}
 		}
 		if(null == this.labelAngle) {
-			switch( (this.anchor)[1] ) {
+			var _g1 = this;
+			switch( (_g1.anchor)[1] ) {
 			case 0:
 				this.labelAngle = 90;
 				break;
@@ -20448,7 +22770,8 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		label.set_orientation(this.labelOrientation);
 		var padding = this.paddingLabel;
 		label.set_text(null == this.tickLabel?d.get_label():this.tickLabel(d.get_value()));
-		switch( (this.anchor)[1] ) {
+		var _g = this;
+		switch( (_g.anchor)[1] ) {
 		case 0:
 			label.place(0,padding,this.labelAngle);
 			break;
@@ -20464,16 +22787,25 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		}
 		var s = (function($this) {
 			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 0:
-			case 1:
-				$r = label.getSize().height + padding;
-				break;
-			case 2:
-			case 3:
-				$r = label.getSize().width + padding;
-				break;
-			}
+			var _g1 = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g1.anchor)[1] ) {
+				case 0:
+					$r = label.getSize().height + padding;
+					break;
+				case 1:
+					$r = label.getSize().height + padding;
+					break;
+				case 2:
+					$r = label.getSize().width + padding;
+					break;
+				case 3:
+					$r = label.getSize().width + padding;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this));
 		if(s > this.desiredSize) this.desiredSize = s;
@@ -20499,23 +22831,33 @@ rg.svg.layer.TickmarksOrtho.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	,maxTicks: function() {
 		var size = (function($this) {
 			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 2:
-			case 3:
-				$r = $this.height;
-				break;
-			case 0:
-			case 1:
-				$r = $this.width;
-				break;
-			}
+			var _g = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g.anchor)[1] ) {
+				case 2:
+					$r = $this.height;
+					break;
+				case 3:
+					$r = $this.height;
+					break;
+				case 0:
+					$r = $this.width;
+					break;
+				case 1:
+					$r = $this.width;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this));
 		return Math.round(size / 2.5);
 	}
 	,updateAnchorLine: function() {
 		var line = this.g.select("line.anchor-line");
-		switch( (this.anchor)[1] ) {
+		var _g = this;
+		switch( (_g.anchor)[1] ) {
 		case 0:
 			line.attr("x1")["float"](0).attr("y1")["float"](0).attr("x2")["float"](this.panel.frame.width).attr("y2")["float"](0);
 			break;
@@ -20589,7 +22931,8 @@ rg.svg.layer.Title.__super__ = rg.svg.panel.Layer;
 rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	set_padding: function(v) {
 		this.padding = v;
-		switch( (this.anchor)[1] ) {
+		var _g = this;
+		switch( (_g.anchor)[1] ) {
 		case 0:
 			this.label.place(0,0,90);
 			break;
@@ -20606,7 +22949,8 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		return v;
 	}
 	,set_anchor: function(v) {
-		switch( (this.anchor = v)[1] ) {
+		var _g = this.anchor = v;
+		switch( (_g)[1] ) {
 		case 0:
 			this.label.set_anchor(rg.svg.widget.GridAnchor.Top);
 			break;
@@ -20630,7 +22974,8 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 	}
 	,resize: function() {
 		if(null == this.anchor || null == this.width || this.padding == null) return;
-		switch( (this.anchor)[1] ) {
+		var _g = this;
+		switch( (_g.anchor)[1] ) {
 		case 0:
 			this.group.attr("transform").string("translate(" + this.width / 2 + "," + this.padding + ")");
 			break;
@@ -20649,16 +22994,25 @@ rg.svg.layer.Title.prototype = $extend(rg.svg.panel.Layer.prototype,{
 		var size = this.label.getSize();
 		return Math.round((function($this) {
 			var $r;
-			switch( ($this.anchor)[1] ) {
-			case 2:
-			case 3:
-				$r = size.width + $this.padding;
-				break;
-			case 0:
-			case 1:
-				$r = size.height + $this.padding;
-				break;
-			}
+			var _g = $this;
+			$r = (function($this) {
+				var $r;
+				switch( (_g.anchor)[1] ) {
+				case 2:
+					$r = size.width + $this.padding;
+					break;
+				case 3:
+					$r = size.width + $this.padding;
+					break;
+				case 0:
+					$r = size.height + $this.padding;
+					break;
+				case 1:
+					$r = size.height + $this.padding;
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this)));
 	}
@@ -20888,6 +23242,89 @@ rg.svg.util.RGCss.numberOfColorsInCss = function() {
 }
 rg.svg.util.RGCss.createBlock = function(container,pos) {
 	return container.append("svg:rect").attr("class").string("fill-" + pos);
+}
+rg.svg.util.SVGSymbolBuilder = function() { }
+$hxClasses["rg.svg.util.SVGSymbolBuilder"] = rg.svg.util.SVGSymbolBuilder;
+rg.svg.util.SVGSymbolBuilder.__name__ = ["rg","svg","util","SVGSymbolBuilder"];
+rg.svg.util.SVGSymbolBuilder.generate = function(container,stats,symbol,style) {
+	if(null == symbol) return;
+	var element = rg.svg.util.SVGSymbolBuilder.createElement(container,stats,symbol);
+	rg.util.RGColors.storeColorForSelection(element,"stroke");
+	rg.svg.util.SVGSymbolBuilder.applyStyle(element,stats,style);
+}
+rg.svg.util.SVGSymbolBuilder.createElement = function(container,stats,symbol) {
+	container.each(function(dp,index) {
+		var description = symbol(dp,stats);
+		rg.svg.util.SVGSymbolBuilder.createNode(dhx.Dom.selectNode(dhx.Group.current),description).classed().add("symbol-item");
+	});
+	return container.selectAll(".symbol-item");
+}
+rg.svg.util.SVGSymbolBuilder.createNode = function(container,description) {
+	if(StringTools.startsWith(description,"image")) {
+		var options = rg.svg.util.SVGSymbolBuilder.parseImageArguments(HxOverrides.substr(description.split(":").shift(),5,null));
+		return rg.svg.util.SVGSymbolBuilder.createImage(container,description.split(":").slice(1).join(":"),options);
+	} else return rg.svg.util.SVGSymbolBuilder.createPath(container,description);
+}
+rg.svg.util.SVGSymbolBuilder.createPath = function(container,path) {
+	return container.append("svg:path").attr("d").string(path);
+}
+rg.svg.util.SVGSymbolBuilder.createImage = function(container,url,options) {
+	var image = container.append("svg:image").attr("xlink:href").string(url).attr("width")["float"](options.width).attr("height")["float"](options.height).attr("preserveAspectRatio").string(options.aspect);
+	image.attr("x")["float"]((function($this) {
+		var $r;
+		switch(options.horizontal) {
+		case "right":
+			$r = -options.width;
+			break;
+		case "center":
+			$r = -options.width / 2;
+			break;
+		default:
+			$r = 0;
+		}
+		return $r;
+	}(this)));
+	image.attr("y")["float"]((function($this) {
+		var $r;
+		switch(options.vertical) {
+		case "bottom":
+			$r = -options.height;
+			break;
+		case "center":
+			$r = -options.height / 2;
+			break;
+		default:
+			$r = 0;
+		}
+		return $r;
+	}(this)));
+	return image;
+}
+rg.svg.util.SVGSymbolBuilder.parseImageArguments = function(description) {
+	var options = { width : 50.0, height : 50.0, vertical : "center", horizontal : "center", aspect : "none"};
+	Arrays.filter(description.split(",").map(function(v,_) {
+		return StringTools.trim(v);
+	}),function(v) {
+		return v != "";
+	}).forEach(function(v,_) {
+		rg.svg.util.SVGSymbolBuilder.appendOption(options,v);
+	});
+	return options;
+}
+rg.svg.util.SVGSymbolBuilder.appendOption = function(options,value) {
+	if(rg.svg.util.SVGSymbolBuilder.SIZE_PATTERN.match(value)) {
+		options.width = Std.parseInt(rg.svg.util.SVGSymbolBuilder.SIZE_PATTERN.matched(1));
+		options.height = Std.parseInt(rg.svg.util.SVGSymbolBuilder.SIZE_PATTERN.matched(2));
+	} else if(rg.svg.util.SVGSymbolBuilder.ALIGN_PATTERN.match(value)) {
+		options.horizontal = rg.svg.util.SVGSymbolBuilder.ALIGN_PATTERN.matched(1).toLowerCase();
+		options.vertical = rg.svg.util.SVGSymbolBuilder.ALIGN_PATTERN.matched(2).toLowerCase();
+	} else if(rg.svg.util.SVGSymbolBuilder.HORIZONTAL_PATTERN.match(value)) options.horizontal = rg.svg.util.SVGSymbolBuilder.HORIZONTAL_PATTERN.matched(1).toLowerCase(); else if(rg.svg.util.SVGSymbolBuilder.VERTICAL_PATTERN.match(value)) options.vertical = rg.svg.util.SVGSymbolBuilder.VERTICAL_PATTERN.matched(1).toLowerCase();
+}
+rg.svg.util.SVGSymbolBuilder.applyStyle = function(element,stats,style) {
+	if(null == style) return;
+	element.attr("style").stringf(function(dp,_) {
+		return style(dp,stats);
+	});
 }
 rg.svg.util.SymbolCache = function() {
 	this.c = new Hash();
@@ -21503,37 +23940,42 @@ rg.svg.widget.GridAnchors.__name__ = ["rg","svg","widget","GridAnchors"];
 rg.svg.widget.GridAnchors.parse = function(s) {
 	return (function($this) {
 		var $r;
-		switch(s.toLowerCase()) {
-		case "topleft":
-			$r = rg.svg.widget.GridAnchor.TopLeft;
-			break;
-		case "top":
-			$r = rg.svg.widget.GridAnchor.Top;
-			break;
-		case "topright":
-			$r = rg.svg.widget.GridAnchor.TopRight;
-			break;
-		case "left":
-			$r = rg.svg.widget.GridAnchor.Left;
-			break;
-		case "center":
-			$r = rg.svg.widget.GridAnchor.Center;
-			break;
-		case "right":
-			$r = rg.svg.widget.GridAnchor.Right;
-			break;
-		case "bottomleft":
-			$r = rg.svg.widget.GridAnchor.BottomLeft;
-			break;
-		case "bottom":
-			$r = rg.svg.widget.GridAnchor.Bottom;
-			break;
-		case "bottomright":
-			$r = rg.svg.widget.GridAnchor.BottomRight;
-			break;
-		default:
-			$r = rg.svg.widget.GridAnchor.Center;
-		}
+		var _g = s.toLowerCase();
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "topleft":
+				$r = rg.svg.widget.GridAnchor.TopLeft;
+				break;
+			case "top":
+				$r = rg.svg.widget.GridAnchor.Top;
+				break;
+			case "topright":
+				$r = rg.svg.widget.GridAnchor.TopRight;
+				break;
+			case "left":
+				$r = rg.svg.widget.GridAnchor.Left;
+				break;
+			case "center":
+				$r = rg.svg.widget.GridAnchor.Center;
+				break;
+			case "right":
+				$r = rg.svg.widget.GridAnchor.Right;
+				break;
+			case "bottomleft":
+				$r = rg.svg.widget.GridAnchor.BottomLeft;
+				break;
+			case "bottom":
+				$r = rg.svg.widget.GridAnchor.Bottom;
+				break;
+			case "bottomright":
+				$r = rg.svg.widget.GridAnchor.BottomRight;
+				break;
+			default:
+				$r = rg.svg.widget.GridAnchor.Center;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -21697,7 +24139,8 @@ rg.svg.widget.Label.prototype = {
 		var bb = this.getBB(), x, y;
 		var a = this.anchor;
 		if(this.dontFlip) {
-			switch( (this.orientation)[1] ) {
+			var _g = this;
+			switch( (_g.orientation)[1] ) {
 			case 1:
 				if(this.angle > 90 && this.angle < 270) a = (function($this) {
 					var $r;
@@ -21857,11 +24300,12 @@ rg.svg.widget.Label.prototype = {
 		this.angle = angle % 360;
 		if(this.angle < 0) this.angle += 360;
 		this.g.attr("transform").string("translate(" + this.x + "," + this.y + ")");
-		var $e = (this.orientation);
+		var _g = this;
+		var $e = (_g.orientation);
 		switch( $e[1] ) {
 		case 0:
-			var a = $e[2];
-			this.gtext.attr("transform").string("rotate(" + a + ")");
+			var _g_forientation_eFixedAngle_0 = $e[2];
+			this.gtext.attr("transform").string("rotate(" + _g_forientation_eFixedAngle_0 + ")");
 			break;
 		case 1:
 			if(this.dontFlip && this.angle > 90 && this.angle < 270) angle += 180;
@@ -21941,15 +24385,25 @@ rg.svg.widget.LabelOrientations.canParse = function(s) {
 rg.svg.widget.LabelOrientations.parse = function(s) {
 	var name = s.split(":")[0].toLowerCase();
 	switch(name) {
-	case "fixed":case "angle":
+	case "fixed":
 		var v = Std.parseFloat(s.split(":")[1]);
 		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "LabelOrientations.hx", lineNumber : 27, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
 		return rg.svg.widget.LabelOrientation.FixedAngle(v);
-	case "ortho":case "orthogonal":
+	case "angle":
+		var v = Std.parseFloat(s.split(":")[1]);
+		if(null == v || !Math.isFinite(v)) throw new thx.error.Error("when 'fixed' is used a number should follow the 'dash' character",null,null,{ fileName : "LabelOrientations.hx", lineNumber : 27, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
+		return rg.svg.widget.LabelOrientation.FixedAngle(v);
+	case "ortho":
 		return rg.svg.widget.LabelOrientation.Orthogonal;
-	case "align":case "aligned":
+	case "orthogonal":
+		return rg.svg.widget.LabelOrientation.Orthogonal;
+	case "align":
 		return rg.svg.widget.LabelOrientation.Aligned;
-	case "horiz":case "horizontal":
+	case "aligned":
+		return rg.svg.widget.LabelOrientation.Aligned;
+	case "horiz":
+		return rg.svg.widget.LabelOrientation.FixedAngle(0);
+	case "horizontal":
 		return rg.svg.widget.LabelOrientation.FixedAngle(0);
 	default:
 		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "LabelOrientations.hx", lineNumber : 36, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
@@ -22026,8 +24480,17 @@ rg.svg.widget.Map.prototype = {
 				})($bind(this,this.onClick),dp));
 			}
 			break;
-		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 136, className : "rg.svg.widget.Map", methodName : "draw"});
+		case "MultiPoint":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 133, className : "rg.svg.widget.Map", methodName : "draw"});
+			break;
+		case "MultiLineString":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 133, className : "rg.svg.widget.Map", methodName : "draw"});
+			break;
+		case "MultiPolygon":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 133, className : "rg.svg.widget.Map", methodName : "draw"});
+			break;
+		case "GeometryCollection":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 133, className : "rg.svg.widget.Map", methodName : "draw"});
 			break;
 		default:
 			this.g.append("svg:path").attr("d").string(path.path(json));
@@ -22261,7 +24724,7 @@ rg.util.Js = function() { }
 $hxClasses["rg.util.Js"] = rg.util.Js;
 rg.util.Js.__name__ = ["rg","util","Js"];
 rg.util.Js.findScript = function(fragment) {
-	var scripts = js.Lib.document.getElementsByTagName("SCRIPT");
+	var scripts = js.Browser.document.getElementsByTagName("SCRIPT");
 	if(typeof fragment == "string") {
 		var _g1 = 0, _g = scripts.length;
 		while(_g1 < _g) {
@@ -22304,12 +24767,12 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 	if(null == headers) headers = { };
 	var success = actions.success, failure = null == actions.failure?function(_,_1) {
 	}:actions.failure;
-	var random = Math.random() * 214748363 | 0, funcName = "ReportGridChartsJsonpCallback" + random, head = js.Lib.document.head;
-	if(null == head) head = js.Lib.document.getElementsByTagName("head")[0];
-	js.Lib.window[funcName] = function(content1,meta) {
-		if(meta.status.code == 200) success(content1); else failure(meta.status.code,meta.status.reason);
-		head.removeChild(js.Lib.document.getElementById(funcName));
-		js.Lib.window[funcName] = undefined;
+	var random = Math.random() * 214748363 | 0, funcName = "ReportGridChartsJsonpCallback" + random, head = js.Browser.document.head;
+	if(null == head) head = js.Browser.document.getElementsByTagName("head")[0];
+	js.Browser.window[funcName] = function(content1,meta) {
+		if(meta.status.code == 200 || meta.status.code == "OK") success(content1); else failure(meta.status.code,meta.status.reason);
+		head.removeChild(js.Browser.document.getElementById(funcName));
+		js.Browser.window[funcName] = undefined;
 		try{ delete window[funcName]; }catch(e){}
 	};
 	var extraQuery = { };
@@ -22318,7 +24781,7 @@ rg.util.Jsonp.request_api = function(method,path,content,actions,query,headers) 
 	extraQuery.callback = funcName;
 	if(content != null) extraQuery.content = thx.json.Json.encode(content);
 	var fullUrl = rg.util.Urls.addQueryParameters(path,extraQuery);
-	var script = js.Lib.document.createElement("SCRIPT");
+	var script = js.Browser.document.createElement("SCRIPT");
 	script.setAttribute("type","text/javascript");
 	script.setAttribute("src",fullUrl);
 	script.setAttribute("id",funcName);
@@ -22341,7 +24804,10 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":case "single":
+		case "eternity":
+			$r = [0.0,0.0];
+			break;
+		case "single":
 			$r = [0.0,0.0];
 			break;
 		case "minute":
@@ -22359,6 +24825,12 @@ rg.util.Periodicity.defaultRange = function(periodicity) {
 		case "year":
 			$r = rg.util.Periodicity.parsePair("6 years ago","today");
 			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "invalid periodicity: " + periodicity;
+				return $r;
+			}($this));
 		}
 		return $r;
 	}(this));
@@ -22376,7 +24848,10 @@ rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":case "single":
+		case "eternity":
+			$r = 1;
+			break;
+		case "single":
 			$r = 1;
 			break;
 		case "minute":
@@ -22414,6 +24889,12 @@ rg.util.Periodicity.unitsBetween = function(start,end,periodicity) {
 		case "year":
 			$r = Math.floor(rg.util.Periodicity.unitsBetween(start,end,"month") / 12);
 			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "invalid periodicity: " + periodicity;
+				return $r;
+			}($this));
 		}
 		return $r;
 	}(this));
@@ -22434,7 +24915,9 @@ rg.util.Periodicity.units = function(value,periodicity) {
 rg.util.Periodicity.range = function(start,end,periodicity) {
 	var step = 1000;
 	switch(periodicity) {
-	case "eternity":case "single":
+	case "eternity":
+		return [0.0];
+	case "single":
 		return [0.0];
 	case "minute":
 		step = 60000;
@@ -22480,7 +24963,10 @@ rg.util.Periodicity.next = function(periodicity,date,step) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":case "single":
+		case "eternity":
+			$r = date;
+			break;
+		case "single":
 			$r = date;
 			break;
 		case "minute":
@@ -22523,6 +25009,12 @@ rg.util.Periodicity.next = function(periodicity,date,step) {
 				return $r;
 			}($this));
 			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "invalid periodicity: " + periodicity;
+				return $r;
+			}($this));
 		}
 		return $r;
 	}(this));
@@ -22555,7 +25047,7 @@ rg.util.Periodicity.formatf = function(periodicity) {
 				return "period";
 			};
 			break;
-		case "minute":case "hour":
+		case "minute":
 			$r = function(v) {
 				return thx.culture.FormatDate.timeShort((function($this) {
 					var $r;
@@ -22566,7 +25058,29 @@ rg.util.Periodicity.formatf = function(periodicity) {
 				}(this)));
 			};
 			break;
-		case "day":case "week":
+		case "hour":
+			$r = function(v) {
+				return thx.culture.FormatDate.timeShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "day":
+			$r = function(v) {
+				return thx.culture.FormatDate.dateShort((function($this) {
+					var $r;
+					var d = new Date();
+					d.setTime(v);
+					$r = d;
+					return $r;
+				}(this)));
+			};
+			break;
+		case "week":
 			$r = function(v) {
 				return thx.culture.FormatDate.dateShort((function($this) {
 					var $r;
@@ -22599,6 +25113,12 @@ rg.util.Periodicity.formatf = function(periodicity) {
 				}(this)));
 			};
 			break;
+		default:
+			$r = (function($this) {
+				var $r;
+				throw "invalid periodicity: " + periodicity;
+				return $r;
+			}($this));
 		}
 		return $r;
 	}(this));
@@ -22625,7 +25145,15 @@ rg.util.Periodicity.format = function(periodicity,v) {
 			$r = d;
 			return $r;
 		}(this)));
-	case "day":case "week":
+	case "day":
+		return thx.culture.FormatDate.dateShort((function($this) {
+			var $r;
+			var d = new Date();
+			d.setTime(v);
+			$r = d;
+			return $r;
+		}(this)));
+	case "week":
 		return thx.culture.FormatDate.dateShort((function($this) {
 			var $r;
 			var d = new Date();
@@ -22655,7 +25183,9 @@ rg.util.Periodicity.format = function(periodicity,v) {
 }
 rg.util.Periodicity.smartFormat = function(periodicity,v) {
 	switch(periodicity) {
-	case "eternity":case "single":
+	case "eternity":
+		return "all time";
+	case "single":
 		return "all time";
 	case "minute":
 		if(rg.util.Periodicity.firstInSeries("hour",v)) return thx.culture.FormatDate.timeShort((function($this) {
@@ -22707,7 +25237,10 @@ rg.util.Periodicity.firstInSeries = function(periodicity,v) {
 	return (function($this) {
 		var $r;
 		switch(periodicity) {
-		case "eternity":case "single":
+		case "eternity":
+			$r = 0 == v;
+			break;
+		case "single":
 			$r = 0 == v;
 			break;
 		case "minute":
@@ -22788,7 +25321,10 @@ rg.util.Periodicity.nextPeriodicity = function(periodicity) {
 		case "hour":
 			$r = "day";
 			break;
-		case "day":case "week":
+		case "day":
+			$r = "month";
+			break;
+		case "week":
 			$r = "month";
 			break;
 		case "month":
@@ -22813,7 +25349,10 @@ rg.util.Periodicity.prevPeriodicity = function(periodicity) {
 		case "day":
 			$r = "hour";
 			break;
-		case "week":case "month":
+		case "week":
+			$r = "day";
+			break;
+		case "month":
 			$r = "day";
 			break;
 		default:
@@ -23267,15 +25806,16 @@ rg.visualization.VisualizationBarChart.prototype = $extend(rg.visualization.Visu
 			_g.ready.dispatch();
 		});
 		chart.stacked = this.infoBar.stacked;
-		var $e = (this.infoBar.effect);
+		var _g1 = this;
+		var $e = (_g1.infoBar.effect);
 		switch( $e[1] ) {
 		case 0:
 			chart.displayGradient = false;
 			break;
 		case 1:
-			var lightness = $e[2];
+			var _g_finfoBar_feffect_eGradient_0 = $e[2];
 			chart.displayGradient = true;
-			chart.gradientLightness = lightness;
+			chart.gradientLightness = _g_finfoBar_feffect_eGradient_0;
 			break;
 		}
 		chart.padding = this.infoBar.barPadding;
@@ -23344,12 +25884,13 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 		if(null != this.info.click) this.chart.click = this.info.click;
 		this.chart.padding = this.info.padding;
 		this.chart.flatness = this.info.flatness;
-		var $e = (this.info.effect);
+		var _g1 = this;
+		var $e = (_g1.info.effect);
 		switch( $e[1] ) {
 		case 1:
-			var v = $e[2];
+			var _g_finfo_feffect_eGradient_0 = $e[2];
 			this.chart.displayGradient = true;
-			this.chart.gradientLightness = v;
+			this.chart.gradientLightness = _g_finfo_feffect_eGradient_0;
 			break;
 		case 0:
 			this.chart.displayGradient = false;
@@ -23591,12 +26132,13 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 		this.chart.outerRadius = this.info.outerradius;
 		this.chart.overRadius = this.info.overradius;
 		this.chart.tooltipRadius = this.info.tooltipradius;
-		var $e = (this.info.effect);
+		var _g1 = this;
+		var $e = (_g1.info.effect);
 		switch( $e[1] ) {
 		case 1:
-			var v = $e[2];
+			var _g_finfo_feffect_eGradient_0 = $e[2];
 			this.chart.displayGradient = true;
-			this.chart.gradientLightness = v;
+			this.chart.gradientLightness = _g_finfo_feffect_eGradient_0;
 			break;
 		case 0:
 			this.chart.displayGradient = false;
@@ -23957,20 +26499,21 @@ rg.visualization.VisualizationStreamGraph.prototype = $extend(rg.visualization.V
 			_g.ready.dispatch();
 		});
 		chart.interpolator = this.infoStream.interpolation;
-		var $e = (this.infoStream.effect);
+		var _g1 = this;
+		var $e = (_g1.infoStream.effect);
 		switch( $e[1] ) {
 		case 0:
 			chart.gradientStyle = 0;
 			break;
 		case 2:
-			var lightness = $e[2];
+			var _g_finfoStream_feffect_eGradientVertical_0 = $e[2];
 			chart.gradientStyle = 1;
-			chart.gradientLightness = lightness;
+			chart.gradientLightness = _g_finfoStream_feffect_eGradientVertical_0;
 			break;
 		case 1:
-			var lightness = $e[2];
+			var _g_finfoStream_feffect_eGradientHorizontal_0 = $e[2];
 			chart.gradientStyle = 2;
-			chart.gradientLightness = lightness;
+			chart.gradientLightness = _g_finfoStream_feffect_eGradientHorizontal_0;
 			break;
 		}
 		this.chart = chart;
@@ -24213,7 +26756,9 @@ thx.color.Colors.parse = function(s) {
 	if(!Strings.empty(type)) {
 		var values = thx.color.Colors._reParse.matched(2).split(",");
 		switch(type) {
-		case "rgb":case "rgba":
+		case "rgb":
+			return new thx.color.Rgb(thx.color.Colors._c(values[0]),thx.color.Colors._c(values[1]),thx.color.Colors._c(values[2]));
+		case "rgba":
 			return new thx.color.Rgb(thx.color.Colors._c(values[0]),thx.color.Colors._c(values[1]),thx.color.Colors._c(values[2]));
 		case "hsl":
 			return new thx.color.Hsl(thx.color.Colors._d(values[0]),thx.color.Colors._p(values[1]),thx.color.Colors._p(values[2]));
@@ -24287,6 +26832,273 @@ thx.color.PerceivedLuminance.PerceivedAccurate.__enum__ = thx.color.PerceivedLum
 thx.color.NamedColors = function() { }
 $hxClasses["thx.color.NamedColors"] = thx.color.NamedColors;
 thx.color.NamedColors.__name__ = ["thx","color","NamedColors"];
+thx.csv = {}
+thx.csv.Csv = function() { }
+$hxClasses["thx.csv.Csv"] = thx.csv.Csv;
+thx.csv.Csv.__name__ = ["thx","csv","Csv"];
+thx.csv.Csv.encode = function(value,delimiter,nulltoempty,newline) {
+	var handler = new thx.csv.CsvEncoder(delimiter,nulltoempty,newline);
+	new thx.data.ValueEncoder(handler).encode(value);
+	return handler.encodedString;
+}
+thx.csv.Csv.decode = function(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace) {
+	var handler = new thx.data.ValueHandler();
+	new thx.csv.CsvDecoder(handler,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace).decode(value);
+	return handler.value;
+}
+thx.csv.Csv.decodeObjects = function(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace) {
+	var values = thx.csv.Csv.decode(value,check_type,delimiter,emptytonull,newline,quote,doublequotations,skipwhitespace), headers = values.shift().map(function(v,_) {
+		return "" + v;
+	}), len = headers.length;
+	return values.map(function(arr,_) {
+		var ob = { };
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			ob[headers[i]] = arr[i];
+		}
+		return ob;
+	});
+}
+thx.csv.CsvDecoder = function(handler,check_type,delimiter,emptytonull,newline,quote,doublequotations,trim_whitespace) {
+	if(trim_whitespace == null) trim_whitespace = true;
+	if(doublequotations == null) doublequotations = true;
+	if(quote == null) quote = "\"";
+	if(newline == null) newline = "\r\n|\n|\r";
+	if(emptytonull == null) emptytonull = false;
+	if(delimiter == null) delimiter = ",";
+	if(check_type == null) check_type = true;
+	this.handler = handler;
+	this.delimiter = delimiter;
+	this.emptytonull = emptytonull;
+	this.quote = quote;
+	this.doublequotations = doublequotations;
+	this.trim_whitespace = trim_whitespace;
+	this.check_type = check_type;
+	if(newline != "\r\n|\n|\r") newline = thx.text.ERegs.escapeERegChars(newline);
+	this.newline = newline;
+	this._end = new EReg("(" + thx.text.ERegs.escapeERegChars(delimiter) + "|" + newline + "|$)","");
+};
+$hxClasses["thx.csv.CsvDecoder"] = thx.csv.CsvDecoder;
+thx.csv.CsvDecoder.__name__ = ["thx","csv","CsvDecoder"];
+thx.csv.CsvDecoder.prototype = {
+	typeString: function(s) {
+		this.handler.arrayItemStart();
+		if(s == "" && this.emptytonull) this.handler.valueNull(); else this.handler.valueString(s);
+		this.handler.arrayItemEnd();
+	}
+	,typeDate: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueDate(Dates.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeBool: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueBool(Bools.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeFloat: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueFloat(Floats.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeCultureFloat: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueFloat(thx.number.NumberParser.parse(s,thx.culture.Culture.get_defaultCulture()));
+		this.handler.arrayItemEnd();
+	}
+	,typeInt: function(s) {
+		this.handler.arrayItemStart();
+		this.handler.valueInt(Ints.parse(s));
+		this.handler.arrayItemEnd();
+	}
+	,typeToken: function(s) {
+		if(!this.check_type) this.typeString(s); else if(Ints.canParse(s)) this.typeInt(s); else if(Floats.canParse(s)) this.typeFloat(s); else if(Bools.canParse(s)) this.typeBool(s); else if(Dates.canParse(s)) this.typeDate(s); else this.typeString(s);
+	}
+	,getTyper: function(s) {
+		var typer = this._typers[this.column];
+		if(null == typer) {
+			if(s == "") return $bind(this,this.typeToken);
+			if(!this.check_type) typer = this._typers[this.column] = $bind(this,this.typeString); else if(Ints.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeInt); else if(thx.number.NumberParser.canParse(s,thx.culture.Culture.get_defaultCulture())) typer = this._typers[this.column] = $bind(this,this.typeCultureFloat); else if(Floats.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeFloat); else if(Bools.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeBool); else if(Dates.canParse(s)) typer = this._typers[this.column] = $bind(this,this.typeDate); else typer = this._typers[this.column] = $bind(this,this.typeString);
+		}
+		return typer;
+	}
+	,error: function(e) {
+		return (function($this) {
+			var $r;
+			throw new thx.error.Error("invalid string value '{0}' at line {1}, column {2}",[Strings.ellipsis(e,50),$this.line,$this.column],null,{ fileName : "CsvDecoder.hx", lineNumber : 128, className : "thx.csv.CsvDecoder", methodName : "error"});
+			return $r;
+		}(this));
+	}
+	,parseValue: function() {
+		if(HxOverrides.substr(this._s,0,1) == this.quote) {
+			var pos = this._s.indexOf(this.quote,1);
+			if(pos != -1) {
+				if(this.doublequotations) while(HxOverrides.substr(this._s,pos + 1,1) == this.quote) {
+					pos = this._s.indexOf(this.quote,pos + 2);
+					if(pos == -1) {
+						pos = this._s.length;
+						break;
+					}
+				}
+			} else pos = this._s.length;
+			var v = HxOverrides.substr(this._s,1,pos - 1);
+			this._s = HxOverrides.substr(this._s,pos + 1,null);
+			this.typeString(StringTools.replace(v,this.quote + this.quote,this.quote));
+			if(!this._end.match(this._s)) this.error(this._s);
+			this._s = this._end.matchedRight();
+			return this._end.matched(0) == this.delimiter;
+		}
+		if(!this._end.match(this._s)) this.error(this._s);
+		this._s = this._end.matchedRight();
+		if(this.line == 1) {
+			var v = this._end.matchedLeft();
+			if(this.trim_whitespace) v = StringTools.trim(v);
+			this.typeToken(v);
+		} else {
+			var v = this._end.matchedLeft();
+			if(this.trim_whitespace) v = StringTools.trim(v);
+			(this.getTyper(v))(v);
+		}
+		if(this._end.matched(0) == this.delimiter) return true; else {
+			this._s = StringTools.ltrim(this._s);
+			return false;
+		}
+	}
+	,parseLine: function() {
+		this.handler.arrayItemStart();
+		this.column = 1;
+		this.handler.arrayStart();
+		while(this.parseValue()) this.column++;
+		this.handler.arrayEnd();
+		this.line++;
+		this.handler.arrayItemEnd();
+	}
+	,decode: function(s) {
+		this._s = s;
+		this._typers = [];
+		this.line = 1;
+		this.handler.start();
+		this.handler.arrayStart();
+		while(this._s.length > 0) this.parseLine();
+		this.handler.arrayEnd();
+		this.handler.end();
+	}
+	,_typers: null
+	,_end: null
+	,_s: null
+	,handler: null
+	,check_type: null
+	,column: null
+	,line: null
+	,trim_whitespace: null
+	,doublequotations: null
+	,quote: null
+	,newline: null
+	,emptytonull: null
+	,delimiter: null
+	,__class__: thx.csv.CsvDecoder
+}
+thx.data = {}
+thx.data.IDataHandler = function() { }
+$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
+thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
+thx.data.IDataHandler.prototype = {
+	comment: null
+	,valueBool: null
+	,valueNull: null
+	,valueFloat: null
+	,valueInt: null
+	,valueString: null
+	,valueDate: null
+	,arrayEnd: null
+	,arrayItemEnd: null
+	,arrayItemStart: null
+	,arrayStart: null
+	,objectEnd: null
+	,objectFieldEnd: null
+	,objectFieldStart: null
+	,objectStart: null
+	,end: null
+	,start: null
+	,__class__: thx.data.IDataHandler
+}
+thx.csv.CsvEncoder = function(delimiter,nulltoempty,newline) {
+	if(newline == null) newline = "\n";
+	if(nulltoempty == null) nulltoempty = true;
+	if(delimiter == null) delimiter = ",";
+	this.delimiter = delimiter;
+	this.nulltoempty = nulltoempty;
+	this.newline = newline;
+	this.re = new EReg("(" + thx.text.ERegs.escapeERegChars(delimiter) + "|\n\r|\n|\r|\")","");
+};
+$hxClasses["thx.csv.CsvEncoder"] = thx.csv.CsvEncoder;
+thx.csv.CsvEncoder.__name__ = ["thx","csv","CsvEncoder"];
+thx.csv.CsvEncoder.__interfaces__ = [thx.data.IDataHandler];
+thx.csv.CsvEncoder.prototype = {
+	comment: function(s) {
+	}
+	,valueBool: function(b) {
+		this.buf.b += Std.string(b?"true":"false");
+	}
+	,valueNull: function() {
+		if(!this.nulltoempty) this.buf.b += "null";
+	}
+	,valueFloat: function(f) {
+		this.buf.b += Std.string(f);
+	}
+	,valueInt: function(i) {
+		this.buf.b += Std.string(i);
+	}
+	,valueString: function(s) {
+		if(this.re.match(s)) this.buf.b += Std.string("\"" + StringTools.replace(s,"\"","\"\"") + "\""); else this.buf.b += Std.string(s);
+	}
+	,valueDate: function(d) {
+		if(d.getSeconds() == 0 && d.getMinutes() == 0 && d.getHours() == 0) this.buf.b += Std.string(Dates.format(d,"C",["%Y-%m-%d"])); else this.buf.b += Std.string(Dates.format(d,"C",["%Y-%m-%d %H:%M:%S"]));
+	}
+	,arrayEnd: function() {
+		if(!this.lineContext) this.lineContext = true;
+	}
+	,arrayItemEnd: function() {
+	}
+	,arrayItemStart: function() {
+		if(this.lineContext) {
+			this.lineContext = false;
+			this.firstValue = true;
+			if(this.firstLine) this.firstLine = false; else this.buf.b += Std.string(this.newline);
+		} else if(this.firstValue) this.firstValue = false; else this.buf.b += Std.string(this.delimiter);
+	}
+	,arrayStart: function() {
+	}
+	,objectEnd: function() {
+	}
+	,objectFieldEnd: function() {
+	}
+	,objectFieldStart: function(name) {
+	}
+	,objectStart: function() {
+		throw new thx.error.Error("objects cannot be encoded to CSV",null,null,{ fileName : "CsvEncoder.hx", lineNumber : 48, className : "thx.csv.CsvEncoder", methodName : "objectStart"});
+	}
+	,end: function() {
+		this.encodedString = this.buf.b;
+	}
+	,start: function() {
+		this.buf = new StringBuf();
+		this.firstLine = true;
+		this.lineContext = true;
+	}
+	,firstValue: null
+	,firstLine: null
+	,valueContext: null
+	,lineContext: null
+	,buf: null
+	,re: null
+	,encodedString: null
+	,newline: null
+	,nulltoempty: null
+	,delimiter: null
+	,__class__: thx.csv.CsvEncoder
+}
 thx.culture = {}
 thx.culture.Info = function() { }
 $hxClasses["thx.culture.Info"] = thx.culture.Info;
@@ -24383,7 +27195,10 @@ thx.culture.FormatDate.format = function(pattern,date,culture,leadingspace) {
 		case "A":
 			buf.b += Std.string(info.days[date.getDay()]);
 			break;
-		case "b":case "h":
+		case "b":
+			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
+			break;
+		case "h":
 			buf.b += Std.string(info.abbrMonths[date.getMonth()]);
 			break;
 		case "B":
@@ -24831,30 +27646,6 @@ thx.cultures.EnUS.__super__ = thx.culture.Culture;
 thx.cultures.EnUS.prototype = $extend(thx.culture.Culture.prototype,{
 	__class__: thx.cultures.EnUS
 });
-thx.data = {}
-thx.data.IDataHandler = function() { }
-$hxClasses["thx.data.IDataHandler"] = thx.data.IDataHandler;
-thx.data.IDataHandler.__name__ = ["thx","data","IDataHandler"];
-thx.data.IDataHandler.prototype = {
-	comment: null
-	,valueBool: null
-	,valueNull: null
-	,valueFloat: null
-	,valueInt: null
-	,valueString: null
-	,valueDate: null
-	,arrayEnd: null
-	,arrayItemEnd: null
-	,arrayItemStart: null
-	,arrayStart: null
-	,objectEnd: null
-	,objectFieldEnd: null
-	,objectFieldStart: null
-	,objectStart: null
-	,end: null
-	,start: null
-	,__class__: thx.data.IDataHandler
-}
 thx.data.ValueEncoder = function(handler) {
 	this.handler = handler;
 };
@@ -24908,7 +27699,8 @@ thx.data.ValueEncoder.prototype = {
 		this.handler.objectEnd();
 	}
 	,encodeValue: function(o) {
-		var $e = (Type["typeof"](o));
+		var _g = Type["typeof"](o);
+		var $e = (_g);
 		switch( $e[1] ) {
 		case 0:
 			this.handler.valueNull();
@@ -24929,12 +27721,12 @@ thx.data.ValueEncoder.prototype = {
 			throw new thx.error.Error("unable to encode TFunction type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 39, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 6:
-			var c = $e[2];
-			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(c),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			var _g_eTClass_0 = $e[2];
+			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(_g_eTClass_0),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
-			var e = $e[2];
-			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(e),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			var _g_eTEnum_0 = $e[2];
+			throw new thx.error.Error("unable to encode TEnum type '{0}'",null,Type.getEnumName(_g_eTEnum_0),{ fileName : "ValueEncoder.hx", lineNumber : 55, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 8:
 			throw new thx.error.Error("unable to encode TUnknown type",null,null,{ fileName : "ValueEncoder.hx", lineNumber : 57, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
@@ -25071,20 +27863,30 @@ thx.date.DateParser.parse = function(s,d) {
 		year = d.getFullYear();
 		month = d.getMonth();
 		day = d.getDate();
-		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) switch(v.toLowerCase()) {
-		case "now":case "this second":
-			if(null == time.matched) {
-				time.hour = d.getHours();
-				time.minute = d.getMinutes();
-				time.second = d.getSeconds();
+		if(null != (v = thx.date.DateParser.absdateexp.matched(1))) {
+			var _g = v.toLowerCase();
+			switch(_g) {
+			case "now":
+				if(null == time.matched) {
+					time.hour = d.getHours();
+					time.minute = d.getMinutes();
+					time.second = d.getSeconds();
+				}
+				break;
+			case "this second":
+				if(null == time.matched) {
+					time.hour = d.getHours();
+					time.minute = d.getMinutes();
+					time.second = d.getSeconds();
+				}
+				break;
+			case "tomorrow":
+				day += 1;
+				break;
+			case "yesterday":
+				day -= 1;
+				break;
 			}
-			break;
-		case "tomorrow":
-			day += 1;
-			break;
-		case "yesterday":
-			day -= 1;
-			break;
 		} else if(null != (v = thx.date.DateParser.absdateexp.matched(3))) {
 			var t = thx.date.DateParser.absdateexp.matched(2), v1 = thx.date.DateParser.months.indexOf(v.toLowerCase());
 			if(v1 == month) year += thx.date.DateParser.last(t)?-1:thx.date.DateParser.next(t)?1:0; else if(v1 > month) year += thx.date.DateParser.last(t)?-1:0; else year += thx.date.DateParser.next(t)?1:0;
@@ -25125,14 +27927,39 @@ thx.date.DateParser.parse = function(s,d) {
 		}
 		dir = dir.toLowerCase();
 		switch(dir) {
-		case "plus":case "+":case "from":case "hence":case "after":
+		case "plus":
 			break;
-		case "minus":case "-":case "before":case "ago":
+		case "+":
+			break;
+		case "from":
+			break;
+		case "hence":
+			break;
+		case "after":
+			break;
+		case "minus":
+			qt = -qt;
+			break;
+		case "-":
+			qt = -qt;
+			break;
+		case "before":
+			qt = -qt;
+			break;
+		case "ago":
 			qt = -qt;
 			break;
 		}
 		switch(dir) {
-		case "ago":case "in":
+		case "ago":
+			if(null == time.matched) {
+				time.hour = d.getHours();
+				time.minute = d.getMinutes();
+				time.second = d.getSeconds();
+				time.matched = "x";
+			}
+			break;
+		case "in":
 			if(null == time.matched) {
 				time.hour = d.getHours();
 				time.minute = d.getMinutes();
@@ -25141,26 +27968,48 @@ thx.date.DateParser.parse = function(s,d) {
 			}
 			break;
 		}
-		switch(period.toLowerCase()) {
-		case "second":case "seconds":
+		var _g = period.toLowerCase();
+		switch(_g) {
+		case "second":
 			time.second += qt;
 			break;
-		case "minute":case "minutes":
+		case "seconds":
+			time.second += qt;
+			break;
+		case "minute":
 			time.minute += qt;
 			break;
-		case "hour":case "hours":
+		case "minutes":
+			time.minute += qt;
+			break;
+		case "hour":
 			time.hour += qt;
 			break;
-		case "day":case "days":
+		case "hours":
+			time.hour += qt;
+			break;
+		case "day":
 			day += qt;
 			break;
-		case "week":case "weeks":
+		case "days":
+			day += qt;
+			break;
+		case "week":
 			day += qt * 7;
 			break;
-		case "month":case "months":
+		case "weeks":
+			day += qt * 7;
+			break;
+		case "month":
 			month += qt;
 			break;
-		case "year":case "years":
+		case "months":
+			month += qt;
+			break;
+		case "year":
+			year += qt;
+			break;
+		case "years":
 			year += qt;
 			break;
 		}
@@ -25190,31 +28039,52 @@ thx.date.DateParser.parseTime = function(s) {
 	} else if(null != (v = thx.date.DateParser.timeexp.matched(8))) {
 		result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(10));
 		result.minute = Std.parseInt(thx.date.DateParser.timeexp.matched(9));
-	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) switch(v.toLowerCase()) {
-	case "evening":
-		result.hour = 17;
-		break;
-	case "morning":
-		result.hour = 8;
-		break;
-	case "afternoon":
-		result.hour = 14;
-		break;
-	case "sunsrise":case "dawn":
-		result.hour = 6;
-		break;
-	case "sunset":case "dusk":
-		result.hour = 19;
-		break;
-	case "noon":case "midday":case "mid-day":
-		result.hour = 12;
-		break;
-	case "mid-night":case "midnight":
-		result.hour = 23;
-		result.minute = 59;
-		result.second = 59;
-		result.millis = 0.999;
-		break;
+	} else if(null != (v = thx.date.DateParser.timeexp.matched(11))) result.hour = Std.parseInt(v) + thx.date.DateParser.plusPm(thx.date.DateParser.timeexp.matched(12)); else if(null != (v = thx.date.DateParser.timeexp.matched(13))) {
+		var _g = v.toLowerCase();
+		switch(_g) {
+		case "evening":
+			result.hour = 17;
+			break;
+		case "morning":
+			result.hour = 8;
+			break;
+		case "afternoon":
+			result.hour = 14;
+			break;
+		case "sunsrise":
+			result.hour = 6;
+			break;
+		case "dawn":
+			result.hour = 6;
+			break;
+		case "sunset":
+			result.hour = 19;
+			break;
+		case "dusk":
+			result.hour = 19;
+			break;
+		case "noon":
+			result.hour = 12;
+			break;
+		case "midday":
+			result.hour = 12;
+			break;
+		case "mid-day":
+			result.hour = 12;
+			break;
+		case "mid-night":
+			result.hour = 23;
+			result.minute = 59;
+			result.second = 59;
+			result.millis = 0.999;
+			break;
+		case "midnight":
+			result.hour = 23;
+			result.minute = 59;
+			result.second = 59;
+			result.millis = 0.999;
+			break;
+		}
 	} else throw new thx.error.Error("failed to parse time for '{0}'",null,s,{ fileName : "DateParser.hx", lineNumber : 406, className : "thx.date.DateParser", methodName : "parseTime"});
 	return result;
 }
@@ -25230,13 +28100,24 @@ thx.date.DateParser.next = function(s) {
 thx.date.DateParser.plusPm = function(s) {
 	if(null == s) return 0; else return (function($this) {
 		var $r;
-		switch(s.toLowerCase()) {
-		case "pm":case "evening":case "afternoon":
-			$r = 12;
-			break;
-		default:
-			$r = 0;
-		}
+		var _g = s.toLowerCase();
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "pm":
+				$r = 12;
+				break;
+			case "evening":
+				$r = 12;
+				break;
+			case "afternoon":
+				$r = 12;
+				break;
+			default:
+				$r = 0;
+			}
+			return $r;
+		}($this));
 		return $r;
 	}(this));
 }
@@ -25498,14 +28379,19 @@ thx.geo.Azimuthal.prototype = {
 	,invert: function(coords) {
 		var x = (coords[0] - this.get_translate()[0]) / this.get_scale(), y = (coords[1] - this.get_translate()[1]) / this.get_scale(), p = Math.sqrt(x * x + y * y), c = (function($this) {
 			var $r;
-			switch( ($this.get_mode())[1] ) {
-			case 0:
-				$r = Math.asin(p);
-				break;
-			case 1:
-				$r = Math.atan(p);
-				break;
-			}
+			var _g = $this.get_mode();
+			$r = (function($this) {
+				var $r;
+				switch( (_g)[1] ) {
+				case 0:
+					$r = Math.asin(p);
+					break;
+				case 1:
+					$r = Math.atan(p);
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this)), sc = Math.sin(c), cc = Math.cos(c);
 		return [(this.x0 + Math.atan2(x * sc,p * this.cy0 * cc + y * this.sy0 * sc)) / 0.01745329251994329577,Math.asin(cc * this.sy0 - y * sc * this.cy0 / p) / 0.01745329251994329577];
@@ -25513,14 +28399,19 @@ thx.geo.Azimuthal.prototype = {
 	,project: function(coords) {
 		var x1 = coords[0] * 0.01745329251994329577 - this.x0, y1 = coords[1] * 0.01745329251994329577, cx1 = Math.cos(x1), sx1 = Math.sin(x1), cy1 = Math.cos(y1), sy1 = Math.sin(y1), k = (function($this) {
 			var $r;
-			switch( ($this.get_mode())[1] ) {
-			case 0:
-				$r = 1;
-				break;
-			case 1:
-				$r = 1 / (1 + $this.sy0 * sy1 + $this.cy0 * cy1 * cx1);
-				break;
-			}
+			var _g = $this.get_mode();
+			$r = (function($this) {
+				var $r;
+				switch( (_g)[1] ) {
+				case 0:
+					$r = 1;
+					break;
+				case 1:
+					$r = 1 / (1 + $this.sy0 * sy1 + $this.cy0 * cy1 * cx1);
+					break;
+				}
+				return $r;
+			}($this));
 			return $r;
 		}(this)), x = k * cy1 * sx1, y = k * (this.sy0 * cy1 * cx1 - this.cy0 * sy1);
 		return [this.get_scale() * x + this.get_translate()[0],this.get_scale() * y + this.get_translate()[1]];
@@ -28026,6 +30917,71 @@ thx.math.scale.Linears.forRgbString = function() {
 		};
 	});
 }
+thx.number = {}
+thx.number.NumberParser = function() { }
+$hxClasses["thx.number.NumberParser"] = thx.number.NumberParser;
+thx.number.NumberParser.__name__ = ["thx","number","NumberParser"];
+thx.number.NumberParser.parse = function(val,cul) {
+	if(cul == null) cul = thx.culture.Culture.get_defaultCulture();
+	var reg = thx.number.NumberParser.cultureNumberEReg(cul);
+	var fval = val;
+	var nval = Math.NaN;
+	var ni = cul.number;
+	var gsep = thx.text.ERegs.escapeERegChars(ni.groupsSeparator);
+	var dsep = thx.text.ERegs.escapeERegChars(ni.decimalsSeparator);
+	if(thx.number.NumberParser.canParse(val,cul)) {
+		fval = new EReg(gsep,"gi").replace(fval,"");
+		fval = new EReg(dsep,"gi").replace(fval,".");
+		nval = Std.parseFloat(fval);
+		if(new EReg(thx.text.ERegs.escapeERegChars(cul.signNeg),"").match(val)) {
+			if(nval > 0) nval *= -1;
+		}
+	}
+	return nval;
+}
+thx.number.NumberParser.cultureNumberEReg = function(cul) {
+	var ni = cul.number;
+	var groups = ni.groups.slice();
+	var digits = "";
+	var gsep = thx.text.ERegs.escapeERegChars(ni.groupsSeparator);
+	var dsep = thx.text.ERegs.escapeERegChars(ni.decimalsSeparator);
+	if(cul.digits != null) throw "unsupported digit characters"; else digits = "[0-9]";
+	var regex = new StringBuf();
+	regex.b += "(";
+	var group_length = 0;
+	if(groups.length > 2) throw "too many groups!";
+	if(groups.length == 2) {
+		if(groups[1] == 0) regex.b += Std.string("(" + digits + "*" + gsep + ")"); else {
+			regex.b += Std.string("((" + digits + "{1," + groups[1] + "}" + gsep + ")");
+			regex.b += Std.string("(" + digits + "{" + groups[1] + "}" + gsep + ")*" + digits + "{" + groups[0] + "})|");
+		}
+		if(groups[0] == 0) regex.b += Std.string("(" + digits + "*" + gsep + ")"); else regex.b += Std.string("(" + digits + "+)");
+	}
+	if(groups.length == 1) {
+		group_length = groups[0];
+		regex.b += Std.string("((" + digits + "{1," + groups[0] + "})");
+		regex.b += Std.string("(" + gsep + digits + "{" + groups[0] + "}" + ")+)|");
+		regex.b += Std.string("(" + digits + "+)");
+	}
+	regex.b += ")";
+	var last_group = 0;
+	regex.b += Std.string("(" + dsep + digits + "*)?");
+	regex.b += "([eE][+\\-]?\\d+)?";
+	var reg_string = regex.b;
+	var negative = false;
+	if(ni.patternNegative != "-n") {
+		var neg_match = new EReg("([^n]+)","g").replace(thx.text.ERegs.escapeERegChars(ni.patternNegative),"($1)?");
+		reg_string = new EReg("n","").replace(neg_match,reg_string);
+	} else reg_string = "[+-]?" + reg_string;
+	reg_string = "^" + reg_string + "$";
+	var reg = new EReg(reg_string,"gi");
+	return reg;
+}
+thx.number.NumberParser.canParse = function(val,cul) {
+	if(cul == null) cul = thx.culture.Culture.get_defaultCulture();
+	var reg = thx.number.NumberParser.cultureNumberEReg(cul);
+	if(reg.match(val)) return true; else return false;
+}
 thx.svg = {}
 thx.svg.Arc = function() {
 	this._r0 = function(_,_1) {
@@ -28427,17 +31383,17 @@ thx.svg.LineInternals.interpolatePoints = function(points,type) {
 		}
 		break;
 	case 7:
-		var tension = $e[2];
-		if(null == tension) tension = .7;
-		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear); else return points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents(points,tension));
+		var type_eCardinal_0 = $e[2];
+		if(null == type_eCardinal_0) type_eCardinal_0 = .7;
+		if(points.length < 3) return thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear); else return points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents(points,type_eCardinal_0));
 		break;
 	case 8:
-		var tension = $e[2];
-		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + Std.string(thx.svg.LineInternals._lineCardinalTangents(points,tension));
+		var type_eCardinalOpen_0 = $e[2];
+		return points.length < 4?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[1][0] + "," + points[1][1] + Std.string(thx.svg.LineInternals._lineCardinalTangents(points,type_eCardinalOpen_0));
 	case 9:
-		var tension = $e[2];
-		if(null == tension) tension = .7;
-		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),tension));
+		var type_eCardinalClosed_0 = $e[2];
+		if(null == type_eCardinalClosed_0) type_eCardinalClosed_0 = .7;
+		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineCardinalTangents([points[points.length - 2]].concat(points).concat([points[1]]),type_eCardinalClosed_0));
 	case 10:
 		return points.length < 3?thx.svg.LineInternals.interpolatePoints(points,thx.svg.LineInterpolator.Linear):points[0][0] + "," + points[0][1] + thx.svg.LineInternals._lineHermite(points,thx.svg.LineInternals._lineMonotoneTangents(points));
 	}
@@ -28631,7 +31587,16 @@ thx.svg.PathGeoJson.applyBounds = function(d,f) {
 			thx.svg.PathGeoJson.applyBounds(feature.geometry,f);
 		}
 		break;
-	case "LineString":case "MultiPoint":
+	case "LineString":
+		var coordinates = d.coordinates;
+		var _g = 0;
+		while(_g < coordinates.length) {
+			var coords = coordinates[_g];
+			++_g;
+			f(coords[0],coords[1]);
+		}
+		break;
+	case "MultiPoint":
 		var coordinates = d.coordinates;
 		var _g = 0;
 		while(_g < coordinates.length) {
@@ -29010,6 +31975,15 @@ thx.svg.Symbol.star = function(size) {
 	var r = Math.sqrt(size / 0.31027) / 2;
 	return "M0," + -r + "L" + r * 0.236 + "," + r * -0.325 + " " + r * 0.951 + "," + r * -0.309 + " " + r * 0.382 + "," + r * 0.124 + " " + r * 0.588 + "," + r * 0.809 + " " + r * 0 + "," + r * 0.401 + " " + r * -0.588 + "," + r * 0.809 + " " + r * -0.382 + "," + r * 0.124 + " " + r * -0.951 + "," + r * -0.309 + " " + r * -0.236 + "," + r * -0.325 + " " + "Z";
 }
+thx.text = {}
+thx.text.ERegs = function() { }
+$hxClasses["thx.text.ERegs"] = thx.text.ERegs;
+thx.text.ERegs.__name__ = ["thx","text","ERegs"];
+thx.text.ERegs.escapeERegChars = function(s) {
+	return thx.text.ERegs._escapePattern.customReplace(s,function(e) {
+		return "\\" + e.matched(0);
+	});
+}
 thx.translation = {}
 thx.translation.ITranslation = function() { }
 $hxClasses["thx.translation.ITranslation"] = thx.translation.ITranslation;
@@ -29134,25 +32108,30 @@ dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Wind
 	var $r;
 	var version = (function($this) {
 		var $r;
-		switch(pattern.matched(1)) {
-		case "5.1":
-			$r = "XP";
-			break;
-		case "5.2":
-			$r = "2003/XP x64";
-			break;
-		case "6.0":
-			$r = "Vista";
-			break;
-		case "6.1":
-			$r = "7";
-			break;
-		case "6.2":
-			$r = "8";
-			break;
-		default:
-			$r = "unknown";
-		}
+		var _g = pattern.matched(1);
+		$r = (function($this) {
+			var $r;
+			switch(_g) {
+			case "5.1":
+				$r = "XP";
+				break;
+			case "5.2":
+				$r = "2003/XP x64";
+				break;
+			case "6.0":
+				$r = "Vista";
+				break;
+			case "6.1":
+				$r = "7";
+				break;
+			case "6.2":
+				$r = "8";
+				break;
+			default:
+				$r = "unknown";
+			}
+			return $r;
+		}($this));
 		return $r;
 	}($this));
 	$r = dhx.OSType.Windows(version);
@@ -29160,69 +32139,91 @@ dhx.ClientHost.os = !hasnavigator?dhx.OSType.UnknownOs:(pattern = new EReg("Wind
 }(this)):new EReg("Mac OS X","").match(useragent)?dhx.OSType.Mac:new EReg("(iPhone|iPad|iPod)","").match(useragent)?dhx.OSType.IOs:new EReg("Linux","").match(useragent)?dhx.OSType.Linux:new EReg("Android","").match(useragent)?dhx.OSType.Android:dhx.OSType.UnknownOs;
 dhx.ClientHost.environment = (function($this) {
 	var $r;
-	switch( (dhx.ClientHost.host)[1] ) {
-	case 0:
-		$r = dhx.EnvironmentType.Server;
-		break;
-	case 1:
-		$r = dhx.EnvironmentType.Server;
-		break;
-	case 2:
-	case 6:
-	case 3:
-		$r = dhx.EnvironmentType.Desktop;
-		break;
-	case 4:
-		$r = (function($this) {
-			var $r;
-			switch( (dhx.ClientHost.os)[1] ) {
-			case 1:
-				$r = dhx.EnvironmentType.Mobile;
-				break;
-			default:
-				$r = dhx.EnvironmentType.Desktop;
-			}
-			return $r;
-		}($this));
-		break;
-	case 5:
-		$r = (function($this) {
-			var $r;
-			switch( (dhx.ClientHost.os)[1] ) {
-			case 2:
-				$r = dhx.EnvironmentType.Mobile;
-				break;
-			default:
-				$r = dhx.EnvironmentType.Desktop;
-			}
-			return $r;
-		}($this));
-		break;
-	case 7:
-		$r = (function($this) {
-			var $r;
-			switch( (dhx.ClientHost.os)[1] ) {
-			case 5:
-				$r = dhx.EnvironmentType.UnknownEnvironment;
-				break;
-			default:
-				$r = dhx.EnvironmentType.Desktop;
-			}
-			return $r;
-		}($this));
-		break;
-	}
+	var _g = dhx.ClientHost;
+	$r = (function($this) {
+		var $r;
+		var $e = (_g.host);
+		switch( $e[1] ) {
+		case 0:
+			$r = dhx.EnvironmentType.Server;
+			break;
+		case 1:
+			$r = dhx.EnvironmentType.Server;
+			break;
+		case 2:
+			var _g_fhost_eIE_0 = $e[2];
+			$r = dhx.EnvironmentType.Desktop;
+			break;
+		case 6:
+			var _g_fhost_eOpera_0 = $e[2];
+			$r = dhx.EnvironmentType.Desktop;
+			break;
+		case 3:
+			var _g_fhost_eFirefox_0 = $e[2];
+			$r = dhx.EnvironmentType.Desktop;
+			break;
+		case 4:
+			var _g_fhost_eSafari_0 = $e[2];
+			$r = (function($this) {
+				var $r;
+				var _g1 = dhx.ClientHost;
+				$r = (function($this) {
+					var $r;
+					switch( (_g1.os)[1] ) {
+					case 1:
+						$r = dhx.EnvironmentType.Mobile;
+						break;
+					default:
+						$r = dhx.EnvironmentType.Desktop;
+					}
+					return $r;
+				}($this));
+				return $r;
+			}($this));
+			break;
+		case 5:
+			var _g_fhost_eChrome_0 = $e[2];
+			$r = (function($this) {
+				var $r;
+				var _g1 = dhx.ClientHost;
+				$r = (function($this) {
+					var $r;
+					switch( (_g1.os)[1] ) {
+					case 2:
+						$r = dhx.EnvironmentType.Mobile;
+						break;
+					default:
+						$r = dhx.EnvironmentType.Desktop;
+					}
+					return $r;
+				}($this));
+				return $r;
+			}($this));
+			break;
+		case 7:
+			var _g_fhost_eUnknown_0 = $e[2];
+			$r = (function($this) {
+				var $r;
+				var _g1 = dhx.ClientHost;
+				$r = (function($this) {
+					var $r;
+					switch( (_g1.os)[1] ) {
+					case 5:
+						$r = dhx.EnvironmentType.UnknownEnvironment;
+						break;
+					default:
+						$r = dhx.EnvironmentType.Desktop;
+					}
+					return $r;
+				}($this));
+				return $r;
+			}($this));
+			break;
+		}
+		return $r;
+	}($this));
 	return $r;
 }(this));
-if(typeof document != "undefined") js.Lib.document = document;
-if(typeof window != "undefined") {
-	js.Lib.window = window;
-	js.Lib.window.onerror = function(msg,url,line) {
-		var f = js.Lib.onerror;
-		if(f == null) return false;
-		return f(msg,[url + ":" + line]);
-	};
-}
 /*!
  * Sizzle CSS Selector Engine
  *  Copyright 2011, The Dojo Foundation
@@ -30632,21 +33633,6 @@ window.requestAnimationFrame = window.requestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
-js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
-	try {
-		return new ActiveXObject("Msxml2.XMLHTTP");
-	} catch( e ) {
-		try {
-			return new ActiveXObject("Microsoft.XMLHTTP");
-		} catch( e1 ) {
-			throw "Unable to create XMLHttpRequest object.";
-		}
-	}
-}:(function($this) {
-	var $r;
-	throw "Unable to create XMLHttpRequest object.";
-	return $r;
-}(this));
 var dbits;
 var j_lm;
 var canary = 0xdeadbeefcafe;
@@ -31000,9 +33986,11 @@ dhx.Access.FIELD_TRANSITION = "__dhx_transition__";
 dhx.AccessAttribute.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
 dhx.AccessClassed._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 dhx.AccessStyle.refloat = new EReg("(\\d+(?:\\.\\d+)?)","");
+js.Browser.window = typeof window != "undefined" ? window : null;
+js.Browser.document = typeof window != "undefined" ? window.document : null;
 dhx.Dom.doc = (function() {
-	var g = new dhx.Group([js.Lib.document]), gs = dhx.Selection.create([g]);
-	g.parentNode = gs.parentNode = js.Lib.document.documentElement;
+	var g = new dhx.Group([js.Browser.document]), gs = dhx.Selection.create([g]);
+	g.parentNode = gs.parentNode = js.Browser.document.documentElement;
 	return gs;
 })();
 dhx.Dom.selectionEngine = (function($this) {
@@ -31021,7 +34009,7 @@ dhx.Namespace.prefix = (function() {
 	h.set("xmlns","http://www.w3.org/2000/xmlns/");
 	return h;
 })();
-dhx.Svg._usepage = new EReg("WebKit","").match(js.Lib.window.navigator.userAgent);
+dhx.Svg._usepage = new EReg("WebKit","").match(js.Browser.window.navigator.userAgent);
 dhx.Timer.timeout = 0;
 dhx.Timer.interval = 0;
 dhx.Timer._step = dhx.Timer.step;
@@ -31089,6 +34077,10 @@ rg.layout.LayoutX.ALT_TOP = 8;
 rg.layout.LayoutX.ALT_BOTTOM = 8;
 rg.svg.chart.Coords.retransform = new EReg("translate\\(\\s*(\\d+(?:\\.\\d+)?)\\s*(?:[, ]\\s*(\\d+(?:\\.\\d+)?)\\s*)?\\)","");
 rg.svg.chart.StreamGraph.vid = 0;
+rg.svg.util.SVGSymbolBuilder.SIZE_PATTERN = new EReg("^(\\d+)x(\\d+)$","");
+rg.svg.util.SVGSymbolBuilder.ALIGN_PATTERN = new EReg("^(center|left|right)\\s+(center|top|bottom)$","i");
+rg.svg.util.SVGSymbolBuilder.HORIZONTAL_PATTERN = new EReg("^(center|left|right)$","i");
+rg.svg.util.SVGSymbolBuilder.VERTICAL_PATTERN = new EReg("^(top|bottom)$","i");
 rg.svg.util.SymbolCache.DEFAULT_SYMBOL = "circle";
 rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
 rg.util.Decrypt.publicExponent = "3";
@@ -31151,5 +34143,6 @@ thx.svg.LineInternals._lineBasisBezier2 = [0,1 / 3,2 / 3,0];
 thx.svg.LineInternals._lineBasisBezier3 = [0,1 / 6,2 / 3,1 / 6];
 thx.svg.Symbol.sqrt3 = Math.sqrt(3);
 thx.svg.Symbol.tan30 = Math.tan(30 * Math.PI / 180);
+thx.text.ERegs._escapePattern = new EReg("[*+?|{[()^$.# \\\\]","");
 rg.app.charts.JSBridge.main();
 })();

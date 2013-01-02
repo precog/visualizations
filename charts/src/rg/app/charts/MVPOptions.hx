@@ -34,7 +34,7 @@ class MVPOptions
 		{
 			var auth  = new Auth(authcode),
 				hosts = [],
-				host = js.Lib.window.location.hostname;
+				host = js.Browser.window.location.hostname;
 			if((~/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/).match(host))
 			{
 				hosts.push(host);

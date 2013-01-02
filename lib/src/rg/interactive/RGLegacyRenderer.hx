@@ -1,6 +1,7 @@
 package rg.interactive;
 
 import dhx.Selection;
+import js.html.FrameElement;
 
 class RGLegacyRenderer
 {
@@ -54,7 +55,7 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 			}, 100);
 
 		if(isIE7orBelow()) {
-			var inode : js.Dom.Frame = cast iframe.node();
+			var inode : FrameElement = cast iframe.node();
 			untyped inode.attachEvent("onload", function() {
 				var doc = getIframeDoc(inode);
 				if(null != doc) {
@@ -92,13 +93,13 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 			.attr("style").string("width:100%; border:0; height:100%; overflow:hidden;")
 			.attr("src").string(
 				isIE7orBelow()
-					? "javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\\'<script>document.domain=\\\\\""+js.Lib.document.domain+"\\\\\";<\\\\\\\\/script>\\\');document.close();};<\\/script>'"
+					? "javascript:'<script>window.onload=function(){document.body.scroll=\"no\";document.body.style.overflow=\"hidden\";document.write(\\\'<script>document.domain=\\\\\""+js.Browser.document.domain+"\\\\\";<\\\\\\\\/script>\\\');document.close();};<\\/script>'"
 					: "about:blank"
 			)
 		;
 	}
 
-	function writeToIframe(iframe : js.Dom.Frame, content : String)
+	function writeToIframe(iframe : FrameElement, content : String)
 	{
 		var iframeDoc : Dynamic = getIframeDoc(iframe);
 		if (null != iframeDoc)
@@ -109,7 +110,7 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 		}
 	}
 
-	static function getIframeDoc(iframe : js.Dom.Frame)
+	static function getIframeDoc(iframe : FrameElement)
 	{
 		var iframeDoc : Dynamic = null;
 
@@ -127,9 +128,9 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 					}
 				},
 				function() {
-					if (null != untyped js.Lib.window.frames[iframe.name])
+					if (null != untyped js.Browser.window.frames[iframe.name])
 					{
-						iframeDoc = untyped js.Lib.window.frames[iframe.name].document;
+						iframeDoc = untyped js.Browser.window.frames[iframe.name].document;
 					}
 				}
 			];

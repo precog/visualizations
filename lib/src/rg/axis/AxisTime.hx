@@ -85,7 +85,7 @@ class AxisTime implements IAxisDiscrete<Float>
 	public function scale(start : Float, end : Float, v : Float)
 	{
 		switch (scaleDistribution) {
-			case ScaleDistribution.ScaleFill:
+			case ScaleFill:
 				return (v - start) / (end - start);
 			default:
 				var values = range(start, end);

@@ -4,7 +4,7 @@
  */
 
 package rg.svg.util;
-import js.Lib;
+import js.Browser;
 import dhx.Dom;
 import dhx.Selection;
 

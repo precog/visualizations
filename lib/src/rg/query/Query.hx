@@ -1,5 +1,7 @@
 package rg.query;
 
+import rg.util.Jsonp;
+import haxe.Http;
 using Arrays;
 
 @:keep class Query extends BaseQuery<Query>
@@ -59,14 +61,61 @@ using Arrays;
 		this._store = new Hash();
 	}
 
-	public function load(handler : (Array<Dynamic> -> Void) -> Void)
+	public function load(loader : (Array<Dynamic> -> Void) -> Void)
 	{
 		return stackAsync(function(stack, h) {
-			handler(function(data) {
+			loader(function(data) {
 				stack.push(data);
 				h(stack);
 			});
 		});
+	}
+
+	public function request(url : String, ?options : { ?type : String, ?useJsonp : Bool })
+	{
+		if(null == options)
+			options = {
+				type : "application/json",
+				useJsonp : false
+			};
+		else {
+			if(null == options.type) options.type = "application/json";
+			if(null == options.useJsonp) options.useJsonp = false;
+		}
+
+
+		var dataHandler : Dynamic -> Array<Dynamic> = null;
+		switch [options.type.toLowerCase(), options.useJsonp] {
+			case ["json" | "application/json", true]:
+				dataHandler = function(data) return data;
+			case ["json" | "application/json", false]:
+				dataHandler = function(data) return thx.json.Json.decode(data);
+			case ["csv" | "text/csv", _]:
+				dataHandler = function(data) return thx.csv.Csv.decode(data);
+			default:
+				throw 'invalid type format "${options.type}"';
+		}
+
+		var stackHandler = function(stack : Array<Array<Dynamic>>, h) {
+				return function(data) {
+					stack.push(dataHandler(data));
+					h(stack);
+				};
+			},
+			async = if(true == options.useJsonp) {
+					function(stack : Array<Array<Dynamic>>, h) {
+						Jsonp.get(url, stackHandler(stack, h), function(i, e) {}, {}, {});
+					}
+				} else {
+					function(stack : Array<Array<Dynamic>>, h) {
+						var http = new Http(url);
+						http.async = true;
+						http.onData = stackHandler(stack, h);
+						http.request(false);
+					}
+				};
+
+		return stackAsync(async);
 	}
 
 	public function data(values : Array<Dynamic>)

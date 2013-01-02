@@ -347,13 +347,13 @@ import rg.frame.Orientation;
 		titleOnTop = info.titleOnTop;
 		switch(info.scalePattern)
 		{
-			case ScalePattern.ScalesBefore:
+			case ScalesBefore:
 				right = false;
 				alternating = false;
-			case ScalePattern.ScalesAfter:
+			case ScalesAfter:
 				right = true;
 				alternating = false;
-			case ScalePattern.ScalesAlternating:
+			case ScalesAlternating:
 				right = false;
 				alternating = true;
 		}

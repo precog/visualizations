@@ -1,6 +1,6 @@
 package rg.util;
 
-import js.Dom;
+import js.html.Element;
 
 class Js
 {
@@ -12,7 +12,7 @@ class Js
 #if reportgridapi
 		return untyped __js__("ReportGrid.$.Util.findScript")(fragment);
 #else
-		var scripts = js.Lib.document.getElementsByTagName('SCRIPT');
+		var scripts = js.Browser.document.getElementsByTagName('SCRIPT');
 		if(untyped __js__('typeof fragment == "string"'))
 		{
 			for (i in 0...scripts.length)
@@ -36,7 +36,7 @@ class Js
 #end
 	}
 
-	public static function findPosition(el : HtmlDom)
+	public static function findPosition(el : Element)
 	{
 		var x = 0, y = 0, obj = el;
 		do {

@@ -30,7 +30,7 @@ class Tooltip
 	public function new(?el : Element)
 	{
 		visible = false;
-		el = null == el ? js.Lib.document.body : el;
+		el = null == el ? js.Browser.document.body : el;
 		tooltip = dhx.Dom.selectNode(el).append("div")
 			.style("display").string("none")
 			.style("position").string("absolute")

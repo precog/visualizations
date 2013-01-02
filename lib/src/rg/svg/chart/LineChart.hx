@@ -21,6 +21,7 @@ import dhx.Access;
 import thx.svg.Area;
 import rg.svg.widget.Label;
 import rg.svg.widget.Sensible;
+import rg.svg.util.SVGSymbolBuilder;
 using Arrays;
 
 // TODO transition animation
@@ -230,11 +231,11 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 
 			switch(lineEffect)
 			{
-				case LineEffect.Gradient(_, _):
+				case Gradient(_, _):
 					path.classed().add("gradient");
-				case LineEffect.DropShadow(_, _, _):
+				case DropShadow(_, _, _):
 					path.classed().add("dropshadow");
-				case LineEffect.NoEffect:
+				case NoEffect:
 					path.classed().add("noeffect");
 			}
 
@@ -264,6 +265,9 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					.classed().add("rgdata");
 			RGColors.storeColorForSelection(cast circle, "stroke");
 
+
+			SVGSymbolBuilder.generate(gsymbol, stats[i], symbol, symbolStyle);
+			/*
 			if (null != symbol)
 			{
 				var sp = this.symbol;
@@ -276,6 +280,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 					spath.attr("style").stringf(function(dp, _) return ss(dp, stats[i]));
 				}
 			}
+			*/
 
 			if (null != labelDataPoint)
 			{

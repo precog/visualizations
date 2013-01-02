@@ -1,7 +1,6 @@
 package rg.interactive;
 
-import js.Lib;
-import js.Dom;
+import js.Browser;
 import haxe.Http;
 import thx.error.Error;
 import dhx.Selection;
@@ -128,7 +127,7 @@ class RGDownloader
 			}
 			url = appendArgument(url, "forceDownload", "true");
 //			dhx.Dom.select("body").append("img").attr("src").string(url);
-			Lib.window.location.href = url;
+			Browser.window.location.href = url;
 		}
 		/*
 		if(content.substr(0, ERROR_PREFIX.length) == ERROR_PREFIX)
@@ -136,7 +135,7 @@ class RGDownloader
 			if (null != error)
 				error(content.substr(ERROR_PREFIX.length));
 		} else if (null == success || success(content))
-			Lib.window.location.href = content;
+			Browser.window.location.href = content;
 		*/
 	}
 
