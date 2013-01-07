@@ -4,7 +4,7 @@
  */
 
 package rg.svg.chart;
-import haxe.Md5;
+import haxe.crypto.Md5;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.svg.widget.Balloon;

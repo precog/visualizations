@@ -93,7 +93,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 	function getY1(pos : Int)
 	{
 		var v = yVariables[pos],
-			scale = callback(v.axis.scale, v.min(), v.max());
+			scale = v.axis.scale.callback(v.min(), v.max());
 		if (null != y0property)
 		{
 			var min = scale(v.min()) * height;
@@ -115,7 +115,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 	function getY0(pos : Int)
 	{
 		var v = yVariables[pos],
-			scale = callback(v.axis.scale, v.min(), v.max());
+			scale = v.axis.scale.callback(v.min(), v.max());
 		return function(d : Dynamic, i : Int)
 		{
 			return height - (scale(DataPoints.valueAlt(d, y0property, v.min())) * height);

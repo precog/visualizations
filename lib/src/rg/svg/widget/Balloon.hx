@@ -208,7 +208,7 @@ class Balloon
 			}, 0);
 		} else {
 			if(0 == boxWidth)
-				haxe.Timer.delay(callback(_moveTo, x, y), 15);
+				haxe.Timer.delay(_moveTo.callback(x, y), 15);
 			else
 				_moveTo(x, y);
 		}

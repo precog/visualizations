@@ -238,11 +238,11 @@ setTimeout(function() { document.VIZ.submit(); }, 200);
 '
 +
 (null == scripts ? "" : Arrays.map(scripts, function(src, _) {
-	return Std.format('<script src="$src" type="text/javascript"></script>');
+	return '<script src="$src" type="text/javascript"></script>';
 }).join("\n"))
 +
 (null == css ? "" : Arrays.map(css, function(href, _) {
-	return Std.format('<link href="$href" rel="stylesheet" type="text/css" />');
+	return '<link href="$href" rel="stylesheet" type="text/css" />';
 }).join("\n"))
 + '
 <script type="text/javascript">

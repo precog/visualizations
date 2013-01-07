@@ -143,8 +143,8 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 					pad     = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset  = - span / 2 + j * (dist + paddingAxis),
 					stats   = xVariable.stats,
-					over    = callback(onmouseover, stats),
-					click   = callback(onclick, stats)
+					over    = onmouseover.callback(stats),
+					click   = onclick.callback(stats)
 				;
 
 				var prev = 0.0;
@@ -173,7 +173,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						.attr("height").float(stacked ? dist : pad)
 						.attr("width").float(w)
 						.onNode("mouseover", over)
-						.onNode("click", callback(click, dp))
+						.onNode("click", click.callback(dp))
 					;
 					Access.setData(bar.node(), dp);
 					RGColors.storeColorForSelection(bar);
@@ -224,8 +224,8 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 					pad = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset = - span / 2 + j * (dist + paddingAxis),
 					stats = yVariables[j].stats,
-					over = callback(onmouseover, stats),
-					click = callback(onclick, stats)
+					over = onmouseover.callback(stats),
+					click = onclick.callback(stats)
 				;
 
 				var prev = 0.0;
@@ -254,7 +254,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						.attr("y").float(height - h - y)
 						.attr("height").float(h)
 						.onNode("mouseover", over)
-						.onNode("click", callback(click, dp))
+						.onNode("click", click.callback(dp))
 					;
 					Access.setData(bar.node(), dp);
 					RGColors.storeColorForSelection(bar);

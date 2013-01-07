@@ -10,9 +10,10 @@
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
 -D js_shims
-#-D noEmbedJS
+-D haxe3
+-D embed_js
 #--dead-code-elimination
---dce no
+-dce no
 --macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
 #--connect 8888
 --js-modern

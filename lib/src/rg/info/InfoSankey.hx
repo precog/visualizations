@@ -11,9 +11,6 @@ using rg.info.Info;
 @:keep class InfoSankey
 {
 	public var label : InfoLabelSankey;
-	public var idproperty : String;
-	public var weightproperty : String;
-	public var parentsproperty : String;
 	public var layerWidth : Null<Float>;
 	public var nodeSpacing : Null<Float>;
 	public var dummySpacing : Null<Float>;
@@ -24,6 +21,7 @@ using rg.info.Info;
 	public var imageWidth : Null<Float>;
 	public var imageHeight : Null<Float>;
 	public var imageSpacing : Null<Float>;
+	public var chunkWidth : Null<Float>;
 	public var labelNodeSpacing : Null<Float>;
 	public var imagePath : Dynamic -> String;
 	public var layoutmap : { layers : Array<Array<String>>, dummies : Array<Array<String>> };
@@ -42,9 +40,6 @@ using rg.info.Info;
 	public function new()
 	{
 		label = new InfoLabelSankey();
-		idproperty = "id";
-		weightproperty = "count";
-		parentsproperty = "parents";
 		stackbackedges = true;
 		thinbackedges = false;
 	}
@@ -54,6 +49,7 @@ using rg.info.Info;
 		return [
 			"label".toInfo(InfoLabelSankey),
 			"layerwidth".toFloat(["layerWidth"]),
+			"chunkwidth".toFloat(["chunkWidth"]),
 			"nodespacing".toFloat(["nodeSpacing"]),
 			"dummyspacing".toFloat(["dummySpacing"]),
 			"extrawidth".toFloat(["extraWidth"]),

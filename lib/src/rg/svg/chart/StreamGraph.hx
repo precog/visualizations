@@ -130,10 +130,10 @@ class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 	function prepareData()
 	{
 		defs.selectAll("linearGradient.h").remove();
-		var xscale = callback(xVariable.axis.scale, xVariable.min(), xVariable.max()),
+		var xscale = xVariable.axis.scale.callback(xVariable.min(), xVariable.max()),
 			xtype = xVariable.type,
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
-			yscale = callback(yVariables[0].axis.scale, yVariables[0].min(), yVariables[0].max()),
+			yscale = yVariables[0].axis.scale.callback(yVariables[0].min(), yVariables[0].max()),
 			ytype = yVariables[0].type,
 			y = function(d) return yscale(DataPoints.value(d, ytype)),
 			m = Std.int(dps.floatMax(function(d) return d.length));

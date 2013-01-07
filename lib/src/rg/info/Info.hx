@@ -40,7 +40,7 @@ using rg.info.filter.FilterDescription;
 	}
 
 	static function warn(name : String, message : Message) {
-		warner(Std.format("the parameter $name has not been applied because: $message"));
+		warner('the parameter $name has not been applied because: $message');
 	}
 
 	static var warner =

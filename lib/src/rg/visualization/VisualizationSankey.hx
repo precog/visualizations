@@ -74,6 +74,8 @@ class VisualizationSankey extends VisualizationSvg
 			chart.imageSpacing = info.imageSpacing;
 		if(null != info.labelNodeSpacing)
 			chart.labelNodeSpacing = info.labelNodeSpacing;
+		if(null != info.chunkWidth)
+			chart.chunkWidth = info.chunkWidth;
 
 		chart.stackbackedges = info.stackbackedges;
 		chart.thinbackedges  = info.thinbackedges;

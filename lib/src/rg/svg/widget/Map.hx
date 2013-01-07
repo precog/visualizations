@@ -123,11 +123,11 @@ class Map
 					}
 					if (null != labelDataPointOver)
 					{
-						p.onNode("mouseover", callback(onMouseOver, dp));
+						p.onNode("mouseover", onMouseOver.callback(dp));
 					}
 
 					if (null != click)
-						p.onNode("click", callback(onClick, dp));
+						p.onNode("click", onClick.callback(dp));
 				}
 			case "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection":
 				throw new Error("the type '{0}' is not implemented yet", [json.type]);

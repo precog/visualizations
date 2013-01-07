@@ -235,7 +235,7 @@ class PivotTable
 					.text().string(formatDataPoint(cell))
 					.attr("title").string(formatDataPointOver(cell));
 				if (null != click)
-					td.onNode("click", callback(onClick, cell));
+					td.onNode("click", onClick.callback(cell));
 				if (displayHeatMap && !Math.isNaN(v = DataPoints.value(cell, cellVariable.type) / d.stats.max))
 				{
 					var c = color(v);

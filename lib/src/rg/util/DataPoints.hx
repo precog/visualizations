@@ -5,7 +5,7 @@
 
 package rg.util;
 
-import haxe.Md5;
+import haxe.crypto.Md5;
 import rg.axis.Stats;
 import rg.data.VariableIndependent;
 import rg.data.VariableDependent;

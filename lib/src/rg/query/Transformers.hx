@@ -147,9 +147,9 @@ class Transformers
 		{
 			var f = Reflect.field(o, field);
 			if(!Reflect.isFunction(f))
-				fs.push(callback(function(v : Dynamic, obj : Dynamic) {
+				fs.push((function(v : Dynamic, obj : Dynamic) {
 					return v;
-				}, f));
+				}).callback(f));
 			else
 				fs.push(f);
 		}
@@ -175,9 +175,9 @@ class Transformers
 		{
 			var f = Reflect.field(o, field);
 			if(!Reflect.isFunction(f))
-				fs.push(callback(function(v : Dynamic, obj : Dynamic) {
+				fs.push((function(v : Dynamic, obj : Dynamic) {
 					return v;
-				}, f));
+				}).callback(f));
 			else
 				fs.push(f);
 		}

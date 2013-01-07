@@ -218,7 +218,7 @@ using Arrays;
 			}
 			for(i in 0...data.length)
 			{
-				f(data[i], callback(complete, i));
+				f(data[i], complete.callback(i));
 			}
 		});
 	}
@@ -240,7 +240,7 @@ using Arrays;
 			}
 			for(i in 0...data.length)
 			{
-				f(data[i], callback(complete, i));
+				f(data[i], complete.callback(i));
 			}
 		});
 	}
@@ -504,7 +504,7 @@ using Arrays;
 		}
 	}
 
-	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + Std.format(" [next: ${null != _next}, async: ${null != _async}]")
+	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + ' [next: ${null != _next}, async: ${null != _async}]'
 
 	inline function _this(q) : This return cast q
 

@@ -39,7 +39,7 @@ class RGDownloader
 		else
 			http.onError = function(e) { trace(e); };
 
-		http.onData = callback(complete, success, error);
+		http.onData = complete.callback(success, error);
 		http.setParameter('html', html());
 		http.setParameter('config', config());
 		http.request(true);
@@ -80,7 +80,7 @@ class RGDownloader
 '
 +
 (null == css ? '' : Arrays.map(css, function(href, _) {
-	return Std.format('<link href="$href" rel="stylesheet" type="text/css" />');
+	return '<link href="$href" rel="stylesheet" type="text/css" />';
 }).join("\n"))
 + '
 </head>

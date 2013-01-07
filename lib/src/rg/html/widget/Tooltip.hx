@@ -154,7 +154,7 @@ class Tooltip
 			case 'right', 'topright', 'bottomright':
 				container.style("left").string((-anchordistance-width) +"px");
 			default:
-				throw new thx.error.Error(Std.format("invalid anchor point: {$anchortype}"));
+				throw new thx.error.Error('invalid anchor point: $anchortype');
 		}
 
 		// y

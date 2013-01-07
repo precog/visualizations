@@ -70,7 +70,7 @@ class Geo extends Chart
 	{
 		if (null == dps || 0 == dps.length)
 		{
-			queue.push(callback(drawmap, map, field));
+			queue.push(drawmap.callback(map, field));
 			return;
 		}
 		colorMode = map.colorMode;
@@ -252,6 +252,6 @@ class Geo extends Chart
 	public function addMap(map : Map, field : String)
 	{
 		if (null != field)
-			map.onReady.add(callback(drawmap, map, field));
+			map.onReady.add(drawmap.callback(map, field));
 	}
 }

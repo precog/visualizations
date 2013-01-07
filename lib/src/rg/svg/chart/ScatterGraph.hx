@@ -101,8 +101,8 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 				stats = yVariables[i].stats;
 			var gsymbol = gi.selectAll("g.symbol").data(data),
 				vars = this.yVariables,
-				onclick = callback(onclick, stats),
-				onmouseover = callback(onmouseover, stats);
+				onclick = onclick.callback(stats),
+				onmouseover = onmouseover.callback(stats);
 			var enter = gsymbol.enter()
 				.append("svg:g")
 				.attr("class").stringf(classf(i, "symbol"))
