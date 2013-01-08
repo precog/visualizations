@@ -48,6 +48,7 @@ class Sankey extends Chart
 	public var edgeClass : Dynamic -> Stats<Dynamic> -> String;
 	public var displayEntry : Dynamic -> Stats<Dynamic> -> Bool;
 	public var displayExit : Dynamic -> Stats<Dynamic> -> Bool;
+	public var chunkWidth : Float;
 
 	var layout : GraphLayout<NodeData, Dynamic>;
 	var maxweight : Float;
@@ -64,7 +65,6 @@ class Sankey extends Chart
 	var dependentVariable : VariableDependent<Dynamic>;
 	var mapelements : Hash<Selection>;
 	var maphi : Hash<Selection>;
-	var chunkWidth : Int;
 
 	public function new(panel : Panel)
 	{
