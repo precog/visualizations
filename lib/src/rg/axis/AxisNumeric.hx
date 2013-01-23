@@ -42,8 +42,8 @@ class AxisNumeric implements IAxis<Float>
 				majors = Floats.range(start, end, stepM, true);
 		}
 		return Tickmarks.bound(null == minors
-			? majors.map(function(d : Float, i : Int) return Tickmarks.forFloat(start, end, d, true))
-			: minors.map(function(d : Float, i : Int) return Tickmarks.forFloat(start, end, d, majors.remove(d))
+			? majors.map(function(d : Float) return Tickmarks.forFloat(start, end, d, true))
+			: minors.map(function(d : Float) return Tickmarks.forFloat(start, end, d, majors.remove(d))
 		), maxTicks);
 	}
 

@@ -46,13 +46,13 @@ class Transformers
 
 	public static function map(handler : Dynamic -> ?Int -> Dynamic)
 	{
-		return function(data : Array<Dynamic>) return data.map(handler);
+		return function(data : Array<Dynamic>) return Arrays.map(data, handler);
 	}
 
 	public static function toObject(field : String)
 	{
 		return function(data : Array<Dynamic>) {
-			return data.map(function(dp, _) {
+			return data.map(function(dp) {
 				var ob = {};
 				Reflect.setField(ob, field, dp);
 				return ob;
@@ -72,7 +72,7 @@ class Transformers
 			if(!Reflect.isFunction(entry.value))
 			{
 				var test = entry.value;
-				entry.value = function(v) return v == test;
+				entry.value = cast function(v) return v == test;
 			}
 		});
 		function handler(d : Dynamic)
@@ -149,7 +149,7 @@ class Transformers
 			if(!Reflect.isFunction(f))
 				fs.push((function(v : Dynamic, obj : Dynamic) {
 					return v;
-				}).callback(f));
+				}).bind(f));
 			else
 				fs.push(f);
 		}
@@ -177,7 +177,7 @@ class Transformers
 			if(!Reflect.isFunction(f))
 				fs.push((function(v : Dynamic, obj : Dynamic) {
 					return v;
-				}).callback(f));
+				}).bind(f));
 			else
 				fs.push(f);
 		}

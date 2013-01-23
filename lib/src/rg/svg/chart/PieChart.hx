@@ -339,7 +339,7 @@ class PieChart extends Chart
 	function pief(dp : Array<Dynamic>) : Array<{ startAngle : Float, endEngle : Float, id : String, dp : Dynamic }>
 	{
 		var name = variableDependent.type,
-			temp = dp.map(function(d, i) return Reflect.field(d, name)),
+			temp = dp.map(function(d) return Reflect.field(d, name)),
 			arr : Dynamic = pie.pie(temp);
 		for (i in 0...arr.length)
 		{

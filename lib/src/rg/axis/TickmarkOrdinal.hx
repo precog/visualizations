@@ -12,7 +12,7 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 {
 	public static function fromArray<T>(values : Array<T>, scaleDistribution : ScaleDistribution)
 	{
-		return values.map(function(_, i) return new TickmarkOrdinal<T>(i, values, scaleDistribution));
+		return Arrays.map(values, function(_, i) return new TickmarkOrdinal<T>(i, values, scaleDistribution));
 	}
 
 	var pos : Int;

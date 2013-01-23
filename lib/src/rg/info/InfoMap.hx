@@ -51,6 +51,7 @@ using Arrays;
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
+			new FilterDescription("template", new TemplateTransformer()),
 			"url".toStr(),
 			"type".toStr(),
 			"scale".toFloat(),
@@ -65,7 +66,6 @@ using Arrays;
 			),
 			"property".toStrOrNull(),
 			"usejsonp".toBool(),
-			new FilterDescription("template", new TemplateTransformer()),
 			"label".toInfo(InfoLabel),
 			"click".toFunction(),
 			"color".simplified(["colorScaleMode"],

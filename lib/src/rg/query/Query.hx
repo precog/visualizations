@@ -141,6 +141,15 @@ using Arrays;
 		});
 	}
 
+	public function auditItem(f : Dynamic -> Void)
+	{
+		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
+			for(dp in d)
+				f(dp);
+			return d;
+		});
+	}
+
 	public function console(?label : String)
 	{
 		return stackTransform(function(data) {
@@ -153,7 +162,7 @@ using Arrays;
 
 	public function renameFields(o : Dynamic)
 	{
-		var pairs = Reflect.fields(o).map(function(d, _) {
+		var pairs = Reflect.fields(o).map(function(d) {
 			return {
 				src : d,
 				dst : Reflect.field(o, d)
@@ -177,6 +186,21 @@ using Arrays;
 	public function transform(t : Transformer)
 	{
 		return stackAsync(asyncTransform(t));
+	}
+
+	public function explode(f : Dynamic -> Array<Dynamic>)
+	{
+		return transform(function(d : Array<Dynamic>) : Array<Dynamic> {
+			var results = [];
+			for(dp in d) {
+				var ndp = results.concat(f(dp));
+				if(Std.is(ndp, Array))
+					results = results.concat(ndp);
+				else
+					results.push(cast ndp);
+			}
+			return results;
+		});
 	}
 
 	public function firstElement() {
@@ -218,7 +242,7 @@ using Arrays;
 			}
 			for(i in 0...data.length)
 			{
-				f(data[i], complete.callback(i));
+				f(data[i], complete.bind(i));
 			}
 		});
 	}
@@ -240,7 +264,7 @@ using Arrays;
 			}
 			for(i in 0...data.length)
 			{
-				f(data[i], complete.callback(i));
+				f(data[i], complete.bind(i));
 			}
 		});
 	}

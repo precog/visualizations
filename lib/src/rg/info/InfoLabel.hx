@@ -15,14 +15,26 @@ using rg.info.filter.FilterDescription;
 	public var datapoint : Dynamic -> Stats<Dynamic> -> String;
 	public var datapointover : Dynamic -> Stats<Dynamic> -> String;
 
-	public function new() { }
+	public var datapointverticaloffset : Float;
+	public var datapointoutline : Bool;
+	public var datapointshadow : Bool;
+
+	public function new()
+	{
+		datapointverticaloffset = 5;
+		datapointoutline = false;
+		datapointshadow = false;
+	}
 
 	public static function filters() : Array<FilterDescription>
 	{
 		return [
 			"title".toTemplateFunctionOrString(["axes", "values", "types"]),
 			"datapoint".toTemplateFunction([null, "stats"]),
-			"datapointover".toTemplateFunction([null, "stats"])
+			"datapointover".toTemplateFunction([null, "stats"]),
+			"datapointverticaloffset".toFloat(),
+			"datapointoutline".toBool(),
+			"datapointshadow".toBool(),
 		];
 	}
 }

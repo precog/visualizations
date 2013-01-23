@@ -20,9 +20,16 @@ class CartesianChart<T> extends Chart
 	public var yVariables : Array<Variable<Dynamic, IAxis<Dynamic>>>;
 	public var xVariable : Variable<Dynamic, IAxis<Dynamic>>;
 
+	public var labelDataPointVerticalOffset : Float;
+	public var labelDataPointOutline : Bool;
+	public var labelDataPointShadow : Bool;
+
 	public function new(panel : Panel)
 	{
 		super(panel);
+		labelDataPointVerticalOffset = 25;
+		labelDataPointOutline = false;
+		labelDataPointShadow = false;
 	}
 
 	public function setVariables(variables : Array<Variable<Dynamic, IAxis<Dynamic>>>, variableIndependents : Array<VariableIndependent<Dynamic>>, variableDependents : Array<VariableDependent<Dynamic>>, data :T)

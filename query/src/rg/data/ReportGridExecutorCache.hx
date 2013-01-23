@@ -200,7 +200,7 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 		var len = VALUE_PREFIX.length;
 		return storage.keys().filter(function(cid) {
 			return cid.substr(0, len) == VALUE_PREFIX;
-		}).map(function(cid, _) {
+		}).map(function(cid) {
 			return cid.substr(len);
 		});
 	}

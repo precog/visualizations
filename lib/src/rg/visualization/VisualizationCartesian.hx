@@ -98,6 +98,10 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		chart.labelDataPoint = info.label.datapoint;
 		chart.labelDataPointOver = info.label.datapointover;
 
+		chart.labelDataPointVerticalOffset = info.label.datapointverticaloffset;
+		chart.labelDataPointOutline = info.label.datapointoutline;
+		chart.labelDataPointShadow = info.label.datapointshadow;
+
 		chart.init();
 	}
 
@@ -117,7 +121,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 			return;
 		if (null != title && null != info.label.title)
 		{
-			title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
+			title.text = info.label.title(variables, data, variables.map(function(variable) return variable.type));
 			layout.suggestSize("title", title.idealHeight());
 		}
 

@@ -152,7 +152,7 @@ class Periodicity
 				}
 				return result;
 			case "year":
-				var result = Ints.range(dateUtc(start).getFullYear(), dateUtc(end).getFullYear()+1, 1).map(function(d, i) {
+				var result = Ints.range(dateUtc(start).getFullYear(), dateUtc(end).getFullYear()+1, 1).map(function(d) {
 					return new Date(d, 0, 1, 0, 0, 0).getTime();
 				});
 				return result;

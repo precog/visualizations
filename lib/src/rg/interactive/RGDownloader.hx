@@ -39,7 +39,7 @@ class RGDownloader
 		else
 			http.onError = function(e) { trace(e); };
 
-		http.onData = complete.callback(success, error);
+		http.onData = complete.bind(success, error);
 		http.setParameter('html', html());
 		http.setParameter('config', config());
 		http.request(true);

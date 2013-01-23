@@ -25,7 +25,7 @@ class FactoryVariable
 
 	public function createVariables(arr : Array<InfoVariable>) : Array<Variable<Dynamic, IAxis<Dynamic>>>
 	{
-		return arr.map(function(info : InfoVariable, _) : Variable<Dynamic, IAxis<Dynamic>> {
+		return arr.map(function(info : InfoVariable) : Variable<Dynamic, IAxis<Dynamic>> {
 			switch(info.variableType)
 			{
 				case Independent:

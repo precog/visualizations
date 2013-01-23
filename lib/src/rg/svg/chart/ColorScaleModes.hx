@@ -33,18 +33,18 @@ class ColorScaleModes
 			case "css":
 				return ColorScaleMode.FromCss(null == s[1] ? null : Std.parseInt(s[1]));
 			case "i", "interpolated":
-				return ColorScaleMode.Interpolation(s[1].split(",").map(function(d, i) {
+				return ColorScaleMode.Interpolation(s[1].split(",").map(function(d) {
 					return Colors.parse(d);
 				}));
 			case "s", "sequence":
-				return ColorScaleMode.Sequence(s[1].split(",").map(function(d, i) {
+				return ColorScaleMode.Sequence(s[1].split(",").map(function(d) {
 					return Colors.parse(d);
 				}));
 			case "f", "fixed":
 				return ColorScaleMode.Fixed(Colors.parse(s[1]));
 			default:
 				if (s[0].indexOf(",") >= 0)
-					return ColorScaleMode.Sequence(s[0].split(",").map(function(d, i) {
+					return ColorScaleMode.Sequence(s[0].split(",").map(function(d) {
 						return Colors.parse(d);
 					}));
 				else

@@ -13,8 +13,8 @@
 -D haxe3
 -D embed_js
 #--dead-code-elimination
--dce no
---macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes"])
+-dce full
+--macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes","rg.layout.Layout"])
 #--connect 8888
 --js-modern
 #--times

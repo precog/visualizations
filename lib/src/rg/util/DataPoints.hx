@@ -79,7 +79,7 @@ class DataPoints
 
 	public static function values(dps : Array<Dynamic>, property : String)
 	{
-		return dps.map(function(dp, _) return value(dp, property)).filter(function(d) return d != null);
+		return dps.map(function(dp) return value(dp, property)).filter(function(d) return d != null);
 	}
 
 	public static function id(dp : Dynamic, dependentProperties : Array<String>)

@@ -17,7 +17,7 @@ import rg.axis.Stats;
 import thx.svg.LineInterpolator;
 import dhx.Access;
 import thx.svg.Area;
-import rg.svg.widget.Label;
+import rg.svg.util.PointLabel;
 import rg.svg.util.SVGSymbolBuilder;
 using Arrays;
 
@@ -101,8 +101,8 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 				stats = yVariables[i].stats;
 			var gsymbol = gi.selectAll("g.symbol").data(data),
 				vars = this.yVariables,
-				onclick = onclick.callback(stats),
-				onmouseover = onmouseover.callback(stats);
+				onclick = onclick.bind(stats),
+				onmouseover = onmouseover.bind(stats);
 			var enter = gsymbol.enter()
 				.append("svg:g")
 				.attr("class").stringf(classf(i, "symbol"))
@@ -118,11 +118,17 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 
 			if (null != labelDataPoint)
 			{
-				var f = this.labelDataPoint;
-				enter.eachNode(function(n, i) {
-					var dp = Access.getData(n),
-						label = new Label(dhx.Dom.selectNode(n), true, true, true);
-					label.text = f(dp, stats);
+				var label_group = chart.append("svg:g").attr("class").string("datapoint-labels");
+				enter.eachNode(function(n, j) {
+					var dp = Access.getData(n);
+					PointLabel.label(
+						label_group,
+						labelDataPoint(dp, stats),
+						x(dp),
+						getY1(i)(dp, j) - labelDataPointVerticalOffset,
+						labelDataPointShadow,
+						labelDataPointOutline
+					);
 				});
 			}
 

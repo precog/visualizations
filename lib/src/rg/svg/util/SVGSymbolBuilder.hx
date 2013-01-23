@@ -82,7 +82,7 @@ class SVGSymbolBuilder
 
 		description
 			.split(",")
-			.map(function(v : String, _) return v.trim()).filter(function(v) return v != "")
+			.map(function(v : String) return v.trim()).filter(function(v) return v != "")
 			.each(function(v : String, _) appendOption(options, v))
 		;
 

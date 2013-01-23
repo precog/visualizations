@@ -140,7 +140,7 @@ class MVPOptions
 				hasdependent = false;
 			if(null == axes)
 				axes = [];
-			params.axes = axes = axes.map(function(v : Dynamic, _) return Std.is(v, String) ? { type : v } : v);
+			params.axes = axes = axes.map(function(v : Dynamic) return Std.is(v, String) ? { type : v } : v);
 			for (i in 0...axes.length)
 			{
 				var variable = axes[i].variable;

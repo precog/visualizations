@@ -70,7 +70,7 @@ class Geo extends Chart
 	{
 		if (null == dps || 0 == dps.length)
 		{
-			queue.push(drawmap.callback(map, field));
+			queue.push(drawmap.bind(map, field));
 			return;
 		}
 		colorMode = map.colorMode;
@@ -144,7 +144,7 @@ class Geo extends Chart
 					colors.push(Hsl.lighter(Hsl.toHsl(Colors.parse(colors[0])), 0.9).toCss());
 				}
 				colors.reverse();
-				set_colorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
+				set_colorMode(Interpolation(colors.map(function(s) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();
@@ -252,6 +252,6 @@ class Geo extends Chart
 	public function addMap(map : Map, field : String)
 	{
 		if (null != field)
-			map.onReady.add(drawmap.callback(map, field));
+			map.onReady.add(drawmap.bind(map, field));
 	}
 }

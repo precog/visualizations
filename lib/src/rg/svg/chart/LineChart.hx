@@ -19,7 +19,7 @@ import rg.axis.Stats;
 import thx.svg.LineInterpolator;
 import dhx.Access;
 import thx.svg.Area;
-import rg.svg.widget.Label;
+import rg.svg.util.PointLabel;
 import rg.svg.widget.Sensible;
 import rg.svg.util.SVGSymbolBuilder;
 using Arrays;
@@ -93,7 +93,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 	function getY1(pos : Int)
 	{
 		var v = yVariables[pos],
-			scale = v.axis.scale.callback(v.min(), v.max());
+			scale = v.axis.scale.bind(v.min(), v.max());
 		if (null != y0property)
 		{
 			var min = scale(v.min()) * height;
@@ -115,7 +115,7 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 	function getY0(pos : Int)
 	{
 		var v = yVariables[pos],
-			scale = v.axis.scale.callback(v.min(), v.max());
+			scale = v.axis.scale.bind(v.min(), v.max());
 		return function(d : Dynamic, i : Int)
 		{
 			return height - (scale(DataPoints.valueAlt(d, y0property, v.min())) * height);
@@ -267,28 +267,20 @@ class LineChart extends CartesianChart<Array<Array<Array<Dynamic>>>>
 
 
 			SVGSymbolBuilder.generate(gsymbol, stats[i], symbol, symbolStyle);
-			/*
-			if (null != symbol)
-			{
-				var sp = this.symbol;
-				var spath = gsymbol.append("svg:path")
-					.attr("d").stringf(function(dp, _) return sp(dp, stats[i]));
-				RGColors.storeColorForSelection(cast spath, "stroke");
-				if (null != symbolStyle)
-				{
-					var ss = this.symbolStyle;
-					spath.attr("style").stringf(function(dp, _) return ss(dp, stats[i]));
-				}
-			}
-			*/
 
-			if (null != labelDataPoint)
+			if(null != labelDataPoint)
 			{
-				var f = this.labelDataPoint;
-				gsymbol.eachNode(function(n, _) {
-					var dp = Access.getData(n),
-						label = new Label(dhx.Dom.selectNode(n), true, false, false);
-					label.text = f(dp, stats[i]);
+				var label_group = chart.append("svg:g").attr("class").string("datapoint-labels");
+				gsymbol.eachNode(function(n, j) {
+					var dp = Access.getData(n);
+					PointLabel.label(
+						label_group,
+						labelDataPoint(dp, stats[i]),
+						x(dp),
+						getY1(i)(dp, j) - labelDataPointVerticalOffset,
+						labelDataPointShadow,
+						labelDataPointOutline
+					);
 				});
 			}
 

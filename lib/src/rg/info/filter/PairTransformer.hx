@@ -17,7 +17,7 @@ class PairTransformer implements ITransformer<Dynamic, Pairs>
 		switch(valueTransformer.transform(value))
 		{
 			case Success(v):
-				return TransformResult.Success(new Pairs(names, names.map(function(_, _) return v)));
+				return TransformResult.Success(new Pairs(names, names.map(function(_) return v)));
 			case Failure(reason):
 				return TransformResult.Failure(reason);
 		}

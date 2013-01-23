@@ -355,7 +355,7 @@ class Sankey extends Chart
 					.attr("width").float(chunkWidth)
 					.attr("height").float(weight)
 					.attr("class").string("edge fill fill-" + styleEdgeBackward + " stroke stroke-"+styleEdgeBackward)
-					.onNode("mouseover", onmouseoveredge.callback((x1 + x2) / 2, backedgesy, edge))
+					.onNode("mouseover", onmouseoveredge.bind((x1 + x2) / 2, backedgesy, edge))
 				;
 				var chunkf = g.append("svg:rect")
 					.attr("x").float(x2 - chunkWidth)
@@ -363,7 +363,7 @@ class Sankey extends Chart
 					.attr("width").float(chunkWidth)
 					.attr("height").float(weight)
 					.attr("class").string("edge fill fill-" + styleEdgeBackward + " stroke stroke-"+styleEdgeBackward)
-					.onNode("mouseover", onmouseoveredge.callback((x1 + x2) / 2, backedgesy, edge))
+					.onNode("mouseover", onmouseoveredge.bind((x1 + x2) / 2, backedgesy, edge))
 				;
 
 				// hook
@@ -378,7 +378,7 @@ class Sankey extends Chart
 					before,
 					after
 				);
-				hook.g.onNode("mouseover", onmouseoveredge.callback((x1 + x2) / 2, backedgesy, edge));
+				hook.g.onNode("mouseover", onmouseoveredge.bind((x1 + x2) / 2, backedgesy, edge));
 				if(null != edgeClass)
 				{
 					var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
@@ -388,7 +388,7 @@ class Sankey extends Chart
 				RGColors.storeColorForSelection(hook.g, "stroke", hook.line.style("stroke").get());
 				if(null != clickEdge)
 				{
-					hook.g.onNode("click", edgeClickWithEdge.callback(edge));
+					hook.g.onNode("click", edgeClickWithEdge.bind(edge));
 				}
 				if(stackbackedges)
 					backedgesy += 1 + backEdgeSpacing;
@@ -420,7 +420,7 @@ class Sankey extends Chart
 					before,
 					after
 				);
-				hook.g.onNode("mouseover", onmouseoveredge.callback((x1 + x2) / 2, backedgesy + weight / 2, edge));
+				hook.g.onNode("mouseover", onmouseoveredge.bind((x1 + x2) / 2, backedgesy + weight / 2, edge));
 				if(null != edgeClass)
 				{
 					var cls = edgeClass({ head : edge.head.data, tail : edge.tail.data, edgeweight : edge.weight }, dependentVariable.stats);
@@ -430,7 +430,7 @@ class Sankey extends Chart
 				RGColors.storeColorForSelection(hook.g, "fill", hook.area.style("fill").get());
 				if(null != clickEdge)
 				{
-					hook.g.onNode("click", edgeClickWithEdge.callback(edge));
+					hook.g.onNode("click", edgeClickWithEdge.bind(edge));
 				}
 				if(stackbackedges)
 					backedgesy += weight + backEdgeSpacing;
@@ -474,11 +474,11 @@ class Sankey extends Chart
 					diagonal.addClass(cls);
 			}
 			addToMap(edge.id, "edge", diagonal.g);
-			diagonal.g.onNode("mouseover", onmouseoveredge.callback((x1 + x2) / 2, (y1 + y2 + weight) / 2, edge));
+			diagonal.g.onNode("mouseover", onmouseoveredge.bind((x1 + x2) / 2, (y1 + y2 + weight) / 2, edge));
 			RGColors.storeColorForSelection(diagonal.g, "fill", diagonal.area.style("fill").get());
 			if(null != clickEdge)
 			{
-				diagonal.g.onNode("click", edgeClickWithEdge.callback(edge));
+				diagonal.g.onNode("click", edgeClickWithEdge.bind(edge));
 			}
 		});
 
@@ -522,7 +522,7 @@ class Sankey extends Chart
 					label.destroy();
 				}
 			}
-			elbow.g.onNode("mouseover", onmouseoverexit.callback(x + minr + (-minr + Math.min(extraWidth, extra)) / 2, ynode(node) + hnode(node) + minr + extraHeight, node));
+			elbow.g.onNode("mouseover", onmouseoverexit.bind(x + minr + (-minr + Math.min(extraWidth, extra)) / 2, ynode(node) + hnode(node) + minr + extraHeight, node));
 			if(null != edgeClass)
 			{
 				var cls = edgeClass({ head : null, tail : node.data, edgeweight : node.data.exit }, dependentVariable.stats);
@@ -532,7 +532,7 @@ class Sankey extends Chart
 			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
-				elbow.g.onNode("click", edgeClickWithNode.callback(node, true));
+				elbow.g.onNode("click", edgeClickWithNode.bind(node, true));
 			}
 			addToMap(node.id, "exit", elbow.g);
 		});
@@ -575,7 +575,7 @@ class Sankey extends Chart
 					label.destroy();
 				}
 			}
-			elbow.g.onNode("mouseover", onmouseoverentry.callback(				x  - minr + (minr - Math.min(extraWidth, extra)) / 2,
+			elbow.g.onNode("mouseover", onmouseoverentry.bind(				x  - minr + (minr - Math.min(extraWidth, extra)) / 2,
 				ynode(node) - minr - extraHeight,
 				node));
 			if(null != edgeClass)
@@ -587,7 +587,7 @@ class Sankey extends Chart
 			RGColors.storeColorForSelection(elbow.g, "fill", elbow.area.style("fill").get());
 			if(null != clickEdge)
 			{
-				elbow.g.onNode("click", edgeClickWithNode.callback(node, false));
+				elbow.g.onNode("click", edgeClickWithNode.bind(node, false));
 			}
 			addToMap(node.id, "entry", elbow.g);
 		});
@@ -758,10 +758,10 @@ class Sankey extends Chart
 
 		cont.each(function(n : GNode<NodeData, Dynamic>, i) {
 			var node = Selection.current;
-			node.onNode("mouseover", onmouseovernode.callback(n));
+			node.onNode("mouseover", onmouseovernode.bind(n));
 			if(null != click)
 			{
-				node.onNode("click", nodeclick.callback(n));
+				node.onNode("click", nodeclick.bind(n));
 			}
 		});
 

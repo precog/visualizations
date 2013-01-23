@@ -37,6 +37,9 @@ class RGCss
 				cache.push(other);
 		}
 		container.remove();
+		haxe.Timer.delay(function() {
+			cache = null;
+		}, 1000);
 		return cache;
 	}
 

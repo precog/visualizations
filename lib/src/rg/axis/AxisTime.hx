@@ -71,7 +71,7 @@ class AxisTime implements IAxisDiscrete<Float>
 		var span = end - start,
 			units = Periodicity.unitsBetween(start, end, periodicity),
 			values = range(start, end),
-			range = values.map(function(value, i) : ITickmark<Float> {
+			range = values.map(function(value) : ITickmark<Float> {
 				return new TickmarkTime(value, values, isMajor(units, value), periodicity, scaleDistribution);
 			});
 		return Tickmarks.bound(range, upperBound);

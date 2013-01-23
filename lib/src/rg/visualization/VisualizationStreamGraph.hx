@@ -18,7 +18,7 @@ class VisualizationStreamGraph extends VisualizationCartesian<Array<Array<Dynami
 	override function initAxes()
 	{
 		xvariable = cast independentVariables[0];
-		yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+		yvariables = cast dependentVariables.map(function(d) : Variable<Dynamic, IAxis<Dynamic>> return d);
 	}
 
 	override function initChart()

@@ -26,6 +26,7 @@ import thx.svg.Line;
 import thx.svg.LineInterpolator;
 import rg.svg.chart.ColorScaleMode;
 import rg.svg.util.RGCss;
+import rg.svg.util.PointLabel;
 using Arrays;
 
 class HeatGrid extends CartesianChart<Array<Dynamic>>
@@ -194,6 +195,21 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 				onmouseover(Access.getData(n), i);
 			})
 		;
+		if(null != labelDataPoint)
+		{
+			var label_group = g.append("svg:g").attr("class").string("datapoint-labels");
+			 g.selectAll("rect").data(dps).eachNode(function(n, i) {
+				var dp = Access.getData(n);
+				PointLabel.label(
+					label_group,
+					labelDataPoint(dp, stats),
+					x(dp, i) + w / 2,
+					y(dp, i) - labelDataPointVerticalOffset + h / 2,
+					labelDataPointShadow,
+					labelDataPointOutline
+				);
+			});
+		}
 		RGColors.storeColorForSelection(cast rect);
 	}
 
@@ -223,7 +239,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 		if (null != v)
 			return v.axis.range(v.min(), v.max());
 		var tickmarks = variable.axis.ticks(variable.min(), variable.max());
-		return tickmarks.map(function(d, i) return d.value);
+		return tickmarks.map(function(d) return d.value);
 	}
 
 	dynamic function stylefeature(svg : Selection, dp : Dynamic) {}
@@ -245,7 +261,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 					colors.push(Hsl.lighter(Hsl.toHsl(Colors.parse(colors[0])), 0.9).toCss());
 				}
 				colors.reverse();
-				set_colorMode(Interpolation(colors.map(function(s, _) return Colors.parse(s))));
+				set_colorMode(Interpolation(colors.map(function(s) return Colors.parse(s))));
 			case FromCss(g):
 				if (null == g)
 					g = RGCss.numberOfColorsInCss();

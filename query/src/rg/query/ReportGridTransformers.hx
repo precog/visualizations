@@ -10,7 +10,7 @@ class ReportGridTransformers
 	{
 		var parent = params.parent,
 			prefix = parent == '/' ? '' : parent;
-		return arr.map(function(path, _) {
+		return arr.map(function(path) {
 			var o = {
 				parent : parent,
 				path :   prefix + "/" + path
@@ -23,7 +23,7 @@ class ReportGridTransformers
 	public static function childrenEvent(arr : Array<String>, params : { path : String }, keep : Array<String>) : Array<{ event : String, path : String }>
 	{
 		var path = params.path;
-		return arr.map(function(event, _) {
+		return arr.map(function(event) {
 			var o = {
 				path :  path,
 				event : _trimPrefix(event)
@@ -37,7 +37,7 @@ class ReportGridTransformers
 	{
 		var path  = params.path,
 			event = params.event;
-		return arr.map(function(property, _) {
+		return arr.map(function(property) {
 			var o = {
 				path :  path,
 				event : event,
@@ -53,7 +53,7 @@ class ReportGridTransformers
 		var path     = params.path,
 			event    = params.event,
 			property = params.property;
-		return arr.map(function(value, _) {
+		return arr.map(function(value) {
 			var o = {
 				path :     path,
 				event :    event,
@@ -70,7 +70,7 @@ class ReportGridTransformers
 	public static function histogram(arr : Array<Array<Dynamic>>, params : { property : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property = params.property;
-		return arr.map(function(value : Array<Dynamic>, _) {
+		return arr.map(function(value : Array<Dynamic>) {
 			var o = {
 				count : value[1]
 			};
@@ -87,7 +87,7 @@ class ReportGridTransformers
 		if(keep.length == 0)
 			return arr;
 		else
-			return arr.map(function(o, _) {
+			return arr.map(function(o) {
 				_keep(params, o, keep);
 				return o;
 			});
@@ -98,7 +98,7 @@ class ReportGridTransformers
 		var tag      = params.tag,
 			property = params.property;
 		return Objects.map(counts, function(key : String, value : Array<Array<Dynamic>>) {
-			return value.map(function(item, _) {
+			return value.map(function(item) {
 				var o = {
 					count : item[1]
 				};
@@ -115,7 +115,7 @@ class ReportGridTransformers
 	public static function propertiesHistogram(arr : Array<Array<Dynamic>>, params : { property : String, ?where : Dynamic }, keep : Array<String>) : Array<{ count : Int }>
 	{
 		var property = params.property;
-		return arr.map(function(value : Array<Dynamic>, _) {
+		return arr.map(function(value : Array<Dynamic>) {
 			var o = {
 				count :    value[1]
 			};

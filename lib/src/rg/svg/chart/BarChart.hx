@@ -22,6 +22,7 @@ import rg.data.VariableIndependent;
 import rg.data.VariableDependent;
 import rg.data.Variable;
 import rg.axis.IAxis;
+import rg.svg.util.PointLabel;
 using Arrays;
 
 class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> }>
@@ -143,8 +144,8 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 					pad     = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset  = - span / 2 + j * (dist + paddingAxis),
 					stats   = xVariable.stats,
-					over    = onmouseover.callback(stats),
-					click   = onclick.callback(stats)
+					over    = onmouseover.bind(stats),
+					click   = onclick.bind(stats)
 				;
 
 				var prev = 0.0;
@@ -173,7 +174,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						.attr("height").float(stacked ? dist : pad)
 						.attr("width").float(w)
 						.onNode("mouseover", over)
-						.onNode("click", click.callback(dp))
+						.onNode("click", click.bind(dp))
 					;
 					Access.setData(bar.node(), dp);
 					RGColors.storeColorForSelection(bar);
@@ -203,6 +204,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 			return gr;
 		}
 
+		var label_group = null != labelDataPoint ? g.append("svg:g").attr("class").string("datapoint-labels") : null;
 		// dependent values
 		for (i in 0...dps.length)
 		{
@@ -221,11 +223,11 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 					yaxis = yVariables[j].axis,
 					ymin  = yVariables[j].min(),
 					ymax  = yVariables[j].max(),
-					pad = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
+					pad   = Math.max(1, (dist - (paddingDataPoint * (axisdps.length - 1))) / axisdps.length),
 					offset = - span / 2 + j * (dist + paddingAxis),
 					stats = yVariables[j].stats,
-					over = onmouseover.callback(stats),
-					click = onclick.callback(stats)
+					over = onmouseover.bind(stats),
+					click = onclick.bind(stats)
 				;
 
 				var prev = 0.0;
@@ -247,14 +249,17 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						h = -h;
 					} else if(Math.isNaN(h))
 						h = 0;
-					var bar = seggroup.append("svg:rect")
+					var w = Math.max(stacked ? dist : pad, 1),
+						ax = stacked ? x + offset : x + offset + k * (pad + paddingDataPoint),
+						ay = height - h - y,
+						bar = seggroup.append("svg:rect")
 						.attr("class").string("bar")
-						.attr("x").float(stacked ? x + offset : x + offset + k * (pad + paddingDataPoint))
-						.attr("width").float(Math.max(stacked ? dist : pad, 1))
-						.attr("y").float(height - h - y)
+						.attr("x").float(ax)
+						.attr("width").float(w)
+						.attr("y").float(ay)
 						.attr("height").float(h)
 						.onNode("mouseover", over)
-						.onNode("click", click.callback(dp))
+						.onNode("click", click.bind(dp))
 					;
 					Access.setData(bar.node(), dp);
 					RGColors.storeColorForSelection(bar);
@@ -262,6 +267,18 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						bar.eachNode(applyGradient);
 					if(visuallyStacked())
 						prev = y + h;
+
+					if(null != labelDataPoint)
+					{
+						PointLabel.label(
+							label_group,
+							labelDataPoint(dp, stats),
+							(stacked ? x + offset : x + offset + k * (pad + paddingDataPoint)) + w / 2,
+							height - h - y - labelDataPointVerticalOffset,
+							labelDataPointShadow,
+							labelDataPointOutline
+						);
+					}
 				}
 			}
 		}

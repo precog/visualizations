@@ -130,10 +130,10 @@ class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 	function prepareData()
 	{
 		defs.selectAll("linearGradient.h").remove();
-		var xscale = xVariable.axis.scale.callback(xVariable.min(), xVariable.max()),
+		var xscale = xVariable.axis.scale.bind(xVariable.min(), xVariable.max()),
 			xtype = xVariable.type,
 			x = function(d) return xscale(DataPoints.value(d, xtype)),
-			yscale = yVariables[0].axis.scale.callback(yVariables[0].min(), yVariables[0].max()),
+			yscale = yVariables[0].axis.scale.bind(yVariables[0].min(), yVariables[0].max()),
 			ytype = yVariables[0].type,
 			y = function(d) return yscale(DataPoints.value(d, ytype)),
 			m = Std.int(dps.floatMax(function(d) return d.length));
@@ -146,8 +146,8 @@ class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 			return null;
 		}
 
-		var coords = dps.map(function(d : Array<Dynamic>, j) {
-			return Ints.range(0, m).map(function(_, i) {
+		var coords = Arrays.map(dps, function(d : Array<Dynamic>, j) {
+			return Arrays.map(Ints.range(0, m), function(_, i) {
 				var dp = d[i];
 				if(null == dp)
 					return { x : x(altDp(i)), y : .0 };
@@ -163,7 +163,7 @@ class StreamGraph extends CartesianChart<Array<Array<Dynamic>>>
 			.order(StackOrder.DefaultOrder)
 			.stack(coords);
 
-		transformedData = data.map(function(d, i) return d.map(function(d, j) {
+		transformedData = Arrays.map(data, function(d, i) return Arrays.map(d, function(d, j) {
 			return {
 				coord : d,
 				dp : dps[i][j]

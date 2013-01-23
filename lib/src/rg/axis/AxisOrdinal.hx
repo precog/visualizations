@@ -66,7 +66,7 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 	{
 		var f = first(),
 			l = last();
-		return range(f, l).map(function(d, i) return toTickmark(f, l, d));
+		return Arrays.map(range(f, l), function(d, i) return toTickmark(f, l, d));
 	}
 	function set_scaleDistribution(v : ScaleDistribution)
 	{

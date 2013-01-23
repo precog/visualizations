@@ -22,10 +22,10 @@ class VisualizationBarChart extends VisualizationCartesian<{ data : Array<Array<
 	{
 		if(infoBar.horizontal)
 		{
-			xvariable = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d)[0];
+			xvariable = cast dependentVariables.map(function(d) : Variable<Dynamic, IAxis<Dynamic>> return d)[0];
 			yvariables = cast [independentVariables[0]];
 		} else {
-			yvariables = cast dependentVariables.map(function(d,_) : Variable<Dynamic, IAxis<Dynamic>> return d);
+			yvariables = cast dependentVariables.map(function(d) : Variable<Dynamic, IAxis<Dynamic>> return d);
 			xvariable = cast independentVariables[0];
 		}
 	}

@@ -78,7 +78,7 @@ class VisualizationPieChart extends VisualizationSvg
 		{
 			if (null != info.label.title)
 			{
-				title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
+				title.text = info.label.title(variables, data, variables.map(function(variable) return variable.type));
 				layout.suggestSize("title", title.idealHeight());
 			} else
 				layout.suggestSize("title", 0);

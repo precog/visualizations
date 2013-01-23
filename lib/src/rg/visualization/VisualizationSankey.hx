@@ -45,7 +45,7 @@ class VisualizationSankey extends VisualizationSvg
 		{
 			if (null != info.label.title)
 			{
-				title.text = info.label.title(variables, data, variables.map(function(variable, _) return variable.type));
+				title.text = info.label.title(variables, data, variables.map(function(variable) return variable.type));
 				layout.suggestSize("title", title.idealHeight());
 			} else
 				layout.suggestSize("title", 0);
@@ -101,7 +101,7 @@ class VisualizationSankey extends VisualizationSvg
 	function layoutDataWithMap(data : Array<Dynamic>, map : { layers : Array<Array<String>>, dummies : Array<Array<String>> }, ?idf : NodeData -> String, ?weightf : Dynamic -> Float, ?edgesf : Dynamic -> Array<{ head : String, tail : String, weight : Float}>)
 	{
 		var graph = createGraph(data, idf, weightf, edgesf);
-		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) {
+		var layers = map.layers.map(function(layer : Array<String>) return layer.map(function(id) {
 			var n = graph.nodes.getById(id);
 			if(null == n)
 			{
@@ -148,7 +148,7 @@ class VisualizationSankey extends VisualizationSvg
 		}
 
 		// convert layers
-		var layers = map.layers.map(function(layer : Array<String>, _) return layer.map(function(id, _) {
+		var layers = map.layers.map(function(layer : Array<String>) return layer.map(function(id) {
 			var n = graph.nodes.getById(id);
 			if(null == n)
 			{
@@ -271,7 +271,7 @@ class VisualizationSankey extends VisualizationSvg
 				nodize(dp.head, false, v);
 			});
 
-			nodes = Iterables.array(map).map(function(n, i) {
+			nodes = Iterables.array(map).map(function(n) {
 				var node = n.node;
 				Reflect.setField(node, type, Math.max(n.positive, n.negative));
 				return node;
