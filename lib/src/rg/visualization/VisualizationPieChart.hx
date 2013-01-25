@@ -20,7 +20,7 @@ class VisualizationPieChart extends VisualizationSvg
 	var chart : PieChart;
 	var title : Null<Title>;
 	public var info : InfoPieChart;
-	override function init()
+	override function _init()
 	{
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
@@ -71,7 +71,7 @@ class VisualizationPieChart extends VisualizationSvg
 	}
 
 	// TODO move sort to axis
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
 		if (null != title)
@@ -91,11 +91,11 @@ class VisualizationPieChart extends VisualizationSvg
 		chart.data(data);
 	}
 
-	override public function destroy()
+	override public function _destroy()
 	{
 		chart.destroy();
 		if (null != title)
 			title.destroy();
-		super.destroy();
+		super._destroy();
 	}
 }

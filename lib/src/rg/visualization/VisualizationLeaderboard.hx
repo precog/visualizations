@@ -17,7 +17,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 		super(container);
 	}
 
-	override function init()
+	override function _init()
 	{
 		chart = new Leadeboard(container);
 		chart.ready.add(function() ready.dispatch());
@@ -47,7 +47,7 @@ class VisualizationLeaderboard extends VisualizationHtml
 		chart.init();
 	}
 
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 
 		chart.setVariables(independentVariables, dependentVariables);

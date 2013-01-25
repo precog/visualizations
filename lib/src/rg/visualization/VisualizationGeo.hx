@@ -18,7 +18,7 @@ class VisualizationGeo extends VisualizationSvg
 	var title : Null<Title>;
 	var chart : Geo;
 
-	override function init()
+	override function _init()
 	{
 		// TITLE
 		if (null != info.label.title)
@@ -80,7 +80,7 @@ class VisualizationGeo extends VisualizationSvg
 		}
 	}
 
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables, data);
 
@@ -97,11 +97,11 @@ class VisualizationGeo extends VisualizationSvg
 		chart.data(data);
 	}
 
-	override public function destroy()
+	override public function _destroy()
 	{
 		chart.destroy();
 		if (null != title)
 			title.destroy();
-		super.destroy();
+		super._destroy();
 	}
 }

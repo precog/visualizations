@@ -76,17 +76,18 @@ class JSBridge
 			var copt = chartopt(options, type);
 			copt.options.a = false; // authorized
 			MVPOptions.complete(copt, function(opt : Dynamic) {
-#if release
 				try {
-#end
 					app.visualization(select(el), opt);
-#if release
-				} catch (e : Error) {
-					log(e.toString());
 				} catch (e : Dynamic) {
 					log(Std.string(e));
-				}
+					if(null != options.error)
+					{
+						options.error(e);
+					}
+#if !release
+					throw e;
 #end
+				}
 			});
 		}
 

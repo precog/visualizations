@@ -4788,9 +4788,11 @@ haxe.Http.prototype = {
 	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
+		return this;
 	}
 	,setHeader: function(header,value) {
 		this.headers.set(header,value);
+		return this;
 	}
 	,params: null
 	,headers: null
@@ -5721,7 +5723,7 @@ hscript.Parser.prototype = {
 		var $e = (t2);
 		switch( $e[1] ) {
 		case 1:
-			var t2_eCTFun_0 = $e[2];
+			var t2_eCTFun_1 = $e[3], t2_eCTFun_0 = $e[2];
 			t2_eCTFun_0.unshift(t);
 			return t2;
 		default:
@@ -6183,6 +6185,7 @@ hscript.Parser.prototype = {
 			case 7:
 				return this.parseExprNext(hscript.Expr.EObject([]));
 			case 2:
+				var tk_eTId_0 = $e[2];
 				var tk2 = this.token();
 				this.tokens.add(tk2);
 				this.tokens.add(tk);
@@ -7404,6 +7407,7 @@ rg.app.charts.App.prototype = {
 				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) _g.globalNotifier.dispatch();
 			});
 		}
+		if(null != jsoptions.options.error) visualization.addError(jsoptions.options.error);
 		haxe.Timer.delay($bind(loader,loader.load),0);
 		return visualization;
 	}
@@ -7414,6 +7418,10 @@ rg.app.charts.App.prototype = {
 rg.app.charts.JSBridge = function() { }
 $hxClasses["rg.app.charts.JSBridge"] = rg.app.charts.JSBridge;
 rg.app.charts.JSBridge.__name__ = ["rg","app","charts","JSBridge"];
+rg.app.charts.JSBridge.log = function(msg) {
+	var c = (window.console && window.console.warn) || alert;
+	c(msg);
+}
 rg.app.charts.JSBridge.main = function() {
 	var r = (typeof ReportGrid == 'undefined') ? (window['ReportGrid'] = {}) : ReportGrid;
 	var globalNotifier = new hxevents.Notifier();
@@ -7429,7 +7437,13 @@ rg.app.charts.JSBridge.main = function() {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
-			app.visualization(rg.app.charts.JSBridge.select(el),opt);
+			try {
+				app.visualization(rg.app.charts.JSBridge.select(el),opt);
+			} catch( e ) {
+				rg.app.charts.JSBridge.log(Std.string(e));
+				if(null != options.error) options.error(e);
+				throw e;
+			}
 		});
 	};
 	r.barChart = function(el,options) {
@@ -7498,7 +7512,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.30.9164"};
+	r.info.charts = { version : "1.5.30.9202"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -7522,7 +7536,7 @@ rg.app.charts.JSBridge.createQuery = function() {
 }
 rg.app.charts.JSBridge.select = function(el) {
 	var s = js.Boot.__instanceof(el,String)?dhx.Dom.select(el):dhx.Dom.selectNode(el);
-	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 193, className : "rg.app.charts.JSBridge", methodName : "select"});
+	if(s.empty()) throw new thx.error.Error("invalid container '{0}'",el,null,{ fileName : "JSBridge.hx", lineNumber : 194, className : "rg.app.charts.JSBridge", methodName : "select"});
 	return s;
 }
 rg.app.charts.JSBridge.opt = function(ob) {
@@ -10113,14 +10127,20 @@ rg.info.InfoHeatGrid.prototype = $extend(rg.info.InfoCartesianChart.prototype,{
 	,__class__: rg.info.InfoHeatGrid
 });
 rg.info.InfoLabel = function() {
+	this.datapointverticaloffset = 5;
+	this.datapointoutline = false;
+	this.datapointshadow = false;
 };
 $hxClasses["rg.info.InfoLabel"] = rg.info.InfoLabel;
 rg.info.InfoLabel.__name__ = ["rg","info","InfoLabel"];
 rg.info.InfoLabel.filters = function() {
-	return [rg.info.filter.FilterDescription.toTemplateFunctionOrString("title",["axes","values","types"]),rg.info.filter.FilterDescription.toTemplateFunction("datapoint",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("datapointover",[null,"stats"])];
+	return [rg.info.filter.FilterDescription.toTemplateFunctionOrString("title",["axes","values","types"]),rg.info.filter.FilterDescription.toTemplateFunction("datapoint",[null,"stats"]),rg.info.filter.FilterDescription.toTemplateFunction("datapointover",[null,"stats"]),rg.info.filter.FilterDescription.toFloat("datapointverticaloffset"),rg.info.filter.FilterDescription.toBool("datapointoutline"),rg.info.filter.FilterDescription.toBool("datapointshadow")];
 }
 rg.info.InfoLabel.prototype = {
-	datapointover: null
+	datapointshadow: null
+	,datapointoutline: null
+	,datapointverticaloffset: null
+	,datapointover: null
 	,datapoint: null
 	,title: null
 	,__class__: rg.info.InfoLabel
@@ -11169,7 +11189,7 @@ rg.interactive.RGDownloader.prototype = {
 		var http = new haxe.Http(this.url(format));
 		http.setHeader("Accept","application/json");
 		if(null != error) http.onError = error; else http.onError = function(e) {
-			haxe.Log.trace(e,{ fileName : "RGDownloader.hx", lineNumber : 40, className : "rg.interactive.RGDownloader", methodName : "download"});
+			null;
 		};
 		http.onData = (function(f,a1,a2) {
 			return function(a3) {
@@ -12614,18 +12634,24 @@ rg.svg.chart.Chart.prototype = $extend(rg.svg.panel.Layer.prototype,{
 });
 rg.svg.chart.CartesianChart = function(panel) {
 	rg.svg.chart.Chart.call(this,panel);
+	this.labelDataPointVerticalOffset = 25;
+	this.labelDataPointOutline = false;
+	this.labelDataPointShadow = false;
 };
 $hxClasses["rg.svg.chart.CartesianChart"] = rg.svg.chart.CartesianChart;
 rg.svg.chart.CartesianChart.__name__ = ["rg","svg","chart","CartesianChart"];
 rg.svg.chart.CartesianChart.__super__ = rg.svg.chart.Chart;
 rg.svg.chart.CartesianChart.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	data: function(dps) {
-		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 36, className : "rg.svg.chart.CartesianChart", methodName : "data"});
+		throw new thx.error.AbstractMethod({ fileName : "CartesianChart.hx", lineNumber : 43, className : "rg.svg.chart.CartesianChart", methodName : "data"});
 	}
 	,setVariables: function(variables,variableIndependents,variableDependents,data) {
 		this.xVariable = variables[0];
 		this.yVariables = variables.slice(1);
 	}
+	,labelDataPointShadow: null
+	,labelDataPointOutline: null
+	,labelDataPointVerticalOffset: null
 	,xVariable: null
 	,yVariables: null
 	,__class__: rg.svg.chart.CartesianChart
@@ -12679,6 +12705,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			}
 			return gr;
 		};
+		var label_group = null != this.labelDataPoint?this.g.append("svg:g").attr("class").string("datapoint-labels"):null;
 		var _g1 = 0, _g = dps.length;
 		while(_g1 < _g) {
 			var i = _g1++;
@@ -12705,7 +12732,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 						y += h;
 						h = -h;
 					} else if(Math.isNaN(h)) h = 0;
-					var bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)).attr("width")["float"](Math.max(this.stacked?dist:pad,1)).attr("y")["float"](this.height - h - y).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
+					var w = Math.max(this.stacked?dist:pad,1), ax = this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint), ay = this.height - h - y, bar = seggroup.append("svg:rect").attr("class").string("bar").attr("x")["float"](ax).attr("width")["float"](w).attr("y")["float"](ay).attr("height")["float"](h).onNode("mouseover",over).onNode("click",(function(f2,dp1) {
 						return function(_,i1) {
 							return f2(dp1,_,i1);
 						};
@@ -12714,6 +12741,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 					rg.util.RGColors.storeColorForSelection(bar);
 					if(this.displayGradient) bar.eachNode($bind(this,this.applyGradient));
 					if(this.visuallyStacked()) prev = y + h;
+					if(null != this.labelDataPoint) rg.svg.util.PointLabel.label(label_group,this.labelDataPoint(dp,stats),(this.stacked?x + offset:x + offset + k * (pad + this.paddingDataPoint)) + w / 2,this.height - h - y - this.labelDataPointVerticalOffset,this.labelDataPointShadow,this.labelDataPointOutline);
 				}
 			}
 		}
@@ -13352,6 +13380,13 @@ rg.svg.chart.HeatGrid.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 			_g.currentNode = n;
 			_g.onmouseover(Reflect.field(n,"__dhx_data__"),i);
 		});
+		if(null != this.labelDataPoint) {
+			var label_group = this.g.append("svg:g").attr("class").string("datapoint-labels");
+			this.g.selectAll("rect").data(this.dps).eachNode(function(n,i) {
+				var dp = Reflect.field(n,"__dhx_data__");
+				rg.svg.util.PointLabel.label(label_group,_g.labelDataPoint(dp,_g.stats),_g.x(dp,i) + _g.w / 2,_g.y(dp,i) - _g.labelDataPointVerticalOffset + _g.h / 2,_g.labelDataPointShadow,_g.labelDataPointOutline);
+			});
+		}
 		rg.util.RGColors.storeColorForSelection(rect);
 	}
 	,currentNode: null
@@ -13538,13 +13573,13 @@ rg.svg.chart.LineChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype
 			rg.util.RGColors.storeColorForSelection(circle,"stroke");
 			rg.svg.util.SVGSymbolBuilder.generate(gsymbol,this.stats[i2[0]],this.symbol,this.symbolStyle);
 			if(null != this.labelDataPoint) {
-				var f = [this.labelDataPoint];
-				gsymbol.eachNode((function(f,i2) {
-					return function(n,_) {
-						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,false,false);
-						label.set_text(f[0](dp,_g2.stats[i2[0]]));
+				var label_group = [this.chart.append("svg:g").attr("class").string("datapoint-labels")];
+				gsymbol.eachNode((function(label_group,i2) {
+					return function(n,j) {
+						var dp = Reflect.field(n,"__dhx_data__");
+						rg.svg.util.PointLabel.label(label_group[0],_g2.labelDataPoint(dp,_g2.stats[i2[0]]),_g2.x(dp),(_g2.getY1(i2[0]))(dp,j) - _g2.labelDataPointVerticalOffset,_g2.labelDataPointShadow,_g2.labelDataPointOutline);
 					};
-				})(f,i2));
+				})(label_group,i2));
 			}
 			gsymbols.update().selectAll("g.symbol").dataf((function() {
 				return function(d,i) {
@@ -14585,6 +14620,7 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		};
 	}
 	,redraw: function() {
+		var _g2 = this;
 		if(null == this.dps || null == this.dps[0] || null == this.dps[0][0]) return;
 		var axisgroup = this.chart.selectAll("g.group").data(this.dps);
 		var axisenter = axisgroup.enter().append("svg:g").attr("class").stringf(function(_,i) {
@@ -14593,43 +14629,43 @@ rg.svg.chart.ScatterGraph.prototype = $extend(rg.svg.chart.CartesianChart.protot
 		axisgroup.exit().remove();
 		var _g1 = 0, _g = this.dps.length;
 		while(_g1 < _g) {
-			var i = _g1++;
-			var data = this.dps[i], gi = this.chart.select("g.group-" + i), stats = [this.yVariables[i].stats];
+			var i1 = [_g1++];
+			var data = this.dps[i1[0]], gi = this.chart.select("g.group-" + i1[0]), stats = [this.yVariables[i1[0]].stats];
 			var gsymbol = gi.selectAll("g.symbol").data(data), vars = this.yVariables, onclick = ((function() {
 				return function(f,a1) {
 					return (function() {
-						return function(dp,i1) {
-							return f(a1,dp,i1);
+						return function(dp,i) {
+							return f(a1,dp,i);
 						};
 					})();
 				};
 			})())($bind(this,this.onclick),stats[0]), onmouseover = ((function() {
 				return function(f1,a11) {
 					return (function() {
-						return function(n,i1) {
-							return f1(a11,n,i1);
+						return function(n,i) {
+							return f1(a11,n,i);
 						};
 					})();
 				};
 			})())($bind(this,this.onmouseover),stats[0]);
-			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i,"symbol")).attr("transform").stringf(this.getTranslatePointf(i));
+			var enter = gsymbol.enter().append("svg:g").attr("class").stringf(this.classf(i1[0],"symbol")).attr("transform").stringf(this.getTranslatePointf(i1[0]));
 			if(null != this.click) enter.on("click",onclick);
 			if(null != this.labelDataPointOver) enter.onNode("mouseover",onmouseover);
 			rg.svg.util.SVGSymbolBuilder.generate(enter,stats[0],this.symbol,this.symbolStyle);
 			if(null != this.labelDataPoint) {
-				var f2 = [this.labelDataPoint];
-				enter.eachNode((function(f2,stats) {
-					return function(n,i1) {
-						var dp = Reflect.field(n,"__dhx_data__"), label = new rg.svg.widget.Label(dhx.Dom.selectNode(n),true,true,true);
-						label.set_text(f2[0](dp,stats[0]));
+				var label_group = [this.chart.append("svg:g").attr("class").string("datapoint-labels")];
+				enter.eachNode((function(label_group,stats,i1) {
+					return function(n,j) {
+						var dp = Reflect.field(n,"__dhx_data__");
+						rg.svg.util.PointLabel.label(label_group[0],_g2.labelDataPoint(dp,stats[0]),_g2.x(dp),(_g2.getY1(i1[0]))(dp,j) - _g2.labelDataPointVerticalOffset,_g2.labelDataPointShadow,_g2.labelDataPointOutline);
 					};
-				})(f2,stats));
+				})(label_group,stats,i1));
 			}
 			gsymbol.update().selectAll("g.symbol").dataf((function() {
-				return function(d,i1) {
+				return function(d,i) {
 					return d;
 				};
-			})()).update().attr("transform").stringf(this.getTranslatePointf(i));
+			})()).update().attr("transform").stringf(this.getTranslatePointf(i1[0]));
 			gsymbol.exit().remove();
 		}
 		this.ready.dispatch();
@@ -15581,6 +15617,16 @@ rg.svg.panel.Space.prototype = $extend(rg.svg.panel.Container.prototype,{
 	,__class__: rg.svg.panel.Space
 });
 rg.svg.util = {}
+rg.svg.util.PointLabel = function() { }
+$hxClasses["rg.svg.util.PointLabel"] = rg.svg.util.PointLabel;
+rg.svg.util.PointLabel.__name__ = ["rg","svg","util","PointLabel"];
+rg.svg.util.PointLabel.label = function(container,text,x,y,shadow,outline) {
+	if(null == text) return null;
+	var label = new rg.svg.widget.Label(container,true,shadow,outline);
+	label.set_text(text);
+	label.place(x,y,0);
+	return label;
+}
 rg.svg.util.RGCss = function() { }
 $hxClasses["rg.svg.util.RGCss"] = rg.svg.util.RGCss;
 rg.svg.util.RGCss.__name__ = ["rg","svg","util","RGCss"];
@@ -17482,7 +17528,10 @@ rg.visualization.Visualization = function(container) {
 $hxClasses["rg.visualization.Visualization"] = rg.visualization.Visualization;
 rg.visualization.Visualization.__name__ = ["rg","visualization","Visualization"];
 rg.visualization.Visualization.prototype = {
-	addReady: function(handler) {
+	addError: function(handler) {
+		this.error.add(handler);
+	}
+	,addReady: function(handler) {
 		this.ready.add(handler);
 		if(this.hasRendered) handler();
 	}
@@ -17490,11 +17539,24 @@ rg.visualization.Visualization.prototype = {
 		this.ready.addOnce(handler);
 		if(this.hasRendered) handler();
 	}
+	,_feedData: function(data) {
+	}
 	,feedData: function(data) {
-		haxe.Log.trace("DATA FEED " + Dynamics.string(data),{ fileName : "Visualization.hx", lineNumber : 47, className : "rg.visualization.Visualization", methodName : "feedData"});
+		try {
+			this._feedData(data);
+		} catch( e ) {
+			this.error.dispatch(e);
+		}
+	}
+	,_init: function() {
+		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 54, className : "rg.visualization.Visualization", methodName : "_init"});
 	}
 	,init: function() {
-		throw new thx.error.AbstractMethod({ fileName : "Visualization.hx", lineNumber : 42, className : "rg.visualization.Visualization", methodName : "init"});
+		try {
+			this._init();
+		} catch( e ) {
+			this.error.dispatch(e);
+		}
 	}
 	,setVariables: function(variables,independentVariables,dependentVariables) {
 		var _g = this;
@@ -17506,8 +17568,13 @@ rg.visualization.Visualization.prototype = {
 		this.ready.addOnce(function() {
 			_g.hasRendered = true;
 		});
+		this.error = new hxevents.Dispatcher();
+		this.error.addOnce(function(_) {
+			_g.ready.dispatch();
+		});
 	}
 	,hasRendered: null
+	,error: null
 	,ready: null
 	,container: null
 	,variables: null
@@ -17587,11 +17654,11 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	,transformData: function(dps) {
 		return (function($this) {
 			var $r;
-			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 163, className : "rg.visualization.VisualizationCartesian", methodName : "transformData"});
+			throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 167, className : "rg.visualization.VisualizationCartesian", methodName : "transformData"});
 			return $r;
 		}(this));
 	}
-	,feedData: function(data) {
+	,_feedData: function(data) {
 		if(0 == data.length) return;
 		if(null != this.title && null != this.info.label.title) {
 			this.title.set_text(this.info.label.title(this.variables,data,this.variables.map(function(variable) {
@@ -17640,6 +17707,9 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 		this.chart.click = this.info.click;
 		this.chart.labelDataPoint = this.info.label.datapoint;
 		this.chart.labelDataPointOver = this.info.label.datapointover;
+		this.chart.labelDataPointVerticalOffset = this.info.label.datapointverticaloffset;
+		this.chart.labelDataPointOutline = this.info.label.datapointoutline;
+		this.chart.labelDataPointShadow = this.info.label.datapointshadow;
 		this.chart.init();
 	}
 	,initChart: function() {
@@ -17666,7 +17736,7 @@ rg.visualization.VisualizationCartesian.prototype = $extend(rg.visualization.Vis
 	,initAxes: function() {
 		throw new thx.error.AbstractMethod({ fileName : "VisualizationCartesian.hx", lineNumber : 46, className : "rg.visualization.VisualizationCartesian", methodName : "initAxes"});
 	}
-	,init: function() {
+	,_init: function() {
 		this.initAxes();
 		this.initYAxes();
 		this.initXAxis();
@@ -17823,7 +17893,7 @@ $hxClasses["rg.visualization.VisualizationFunnelChart"] = rg.visualization.Visua
 rg.visualization.VisualizationFunnelChart.__name__ = ["rg","visualization","VisualizationFunnelChart"];
 rg.visualization.VisualizationFunnelChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
-	feedData: function(data) {
+	_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		var data1 = rg.util.DataPoints.filterByIndependents(rg.util.DataPoints.filterByDependents(data,this.dependentVariables),this.independentVariables);
 		if(null != this.info.sortDataPoint) data1.sort(this.info.sortDataPoint);
@@ -17839,7 +17909,7 @@ rg.visualization.VisualizationFunnelChart.prototype = $extend(rg.visualization.V
 		this.chart.init();
 		this.chart.data(data1);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.FunnelChart(panelChart);
@@ -17884,7 +17954,7 @@ $hxClasses["rg.visualization.VisualizationGeo"] = rg.visualization.Visualization
 rg.visualization.VisualizationGeo.__name__ = ["rg","visualization","VisualizationGeo"];
 rg.visualization.VisualizationGeo.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
-	feedData: function(data) {
+	_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
@@ -17897,7 +17967,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		this.chart.init();
 		this.chart.data(data);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		if(null != this.info.label.title) {
 			var panelContextTitle = this.layout.getContext("title");
@@ -17988,11 +18058,11 @@ $hxClasses["rg.visualization.VisualizationLeaderboard"] = rg.visualization.Visua
 rg.visualization.VisualizationLeaderboard.__name__ = ["rg","visualization","VisualizationLeaderboard"];
 rg.visualization.VisualizationLeaderboard.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationLeaderboard.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
-	feedData: function(data) {
+	_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		this.chart.data(data);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		this.chart = new rg.html.chart.Leadeboard(this.container);
 		this.chart.ready.add(function() {
@@ -18065,7 +18135,7 @@ $hxClasses["rg.visualization.VisualizationPieChart"] = rg.visualization.Visualiz
 rg.visualization.VisualizationPieChart.__name__ = ["rg","visualization","VisualizationPieChart"];
 rg.visualization.VisualizationPieChart.__super__ = rg.visualization.VisualizationSvg;
 rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.VisualizationSvg.prototype,{
-	feedData: function(data) {
+	_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
@@ -18079,7 +18149,7 @@ rg.visualization.VisualizationPieChart.prototype = $extend(rg.visualization.Visu
 		this.chart.init();
 		this.chart.data(data);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		var panelChart = this.layout.getPanel(this.layout.mainPanelName);
 		this.chart = new rg.svg.chart.PieChart(panelChart);
@@ -18131,11 +18201,11 @@ $hxClasses["rg.visualization.VisualizationPivotTable"] = rg.visualization.Visual
 rg.visualization.VisualizationPivotTable.__name__ = ["rg","visualization","VisualizationPivotTable"];
 rg.visualization.VisualizationPivotTable.__super__ = rg.visualization.VisualizationHtml;
 rg.visualization.VisualizationPivotTable.prototype = $extend(rg.visualization.VisualizationHtml.prototype,{
-	feedData: function(data) {
+	_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables);
 		this.chart.data(data);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		this.chart = new rg.html.chart.PivotTable(this.container);
 		this.chart.ready.add(function() {
@@ -18335,7 +18405,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		});
 		return new thx.graph.GraphLayout(graph,layers1);
 	}
-	,feedData: function(data) {
+	,_feedData: function(data) {
 		this.chart.setVariables(this.independentVariables,this.dependentVariables,data);
 		if(null != this.title) {
 			if(null != this.info.label.title) {
@@ -18375,7 +18445,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 		this.chart.init();
 		this.chart.data(layout);
 	}
-	,init: function() {
+	,_init: function() {
 		var _g = this;
 		if(null != this.info.label.title) {
 			var panelContextTitle = this.layout.getContext("title");
@@ -19749,7 +19819,6 @@ thx.error.Error.prototype = $extend(thx.util.Message.prototype,{
 			return Strings.format(this.message,this.params);
 		} catch( e ) {
 			var ps = this.pos.className + "." + this.pos.methodName + "(" + this.pos.lineNumber + ")";
-			haxe.Log.trace("wrong parameters passed for pattern '" + this.message + "' at " + ps,{ fileName : "Error.hx", lineNumber : 42, className : "thx.error.Error", methodName : "toString"});
 			return "";
 		}
 	}

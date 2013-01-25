@@ -10,6 +10,7 @@ import rg.data.VariableIndependent;
 import rg.data.Variable;
 import rg.axis.IAxis;
 import hxevents.Notifier;
+import hxevents.Dispatcher;
 import dhx.Selection;
 using Arrays;
 
@@ -20,6 +21,7 @@ class Visualization
 	public var variables(default, null) : Array < Variable < Dynamic, IAxis<Dynamic> >> ;
 	public var container(default, null) : Selection;
 	var ready : Notifier;
+	var error : hxevents.Dispatcher<Dynamic>;
 	var hasRendered : Bool;
 
 	private function new(container : Selection)
@@ -35,19 +37,48 @@ class Visualization
 		hasRendered = false;
 		ready = new Notifier();
 		ready.addOnce(function() hasRendered = true);
+		error = new Dispatcher();
+		error.addOnce(function(_) ready.dispatch());
 	}
 
 	public function init()
 	{
+		try {
+			_init();
+		} catch(e : Dynamic) {
+			error.dispatch(e);
+		}
+	}
+
+	function _init() {
 		throw new AbstractMethod();
 	}
 
 	public function feedData(data : Array<Dynamic>)
 	{
-		trace("DATA FEED " + Dynamics.string(data));
+		try {
+			_feedData(data);
+		} catch(e : Dynamic) {
+			error.dispatch(e);
+		}
+	}
+
+	function _feedData(data : Array<Dynamic>)
+	{
+
 	}
 
 	public function destroy()
+	{
+
+		try {
+			_destroy();
+		} catch(e : Dynamic) {
+			error.dispatch(e);
+		}
+	}
+
+	function _destroy()
 	{
 
 	}
@@ -69,5 +100,10 @@ class Visualization
 	public function removeReady(handler : Void -> Void)
 	{
 		ready.remove(handler);
+	}
+
+	public function addError(handler : Dynamic -> Void)
+	{
+		error.add(handler);
 	}
 }

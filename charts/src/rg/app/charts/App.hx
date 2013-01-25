@@ -152,6 +152,10 @@ class App
 			});
 		}
 
+		if(null != jsoptions.options.error) {
+			visualization.addError(jsoptions.options.error);
+		}
+
 		haxe.Timer.delay(loader.load, 0);
 
 		return visualization;

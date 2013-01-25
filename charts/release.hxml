@@ -11,7 +11,7 @@
 #--connect 8888
 -D js_shims
 -D haxe3
--dce no
+-dce full
 -D embed_js
 --no-traces
 #--dead-code-elimination

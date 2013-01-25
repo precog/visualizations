@@ -30,7 +30,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 	var xvariable : Variable<Dynamic, IAxis<Dynamic>>;
 	var yvariables : Array<Variable<Dynamic, IAxis<Dynamic>>>;
 
-	override function init()
+	override function _init()
 	{
 		initAxes();
 		initYAxes();
@@ -115,7 +115,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		title = new Title(panelContextTitle.panel, null, panelContextTitle.anchor);
 	}
 
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 		if (0 == data.length)
 			return;
@@ -167,7 +167,7 @@ class VisualizationCartesian<T> extends VisualizationSvg
 		return throw new AbstractMethod();
 	}
 
-	override function destroy()
+	override function _destroy()
 	{
 		chart.destroy();
 	}

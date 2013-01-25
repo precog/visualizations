@@ -19,7 +19,7 @@ class VisualizationSankey extends VisualizationSvg
 	var title : Null<Title>;
 	var chart : Sankey;
 
-	override function init()
+	override function _init()
 	{
 		// TITLE
 		if (null != info.label.title)
@@ -37,7 +37,7 @@ class VisualizationSankey extends VisualizationSvg
 		chart.ready.add(function() ready.dispatch());
 	}
 
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 //trace(data);
 		chart.setVariables(independentVariables, dependentVariables, data);
@@ -375,11 +375,11 @@ class VisualizationSankey extends VisualizationSvg
 			return weightf;
 	}
 
-	override public function destroy()
+	override public function _destroy()
 	{
 		chart.destroy();
 		if (null != title)
 			title.destroy();
-		super.destroy();
+		super._destroy();
 	}
 }

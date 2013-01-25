@@ -19,7 +19,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 	var title : Null<Title>;
 	var chart : FunnelChart;
 
-	override function init()
+	override function _init()
 	{
 		// CHART
 		var panelChart = layout.getPanel(layout.mainPanelName);
@@ -63,7 +63,7 @@ class VisualizationFunnelChart extends VisualizationSvg
 	}
 
 	// TODO move sort to axis
-	override function feedData(data : Array<Dynamic>)
+	override function _feedData(data : Array<Dynamic>)
 	{
 		chart.setVariables(independentVariables, dependentVariables);
 		var data = DataPoints.filterByIndependents(DataPoints.filterByDependents(data, dependentVariables), independentVariables);
@@ -86,11 +86,11 @@ class VisualizationFunnelChart extends VisualizationSvg
 		chart.data(data);
 	}
 
-	override public function destroy()
+	override public function _destroy()
 	{
 		chart.destroy();
 		if (null != title)
 			title.destroy();
-		super.destroy();
+		super._destroy();
 	}
 }
