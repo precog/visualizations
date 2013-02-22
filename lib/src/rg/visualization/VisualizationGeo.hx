@@ -7,7 +7,7 @@ package rg.visualization;
 import rg.factory.FactoryGeoProjection;
 import rg.info.InfoGeo;
 import rg.svg.chart.Geo;
-import rg.svg.widget.Map;
+import rg.svg.widget.GeoMap;
 import rg.svg.layer.Title;
 import rg.svg.chart.ColorScaleMode;
 using Arrays;
@@ -50,7 +50,7 @@ class VisualizationGeo extends VisualizationSvg
 		for (imap in info.map)
 		{
 			var projection = pfactory.create(imap),
-				map = new Map(chart.mapcontainer, projection);
+				map = new GeoMap(chart.mapcontainer, projection);
 			map.className = imap.classname;
 			// labels
 			if (null == imap.label)

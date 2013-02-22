@@ -5,7 +5,7 @@
 
 package rg.axis;
 
-interface IAxisOrdinal<T> implements IAxisDiscrete<T>
+interface IAxisOrdinal<T> extends IAxisDiscrete<T>
 {
 	public function first(): T;
 	public function last(): T;

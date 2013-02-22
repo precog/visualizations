@@ -31,7 +31,7 @@ class Frame
 		change();
 	}
 
-	public function toString() return "[x: " + x +", y: " + y + ", width: " + width + ", height: " + height + "]"
+	public function toString() return "[x: " + x +", y: " + y + ", width: " + width + ", height: " + height + "]";
 }
 
 typedef FrameFriend = {

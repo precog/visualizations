@@ -18,5 +18,5 @@ class AxisOrdinalStats<T> extends AxisOrdinal<T>
 		this.variable = variable;
 	}
 
-	override function values() return variable.stats.values
+	override function values() return variable.stats.values;
 }

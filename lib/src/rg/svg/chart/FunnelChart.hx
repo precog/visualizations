@@ -89,7 +89,7 @@ class FunnelChart extends Chart
 		redraw();
 	}
 
-	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type)
+	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type);
 
 	var stats : Stats<Dynamic>;
 	var topheight : Float;
@@ -100,7 +100,7 @@ class FunnelChart extends Chart
 		return variableDependent.axis.scale(variableDependent.min(), variableDependent.max(), value);
 	}
 
-	function next(i : Int) return dpvalue(dps[(i + 1) < dps.length ? i + 1 : i])
+	function next(i : Int) return dpvalue(dps[(i + 1) < dps.length ? i + 1 : i]);
 
 	function redraw()
 	{

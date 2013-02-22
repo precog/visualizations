@@ -52,13 +52,13 @@ using Arrays;
 	var _first : BaseQuery<This>;
 	var _next : BaseQuery<This>;
 	var _async : AsyncStack;
-	var _store : Hash<Array<Array<Dynamic>>>;
+	var _store : Map<String, Array<Array<Dynamic>>>;
 
 	public function new(async : AsyncStack, first : BaseQuery<This>)
 	{
 		this._async = async;
 		this._first = first;
-		this._store = new Hash();
+		this._store = new Map ();
 	}
 
 	public function load(loader : (Array<Dynamic> -> Void) -> Void)
@@ -503,7 +503,7 @@ using Arrays;
 		_first.execute(handler);
 	}
 
-	inline function _query(t : This) : BaseQuery<This> return cast t
+	inline function _query(t : This) : BaseQuery<This> return cast t;
 
 	function _createQuery(async : AsyncStack, first : BaseQuery<This>) : BaseQuery<This>
 	{
@@ -528,9 +528,9 @@ using Arrays;
 		}
 	}
 
-	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + ' [next: ${null != _next}, async: ${null != _async}]'
+	public function toString() return Type.getClassName(Type.getClass(this)).split(".").pop() + ' [next: ${null != _next}, async: ${null != _async}]';
 
-	inline function _this(q) : This return cast q
+	inline function _this(q) : This return cast q;
 
 	static function __init__() untyped
 	{

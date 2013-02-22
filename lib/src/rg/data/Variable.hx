@@ -36,11 +36,11 @@ class Variable<T, TAxis : IAxis<T>>
 			this.stats = null;
 	}
 
-	public function min() return minf(stats, meta)
-	public function max() return maxf(stats, meta)
+	public function min() return minf(stats, meta);
+	public function max() return maxf(stats, meta);
 
-	function set_minf(f : Stats<T> -> Dynamic -> T) return minf = f
-	function set_maxf(f : Stats<T> -> Dynamic -> T) return maxf = f
+	function set_minf(f : Stats<T> -> Dynamic -> T) return minf = f;
+	function set_maxf(f : Stats<T> -> Dynamic -> T) return maxf = f;
 
 	function get_minf()
 	{

@@ -27,7 +27,7 @@ class Transformers
 
 	public static function split(data : Array<Dynamic>, f : Dynamic -> String) : Array<Array<Dynamic>>
 	{
-		var map     = new Hash(),
+		var map     = new Map (),
 			result  = [];
 		data.each(function(dp, _) {
 			var name = "" + f(dp),

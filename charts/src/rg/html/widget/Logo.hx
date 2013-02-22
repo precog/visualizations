@@ -4,10 +4,11 @@ import haxe.Timer;
 import js.html.Element;
 import dhx.Dom;
 import dhx.Selection;
+import haxe.ds.StringMap;
 
 class Logo
 {
-	static var registry = new Hash();
+	static var registry = new StringMap();
 
 	public static function pageIsBranded()
 	{
@@ -39,11 +40,11 @@ class Logo
 	var anchor : Selection;
 	var image : Selection;
 	var id : Int;
-	var mapvalues : Hash<Dynamic>;
+	var mapvalues : StringMap<Dynamic>;
 	var padRight : Int;
 	function new(container : Selection, padright : Int)
 	{
-		mapvalues = new Hash();
+		mapvalues = new StringMap();
 		this.padRight = padright;
 		id = ++_id;
 		this.container = container;

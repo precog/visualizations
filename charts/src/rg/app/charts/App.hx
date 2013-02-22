@@ -28,6 +28,7 @@ import rg.html.widget.Logo;
 import rg.layout.Layout;
 import thx.error.Error;
 import dhx.Selection;
+import haxe.ds.StringMap;
 using rg.info.Info;
 using Arrays;
 
@@ -41,11 +42,11 @@ class App
 		return ":RGVIZ-" + (++lastid);
 	}
 
-	var layouts : Hash<Layout>;
+	var layouts : StringMap<Layout>;
 	var globalNotifier : hxevents.Notifier;
 	public function new(notifier : hxevents.Notifier)
 	{
-		this.layouts = new Hash();
+		this.layouts = new StringMap();
 		this.globalNotifier = notifier;
 	}
 

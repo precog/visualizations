@@ -52,7 +52,7 @@ class PieChart extends Chart
 	public var labelOrientation : LabelOrientation;
 	public var labelDontFlip : Bool;
 
-	var labels : Hash<Label>;
+	var labels : Map<String, Label>;
 
 	public var mouseClick : Dynamic -> Void;
 
@@ -70,7 +70,7 @@ class PieChart extends Chart
 		overRadius = 0.95;
 		labelRadius = 0.45;
 		tooltipRadius = 0.5;
-		labels = new Hash();
+		labels = new Map ();
 
 		labelOrientation = LabelOrientation.Orthogonal;
 		labelDontFlip = true;
@@ -319,7 +319,7 @@ class PieChart extends Chart
 			.attr("d").stringf(arcShape(arcNormal));
 	}
 
-	function id(dp : Dynamic, i : Int) return dp.id
+	function id(dp : Dynamic, i : Int) return dp.id;
 
 	function makeid(dp : Dynamic)
 	{

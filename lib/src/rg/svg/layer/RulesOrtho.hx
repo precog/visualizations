@@ -93,7 +93,7 @@ class RulesOrtho extends Layer
 		return Math.round(size / 2.5);
 	}
 
-	function id(d : ITickmark<Dynamic>, i) return "" + d.value
+	function id(d : ITickmark<Dynamic>, i) return "" + d.value;
 
 	function redraw()
 	{
@@ -188,19 +188,19 @@ class RulesOrtho extends Layer
 		}
 	}
 
-	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")"
+	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")";
 
-	function translateHorizontal(d : ITickmark<Dynamic>, i : Int)	return t(0, height - d.delta * height)
-	function translateVertical(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * width, 0)
+	function translateHorizontal(d : ITickmark<Dynamic>, i : Int)	return t(0, height - d.delta * height);
+	function translateVertical(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * width, 0);
 
-	function x1Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0
-	function x1Vertical(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y1Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y1Vertical(d : ITickmark<Dynamic>, i : Int)	return 0
-	function x2Horizontal(d : ITickmark<Dynamic>, i : Int)	return width
-	function x2Vertical(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y2Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y2Vertical(d : ITickmark<Dynamic>, i : Int)	return height
+	function x1Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function x1Vertical(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y1Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y1Vertical(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function x2Horizontal(d : ITickmark<Dynamic>, i : Int)	return width;
+	function x2Vertical(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y2Horizontal(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y2Vertical(d : ITickmark<Dynamic>, i : Int)	return height;
 
-	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null
+	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null;
 }

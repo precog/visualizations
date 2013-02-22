@@ -100,7 +100,7 @@ class Title extends Layer
 */
 	}
 
-	function get_text() return label.text
+	function get_text() return label.text;
 
 	function set_text(v : String)
 	{

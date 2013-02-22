@@ -23,10 +23,10 @@ import rg.axis.Stats;
 import js.html.Element;
 using Arrays;
 
-class Map
+class GeoMap
 {
 	public var className(null, set) : String;
-	public var map(default, null) : Hash<{ svg : Selection, dp : Dynamic }>;
+	public var map(default, null) : Map<String, { svg : Selection, dp : Dynamic }>;
 	public var onReady(default, null) : Notifier;
 
 	public var click : Dynamic -> Stats<Dynamic> -> Void;
@@ -43,7 +43,7 @@ class Map
 	{
 		g = container.append("svg:g").attr("class").string("map");
 		this.projection = projection;
-		map = new Hash();
+		map = new Map ();
 		ready = false;
 		onReady = new Notifier();
 		onReady.addOnce(function() ready = true);
@@ -141,7 +141,7 @@ class Map
 	{
 		handlerDataPointOver(n, dp, labelDataPointOver);
 	}
-	function onClick(dp : Dynamic, _, i) handlerClick(dp, click)
+	function onClick(dp : Dynamic, _, i) handlerClick(dp, click);
 
 	public var handlerDataPointOver : Element -> Dynamic -> (Dynamic -> Stats<Dynamic> -> String) -> Void;
 	public var handlerClick : Dynamic -> (Dynamic -> Stats<Dynamic> -> Void) -> Void;

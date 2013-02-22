@@ -26,7 +26,6 @@ class ZeroClipboard extends Sprite {
 
 	static function init() {
 		// constructor, setup event listeners and external interfaces
-//		flash.Lib.current.stage.scaleMode = StageScaleMode.EXACT_FIT;
 		flash.system.Security.allowDomain("*");
 
 		// import flashvars
@@ -38,7 +37,6 @@ class ZeroClipboard extends Sprite {
 		button.buttonMode = true;
 		button.useHandCursor = true;
 		button.graphics.beginFill(0xCCFF00);
-//		button.graphics.drawRect(0, 0, Math.floor(flashvars.width), Math.floor(flashvars.height));
 		button.graphics.drawRect(0, 0, Math.floor(flashvars.width), Math.floor(flashvars.height));
 		button.alpha = 0.0;
 		flash.Lib.current.addChild(button);
@@ -80,6 +78,6 @@ class ZeroClipboard extends Sprite {
 		// user click copies text to clipboard
 		// as of flash player 10, this MUST happen from an in-movie flash click event
 		System.setClipboard( clipText );
-		ExternalInterface.call( 'ZeroClipboard.dispatch', id, 'complete', clipText );
+		ExternalInterface.call( 'ZeroClipboard.dispatch', id, 'complete', StringTools.urlEncode(clipText) );
 	}
 }

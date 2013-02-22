@@ -7,7 +7,7 @@ package rg.svg.chart;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.axis.Stats;
-import rg.svg.widget.Map;
+import rg.svg.widget.GeoMap;
 import rg.svg.panel.Panel;
 import rg.util.DataPoints;
 import rg.svg.widget.Label;
@@ -64,9 +64,9 @@ class Geo extends Chart
 			mapcontainer.attr("transform").string("translate(" + (width / 2) + "," + (height / 2) + ")");
 	}
 
-	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type)
+	function dpvalue(dp : Dynamic) return DataPoints.value(dp, variableDependent.type);
 
-	function drawmap(map : Map, field : String)
+	function drawmap(map : GeoMap, field : String)
 	{
 		if (null == dps || 0 == dps.length)
 		{
@@ -127,7 +127,7 @@ class Geo extends Chart
 			queue.shift()();
 	}
 
-	function get_colorMode() return colorMode
+	function get_colorMode() return colorMode;
 	function set_colorMode(v : ColorScaleMode)
 	{
 		switch(colorMode = v)
@@ -249,7 +249,7 @@ class Geo extends Chart
 		g.classed().add("geo");
 	}
 
-	public function addMap(map : Map, field : String)
+	public function addMap(map : GeoMap, field : String)
 	{
 		if (null != field)
 			map.onReady.add(drawmap.bind(map, field));

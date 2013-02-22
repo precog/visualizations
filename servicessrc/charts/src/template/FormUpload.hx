@@ -9,7 +9,7 @@ class FormUpload extends Template<{
 	url : UrlHelperInst,
 	html : String,
 	config : String,
-	errors : Hash<String>,
+	errors : Map<String, String>,
 	displayFormat : String
 }>
 { }

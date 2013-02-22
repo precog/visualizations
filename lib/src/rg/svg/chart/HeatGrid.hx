@@ -87,8 +87,8 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 	var h : Float;
 	var stats : Stats<Dynamic>;
 
-	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w
-	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h
+	function x(dp, i) return Arrays.indexOf(xrange, DataPoints.value(dp, xVariable.type)) * w;
+	function y(dp, i) return height - (1 + Arrays.indexOf(yrange, DataPoints.value(dp, yVariables[0].type))) * h;
 
 	function redraw()
 	{
@@ -169,7 +169,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 
 	function createGridMap(grid)
 	{
-		var map = new Hash();
+		var map = new Map ();
 		for(r in 0...rows)
 			for (c in 0...cols)
 				if(grid(c, r))
@@ -244,7 +244,7 @@ class HeatGrid extends CartesianChart<Array<Dynamic>>
 
 	dynamic function stylefeature(svg : Selection, dp : Dynamic) {}
 
-	function get_colorMode() return colorMode
+	function get_colorMode() return colorMode;
 	function set_colorMode(v : ColorScaleMode)
 	{
 		switch(colorMode = v)

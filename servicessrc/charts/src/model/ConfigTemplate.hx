@@ -6,13 +6,13 @@ using Arrays;
 class ConfigTemplate
 {
 	var params : Set<String>;
-	var allowedValues : Hash<Array<Dynamic>>;
-	var defaults : Hash<Dynamic>;
+	var allowedValues : Map<String, Array<Dynamic>>;
+	var defaults : Map<String, Dynamic>;
 	public function new()
 	{
 		params = new Set();
-		allowedValues = new Hash();
-		defaults = new Hash();
+		allowedValues = new Map ();
+		defaults = new Map ();
 	}
 
 	public function addParameter(name : String, ?values : Array<Dynamic>)

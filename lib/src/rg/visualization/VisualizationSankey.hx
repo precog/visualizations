@@ -246,7 +246,7 @@ class VisualizationSankey extends VisualizationSvg
 		{
 			// try getting nodes from edges
 			var type  = dependentVariables[0].type,
-				map   = new Hash<{ node : { id : String }, positive : Float, negative : Float }>(),
+				map   = new Map <String, { node : { id : String }, positive : Float, negative : Float }>(),
 				edges = data.filter(function(dp) return Reflect.hasField(dp, "head") || Reflect.hasField(dp, "tail"));
 
 			function nodize(name : String, istail : Bool, weight : Float)

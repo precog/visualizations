@@ -15,9 +15,9 @@ class Visualizations
 	public static var svg = ["barchart", "geo", "funnelchart", "heatgrid", "linechart", "piechart", "scattergraph", "streamgraph", "sankey"];
 	public static var visualizations = svg.concat(html);
 	public static var layouts = ["simple", "cartesian", "x"];
-	public static var layoutDefault : Hash<String>;
-	public static var layoutType : Hash<Class<Dynamic>>;
-	public static var layoutArgs : Hash<Array<Dynamic>>;
+	public static var layoutDefault : Map<String, String>;
+	public static var layoutType : Map<String, Class<Dynamic>>;
+	public static var layoutArgs : Map<String, Array<Dynamic>>;
 
 	public static function instantiateLayout(name : String, width : Int, height : Int, container : Selection) : Layout
 	{
@@ -26,9 +26,9 @@ class Visualizations
 
 	static function __init__()
 	{
-		layoutDefault = new Hash();
-		layoutType = new Hash();
-		layoutArgs = new Hash();
+		layoutDefault = new Map ();
+		layoutType = new Map ();
+		layoutArgs = new Map ();
 
 		layoutDefault.set("barchart",	  "cartesian");
 		layoutDefault.set("funnelchart",  "simple");

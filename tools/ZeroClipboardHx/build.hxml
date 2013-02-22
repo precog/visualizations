@@ -3,4 +3,4 @@
 -swf-header 1:1:30:000000
 -main ZeroClipboard
 -cp src
---dead-code-elimination
+-dce full

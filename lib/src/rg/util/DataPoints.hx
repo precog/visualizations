@@ -69,7 +69,7 @@ class DataPoints
 		return dps;
 	}
 
-	public inline static function value(dp : Dynamic, property : String) : Dynamic return Reflect.field(dp, property)
+	public inline static function value(dp : Dynamic, property : String) : Dynamic return Reflect.field(dp, property);
 
 	public inline static function valueAlt<T>(dp : Dynamic, property : String, alt : T) : T
 	{

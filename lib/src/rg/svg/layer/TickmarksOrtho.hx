@@ -121,7 +121,7 @@ class TickmarksOrtho extends Layer
 		return Math.round(size / 2.5);
 	}
 
-	function id(d : ITickmark<Dynamic>, i) return "" + d.value
+	function id(d : ITickmark<Dynamic>, i) return "" + d.value;
 
 	function redraw()
 	{
@@ -314,31 +314,31 @@ class TickmarksOrtho extends Layer
 		}
 	}
 
-	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")"
+	inline function t(x : Float, y : Float) return "translate(" + x + "," + y + ")";
 
-	function translateTop(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * panel.frame.width, 0)
-	function translateBottom(d : ITickmark<Dynamic>, i : Int)	return t(d.delta * panel.frame.width, panel.frame.height)
-	function translateLeft(d : ITickmark<Dynamic>, i : Int)		return t(0, panel.frame.height - d.delta * panel.frame.height)
-	function translateRight(d : ITickmark<Dynamic>, i : Int)	return t(panel.frame.width, panel.frame.height - d.delta * panel.frame.height)
+	function translateTop(d : ITickmark<Dynamic>, i : Int)		return t(d.delta * panel.frame.width, 0);
+	function translateBottom(d : ITickmark<Dynamic>, i : Int)	return t(d.delta * panel.frame.width, panel.frame.height);
+	function translateLeft(d : ITickmark<Dynamic>, i : Int)		return t(0, panel.frame.height - d.delta * panel.frame.height);
+	function translateRight(d : ITickmark<Dynamic>, i : Int)	return t(panel.frame.width, panel.frame.height - d.delta * panel.frame.height);
 
-	function x1Top(d : ITickmark<Dynamic>, i : Int)		return 0
-	function x1Bottom(d : ITickmark<Dynamic>, i : Int)	return 0
-	function x1Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? paddingMajor : paddingMinor
-	function x1Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? paddingMajor : paddingMinor)
-	function y1Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? paddingMajor : paddingMinor
-	function y1Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? paddingMajor : paddingMinor)
-	function y1Left(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y1Right(d : ITickmark<Dynamic>, i : Int)	return 0
+	function x1Top(d : ITickmark<Dynamic>, i : Int)		return 0;
+	function x1Bottom(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function x1Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? paddingMajor : paddingMinor;
+	function x1Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? paddingMajor : paddingMinor);
+	function y1Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? paddingMajor : paddingMinor;
+	function y1Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? paddingMajor : paddingMinor);
+	function y1Left(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y1Right(d : ITickmark<Dynamic>, i : Int)	return 0;
 
-	function x2Top(d : ITickmark<Dynamic>, i : Int)		return 0
-	function x2Bottom(d : ITickmark<Dynamic>, i : Int)	return 0
-	function x2Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor
-	function x2Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor)
+	function x2Top(d : ITickmark<Dynamic>, i : Int)		return 0;
+	function x2Bottom(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function x2Left(d : ITickmark<Dynamic>, i : Int)	return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor;
+	function x2Right(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor);
 
-	function y2Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor
-	function y2Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor)
-	function y2Left(d : ITickmark<Dynamic>, i : Int)	return 0
-	function y2Right(d : ITickmark<Dynamic>, i : Int)	return 0
+	function y2Top(d : ITickmark<Dynamic>, i : Int)		return d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor;
+	function y2Bottom(d : ITickmark<Dynamic>, i : Int)	return -(d.major ? lengthMajor + paddingMajor : lengthMinor + paddingMinor);
+	function y2Left(d : ITickmark<Dynamic>, i : Int)	return 0;
+	function y2Right(d : ITickmark<Dynamic>, i : Int)	return 0;
 
-	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null
+	function tickClass(d : ITickmark<Dynamic>, i : Int)	return d.major ? "major" : null;
 }

@@ -12,7 +12,7 @@ class UploadForm extends Controller
 			url : new ufront.web.mvc.view.UrlHelper.UrlHelperInst(controllerContext.requestContext),
 			html : html,
 			config : config,
-			errors : new Hash(),
+			errors : new Map (),
 			displayFormat : displayFormat
 		};
 		if(this.controllerContext.request.httpMethod == "POST")

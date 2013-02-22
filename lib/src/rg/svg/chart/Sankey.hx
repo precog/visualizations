@@ -63,8 +63,8 @@ class Sankey extends Chart
 	var styleEdgeBackward : String;
 	var styleEdgeForward : String;
 	var dependentVariable : VariableDependent<Dynamic>;
-	var mapelements : Hash<Selection>;
-	var maphi : Hash<Selection>;
+	var mapelements : Map<String, Selection>;
+	var maphi : Map<String, Selection>;
 
 	public function new(panel : Panel)
 	{
@@ -136,8 +136,8 @@ class Sankey extends Chart
 
 	function redraw()
 	{
-		mapelements = new Hash();
-		maphi = new Hash();
+		mapelements = new Map ();
+		maphi = new Map ();
 		// space occupied by the node paddings
 		maxweight = 0;
 		layerstarty = [];
@@ -783,7 +783,7 @@ class Sankey extends Chart
 		for(el in maphi)
 			el.classed().remove("over");
 
-		maphi = new Hash();
+		maphi = new Map ();
 
 		var hiedgep = null,
 			hinodep = null,

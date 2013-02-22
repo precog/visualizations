@@ -59,9 +59,9 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		return ScaleDistributions.distribute(scaleDistribution, p - s, e - s + 1); // (p - s) / (e - s);
 	}
 
-	public function first() return values().first()
-	public function last() return values().last()
-	public function values() : Array<T> return throw new AbstractMethod()
+	public function first() return values().first();
+	public function last() return values().last();
+	public function values() : Array<T> return throw new AbstractMethod();
 	public function allTicks()
 	{
 		var f = first(),
@@ -73,8 +73,8 @@ class AxisOrdinal<T> implements IAxisOrdinal<T>
 		return this.scaleDistribution = v;
 	}
 
-	public function min(stats : Stats<T>, meta : Dynamic) : T return values().first()
-	public function max(stats : Stats<T>, meta : Dynamic) : T return values().last()
+	public function min(stats : Stats<T>, meta : Dynamic) : T return values().first();
+	public function max(stats : Stats<T>, meta : Dynamic) : T return values().last();
 
-	public function createStats(type : String) : Stats<T> return new Stats<T>(type)
+	public function createStats(type : String) : Stats<T> return new Stats<T>(type);
 }

@@ -99,5 +99,5 @@ class AxisNumeric implements IAxis<Float>
 			return 0.0;
 	}
 
-	public function createStats(type : String) : Stats<Float> return new StatsNumeric(type)
+	public function createStats(type : String) : Stats<Float> return new StatsNumeric(type);
 }

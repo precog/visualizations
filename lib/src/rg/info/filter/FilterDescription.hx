@@ -564,7 +564,7 @@ class TransformerExpressionToFunction implements ITransformer<Dynamic, Void -> S
 	public static function extractValues(map : Array<String>, args : Array<Dynamic>)
 	{
 		var i = map.length,
-			values = new Hash<Dynamic>();
+			values = new Map<String, Dynamic>();
 		values.set("ReportGrid", untyped __js__("ReportGrid"));
 
 		values.set("format",   untyped __js__("ReportGrid.format"));
@@ -609,9 +609,9 @@ class TransformerExpressionToFunction implements ITransformer<Dynamic, Void -> S
 
 class ReturnMessageIfNot
 {
-	public static function isBool(v : Dynamic) return Std.is(v, Bool) ? null : "not a boolean"
-	public static function isString(v : Dynamic) return Std.is(v, String) ? null : "not a string"
-	public static function isObject(v : Dynamic) return Types.isAnonymous(v) ? null : "not an object"
+	public static function isBool(v : Dynamic) return Std.is(v, Bool) ? null : "not a boolean";
+	public static function isString(v : Dynamic) return Std.is(v, String) ? null : "not a string";
+	public static function isObject(v : Dynamic) return Types.isAnonymous(v) ? null : "not an object";
 }
 
 class ReturnMessageChainer

@@ -2,10 +2,10 @@ package rg.storage;
 
 class MemoryStorage implements IStorage
 {
-	var storage : Hash<Dynamic>;
+	var storage : Map<String, Dynamic>;
 	public function new()
 	{
-		storage = new Hash();
+		storage = new Map ();
 	}
 
 	public function set(name : String, value : Dynamic) : Void
@@ -18,7 +18,7 @@ class MemoryStorage implements IStorage
 	}
 	public function clear() : Void
 	{
-		storage = new Hash();
+		storage = new Map ();
 	}
 	public function remove(name : String) : Void
 	{

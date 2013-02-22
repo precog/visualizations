@@ -66,8 +66,8 @@ class HookConnector
 		return path;
 	}
 
-	static function lineTo(x : Float, y : Float) return "L" + x + "," + y
-	static function quarterTo(x : Float, y : Float, r : Float) return "A"+Math.abs(r)+","+Math.abs(r)+" 0 0,"+(r < 0 ? 0 : 1)+" "+x+","+y
+	static function lineTo(x : Float, y : Float) return "L" + x + "," + y;
+	static function quarterTo(x : Float, y : Float, r : Float) return "A"+Math.abs(r)+","+Math.abs(r)+" 0 0,"+(r < 0 ? 0 : 1)+" "+x+","+y;
 
 	function createPath2(x1 : Float, y1 : Float, sr : Float, x2 : Float, y2 : Float, yreference : Float)
 	{

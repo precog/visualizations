@@ -26,7 +26,7 @@ class Renderable
 		{
 			var s = html + "::" + haxe.Serializer.run(config);
 			s = SEED + (~/\s+/mg).replace(s, '');
-			uid = hash(s);
+			uid = Map (s);
 		}
 		return uid;
 	}
@@ -36,7 +36,7 @@ class Renderable
 		return config.allowedFormats.exists(format);
 	}
 
-	static function hash(s : String) : String
+	static function Map (s : String) : String
 	{
 		s = untyped __call__('md5', s);
 		s = untyped __call__('base_convert', s, 16, 36);

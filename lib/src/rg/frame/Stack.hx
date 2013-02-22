@@ -185,7 +185,7 @@ class Stack
 			moreSpaceRequired(required);
 	}
 
-	function get_length() return children.length
+	function get_length() return children.length;
 
 	public function setSize(width : Int, height : Int)
 	{
@@ -197,7 +197,7 @@ class Stack
 		return this;
 	}
 
-	public function toString() return "Stack [width: " + width + ", height: " + height + ", children: " + children.length + "]"
+	public function toString() return "Stack [width: " + width + ", height: " + height + ", children: " + children.length + "]";
 }
 
 typedef FriendPanel = {

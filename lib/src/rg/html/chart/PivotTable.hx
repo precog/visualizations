@@ -324,10 +324,10 @@ class PivotTable
 		click(dp);
 	}
 
-	function formatTotal(v : Float, ?_) return labelTotal(v, stats)
-	function formatTotalOver(v : Float, ?_) return labelTotalOver(v, stats)
-	function formatDataPoint(dp : Dynamic, ?_) return labelDataPoint(dp, stats)
-	function formatDataPointOver(dp : Dynamic, ?_) return labelDataPointOver(dp, stats)
+	function formatTotal(v : Float, ?_) return labelTotal(v, stats);
+	function formatTotalOver(v : Float, ?_) return labelTotalOver(v, stats);
+	function formatDataPoint(dp : Dynamic, ?_) return labelDataPoint(dp, stats);
+	function formatDataPointOver(dp : Dynamic, ?_) return labelDataPointOver(dp, stats);
 
 	function buildValue(value : Dynamic, header : String, counter : Int, tr : Selection)
 	{

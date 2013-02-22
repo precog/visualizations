@@ -12,12 +12,12 @@ class ReportGridExecutorCache implements IExecutorReportGrid
 	public var timeout(default, null) : Int;
 	var executor : IExecutorReportGrid;
 	var storage : IStorage;
-	var queue : Hash<Array<Dynamic -> Void>>;
+	var queue : Map<String, Array<Dynamic -> Void>>;
 	public function new(executor : IExecutorReportGrid, storage : IStorage, timeout : Int)
 	{
 		this.executor = executor;
 		this.storage = storage;
-		queue = new Hash();
+		queue = new Map ();
 		this.timeout = timeout;
 		cleanOld();
 	}

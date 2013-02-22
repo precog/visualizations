@@ -221,5 +221,5 @@ class Leadeboard
 		return labelDataPointOver(dp, stats);
 	}
 
-	function id(dp : Dynamic, ?_) return DataPoints.id(dp, [variableDependent.type])
+	function id(dp : Dynamic, ?_) return DataPoints.id(dp, [variableDependent.type]);
 }

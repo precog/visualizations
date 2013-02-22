@@ -11,11 +11,11 @@ class SymbolCache
 	static inline var DEFAULT_SYMBOL = "circle";
 	public static var cache(default, null) : SymbolCache;
 
-	var c : Hash<String>;
+	var c : Map<String, String>;
 	var r : Int;
 	public function new()
 	{
-		c = new Hash();
+		c = new Map ();
 		r = 0;
 	}
 

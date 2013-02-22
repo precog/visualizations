@@ -94,7 +94,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 		}
 	}
 
-	function visuallyStacked() return stacked && startat == null
+	function visuallyStacked() return stacked && startat == null;
 
 
 	override function data(result : { data : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>> })
@@ -108,7 +108,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 	function datah(dps : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>>)
 	{
 
-		var axisgs = new Hash(),
+		var axisgs = new Map (),
 			span = (height - (padding * (dps.length - 1))) / dps.length;
 
 		function getGroup(name : String, container : Selection)
@@ -190,7 +190,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 
 	function datav(dps : Array<Array<Array<Dynamic>>>, segments : Null<Array<String>>)
 	{
-		var axisgs = new Hash(),
+		var axisgs = new Map (),
 			span = (width - (padding * (dps.length - 1))) / dps.length;
 
 		function getGroup(name : String, container : Selection)

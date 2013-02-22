@@ -20,10 +20,10 @@ class Tickmark<T> implements ITickmark<T>
 		this.delta = delta;
 	}
 
-	function get_delta() return delta
-	function get_major() return major
-	function get_value() return value
-	function get_label() return RGStrings.humanize(value)
+	function get_delta() return delta;
+	function get_major() return major;
+	function get_value() return value;
+	function get_label() return RGStrings.humanize(value);
 
-	function toString() return Tickmarks.string(this)
+	function toString() return Tickmarks.string(this);
 }

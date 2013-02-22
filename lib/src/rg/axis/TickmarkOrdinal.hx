@@ -32,7 +32,7 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 	}
 
 	@:isVar public var major(get, null) : Bool;
-	function get_major() return major
+	function get_major() return major;
 
 	public var value(get, null) : T;
 	function get_value()
@@ -46,5 +46,5 @@ class TickmarkOrdinal<T> implements ITickmark<T>
 		return RGStrings.humanize(values[pos]);
 	}
 
-	function toString() return Tickmarks.string(this)
+	function toString() return Tickmarks.string(this);
 }

@@ -908,7 +908,7 @@ Dynamics.same = function(a,b) {
 			return true;
 		}
 		if(js.Boot.__instanceof(a,Date)) return a.getTime() == b.getTime();
-		if(js.Boot.__instanceof(a,Hash) || js.Boot.__instanceof(a,IntHash)) {
+		if(js.Boot.__instanceof(a,_Map.MapImpl) || js.Boot.__instanceof(a,_Map.MapImpl)) {
 			var ha = a, hb = b;
 			var ka = Iterators.array(ha.keys()), kb = Iterators.array(hb.keys());
 			if(ka.length != kb.length) return false;
@@ -1120,45 +1120,6 @@ Floats.uninterpolatef = function(a,b) {
 		return (x - a) * b;
 	};
 }
-var Hash = function() {
-	this.h = { };
-};
-$hxClasses["Hash"] = Hash;
-Hash.__name__ = ["Hash"];
-Hash.prototype = {
-	iterator: function() {
-		return { ref : this.h, it : this.keys(), hasNext : function() {
-			return this.it.hasNext();
-		}, next : function() {
-			var i = this.it.next();
-			return this.ref["$" + i];
-		}};
-	}
-	,keys: function() {
-		var a = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
-		}
-		return HxOverrides.iter(a);
-	}
-	,remove: function(key) {
-		key = "$" + key;
-		if(!this.h.hasOwnProperty(key)) return false;
-		delete(this.h[key]);
-		return true;
-	}
-	,exists: function(key) {
-		return this.h.hasOwnProperty("$" + key);
-	}
-	,get: function(key) {
-		return this.h["$" + key];
-	}
-	,set: function(key,value) {
-		this.h["$" + key] = value;
-	}
-	,h: null
-	,__class__: Hash
-}
 var HxOverrides = function() { }
 $hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = ["HxOverrides"];
@@ -1224,41 +1185,6 @@ HxOverrides.iter = function(a) {
 	}, next : function() {
 		return this.arr[this.cur++];
 	}};
-}
-var IntHash = function() {
-	this.h = { };
-};
-$hxClasses["IntHash"] = IntHash;
-IntHash.__name__ = ["IntHash"];
-IntHash.prototype = {
-	iterator: function() {
-		return { ref : this.h, it : this.keys(), hasNext : function() {
-			return this.it.hasNext();
-		}, next : function() {
-			var i = this.it.next();
-			return this.ref[i];
-		}};
-	}
-	,keys: function() {
-		var a = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) a.push(key | 0);
-		}
-		return HxOverrides.iter(a);
-	}
-	,remove: function(key) {
-		if(!this.h.hasOwnProperty(key)) return false;
-		delete(this.h[key]);
-		return true;
-	}
-	,get: function(key) {
-		return this.h[key];
-	}
-	,set: function(key,value) {
-		this.h[key] = value;
-	}
-	,h: null
-	,__class__: IntHash
 }
 var IntIterator = function(min,max) {
 	this.min = min;
@@ -1431,6 +1357,10 @@ List.prototype = {
 	,h: null
 	,__class__: List
 }
+var _Map = {}
+_Map.MapImpl = function() { }
+$hxClasses["_Map.MapImpl"] = _Map.MapImpl;
+_Map.MapImpl.__name__ = ["_Map","MapImpl"];
 var Objects = function() { }
 $hxClasses["Objects"] = Objects;
 Objects.__name__ = ["Objects"];
@@ -1525,7 +1455,7 @@ Reflect.fields = function(o) {
 	if(o != null) {
 		var hasOwnProperty = Object.prototype.hasOwnProperty;
 		for( var f in o ) {
-		if(hasOwnProperty.call(o,f)) a.push(f);
+		if(f != "__id__" && hasOwnProperty.call(o,f)) a.push(f);
 		}
 	}
 	return a;
@@ -1582,7 +1512,7 @@ StringBuf.prototype = {
 		return this.b;
 	}
 	,addSub: function(s,pos,len) {
-		this.b += HxOverrides.substr(s,pos,len);
+		this.b += len == null?HxOverrides.substr(s,pos,null):HxOverrides.substr(s,pos,len);
 	}
 	,addChar: function(c) {
 		this.b += String.fromCharCode(c);
@@ -2270,7 +2200,10 @@ chx.lang.Exception = function(msg,cause) {
 $hxClasses["chx.lang.Exception"] = chx.lang.Exception;
 chx.lang.Exception.__name__ = ["chx","lang","Exception"];
 chx.lang.Exception.prototype = {
-	cause: null
+	toString: function() {
+		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
+	}
+	,cause: null
 	,message: null
 	,__class__: chx.lang.Exception
 }
@@ -2895,7 +2828,7 @@ dhx.BaseSelection.removeEvent = function(target,typo,type,capture) {
 }
 dhx.BaseSelection.bindJoin = function(join,group,groupData,update,enter,exit) {
 	var n = group.nodes.length, m = groupData.length, updateElements = [], exitElements = [], enterElements = [], node, nodeData;
-	var nodeByKey = new Hash(), keys = [], key, j = groupData.length;
+	var nodeByKey = new haxe.ds.StringMap(), keys = [], key, j = groupData.length;
 	var _g = 0;
 	while(_g < n) {
 		var i = _g++;
@@ -3600,7 +3533,7 @@ dhx.Timer._flush = function() {
 dhx.BaseTransition = function(selection) {
 	this.selection = selection;
 	var tid = this._transitionId = dhx.BaseTransition._inheritid > 0?dhx.BaseTransition._inheritid:++dhx.BaseTransition._id;
-	this._tweens = new Hash();
+	this._tweens = new haxe.ds.StringMap();
 	this._interpolators = [];
 	this._remove = false;
 	this._stage = [];
@@ -3691,7 +3624,7 @@ dhx.BaseTransition.prototype = {
 			} else {
 				me._stage[k] = 1;
 				if(null != me._start) me._start(n,i);
-				ik = me._interpolators[k] = new Hash();
+				ik = me._interpolators[k] = new haxe.ds.StringMap();
 				tx.active = me._transitionId;
 				var $it0 = me._tweens.keys();
 				while( $it0.hasNext() ) {
@@ -4033,19 +3966,21 @@ $hxClasses["erazor.Template"] = erazor.Template;
 erazor.Template.__name__ = ["erazor","Template"];
 erazor.Template.prototype = {
 	setInterpreterVars: function(interp,content) {
-		if(js.Boot.__instanceof(content,Hash)) {
+		if(js.Boot.__instanceof(content,haxe.ds.StringMap)) {
 			var hash = content;
 			var $it0 = hash.keys();
 			while( $it0.hasNext() ) {
 				var field = $it0.next();
-				interp.variables.set(field,hash.get(field));
+				var value = hash.get(field);
+				interp.variables.set(field,value);
 			}
 		} else {
 			var _g = 0, _g1 = Reflect.fields(content);
 			while(_g < _g1.length) {
 				var field = _g1[_g];
 				++_g;
-				interp.variables.set(field,Reflect.field(content,field));
+				var value = Reflect.field(content,field);
+				interp.variables.set(field,value);
 			}
 		}
 	}
@@ -4056,7 +3991,7 @@ erazor.Template.prototype = {
 		var parser = new hscript.Parser();
 		var program = parser.parseString(script);
 		var interp = new erazor.hscript.EnhancedInterp();
-		this.variables = interp.variables;
+		this.variables = new haxe.ds.StringMap();
 		var bufferStack = [];
 		this.setInterpreterVars(interp,content);
 		interp.variables.set("__b__",buffer);
@@ -4083,16 +4018,24 @@ erazor.error.ParserError = function(msg,pos,excerpt) {
 $hxClasses["erazor.error.ParserError"] = erazor.error.ParserError;
 erazor.error.ParserError.__name__ = ["erazor","error","ParserError"];
 erazor.error.ParserError.prototype = {
-	excerpt: null
+	toString: function() {
+		var excerpt = this.excerpt;
+		if(excerpt != null) {
+			var nl = excerpt.indexOf("\n");
+			if(nl != -1) excerpt = HxOverrides.substr(excerpt,0,nl);
+		}
+		return this.msg + " @ " + this.pos + (excerpt != null?" ( \"" + excerpt + "\" )":"");
+	}
+	,excerpt: null
 	,pos: null
 	,msg: null
 	,__class__: erazor.error.ParserError
 }
 var hscript = {}
 hscript.Interp = function() {
-	this.locals = new Hash();
+	this.locals = new haxe.ds.StringMap();
 	this.declared = new Array();
-	this.variables = new Hash();
+	this.variables = new haxe.ds.StringMap();
 	this.variables.set("null",null);
 	this.variables.set("true",true);
 	this.variables.set("false",false);
@@ -4385,7 +4328,7 @@ hscript.Interp.prototype = {
 		}
 	}
 	,duplicate: function(h) {
-		var h2 = new Hash();
+		var h2 = new haxe.ds.StringMap();
 		var $it0 = h.keys();
 		while( $it0.hasNext() ) {
 			var k = $it0.next();
@@ -4415,7 +4358,7 @@ hscript.Interp.prototype = {
 		return null;
 	}
 	,execute: function(expr) {
-		this.locals = new Hash();
+		this.locals = new haxe.ds.StringMap();
 		return this.exprReturn(expr);
 	}
 	,increment: function(e,prefix,delta) {
@@ -4427,8 +4370,14 @@ hscript.Interp.prototype = {
 			var v = l == null?this.variables.get(e_eEIdent_0):l.r;
 			if(prefix) {
 				v += delta;
-				if(l == null) this.variables.set(e_eEIdent_0,v); else l.r = v;
-			} else if(l == null) this.variables.set(e_eEIdent_0,v + delta); else l.r = v + delta;
+				if(l == null) {
+					var value = v;
+					this.variables.set(e_eEIdent_0,value);
+				} else l.r = v;
+			} else if(l == null) {
+				var value = v + delta;
+				this.variables.set(e_eEIdent_0,value);
+			} else l.r = v + delta;
 			return v;
 		case 5:
 			var e_eEField_1 = $e[3], e_eEField_0 = $e[2];
@@ -4511,7 +4460,7 @@ hscript.Interp.prototype = {
 	}
 	,initOps: function() {
 		var me = this;
-		this.binops = new Hash();
+		this.binops = new haxe.ds.StringMap();
 		this.binops.set("+",function(e1,e2) {
 			return me.expr(e1) + me.expr(e2);
 		});
@@ -4686,39 +4635,10 @@ haxe.BaseCode.prototype = {
 	,base: null
 	,__class__: haxe.BaseCode
 }
-haxe.FastCell = function(elt,next) {
-	this.elt = elt;
-	this.next = next;
-};
-$hxClasses["haxe.FastCell"] = haxe.FastCell;
-haxe.FastCell.__name__ = ["haxe","FastCell"];
-haxe.FastCell.prototype = {
-	next: null
-	,elt: null
-	,__class__: haxe.FastCell
-}
-haxe.FastList = function() {
-};
-$hxClasses["haxe.FastList"] = haxe.FastList;
-haxe.FastList.__name__ = ["haxe","FastList"];
-haxe.FastList.prototype = {
-	pop: function() {
-		var k = this.head;
-		if(k == null) return null; else {
-			this.head = k.next;
-			return k.elt;
-		}
-	}
-	,add: function(item) {
-		this.head = new haxe.FastCell(item,this.head);
-	}
-	,head: null
-	,__class__: haxe.FastList
-}
 haxe.Http = function(url) {
 	this.url = url;
-	this.headers = new Hash();
-	this.params = new Hash();
+	this.headers = new haxe.ds.StringMap();
+	this.params = new haxe.ds.StringMap();
 	this.async = true;
 };
 $hxClasses["haxe.Http"] = haxe.Http;
@@ -4732,6 +4652,7 @@ haxe.Http.prototype = {
 	}
 	,request: function(post) {
 		var me = this;
+		me.responseData = null;
 		var r = js.Browser.createXMLHttpRequest();
 		var onreadystatechange = function(_) {
 			if(r.readyState != 4) return;
@@ -4746,7 +4667,7 @@ haxe.Http.prototype = {
 			}(this));
 			if(s == undefined) s = null;
 			if(s != null) me.onStatus(s);
-			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else if(s == null) me.onError("Failed to connect or resolve host"); else switch(s) {
+			if(s != null && s >= 200 && s < 400) me.onData(me.responseData = r.responseText); else if(s == null) me.onError("Failed to connect or resolve host"); else switch(s) {
 			case 12029:
 				me.onError("Failed to connect to host");
 				break;
@@ -4754,6 +4675,7 @@ haxe.Http.prototype = {
 				me.onError("Unknown host");
 				break;
 			default:
+				me.responseData = r.responseText;
 				me.onError("Http Error #" + r.status);
 			}
 		};
@@ -4798,6 +4720,7 @@ haxe.Http.prototype = {
 	,headers: null
 	,postData: null
 	,async: null
+	,responseData: null
 	,url: null
 	,__class__: haxe.Http
 }
@@ -4825,6 +4748,7 @@ haxe.Timer.delay = function(f,time_ms) {
 }
 haxe.Timer.prototype = {
 	run: function() {
+		null;
 	}
 	,stop: function() {
 		if(this.id == null) return;
@@ -5008,6 +4932,110 @@ haxe.crypto.Md5.prototype = {
 	}
 	,__class__: haxe.crypto.Md5
 }
+haxe.ds = {}
+haxe.ds.FastCell = function(elt,next) {
+	this.elt = elt;
+	this.next = next;
+};
+$hxClasses["haxe.ds.FastCell"] = haxe.ds.FastCell;
+haxe.ds.FastCell.__name__ = ["haxe","ds","FastCell"];
+haxe.ds.FastCell.prototype = {
+	next: null
+	,elt: null
+	,__class__: haxe.ds.FastCell
+}
+haxe.ds.GenericStack = function() {
+};
+$hxClasses["haxe.ds.GenericStack"] = haxe.ds.GenericStack;
+haxe.ds.GenericStack.__name__ = ["haxe","ds","GenericStack"];
+haxe.ds.GenericStack.prototype = {
+	pop: function() {
+		var k = this.head;
+		if(k == null) return null; else {
+			this.head = k.next;
+			return k.elt;
+		}
+	}
+	,add: function(item) {
+		this.head = new haxe.ds.FastCell(item,this.head);
+	}
+	,head: null
+	,__class__: haxe.ds.GenericStack
+}
+haxe.ds.IntMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.IntMap"] = haxe.ds.IntMap;
+haxe.ds.IntMap.__name__ = ["haxe","ds","IntMap"];
+haxe.ds.IntMap.prototype = {
+	iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref[i];
+		}};
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key | 0);
+		}
+		return HxOverrides.iter(a);
+	}
+	,remove: function(key) {
+		if(!this.h.hasOwnProperty(key)) return false;
+		delete(this.h[key]);
+		return true;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,set: function(key,value) {
+		this.h[key] = value;
+	}
+	,h: null
+	,__class__: haxe.ds.IntMap
+}
+haxe.ds.StringMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.StringMap"] = haxe.ds.StringMap;
+haxe.ds.StringMap.__name__ = ["haxe","ds","StringMap"];
+haxe.ds.StringMap.prototype = {
+	iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
+	}
+	,remove: function(key) {
+		key = "$" + key;
+		if(!this.h.hasOwnProperty(key)) return false;
+		delete(this.h[key]);
+		return true;
+	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty("$" + key);
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,h: null
+	,__class__: haxe.ds.StringMap
+}
 haxe.io = {}
 haxe.io.Bytes = function(length,b) {
 	this.length = length;
@@ -5188,7 +5216,10 @@ haxe.io.Eof = function() {
 $hxClasses["haxe.io.Eof"] = haxe.io.Eof;
 haxe.io.Eof.__name__ = ["haxe","io","Eof"];
 haxe.io.Eof.prototype = {
-	__class__: haxe.io.Eof
+	toString: function() {
+		return "Eof";
+	}
+	,__class__: haxe.io.Eof
 }
 haxe.io.Error = { __ename__ : ["haxe","io","Error"], __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] }
 haxe.io.Error.Blocked = ["Blocked",0];
@@ -5314,8 +5345,8 @@ hscript.Parser = function() {
 	this.opChars = "+*/-=!><&|^%~";
 	this.identChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 	var priorities = [["%"],["*","/"],["+","-"],["<<",">>",">>>"],["|","&","^"],["==","!=",">","<",">=","<="],["..."],["&&"],["||"],["=","+=","-=","*=","/=","%=","<<=",">>=",">>>=","|=","&=","^="]];
-	this.opPriority = new Hash();
-	this.opRightAssoc = new Hash();
+	this.opPriority = new haxe.ds.StringMap();
+	this.opRightAssoc = new haxe.ds.StringMap();
 	var _g1 = 0, _g = priorities.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -5327,7 +5358,7 @@ hscript.Parser = function() {
 			if(i == 9) this.opRightAssoc.set(x,true);
 		}
 	}
-	this.unops = new Hash();
+	this.unops = new haxe.ds.StringMap();
 	var _g = 0, _g1 = ["!","++","--","-","~"];
 	while(_g < _g1.length) {
 		var x = _g1[_g];
@@ -5723,7 +5754,7 @@ hscript.Parser.prototype = {
 		var $e = (t2);
 		switch( $e[1] ) {
 		case 1:
-			var t2_eCTFun_1 = $e[3], t2_eCTFun_0 = $e[2];
+			var t2_eCTFun_0 = $e[2];
 			t2_eCTFun_0.unshift(t);
 			return t2;
 		default:
@@ -6185,7 +6216,6 @@ hscript.Parser.prototype = {
 			case 7:
 				return this.parseExprNext(hscript.Expr.EObject([]));
 			case 2:
-				var tk_eTId_0 = $e[2];
 				var tk2 = this.token();
 				this.tokens.add(tk2);
 				this.tokens.add(tk);
@@ -6354,7 +6384,7 @@ hscript.Parser.prototype = {
 		return null;
 	}
 	,parse: function(s) {
-		this.tokens = new haxe.FastList();
+		this.tokens = new haxe.ds.GenericStack();
 		this["char"] = -1;
 		this.input = s;
 		this.ops = new Array();
@@ -7322,7 +7352,7 @@ rg.RGConst.__name__ = ["rg","RGConst"];
 rg.app = {}
 rg.app.charts = {}
 rg.app.charts.App = function(notifier) {
-	this.layouts = new Hash();
+	this.layouts = new haxe.ds.StringMap();
 	this.globalNotifier = notifier;
 };
 $hxClasses["rg.app.charts.App"] = rg.app.charts.App;
@@ -7442,7 +7472,6 @@ rg.app.charts.JSBridge.main = function() {
 			} catch( e ) {
 				rg.app.charts.JSBridge.log(Std.string(e));
 				if(null != options.error) options.error(e);
-				throw e;
 			}
 		});
 	};
@@ -7512,7 +7541,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.30.9202"};
+	r.info.charts = { version : "1.5.32.9213"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -9617,7 +9646,7 @@ rg.html.widget.DownloaderPositions.parse = function(v) {
 	}
 }
 rg.html.widget.Logo = function(container,padright) {
-	this.mapvalues = new Hash();
+	this.mapvalues = new haxe.ds.StringMap();
 	this.padRight = padright;
 	this.id = ++rg.html.widget.Logo._id;
 	this.container = container;
@@ -11017,7 +11046,7 @@ $hxClasses["rg.info.filter.TransformerExpressionToFunction"] = rg.info.filter.Tr
 rg.info.filter.TransformerExpressionToFunction.__name__ = ["rg","info","filter","TransformerExpressionToFunction"];
 rg.info.filter.TransformerExpressionToFunction.__interfaces__ = [rg.info.filter.ITransformer];
 rg.info.filter.TransformerExpressionToFunction.extractValues = function(map,args) {
-	var i = map.length, values = new Hash();
+	var i = map.length, values = new haxe.ds.StringMap();
 	values.set("ReportGrid",ReportGrid);
 	values.set("format",ReportGrid.format);
 	values.set("symbol",ReportGrid.symbol);
@@ -11034,7 +11063,8 @@ rg.info.filter.TransformerExpressionToFunction.extractValues = function(map,args
 			while(_g < _g1.length) {
 				var key1 = _g1[_g];
 				++_g;
-				values.set(key1,Reflect.field(args[i],key1));
+				var value = Reflect.field(args[i],key1);
+				values.set(key1,value);
 			}
 		} else values.set(key,args[i]);
 	}
@@ -11862,7 +11892,7 @@ rg.query = {}
 rg.query.BaseQuery = function(async,first) {
 	this._async = async;
 	this._first = first;
-	this._store = new Hash();
+	this._store = new haxe.ds.StringMap();
 };
 $hxClasses["rg.query.BaseQuery"] = rg.query.BaseQuery;
 rg.query.BaseQuery.__name__ = ["rg","query","BaseQuery"];
@@ -12325,7 +12355,7 @@ rg.query.Transformers.crossStack = function(data) {
 	return [src];
 }
 rg.query.Transformers.split = function(data,f) {
-	var map = new Hash(), result = [];
+	var map = new haxe.ds.StringMap(), result = [];
 	data.forEach(function(dp,_) {
 		var name = "" + f(dp), pos = map.get(name);
 		if(null == pos) {
@@ -12696,7 +12726,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		this.click(dp,stats);
 	}
 	,datav: function(dps,segments) {
-		var axisgs = new Hash(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
+		var axisgs = new haxe.ds.StringMap(), span = (this.width - this.padding * (dps.length - 1)) / dps.length;
 		var getGroup = function(name,container) {
 			var gr = axisgs.get(name);
 			if(null == gr) {
@@ -12748,7 +12778,7 @@ rg.svg.chart.BarChart.prototype = $extend(rg.svg.chart.CartesianChart.prototype,
 		this.ready.dispatch();
 	}
 	,datah: function(dps,segments) {
-		var axisgs = new Hash(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
+		var axisgs = new haxe.ds.StringMap(), span = (this.height - this.padding * (dps.length - 1)) / dps.length;
 		var getGroup = function(name,container) {
 			var gr = axisgs.get(name);
 			if(null == gr) {
@@ -13721,7 +13751,7 @@ rg.svg.chart.PieChart = function(panel) {
 	this.overRadius = 0.95;
 	this.labelRadius = 0.45;
 	this.tooltipRadius = 0.5;
-	this.labels = new Hash();
+	this.labels = new haxe.ds.StringMap();
 	this.labelOrientation = rg.svg.widget.LabelOrientation.Orthogonal;
 	this.labelDontFlip = true;
 };
@@ -14054,12 +14084,16 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,highlight: function(id,type) {
 		var _g = this;
-		var $it0 = this.maphi.iterator();
+		var $it0 = ((function(_e) {
+			return function() {
+				return _e.iterator();
+			};
+		})(this.maphi))();
 		while( $it0.hasNext() ) {
 			var el = $it0.next();
 			el.classed().remove("over");
 		}
-		this.maphi = new Hash();
+		this.maphi = new haxe.ds.StringMap();
 		var hiedgep = null, hinodep = null, hiedgen = null, hinoden = null;
 		var hielement = function(id1,type1) {
 			var key = type1 + ":" + id1;
@@ -14125,8 +14159,8 @@ rg.svg.chart.Sankey.prototype = $extend(rg.svg.chart.Chart.prototype,{
 	}
 	,redraw: function() {
 		var _g2 = this;
-		this.mapelements = new Hash();
-		this.maphi = new Hash();
+		this.mapelements = new haxe.ds.StringMap();
+		this.maphi = new haxe.ds.StringMap();
 		this.maxweight = 0;
 		this.layerstarty = [];
 		var _g1 = 0, _g = this.layout.length;
@@ -15736,7 +15770,7 @@ rg.svg.util.SVGSymbolBuilder.applyStyle = function(element,stats,style) {
 	});
 }
 rg.svg.util.SymbolCache = function() {
-	this.c = new Hash();
+	this.c = new haxe.ds.StringMap();
 	this.r = 0;
 };
 $hxClasses["rg.svg.util.SymbolCache"] = rg.svg.util.SymbolCache;
@@ -16283,6 +16317,115 @@ rg.svg.widget.Orientation.TopRight.__enum__ = rg.svg.widget.Orientation;
 rg.svg.widget.Orientation.TopLeft = ["TopLeft",7];
 rg.svg.widget.Orientation.TopLeft.toString = $estr;
 rg.svg.widget.Orientation.TopLeft.__enum__ = rg.svg.widget.Orientation;
+rg.svg.widget.GeoMap = function(container,projection) {
+	var _g = this;
+	this.g = container.append("svg:g").attr("class").string("map");
+	this.projection = projection;
+	this.map = new haxe.ds.StringMap();
+	this.ready = false;
+	this.onReady = new hxevents.Notifier();
+	this.onReady.addOnce(function() {
+		_g.ready = true;
+	});
+};
+$hxClasses["rg.svg.widget.GeoMap"] = rg.svg.widget.GeoMap;
+rg.svg.widget.GeoMap.__name__ = ["rg","svg","widget","GeoMap"];
+rg.svg.widget.GeoMap.loadJsonp = function(url,handler) {
+	rg.util.Jsonp.get(url,handler,null,null,null);
+}
+rg.svg.widget.GeoMap.loadJsonAjax = function(url,handler) {
+	var http = new haxe.Http(url);
+	http.onData = function(data) {
+		var json = thx.json.Json.decode(data);
+		handler(json);
+	};
+	http.onError = function(err) {
+		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "GeoMap.hx", lineNumber : 90, className : "rg.svg.widget.GeoMap", methodName : "loadJsonAjax"});
+	};
+	http.request(false);
+}
+rg.svg.widget.GeoMap.prototype = {
+	set_className: function(cls) {
+		this.g.attr("class").string("map" + (null == cls?"":" " + cls));
+		return cls;
+	}
+	,handlerClick: null
+	,handlerDataPointOver: null
+	,onClick: function(dp,_,i) {
+		this.handlerClick(dp,this.click);
+	}
+	,onMouseOver: function(dp,n,i) {
+		this.handlerDataPointOver(n,dp,this.labelDataPointOver);
+	}
+	,draw: function(json) {
+		var _g = this;
+		var id = null != this.mapping?function(s) {
+			return Reflect.hasField(_g.mapping,s)?Reflect.field(_g.mapping,s):s;
+		}:function(s) {
+			return s;
+		};
+		var path = new thx.svg.PathGeoJson();
+		path.set_projection(this.projection);
+		switch(json.type) {
+		case "FeatureCollection":
+			var _g1 = 0, _g2 = json.features.length;
+			while(_g1 < _g2) {
+				var i = _g1++;
+				var feature = json.features[i], centroid = path.centroid(feature.geometry), p = feature.geometry.type == "Point"?this.g.append("svg:circle").attr("cx")["float"](centroid[0]).attr("cy")["float"](centroid[1]).attr("r")["float"](5):this.g.append("svg:path").attr("d").string(path.path(feature.geometry));
+				var dp = { };
+				dp.$centroid = centroid;
+				dp.$data = feature.properties;
+				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
+				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,dp1) {
+					return function(n,i1) {
+						return f(dp1,n,i1);
+					};
+				})($bind(this,this.onMouseOver),dp));
+				if(null != this.click) p.onNode("click",(function(f1,dp2) {
+					return function(_,i1) {
+						return f1(dp2,_,i1);
+					};
+				})($bind(this,this.onClick),dp));
+			}
+			break;
+		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
+			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "GeoMap.hx", lineNumber : 133, className : "rg.svg.widget.GeoMap", methodName : "draw"});
+			break;
+		default:
+			this.g.append("svg:path").attr("d").string(path.path(json));
+		}
+		this.onReady.dispatch();
+	}
+	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
+		var _g = this;
+		var load = usejsonp?rg.svg.widget.GeoMap.loadJsonp:rg.svg.widget.GeoMap.loadJsonAjax;
+		if(null == mappingurl) load(geourl,$bind(this,this.draw)); else load(mappingurl,function(m) {
+			_g.mapping = m;
+			load(geourl,$bind(_g,_g.draw));
+		});
+	}
+	,load: function(path,type,mappingurl,usejsonp) {
+		switch(type) {
+		case "geojson":
+			this.loadGeoJson(path,mappingurl,usejsonp);
+			break;
+		default:
+			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "GeoMap.hx", lineNumber : 59, className : "rg.svg.widget.GeoMap", methodName : "load"});
+		}
+	}
+	,g: null
+	,projection: null
+	,mapping: null
+	,ready: null
+	,colorMode: null
+	,radius: null
+	,labelDataPointOver: null
+	,labelDataPoint: null
+	,click: null
+	,onReady: null
+	,map: null
+	,__class__: rg.svg.widget.GeoMap
+}
 rg.svg.widget.GridAnchor = { __ename__ : ["rg","svg","widget","GridAnchor"], __constructs__ : ["TopLeft","Top","TopRight","Left","Center","Right","BottomLeft","Bottom","BottomRight"] }
 rg.svg.widget.GridAnchor.TopLeft = ["TopLeft",0];
 rg.svg.widget.GridAnchor.TopLeft.toString = $estr;
@@ -16722,115 +16865,6 @@ rg.svg.widget.LabelOrientations.parse = function(s) {
 	default:
 		throw new thx.error.Error("invalid filter orientation '{0}'",null,s,{ fileName : "LabelOrientations.hx", lineNumber : 36, className : "rg.svg.widget.LabelOrientations", methodName : "parse"});
 	}
-}
-rg.svg.widget.Map = function(container,projection) {
-	var _g = this;
-	this.g = container.append("svg:g").attr("class").string("map");
-	this.projection = projection;
-	this.map = new Hash();
-	this.ready = false;
-	this.onReady = new hxevents.Notifier();
-	this.onReady.addOnce(function() {
-		_g.ready = true;
-	});
-};
-$hxClasses["rg.svg.widget.Map"] = rg.svg.widget.Map;
-rg.svg.widget.Map.__name__ = ["rg","svg","widget","Map"];
-rg.svg.widget.Map.loadJsonp = function(url,handler) {
-	rg.util.Jsonp.get(url,handler,null,null,null);
-}
-rg.svg.widget.Map.loadJsonAjax = function(url,handler) {
-	var http = new haxe.Http(url);
-	http.onData = function(data) {
-		var json = thx.json.Json.decode(data);
-		handler(json);
-	};
-	http.onError = function(err) {
-		throw new thx.error.Error("unable to load JSON file '{0}': {1}",[url,err],null,{ fileName : "Map.hx", lineNumber : 90, className : "rg.svg.widget.Map", methodName : "loadJsonAjax"});
-	};
-	http.request(false);
-}
-rg.svg.widget.Map.prototype = {
-	set_className: function(cls) {
-		this.g.attr("class").string("map" + (null == cls?"":" " + cls));
-		return cls;
-	}
-	,handlerClick: null
-	,handlerDataPointOver: null
-	,onClick: function(dp,_,i) {
-		this.handlerClick(dp,this.click);
-	}
-	,onMouseOver: function(dp,n,i) {
-		this.handlerDataPointOver(n,dp,this.labelDataPointOver);
-	}
-	,draw: function(json) {
-		var _g = this;
-		var id = null != this.mapping?function(s) {
-			return Reflect.hasField(_g.mapping,s)?Reflect.field(_g.mapping,s):s;
-		}:function(s) {
-			return s;
-		};
-		var path = new thx.svg.PathGeoJson();
-		path.set_projection(this.projection);
-		switch(json.type) {
-		case "FeatureCollection":
-			var _g1 = 0, _g2 = json.features.length;
-			while(_g1 < _g2) {
-				var i = _g1++;
-				var feature = json.features[i], centroid = path.centroid(feature.geometry), p = feature.geometry.type == "Point"?this.g.append("svg:circle").attr("cx")["float"](centroid[0]).attr("cy")["float"](centroid[1]).attr("r")["float"](5):this.g.append("svg:path").attr("d").string(path.path(feature.geometry));
-				var dp = { };
-				dp.$centroid = centroid;
-				dp.$data = feature.properties;
-				if(null != feature.id) this.map.set(id(feature.id),{ svg : p, dp : dp});
-				if(null != this.labelDataPointOver) p.onNode("mouseover",(function(f,dp1) {
-					return function(n,i1) {
-						return f(dp1,n,i1);
-					};
-				})($bind(this,this.onMouseOver),dp));
-				if(null != this.click) p.onNode("click",(function(f1,dp2) {
-					return function(_,i1) {
-						return f1(dp2,_,i1);
-					};
-				})($bind(this,this.onClick),dp));
-			}
-			break;
-		case "MultiPoint":case "MultiLineString":case "MultiPolygon":case "GeometryCollection":
-			throw new thx.error.Error("the type '{0}' is not implemented yet",[json.type],null,{ fileName : "Map.hx", lineNumber : 133, className : "rg.svg.widget.Map", methodName : "draw"});
-			break;
-		default:
-			this.g.append("svg:path").attr("d").string(path.path(json));
-		}
-		this.onReady.dispatch();
-	}
-	,loadGeoJson: function(geourl,mappingurl,usejsonp) {
-		var _g = this;
-		var load = usejsonp?rg.svg.widget.Map.loadJsonp:rg.svg.widget.Map.loadJsonAjax;
-		if(null == mappingurl) load(geourl,$bind(this,this.draw)); else load(mappingurl,function(m) {
-			_g.mapping = m;
-			load(geourl,$bind(_g,_g.draw));
-		});
-	}
-	,load: function(path,type,mappingurl,usejsonp) {
-		switch(type) {
-		case "geojson":
-			this.loadGeoJson(path,mappingurl,usejsonp);
-			break;
-		default:
-			new thx.error.Error("unsupported geographic format '{0}'",null,type,{ fileName : "Map.hx", lineNumber : 59, className : "rg.svg.widget.Map", methodName : "load"});
-		}
-	}
-	,g: null
-	,projection: null
-	,mapping: null
-	,ready: null
-	,colorMode: null
-	,radius: null
-	,labelDataPointOver: null
-	,labelDataPoint: null
-	,click: null
-	,onReady: null
-	,map: null
-	,__class__: rg.svg.widget.Map
 }
 rg.svg.widget.Sensible = function() { }
 $hxClasses["rg.svg.widget.Sensible"] = rg.svg.widget.Sensible;
@@ -17987,7 +18021,7 @@ rg.visualization.VisualizationGeo.prototype = $extend(rg.visualization.Visualiza
 		while(_g1 < _g11.length) {
 			var imap = _g11[_g1];
 			++_g1;
-			var projection = pfactory.create(imap), map = new rg.svg.widget.Map(this.chart.mapcontainer,projection);
+			var projection = pfactory.create(imap), map = new rg.svg.widget.GeoMap(this.chart.mapcontainer,projection);
 			map.set_className(imap.classname);
 			if(null == imap.label) map.labelDataPoint = this.info.label.datapoint; else map.labelDataPoint = imap.label.datapoint;
 			if(null == imap.label) map.labelDataPointOver = this.info.label.datapointover; else map.labelDataPointOver = imap.label.datapointover;
@@ -18304,7 +18338,7 @@ rg.visualization.VisualizationSankey.prototype = $extend(rg.visualization.Visual
 			return dp.id != null;
 		});
 		if(nodes.length == 0) {
-			var type = this.dependentVariables[0].type, map = new Hash(), edges = data.filter(function(dp) {
+			var type = this.dependentVariables[0].type, map = new haxe.ds.StringMap(), edges = data.filter(function(dp) {
 				return Reflect.hasField(dp,"head") || Reflect.hasField(dp,"tail");
 			});
 			var nodize = function(name,istail,weight) {
@@ -18559,7 +18593,7 @@ thx.collection = {}
 thx.collection.HashList = function() {
 	this.length = 0;
 	this.__keys = [];
-	this.__hash = new Hash();
+	this.__hash = new haxe.ds.StringMap();
 };
 $hxClasses["thx.collection.HashList"] = thx.collection.HashList;
 thx.collection.HashList.__name__ = ["thx","collection","HashList"];
@@ -18890,7 +18924,7 @@ $hxClasses["thx.culture.Culture"] = thx.culture.Culture;
 thx.culture.Culture.__name__ = ["thx","culture","Culture"];
 thx.culture.Culture.__properties__ = {get_cultures:"get_cultures"}
 thx.culture.Culture.get_cultures = function() {
-	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new Hash();
+	if(null == thx.culture.Culture.cultures) thx.culture.Culture.cultures = new haxe.ds.StringMap();
 	return thx.culture.Culture.cultures;
 }
 thx.culture.Culture.get_defaultCulture = function() {
@@ -19255,7 +19289,7 @@ $hxClasses["thx.culture.Language"] = thx.culture.Language;
 thx.culture.Language.__name__ = ["thx","culture","Language"];
 thx.culture.Language.__properties__ = {get_languages:"get_languages"}
 thx.culture.Language.get_languages = function() {
-	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new Hash();
+	if(null == thx.culture.Language.languages) thx.culture.Language.languages = new haxe.ds.StringMap();
 	return thx.culture.Language.languages;
 }
 thx.culture.Language.add = function(language) {
@@ -19469,7 +19503,7 @@ thx.data.ValueEncoder.prototype = {
 			break;
 		case 6:
 			var _g_eTClass_0 = $e[2];
-			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,Hash)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(_g_eTClass_0),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
+			if(js.Boot.__instanceof(o,String)) this.handler.valueString(o); else if(js.Boot.__instanceof(o,Array)) this.encodeArray(o); else if(js.Boot.__instanceof(o,Date)) this.handler.valueDate(o); else if(js.Boot.__instanceof(o,_Map.MapImpl)) this.encodeHash(o); else if(js.Boot.__instanceof(o,List)) this.encodeList(o); else throw new thx.error.Error("unable to encode class '{0}'",null,Type.getClassName(_g_eTClass_0),{ fileName : "ValueEncoder.hx", lineNumber : 53, className : "thx.data.ValueEncoder", methodName : "encodeValue"});
 			break;
 		case 7:
 			var _g_eTEnum_0 = $e[2];
@@ -20527,8 +20561,8 @@ thx.graph.GraphCollection = function(graph,idf) {
 	this.nextid = 0;
 	this.graph = graph;
 	this.idf = idf;
-	this.collection = new IntHash();
-	this._map = new Hash();
+	this.collection = new haxe.ds.IntMap();
+	this._map = new haxe.ds.StringMap();
 	if(null != idf) {
 		var add = $bind(this,this.collectionCreate);
 		this.collectionCreate = function(item) {
@@ -20575,8 +20609,8 @@ thx.graph.GraphCollection.prototype = {
 }
 thx.graph.GraphEdges = function(graph,edgeidf) {
 	thx.graph.GraphCollection.call(this,graph,edgeidf);
-	this.edgesp = new IntHash();
-	this.edgesn = new IntHash();
+	this.edgesp = new haxe.ds.IntMap();
+	this.edgesn = new haxe.ds.IntMap();
 };
 $hxClasses["thx.graph.GraphEdges"] = thx.graph.GraphEdges;
 thx.graph.GraphEdges.__name__ = ["thx","graph","GraphEdges"];
@@ -20710,7 +20744,7 @@ thx.graph.GraphLayout = function(graph,layers) {
 $hxClasses["thx.graph.GraphLayout"] = thx.graph.GraphLayout;
 thx.graph.GraphLayout.__name__ = ["thx","graph","GraphLayout"];
 thx.graph.GraphLayout.arrayCrossings = function(graph,a,b) {
-	var map = new IntHash(), c = 0;
+	var map = new haxe.ds.IntMap(), c = 0;
 	var _g1 = 0, _g = b.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -20805,7 +20839,7 @@ thx.graph.GraphLayout.prototype = {
 	}
 	,_updateMap: function() {
 		var _g = this;
-		this._map = new IntHash();
+		this._map = new haxe.ds.IntMap();
 		this.each(function(cell,node) {
 			_g._map.set(node.id,[cell.layer,cell.position]);
 		});
@@ -21174,7 +21208,7 @@ thx.graph.SugiyamaMethod.__name__ = ["thx","graph","SugiyamaMethod"];
 thx.graph.SugiyamaMethod.prototype = {
 	resolve: function(graph,nodef,edgef) {
 		var onecycles = new thx.graph.OneCycleRemover().remove(graph), twocycles = new thx.graph.TwoCycleRemover().remove(graph);
-		var partitions = this.partitioner.partition(graph), reversed = new Hash();
+		var partitions = this.partitioner.partition(graph), reversed = new haxe.ds.StringMap();
 		(partitions.left.length > partitions.right.length?partitions.right:partitions.left).forEach(function(edge,_) {
 			reversed.set(edge.tail.id + "-" + edge.head.id,[edge.invert()]);
 		});
@@ -21187,7 +21221,11 @@ thx.graph.SugiyamaMethod.prototype = {
 			if(reversed.exists(key)) reversed.set(key,split);
 		});
 		layout = this.decrosser.decross(layout);
-		var $it0 = reversed.iterator();
+		var $it0 = ((function(_e) {
+			return function() {
+				return _e.iterator();
+			};
+		})(reversed))();
 		while( $it0.hasNext() ) {
 			var path = $it0.next();
 			path.forEach(function(edge,_) {
@@ -24161,9 +24199,9 @@ r.$.pk = r.$.pk || { };
 r.$.pk.rg_query_BaseQuery = r.$.pk.rg_query_BaseQuery || rg.query.BaseQuery;
 r.$.pk.rg_query_Query = r.$.pk.rg_query_Query || rg.query.Query;
 rg.svg.util.SymbolCache.cache = new rg.svg.util.SymbolCache();
-rg.visualization.Visualizations.layoutDefault = new Hash();
-rg.visualization.Visualizations.layoutType = new Hash();
-rg.visualization.Visualizations.layoutArgs = new Hash();
+rg.visualization.Visualizations.layoutDefault = new haxe.ds.StringMap();
+rg.visualization.Visualizations.layoutType = new haxe.ds.StringMap();
+rg.visualization.Visualizations.layoutArgs = new haxe.ds.StringMap();
 rg.visualization.Visualizations.layoutDefault.set("barchart","cartesian");
 rg.visualization.Visualizations.layoutDefault.set("funnelchart","simple");
 rg.visualization.Visualizations.layoutDefault.set("geo","simple");
@@ -24176,7 +24214,7 @@ rg.visualization.Visualizations.layoutDefault.set("streamgraph","x");
 rg.visualization.Visualizations.layoutType.set("cartesian",rg.layout.LayoutCartesian);
 rg.visualization.Visualizations.layoutType.set("simple",rg.layout.LayoutSimple);
 rg.visualization.Visualizations.layoutType.set("x",rg.layout.LayoutX);
-thx.color.NamedColors.byName = new Hash();
+thx.color.NamedColors.byName = new haxe.ds.StringMap();
 thx.color.NamedColors.byName.set("aliceblue",thx.color.NamedColors.aliceblue = thx.color.Rgb.fromInt(15792383));
 thx.color.NamedColors.byName.set("alice blue",thx.color.NamedColors.aliceblue);
 thx.color.NamedColors.byName.set("antiquewhite",thx.color.NamedColors.antiquewhite = thx.color.Rgb.fromInt(16444375));
@@ -24456,7 +24494,7 @@ dhx.Dom.selectionEngine = (function($this) {
 	return $r;
 }(this));
 dhx.Namespace.prefix = (function() {
-	var h = new Hash();
+	var h = new haxe.ds.StringMap();
 	h.set("svg","http://www.w3.org/2000/svg");
 	h.set("xhtml","http://www.w3.org/1999/xhtml");
 	h.set("xlink","http://www.w3.org/1999/xlink");
@@ -24472,9 +24510,8 @@ dhx.BaseTransition._id = 0;
 dhx.BaseTransition._inheritid = 0;
 erazor.Parser.at = "@";
 erazor.Parser.bracketMismatch = "Bracket mismatch! Inside template, non-paired brackets, '{' or '}', should be replaced by @{'{'} and @{'}'}.";
-rg.RGConst.HOST = "" == js.Browser.window.location.host?"localhost":js.Browser.window.location.host;
-rg.RGConst.BASE_URL_GEOJSON = "http://" + rg.RGConst.HOST + "/rg/charts/geo/json/";
-rg.RGConst.SERVICE_RENDERING_STATIC = "http://" + rg.RGConst.HOST + "/rg/services/viz/charts/up.json";
+rg.RGConst.BASE_URL_GEOJSON = "https://api.reportgrid.com/geo/json/";
+rg.RGConst.SERVICE_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/up.json";
 rg.RGConst.LEGACY_RENDERING_STATIC = "https://api.reportgrid.com/services/viz/charts/upandsee.{ext}";
 rg.app.charts.App.lastid = 0;
 rg.app.charts.App.chartsCounter = 0;
@@ -24484,7 +24521,7 @@ rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
-rg.html.widget.Logo.registry = new Hash();
+rg.html.widget.Logo.registry = new haxe.ds.StringMap();
 rg.html.widget.Logo._id = 0;
 rg.info.Info.warner = window.console && window.console.warn?function(m) {
 	console.warn("" + Std.string(m));
