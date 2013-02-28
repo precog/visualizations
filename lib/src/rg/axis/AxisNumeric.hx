@@ -35,16 +35,17 @@ class AxisNumeric implements IAxis<Float>
 			if(stepm == 0)
 				minors = [0.0];
 			else
-				minors = Floats.range(start, end, stepm, true);
+				minors = Floats.range(start, end, stepm, true, true);
 			if(stepM == 0)
 				majors = [0.0];
 			else
-				majors = Floats.range(start, end, stepM, true);
+				majors = Floats.range(start, end, stepM, true, true);
 		}
-		return Tickmarks.bound(null == minors
+		var r = Tickmarks.bound(null == minors
 			? majors.map(function(d : Float) return Tickmarks.forFloat(start, end, d, true))
 			: minors.map(function(d : Float) return Tickmarks.forFloat(start, end, d, majors.remove(d))
 		), maxTicks);
+		return r;
 	}
 
 	static function _step(span : Float, m : Int)

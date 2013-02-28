@@ -93,7 +93,6 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 
 		// axis exit
 		axisgroup.exit().remove();
-
 		for (i in 0...dps.length)
 		{
 			var data = dps[i],
@@ -103,11 +102,12 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 				vars = this.yVariables,
 				onclick = onclick.bind(stats),
 				onmouseover = onmouseover.bind(stats);
+
 			var enter = gsymbol.enter()
 				.append("svg:g")
 				.attr("class").stringf(classf(i, "symbol"))
-				.attr("transform").stringf(getTranslatePointf(i));
-
+				.attr("transform").stringf(getTranslatePointf(i))
+				;
 			if (null != click)
 				enter.on("click", onclick);
 
@@ -131,14 +131,12 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 					);
 				});
 			}
-
 			gsymbol.update()
 				.selectAll("g.symbol")
 				.dataf(function(d, i) return d)
 				.update()
 				.attr("transform").stringf(cast getTranslatePointf(i))
 			;
-
 			gsymbol.exit().remove();
 		}
 		ready.dispatch();
@@ -150,7 +148,7 @@ class ScatterGraph extends CartesianChart<Array<Array<Dynamic>>>
 			y = getY1(pos);
 		return function(dp, i)
 		{
-			return "translate("+x(dp)+","+y(dp,i)+")";
+			return "translate("+Math.round(x(dp))+","+Math.round(y(dp,i))+")";
 		};
 	}
 
