@@ -1,6 +1,6 @@
 <?php
 
-define('HOST', 'http://'.$_SERVER['SERVER_NAME']);
+define('HOST', '//'.$_SERVER['SERVER_NAME']);
 define('SAMPLES_CHARTS_DIR', 'samples/charts/');
 define('SAMPLES_DATA_DIR', 'samples/data/');
 define('SAMPLE_EXT', '.js');
@@ -40,16 +40,16 @@ if(LOCAL)
 	define('REPORTGRID_VIZ_API', HOST.'/rg/charts/js/reportgrid-charts.js' . (AUTHCODE ? ('?authCode=' . urlencode(AUTHCODE)) : ''));
 	define('REPORTGRID_QUERY_API', HOST.'/rg/query/js/reportgrid-query.js');
 	define('REPORTGRID_CSS_API', HOST.'/rg/css/rg-charts.css');
-	define('REPORTGRID_CORE_API', HOST.'/rg/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
+	define('REPORTGRID_CORE_API', HOST.'/rg/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=https://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
 	define('SAMPLE_CSS', HOST.'/rg/charts/service/samples/css/sample.css');
 
 	$viz_categories['XX'] = array('name' => 'Test', 'sequence' => 1000);
 } else {
 	define('REPORTGRID_VIZ_API', HOST.'/js/reportgrid-charts.js' . (AUTHCODE ? ('?authCode=' . urlencode(AUTHCODE)) : ''));
-	define('REPORTGRID_QUERY_API', 'http://api.reportgrid.com/js/reportgrid-query.js');
-	define('REPORTGRID_CSS_API', 'http://api.reportgrid.com/css/rg-charts.css');
-	define('REPORTGRID_CORE_API', 'http://api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=http://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
-	define('SAMPLE_CSS', 'http://api.reportgrid.com/services/viz/samples/samples/css/sample.css');
+	define('REPORTGRID_QUERY_API', '//api.reportgrid.com/js/reportgrid-query.js');
+	define('REPORTGRID_CSS_API', '//api.reportgrid.com/css/rg-charts.css');
+	define('REPORTGRID_CORE_API', '//api.reportgrid.com/js/reportgrid-core.js?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&analyticsServer=https://stageapp01.reportgrid.com/services/analytics/v1/" type="text/javascript');
+	define('SAMPLE_CSS', '//api.reportgrid.com/services/viz/samples/samples/css/sample.css');
 }
 
 function categories()

@@ -111,6 +111,14 @@ class TemplateTransformer implements ITransformer<Dynamic, Pairs>
 				TransformResult.Success(new Pairs(
 					["projection", "url"],
 					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-states.json.js"]));
+			case "usa-states-name":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-states-name.json.js"]));
+			case "usa-states-code":
+				TransformResult.Success(new Pairs(
+					["projection", "url"],
+					["albersusa", RGConst.BASE_URL_GEOJSON + "usa-states-code.json.js"]));
 			case "usa-state-centroids":
 				TransformResult.Success(new Pairs(
 					["projection", "url"],
