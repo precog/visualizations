@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="chrome=IE8">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>ReportGrid.Charts</title>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script>
 var API = {
 	samplesService : "index.php"
@@ -105,7 +105,7 @@ $(document).ready(function(){
 		{
 			var url = src();
 			console.log(url);
-			$.getJSON('http://api.reportgrid.com/services/viz/samples/up/url.json', {
+			$.getJSON('//api.reportgrid.com/services/viz/samples/up/url.json', {
 				urlhtml: url
 			}, function(data){
 				$('#samplevisualization iframe').attr('src', data.service[format]);
@@ -120,7 +120,7 @@ $(document).ready(function(){
 	$("#html").click(formathandler('html'));
 
 	function src() {
-		return 'http://api.reportgrid.com/services/viz/samples/' + $('#samplecurrent').attr('href');
+		return '//api.reportgrid.com/services/viz/samples/' + $('#samplecurrent').attr('href');
 	}
 })
 </script>
