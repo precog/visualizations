@@ -20,3 +20,7 @@ QuirrelIDE/clierror
 .DS_Store
 
 query/project.sublime-workspace
+
+*.un~
+*.swp
+*.pyc
