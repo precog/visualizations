@@ -234,37 +234,44 @@ class Periodicity
 	{
 		switch(periodicity)
 		{
-			case "eternity", "single": return "all time";
+			case "eternity", "single":
+				return "all time";
 			case "minute":
 				if (firstInSeries("hour", v))
 					return FormatDate.timeShort(Date.fromTime(v));
 				else
-					return FormatDate.format("%i", Date.fromTime(v));
+					return formatDate("%i", Date.fromTime(v));
 			case "hour":
 				if (firstInSeries("day", v))
-					return FormatDate.format("%b %e", dateUtc(v));
+					return formatDate("%b %e", dateUtc(v));
 				else
 					return FormatDate.hourShort(Date.fromTime(v));
 			case "day":
 				if (firstInSeries("month", v))
-					return FormatDate.format("%b %e", dateUtc(v));
+					return formatDate("%b %e", dateUtc(v));
 				else
-					return FormatDate.format("%e", dateUtc(v));
+					return formatDate("%e", dateUtc(v));
 			case "week":
 				var d = dateUtc(v);
 				if (d.getDate() <= 7)
-					return FormatDate.format("%b %e", d);
+					return formatDate("%b %e", d);
 				else
-					return FormatDate.format("%e", d);
+					return formatDate("%e", d);
 			case "month":
 				if (firstInSeries("year", v))
 					return FormatDate.year(dateUtc(v));
 				else
-					return FormatDate.format("%b", dateUtc(v));
+					return formatDate("%b", dateUtc(v));
 			case "year":
 				return FormatDate.year(dateUtc(v));
-			default: return periodicity + ": " + Date.fromTime(v);
+			default:
+				return periodicity + ": " + Date.fromTime(v);
 		}
+	}
+
+	static function formatDate(pattern : String, date : Date)
+	{
+		return FormatDate.format(date, pattern);
 	}
 
 	public static function firstInSeries(periodicity : String, v : Float) : Bool

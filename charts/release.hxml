@@ -17,6 +17,6 @@
 -D embed_js
 --no-traces
 #--dead-code-elimination
---js-modern
+#--js-modern
 --macro keep(["StringBuf","Math","thx.svg.Symbol","Dates","thx.svg.PathTypes","thx.svg.AreaTypes","thx.svg.CentroidTypes","rg.layout.Layout"])
 -cmd ./deploy.sh

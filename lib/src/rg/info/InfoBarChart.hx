@@ -6,6 +6,7 @@
 package rg.info;
 import rg.svg.chart.GradientEffect;
 import rg.svg.chart.GradientEffects;
+import rg.axis.Stats;
 
 using rg.info.filter.FilterDescription;
 
@@ -21,6 +22,7 @@ using rg.info.Info;
 	public var horizontal : Bool;
 	public var segment : InfoSegment;
 	public var startat : Null<String>;
+	public var barclass : Null<Dynamic -> Stats<Dynamic> -> String>;
 
 	public function new()
 	{
@@ -44,6 +46,7 @@ using rg.info.Info;
 				GradientEffects.parse,
 				ReturnMessageIfNot.isString.or(GradientEffects.canParse.make("invalid gradient effect: {0}"))
 			),
+			"barclass".toExpressionFunctionOrString([null, "stats"]),
 			"barpadding".toFloat(["barPadding"]),
 			"barpaddingaxis".toFloat(["barPaddingAxis"]),
 			"barpaddingdatapoint".toFloat(["barPaddingDataPoint"]),

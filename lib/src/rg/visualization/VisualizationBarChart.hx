@@ -45,6 +45,7 @@ class VisualizationBarChart extends VisualizationCartesian<{ data : Array<Array<
 				chart.displayGradient = true;
 				chart.gradientLightness = lightness;
 		}
+		chart.barClass = infoBar.barclass;
 		chart.padding = infoBar.barPadding;
 		chart.paddingAxis = infoBar.barPaddingAxis;
 		chart.paddingDataPoint = infoBar.barPaddingDataPoint;

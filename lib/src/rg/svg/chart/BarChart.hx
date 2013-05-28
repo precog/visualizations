@@ -40,6 +40,7 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 	public var horizontal : Bool;
 	public var startat : Null<String>;
 	public var segmentProperty : Null<String>;
+	public var barClass : Dynamic -> Stats<Dynamic> -> String;
 
 	public function new(panel : Panel)
 	{
@@ -177,6 +178,13 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						.onNode("click", click.bind(dp))
 					;
 					Access.setData(bar.node(), dp);
+					if(null != barClass)
+					{
+						var cls = barClass(dp, stats);
+						if(null != cls)
+							bar.classed().add(cls);
+					}
+
 					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);
@@ -262,6 +270,14 @@ class BarChart extends CartesianChart<{ data : Array<Array<Array<Dynamic>>>, seg
 						.onNode("click", click.bind(dp))
 					;
 					Access.setData(bar.node(), dp);
+
+					if(null != barClass)
+					{
+						var cls = barClass(dp, stats);
+						if(null != cls)
+							bar.classed().add(cls);
+					}
+
 					RGColors.storeColorForSelection(bar);
 					if(displayGradient)
 						bar.eachNode(applyGradient);

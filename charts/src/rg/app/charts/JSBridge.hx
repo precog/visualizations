@@ -42,7 +42,7 @@ class JSBridge
 
 	static function main()
 	{
-		// check for IE8 or older and return
+// check for IE8 or older and return
 //		var msiev = getInternetExplorerVersion();
 //		if(msiev >= 0 && msiev < 9)
 //			return;
