@@ -10,7 +10,7 @@
 -js bin/js/reportgrid-charts.js
 -main rg.app.charts.JSBridge
 -D js_shims
--D haxe3
+#-D haxe3
 -D embed_js
 #--dead-code-elimination
 -dce no

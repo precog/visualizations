@@ -45,7 +45,8 @@ class App
 #end
 	public static var version(default, null) : String;
 
-	public static function baseUrl() return BASE_HOST
+	public static function baseUrl()
+		return BASE_HOST;
 
 	static function main()
 	{
@@ -93,7 +94,7 @@ class App
 
 		app.modules.add(new util.TraceToMongo(MONGO_DB_NAME, LOG_COLLECTION, serverName()));
 
-routes.addRoute("/contact/{?message}", {controller:"site", action:"contact"});
+		routes.addRoute("/contact/{?message}", {controller:"site", action:"contact"});
 
 		routes.addRoute('/', {
 			controller : "home", action : "index"

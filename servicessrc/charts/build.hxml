@@ -1,10 +1,9 @@
--php ../../services/charts
+-php bin
 -cp src
+-cp ufront
+-cp erazor
+-cp thx
+-lib hscript
 -main App
--lib ufront
--cp /User/francoponticelli/ufront/src
--lib erazor
--lib hscript:1.6
+-D ufront
 -D erazor
--D haxe_209
-#-lib thx

@@ -12,7 +12,7 @@
 #--connect 8888
 -D release
 -D js_shims
--D haxe3
+#-D haxe3
 -dce full
 -D embed_js
 --no-traces

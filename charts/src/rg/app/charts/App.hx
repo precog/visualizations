@@ -24,7 +24,6 @@ import rg.data.IndependentVariableProcessor;
 import rg.data.VariableDependent;
 import rg.data.VariableIndependent;
 import rg.html.widget.DownloaderMenu;
-import rg.html.widget.Logo;
 import rg.layout.Layout;
 import thx.error.Error;
 import dhx.Selection;
@@ -135,14 +134,6 @@ class App
 		}
 		if(!uselegacy)
 		{
-			if(!jsoptions.options.a && untyped document.location.href.substr(0, 7) != "file://")
-			{
-				visualization.addReadyOnce(function()
-				{
-					var widget = Logo.createLogo(visualization.container, brandPadding);
-				});
-			}
-
 			visualization.addReadyOnce(function()
 			{
 				chartsLoaded++;

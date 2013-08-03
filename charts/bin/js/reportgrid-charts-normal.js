@@ -205,131 +205,6 @@ Bools.parse = function(s) {
 Bools.compare = function(a,b) {
 	return a == b?0:a?-1:1;
 }
-var Bytes = function(length,b) {
-	this.length = length;
-	this.b = b;
-};
-$hxClasses["Bytes"] = Bytes;
-Bytes.__name__ = ["Bytes"];
-Bytes.alloc = function(length) {
-	var a = new Array();
-	var _g = 0;
-	while(_g < length) {
-		var i = _g++;
-		a.push(0);
-	}
-	return new Bytes(length,a);
-}
-Bytes.ofString = function(s) {
-	var a = new Array();
-	var _g1 = 0, _g = s.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var c = HxOverrides.cca(s,i);
-		if(c <= 127) a.push(c); else if(c <= 2047) {
-			a.push(192 | c >> 6);
-			a.push(128 | c & 63);
-		} else if(c <= 65535) {
-			a.push(224 | c >> 12);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		} else {
-			a.push(240 | c >> 18);
-			a.push(128 | c >> 12 & 63);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		}
-	}
-	return new Bytes(a.length,a);
-}
-Bytes.prototype = {
-	toString: function() {
-		return this.readString(0,this.length);
-	}
-	,readString: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) throw new chx.lang.OutsideBoundsException();
-		var s = "";
-		var b = this.b;
-		var fcc = String.fromCharCode;
-		var i = pos;
-		var max = pos + len;
-		while(i < max) {
-			var c = b[i++];
-			if(c < 128) {
-				if(c == 0) break;
-				s += fcc(c);
-			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-				var c2 = b[i++];
-				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-			} else {
-				var c2 = b[i++];
-				var c3 = b[i++];
-				s += fcc((c & 15) << 18 | (c2 & 127) << 12 | c3 << 6 & 127 | b[i++] & 127);
-			}
-		}
-		return s;
-	}
-	,sub: function(pos,len) {
-		if(len == null) len = this.length - pos;
-		if(pos + len > this.length) len = this.length - pos;
-		if(pos < 0 || len < 0) throw new chx.lang.OutsideBoundsException();
-		return new Bytes(len,this.b.slice(pos,pos + len));
-	}
-	,b: null
-	,length: null
-	,__class__: Bytes
-}
-var BytesBuffer = function() {
-	this.b = new Array();
-};
-$hxClasses["BytesBuffer"] = BytesBuffer;
-BytesBuffer.__name__ = ["BytesBuffer"];
-BytesBuffer.prototype = {
-	getBytes: function() {
-		var bytes = new Bytes(this.b.length,this.b);
-		this.b = null;
-		return bytes;
-	}
-	,add: function(src) {
-		var b1 = this.b;
-		var b2 = src.b;
-		var _g1 = 0, _g = src.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.b.push(b2[i]);
-		}
-	}
-	,b: null
-	,__class__: BytesBuffer
-}
-var BytesUtil = function() { }
-$hxClasses["BytesUtil"] = BytesUtil;
-BytesUtil.__name__ = ["BytesUtil"];
-BytesUtil.cleanHexFormat = function(hex) {
-	var e = StringTools.replace(hex,":","");
-	e = e.split("|").join("");
-	var ereg = new EReg("([\\s]*)","g");
-	e = ereg.replace(e,"");
-	if(StringTools.startsWith(e,"0x")) e = HxOverrides.substr(e,2,null);
-	if((e.length & 1) == 1) e = "0" + e;
-	return e.toLowerCase();
-}
-BytesUtil.hexDump = function(b,separator) {
-	return BytesUtil.toHex(b,separator);
-}
-BytesUtil.toHex = function(b,separator) {
-	if(separator == null) separator = " ";
-	var sb = new StringBuf();
-	var l = b.length;
-	var first = true;
-	var _g = 0;
-	while(_g < l) {
-		var i = _g++;
-		if(first) first = false; else sb.b += Std.string(separator);
-		sb.b += Std.string(StringTools.hex(b.b[i],2).toLowerCase());
-	}
-	return StringTools.rtrim(sb.b);
-}
 var DateTools = function() { }
 $hxClasses["DateTools"] = DateTools;
 DateTools.__name__ = ["DateTools"];
@@ -1672,11 +1547,6 @@ StringTools.urlDecode = function(s) {
 StringTools.startsWith = function(s,start) {
 	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
 }
-StringTools.endsWith = function(s,end) {
-	var elen = end.length;
-	var slen = s.length;
-	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
-}
 StringTools.isSpace = function(s,pos) {
 	var c = HxOverrides.cca(s,pos);
 	return c >= 9 && c <= 13 || c == 32;
@@ -1734,16 +1604,6 @@ StringTools.hex = function(n,digits) {
 	} while(n > 0);
 	if(digits != null) while(s.length < digits) s = "0" + s;
 	return s;
-}
-StringTools.stripWhite = function(s) {
-	var l = s.length;
-	var i = 0;
-	var sb = new StringBuf();
-	while(i < l) {
-		if(!StringTools.isSpace(s,i)) sb.b += Std.string(s.charAt(i));
-		i++;
-	}
-	return sb.b;
 }
 var Strings = function() { }
 $hxClasses["Strings"] = Strings;
@@ -1871,8 +1731,19 @@ Strings.lcfirst = function(value) {
 Strings.empty = function(value) {
 	return value == null || value == "";
 }
+Strings.mapEreg = function(e,s,f) {
+	var buf = new StringBuf();
+	while(true) {
+		if(!e.match(s)) break;
+		buf.b += Std.string(e.matchedLeft());
+		buf.b += Std.string(f(e));
+		s = e.matchedRight();
+	}
+	buf.b += Std.string(s);
+	return buf.b;
+}
 Strings.ucwords = function(value) {
-	return Strings.__ucwordsPattern.customReplace(value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
+	return Strings.mapEreg(Strings.__ucwordsPattern,value == null?null:value.charAt(0).toUpperCase() + HxOverrides.substr(value,1,null),Strings.__upperMatch);
 }
 Strings.__upperMatch = function(re) {
 	return re.matched(0).toUpperCase();
@@ -2202,165 +2073,6 @@ Types.isPrimitive = function(v) {
 		return $r;
 	}(this));
 }
-var chx = {}
-chx.crypt = {}
-chx.crypt.IBlockCipher = function() { }
-$hxClasses["chx.crypt.IBlockCipher"] = chx.crypt.IBlockCipher;
-chx.crypt.IBlockCipher.__name__ = ["chx","crypt","IBlockCipher"];
-chx.crypt.IPad = function() { }
-$hxClasses["chx.crypt.IPad"] = chx.crypt.IPad;
-chx.crypt.IPad.__name__ = ["chx","crypt","IPad"];
-chx.crypt.IPad.prototype = {
-	unpad: null
-	,__class__: chx.crypt.IPad
-}
-chx.crypt.PadPkcs1Type1 = function(size) {
-	this.blockSize = size;
-	this.setPadCount(8);
-	this.typeByte = 1;
-	this.set_padByte(255);
-};
-$hxClasses["chx.crypt.PadPkcs1Type1"] = chx.crypt.PadPkcs1Type1;
-chx.crypt.PadPkcs1Type1.__name__ = ["chx","crypt","PadPkcs1Type1"];
-chx.crypt.PadPkcs1Type1.__interfaces__ = [chx.crypt.IPad];
-chx.crypt.PadPkcs1Type1.prototype = {
-	set_padByte: function(x) {
-		this.padByte = x & 255;
-		return x;
-	}
-	,setPadCount: function(x) {
-		if(x + 3 >= this.blockSize) throw "Internal padding size exceeds crypt block size";
-		this.padCount = x;
-		this.textSize = this.blockSize - 3 - this.padCount;
-		return x;
-	}
-	,unpad: function(s) {
-		var i = 0;
-		var sb = new BytesBuffer();
-		while(i < s.length) {
-			while(i < s.length && s.b[i] == 0) ++i;
-			if(s.length - i - 3 - this.padCount < 0) throw "Unexpected short message";
-			if(s.b[i] != this.typeByte) throw "Expected marker " + this.typeByte + " at position " + i + " [" + BytesUtil.hexDump(s) + "]";
-			if(++i >= s.length) return sb.getBytes();
-			while(i < s.length && s.b[i] != 0) ++i;
-			i++;
-			var n = 0;
-			while(i < s.length && n++ < this.textSize) sb.b.push(s.b[i++]);
-		}
-		return sb.getBytes();
-	}
-	,typeByte: null
-	,padCount: null
-	,padByte: null
-	,textSize: null
-	,blockSize: null
-	,__class__: chx.crypt.PadPkcs1Type1
-}
-chx.crypt.RSAEncrypt = function(nHex,eHex) {
-	this.init();
-	if(nHex != null) this.setPublic(nHex,eHex);
-};
-$hxClasses["chx.crypt.RSAEncrypt"] = chx.crypt.RSAEncrypt;
-chx.crypt.RSAEncrypt.__name__ = ["chx","crypt","RSAEncrypt"];
-chx.crypt.RSAEncrypt.__interfaces__ = [chx.crypt.IBlockCipher];
-chx.crypt.RSAEncrypt.prototype = {
-	get_blockSize: function() {
-		if(this.n == null) return 0;
-		return this.n.bitLength() + 7 >> 3;
-	}
-	,doPublic: function(x) {
-		return x.modPowInt(this.e,this.n);
-	}
-	,doBufferDecrypt: function(src,f,pf) {
-		var bs = this.get_blockSize();
-		var ts = bs - 11;
-		var idx = 0;
-		var msg = new BytesBuffer();
-		while(idx < src.length) {
-			if(idx + bs > src.length) bs = src.length - idx;
-			var c = math.BigInteger.ofBytes(src.sub(idx,bs),true);
-			var m = f(c);
-			if(m == null) return null;
-			var up = pf.unpad(m.toBytesUnsigned());
-			if(up.length > ts) throw "block text length error";
-			msg.add(up);
-			idx += bs;
-		}
-		return msg.getBytes();
-	}
-	,verify: function(data) {
-		return this.doBufferDecrypt(data,$bind(this,this.doPublic),new chx.crypt.PadPkcs1Type1(this.get_blockSize()));
-	}
-	,setPublic: function(nHex,eHex) {
-		this.init();
-		if(nHex == null || nHex.length == 0) throw new chx.lang.NullPointerException("nHex not set: " + nHex);
-		if(eHex == null || eHex.length == 0) throw new chx.lang.NullPointerException("eHex not set: " + eHex);
-		var s = BytesUtil.cleanHexFormat(nHex);
-		this.n = math.BigInteger.ofString(s,16);
-		if(this.n == null) throw 2;
-		var ie = Std.parseInt("0x" + BytesUtil.cleanHexFormat(eHex));
-		if(ie == null || ie == 0) throw 3;
-		this.e = ie;
-	}
-	,init: function() {
-		this.n = null;
-		this.e = 0;
-	}
-	,e: null
-	,n: null
-	,__class__: chx.crypt.RSAEncrypt
-}
-chx.formats = {}
-chx.formats.Base64 = function() { }
-$hxClasses["chx.formats.Base64"] = chx.formats.Base64;
-chx.formats.Base64.__name__ = ["chx","formats","Base64"];
-chx.formats.Base64.decode = function(s) {
-	s = StringTools.stripWhite(s);
-	s = StringTools.replace(s,"=","");
-	if(chx.formats.Base64.enc == null) chx.formats.Base64.enc = new haxe.BaseCode(Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
-	return (function($this) {
-		var $r;
-		try {
-			$r = chx.formats.Base64.enc.decodeBytes(Bytes.ofString(s));
-		} catch( e ) {
-			$r = null;
-		}
-		return $r;
-	}(this));
-}
-chx.lang = {}
-chx.lang.Exception = function(msg,cause) {
-	this.message = msg;
-	this.cause = cause;
-};
-$hxClasses["chx.lang.Exception"] = chx.lang.Exception;
-chx.lang.Exception.__name__ = ["chx","lang","Exception"];
-chx.lang.Exception.prototype = {
-	toString: function() {
-		return Type.getClassName(Type.getClass(this)) + "(" + (this.message == null?"":this.message + ")");
-	}
-	,cause: null
-	,message: null
-	,__class__: chx.lang.Exception
-}
-chx.lang.NullPointerException = function(msg,cause) {
-	chx.lang.Exception.call(this,msg,cause);
-};
-$hxClasses["chx.lang.NullPointerException"] = chx.lang.NullPointerException;
-chx.lang.NullPointerException.__name__ = ["chx","lang","NullPointerException"];
-chx.lang.NullPointerException.__super__ = chx.lang.Exception;
-chx.lang.NullPointerException.prototype = $extend(chx.lang.Exception.prototype,{
-	__class__: chx.lang.NullPointerException
-});
-chx.lang.OutsideBoundsException = function(msg,cause) {
-	chx.lang.Exception.call(this,msg,cause);
-};
-$hxClasses["chx.lang.OutsideBoundsException"] = chx.lang.OutsideBoundsException;
-chx.lang.OutsideBoundsException.__name__ = ["chx","lang","OutsideBoundsException"];
-chx.lang.OutsideBoundsException.__super__ = chx.lang.Exception;
-chx.lang.OutsideBoundsException.prototype = $extend(chx.lang.Exception.prototype,{
-	__class__: chx.lang.OutsideBoundsException
-});
 var dhx = {}
 dhx.Access = function(selection) {
 	this.selection = selection;
@@ -3176,20 +2888,6 @@ dhx.BaseSelection.prototype = {
 		}
 		return null;
 	}
-	,insert: function(name,before,beforeSelector) {
-		var qname = dhx.Namespace.qualify(name);
-		var insertDom = function(node) {
-			var n = js.Browser.document.createElement(name);
-			node.insertBefore(n,null != before?before:dhx.Dom.select(beforeSelector).node());
-			return n;
-		};
-		var insertNsDom = function(node) {
-			var n = js.js.Browser.document.createElementNS(qname.space,qname.local);
-			node.insertBefore(n,null != before?before:dhx.Dom.select(beforeSelector).node());
-			return n;
-		};
-		return this._select(null == qname?insertDom:insertNsDom);
-	}
 	,eachNode: function(f) {
 		var _g = 0, _g1 = this.groups;
 		while(_g < _g1.length) {
@@ -3852,7 +3550,7 @@ erazor._Parser.ParseResult.doneSkipCurrent.toString = $estr;
 erazor._Parser.ParseResult.doneSkipCurrent.__enum__ = erazor._Parser.ParseResult;
 erazor.Parser = function() {
 	this.condMatch = new EReg("^@(?:if|for|while)\\b","");
-	this.inConditionalMatch = new EReg("^(?:\\}[\\s\r\n]*else if\\b|\\}[\\s\r\n]*else[\\s\r\n]*{)","");
+	this.inConditionalMatch = new EReg("^(?:\\}[\\s\r\n]*else if\\b|\\}[\\s\r\n]*else[\\s\r\n]*\\{)","");
 	this.variableChar = new EReg("^[_\\w\\.]$","");
 };
 $hxClasses["erazor.Parser"] = erazor.Parser;
@@ -3881,10 +3579,12 @@ erazor.Parser.prototype = {
 		var i = -1;
 		while(++i < len) {
 			var $char = template.charAt(i);
-			if($char == erazor.Parser.at) {
+			switch($char) {
+			case erazor.Parser.at:
 				if(len > i + 1 && template.charAt(i + 1) != erazor.Parser.at) return { block : erazor.TBlock.literal(this.escapeLiteral(HxOverrides.substr(template,0,i))), length : i, start : this.pos};
 				++i;
-			} else if($char == "}") {
+				break;
+			case "}":
 				if(this.bracketStack.length > 0) {
 					var _g = this.bracketStack[this.bracketStack.length - 1];
 					switch( (_g)[1] ) {
@@ -3895,7 +3595,11 @@ erazor.Parser.prototype = {
 						break;
 					}
 				} else throw new erazor.error.ParserError(erazor.Parser.bracketMismatch,this.pos);
-			} else if($char == "{") this.bracketStack.push(erazor._Parser.ParseContext.literal);
+				break;
+			case "{":
+				this.bracketStack.push(erazor._Parser.ParseContext.literal);
+				break;
+			}
 		}
 		return { block : erazor.TBlock.literal(this.escapeLiteral(template)), length : len, start : this.pos};
 	}
@@ -4035,19 +3739,11 @@ erazor.Parser.prototype = {
 				if($char == startBrace) ++stack; else if($char == endBrace) {
 					--stack;
 					if(stack == 0) return HxOverrides.substr(template,0,i + 1);
-					if(stack < 0) return (function($this) {
-						var $r;
-						throw new erazor.error.ParserError("Unbalanced braces for block: ",$this.pos,HxOverrides.substr(template,0,100));
-						return $r;
-					}(this));
+					if(stack < 0) throw new erazor.error.ParserError("Unbalanced braces for block: ",this.pos,HxOverrides.substr(template,0,100));
 				} else if($char == "\"") insideDoubleQuote = true; else if($char == "'") insideSingleQuote = true;
 			} else if(insideDoubleQuote && $char == "\"" && template.charAt(i - 1) != "\\") insideDoubleQuote = false; else if(insideSingleQuote && $char == "'" && template.charAt(i - 1) != "\\") insideSingleQuote = false;
 		}
-		return (function($this) {
-			var $r;
-			throw new erazor.error.ParserError("Failed to find a closing delimiter for the script block: ",$this.pos,HxOverrides.substr(template,0,100));
-			return $r;
-		}(this));
+		throw new erazor.error.ParserError("Failed to find a closing delimiter for the script block: ",this.pos,HxOverrides.substr(template,0,100));
 	}
 	,pos: null
 	,conditionalStack: null
@@ -4706,6 +4402,7 @@ hscript.Interp.prototype = {
 erazor.hscript = {}
 erazor.hscript.EnhancedInterp = function() {
 	hscript.Interp.call(this);
+	var add = ($_=new StringBuf(),$bind($_,$_.add));
 };
 $hxClasses["erazor.hscript.EnhancedInterp"] = erazor.hscript.EnhancedInterp;
 erazor.hscript.EnhancedInterp.__name__ = ["erazor","hscript","EnhancedInterp"];
@@ -4722,60 +4419,6 @@ erazor.hscript.EnhancedInterp.prototype = $extend(hscript.Interp.prototype,{
 	,__class__: erazor.hscript.EnhancedInterp
 });
 var haxe = {}
-haxe.BaseCode = function(base) {
-	var len = base.length;
-	var nbits = 1;
-	while(len > 1 << nbits) nbits++;
-	if(nbits > 8 || len != 1 << nbits) throw "BaseCode : base length must be a power of two.";
-	this.base = base;
-	this.nbits = nbits;
-};
-$hxClasses["haxe.BaseCode"] = haxe.BaseCode;
-haxe.BaseCode.__name__ = ["haxe","BaseCode"];
-haxe.BaseCode.prototype = {
-	decodeBytes: function(b) {
-		var nbits = this.nbits;
-		var base = this.base;
-		if(this.tbl == null) this.initTable();
-		var tbl = this.tbl;
-		var size = b.length * nbits >> 3;
-		var out = Bytes.alloc(size);
-		var buf = 0;
-		var curbits = 0;
-		var pin = 0;
-		var pout = 0;
-		while(pout < size) {
-			while(curbits < 8) {
-				curbits += nbits;
-				buf <<= nbits;
-				var i = tbl[b.b[pin++]];
-				if(i == -1) throw "BaseCode : invalid encoded char";
-				buf |= i;
-			}
-			curbits -= 8;
-			out.b[pout++] = buf >> curbits & 255 & 255;
-		}
-		return out;
-	}
-	,initTable: function() {
-		var tbl = new Array();
-		var _g = 0;
-		while(_g < 256) {
-			var i = _g++;
-			tbl[i] = -1;
-		}
-		var _g1 = 0, _g = this.base.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			tbl[this.base.b[i]] = i;
-		}
-		this.tbl = tbl;
-	}
-	,tbl: null
-	,nbits: null
-	,base: null
-	,__class__: haxe.BaseCode
-}
 haxe.Http = function(url) {
 	this.url = url;
 	this.headers = new haxe.ds.StringMap();
@@ -6816,686 +6459,6 @@ js.Scroll.getLeft = function() {
 	}
 	return document.documentElement.scrollLeft;
 }
-var math = {}
-math.BigInteger = function() {
-	if(math.BigInteger.BI_RC == null || math.BigInteger.BI_RC.length == 0) math.BigInteger.initBiRc();
-	if(math.BigInteger.BI_RM.length == 0) throw "BI_RM not initialized";
-	this.chunks = new Array();
-	var _g = math.BigInteger;
-	switch(_g.defaultAm) {
-	case 1:
-		this.am = $bind(this,this.am1);
-		break;
-	case 2:
-		this.am = $bind(this,this.am2);
-		break;
-	case 3:
-		this.am = $bind(this,this.am3);
-		break;
-	default:
-		throw "am error";
-		null;
-	}
-};
-$hxClasses["math.BigInteger"] = math.BigInteger;
-math.BigInteger.__name__ = ["math","BigInteger"];
-math.BigInteger.initBiRc = function() {
-	math.BigInteger.BI_RC = new Array();
-	var rr = HxOverrides.cca("0",0);
-	var _g = 0;
-	while(_g < 10) {
-		var vv = _g++;
-		math.BigInteger.BI_RC[rr] = vv;
-		rr++;
-	}
-	rr = HxOverrides.cca("a",0);
-	var _g = 10;
-	while(_g < 37) {
-		var vv = _g++;
-		math.BigInteger.BI_RC[rr] = vv;
-		rr++;
-	}
-	rr = HxOverrides.cca("A",0);
-	var _g = 10;
-	while(_g < 37) {
-		var vv = _g++;
-		math.BigInteger.BI_RC[rr] = vv;
-		rr++;
-	}
-}
-math.BigInteger.get_ZERO = function() {
-	return math.BigInteger.nbv(0);
-}
-math.BigInteger.get_ONE = function() {
-	return math.BigInteger.nbv(1);
-}
-math.BigInteger.nbv = function(i) {
-	var r = math.BigInteger.nbi();
-	r.fromInt(i);
-	return r;
-}
-math.BigInteger.nbi = function() {
-	return new math.BigInteger();
-}
-math.BigInteger.ofString = function(s,base) {
-	var me = math.BigInteger.nbi();
-	var fromStringExt = function(s1,b) {
-		me.fromInt(0);
-		var cs = Math.floor(0.6931471805599453 * math.BigInteger.DB / Math.log(b));
-		var d = Math.pow(b,cs) | 0;
-		var mi = false;
-		var j = 0;
-		var w = 0;
-		var _g1 = 0, _g = s1.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var x = math.BigInteger.intAt(s1,i);
-			if(x < 0) {
-				if(s1.charAt(i) == "-" && me.sign == 0) mi = true;
-				continue;
-			}
-			w = b * w + x;
-			if(++j >= cs) {
-				me.dMultiply(d);
-				me.dAddOffset(w,0);
-				j = 0;
-				w = 0;
-			}
-		}
-		if(j > 0) {
-			me.dMultiply(Math.pow(b,j) | 0);
-			me.dAddOffset(w,0);
-		}
-		if(mi) math.BigInteger.get_ZERO().subTo(me,me);
-		return me;
-	};
-	var k;
-	if(base == 16) k = 4; else if(base == 10) return fromStringExt(s,base); else if(base == 256) k = 8; else if(base == 8) k = 3; else if(base == 2) k = 1; else if(base == 32) k = 5; else if(base == 4) k = 2; else return fromStringExt(s,base);
-	me.t = 0;
-	me.sign = 0;
-	var i = s.length, mi = false, sh = 0;
-	while(--i >= 0) {
-		var x = k == 8?HxOverrides.cca(s,i) & 255:math.BigInteger.intAt(s,i);
-		if(x < 0) {
-			if(s.charAt(i) == "-") mi = true;
-			continue;
-		}
-		mi = false;
-		if(sh == 0) {
-			me.chunks[me.t] = x;
-			me.t++;
-		} else if(sh + k > math.BigInteger.DB) {
-			me.chunks[me.t - 1] |= (x & (1 << math.BigInteger.DB - sh) - 1) << sh;
-			me.chunks[me.t] = x >> math.BigInteger.DB - sh;
-			me.t++;
-		} else me.chunks[me.t - 1] |= x << sh;
-		sh += k;
-		if(sh >= math.BigInteger.DB) sh -= math.BigInteger.DB;
-	}
-	if(k == 8 && (HxOverrides.cca(s,0) & 128) != 0) {
-		me.sign = -1;
-		if(sh > 0) me.chunks[me.t - 1] |= (1 << math.BigInteger.DB - sh) - 1 << sh;
-	}
-	me.clamp();
-	if(mi) math.BigInteger.get_ZERO().subTo(me,me);
-	return me;
-}
-math.BigInteger.ofBytes = function(r,unsigned,pos,len) {
-	if(pos == null) pos = 0;
-	if(len == null) len = r.length - pos;
-	if(len == 0) return math.BigInteger.get_ZERO();
-	var bi = math.BigInteger.nbi();
-	bi.sign = 0;
-	bi.t = 0;
-	var i = pos + len;
-	var sh = 0;
-	while(--i >= pos) {
-		var x = i < len?r.b[i] & 255:0;
-		if(sh == 0) {
-			bi.chunks[bi.t] = x;
-			bi.t++;
-		} else if(sh + 8 > math.BigInteger.DB) {
-			bi.chunks[bi.t - 1] |= (x & (1 << math.BigInteger.DB - sh) - 1) << sh;
-			bi.chunks[bi.t] = x >> math.BigInteger.DB - sh;
-			bi.t++;
-		} else bi.chunks[bi.t - 1] |= x << sh;
-		sh += 8;
-		if(sh >= math.BigInteger.DB) sh -= math.BigInteger.DB;
-	}
-	if(!unsigned && (r.b[0] & 128) != 0) {
-		bi.sign = -1;
-		if(sh > 0) bi.chunks[bi.t - 1] |= (1 << math.BigInteger.DB - sh) - 1 << sh;
-	}
-	bi.clamp();
-	return bi;
-}
-math.BigInteger.nbits = function(x) {
-	var r = 1;
-	var t;
-	if((t = x >>> 16) != 0) {
-		x = t;
-		r += 16;
-	}
-	if((t = x >> 8) != 0) {
-		x = t;
-		r += 8;
-	}
-	if((t = x >> 4) != 0) {
-		x = t;
-		r += 4;
-	}
-	if((t = x >> 2) != 0) {
-		x = t;
-		r += 2;
-	}
-	if((t = x >> 1) != 0) {
-		x = t;
-		r += 1;
-	}
-	return r;
-}
-math.BigInteger.intAt = function(s,i) {
-	var c = math.BigInteger.BI_RC[HxOverrides.cca(s,i)];
-	if(c == null) return -1;
-	return c;
-}
-math.BigInteger.prototype = {
-	am3: function(i,x,w,j,c,n) {
-		var xl = x & 16383;
-		var xh = x >> 14;
-		while(--n >= 0) {
-			var l = this.chunks[i] & 16383;
-			var h = this.chunks[i] >> 14;
-			i++;
-			var m = xh * l + h * xl;
-			l = xl * l + ((m & 16383) << 14) + w.chunks[j] + c;
-			c = (l >> 28) + (m >> 14) + xh * h;
-			w.chunks[j] = l & 268435455;
-			j++;
-		}
-		return c;
-	}
-	,am2: function(i,x,w,j,c,n) {
-		var xl = x & 32767;
-		var xh = x >> 15;
-		while(--n >= 0) {
-			var l = this.chunks[i] & 32767;
-			var h = this.chunks[i] >> 15;
-			i++;
-			var m = xh * l + h * xl;
-			l = xl * l + ((m & 32767) << 15) + w.chunks[j] + (c & 1073741823);
-			c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
-			w.chunks[j] = l & 1073741823;
-			j++;
-		}
-		return c;
-	}
-	,am1: function(i,x,w,j,c,n) {
-		while(--n >= 0) {
-			var v = x * this.chunks[i] + w.chunks[j] + c;
-			i++;
-			c = Math.floor(v / 67108864);
-			w.chunks[j] = v & 67108863;
-			j++;
-		}
-		return c;
-	}
-	,rShiftTo: function(n,r) {
-		r.sign = this.sign;
-		var ds = Math.floor(n / math.BigInteger.DB);
-		if(ds >= this.t) {
-			r.t = 0;
-			return;
-		}
-		var bs = n % math.BigInteger.DB;
-		var cbs = math.BigInteger.DB - bs;
-		var bm = (1 << bs) - 1;
-		r.chunks[0] = this.chunks[ds] >> bs;
-		var _g1 = ds + 1, _g = this.t;
-		while(_g1 < _g) {
-			var i = _g1++;
-			r.chunks[i - ds - 1] |= (this.chunks[i] & bm) << cbs;
-			r.chunks[i - ds] = this.chunks[i] >> bs;
-		}
-		if(bs > 0) r.chunks[this.t - ds - 1] |= (this.sign & bm) << cbs;
-		r.t = this.t - ds;
-		r.clamp();
-	}
-	,lShiftTo: function(n,r) {
-		var bs = n % math.BigInteger.DB;
-		var cbs = math.BigInteger.DB - bs;
-		var bm = (1 << cbs) - 1;
-		var ds = Math.floor(n / math.BigInteger.DB), c = this.sign << bs & math.BigInteger.DM, i;
-		var i1 = this.t - 1;
-		while(i1 >= 0) {
-			r.chunks[i1 + ds + 1] = this.chunks[i1] >> cbs | c;
-			c = (this.chunks[i1] & bm) << bs;
-			i1--;
-		}
-		i1 = ds - 1;
-		while(i1 >= 0) {
-			r.chunks[i1] = 0;
-			i1--;
-		}
-		r.chunks[ds] = c;
-		r.t = this.t + ds + 1;
-		r.sign = this.sign;
-		r.clamp();
-	}
-	,exp: function(e,z) {
-		if(e > 2147483647 || e < 1) return math.BigInteger.get_ONE();
-		var r = math.BigInteger.nbi();
-		var r2 = math.BigInteger.nbi();
-		var g = z.convert(this);
-		var i = math.BigInteger.nbits(e) - 1;
-		g.copyTo(r);
-		while(--i >= 0) {
-			z.sqrTo(r,r2);
-			if((e & 1 << i) > 0) z.mulTo(r2,g,r); else {
-				var t = r;
-				r = r2;
-				r2 = t;
-			}
-		}
-		return z.revert(r);
-	}
-	,dMultiply: function(n) {
-		this.chunks[this.t] = this.am(0,n - 1,this,0,0,this.t);
-		this.t++;
-		this.clamp();
-	}
-	,invDigit: function() {
-		if(this.t < 1) return 0;
-		var x = this.chunks[0];
-		if((x & 1) == 0) return 0;
-		var y = x & 3;
-		y = y * (2 - (x & 15) * y) & 15;
-		y = y * (2 - (x & 255) * y) & 255;
-		y = y * (2 - ((x & 65535) * y & 65535)) & 65535;
-		y = y * (2 - x * y % math.BigInteger.DV) % math.BigInteger.DV;
-		return y > 0?math.BigInteger.DV - y:-y;
-	}
-	,drShiftTo: function(n,r) {
-		if(r == null) return;
-		var i = n;
-		while(i < this.t) {
-			r.chunks[i - n] = this.chunks[i];
-			i++;
-		}
-		r.t = Math.max(this.t - n,0) | 0;
-		r.sign = this.sign;
-	}
-	,dlShiftTo: function(n,r) {
-		if(r == null) return;
-		var i = this.t - 1;
-		while(i >= 0) {
-			r.chunks[i + n] = this.chunks[i];
-			i--;
-		}
-		i = n - 1;
-		while(i >= 0) {
-			r.chunks[i] = 0;
-			i--;
-		}
-		r.t = this.t + n;
-		r.sign = this.sign;
-	}
-	,dAddOffset: function(n,w) {
-		while(this.t <= w) {
-			this.chunks[this.t] = 0;
-			this.t++;
-		}
-		this.chunks[w] += n;
-		while(this.chunks[w] >= math.BigInteger.DV) {
-			this.chunks[w] -= math.BigInteger.DV;
-			if(++w >= this.t) {
-				this.chunks[this.t] = 0;
-				this.t++;
-			}
-			++this.chunks[w];
-		}
-	}
-	,padTo: function(n) {
-		while(this.t < n) {
-			this.chunks[this.t] = 0;
-			this.t++;
-		}
-	}
-	,clamp: function() {
-		var c = this.sign & math.BigInteger.DM;
-		while(this.t > 0 && this.chunks[this.t - 1] == c) --this.t;
-	}
-	,subTo: function(a,r) {
-		var i = 0;
-		var c = 0;
-		var m = Math.min(a.t,this.t) | 0;
-		while(i < m) {
-			c += this.chunks[i] - a.chunks[i];
-			r.chunks[i] = c & math.BigInteger.DM;
-			i++;
-			c >>= math.BigInteger.DB;
-		}
-		if(a.t < this.t) {
-			c -= a.sign;
-			while(i < this.t) {
-				c += this.chunks[i];
-				r.chunks[i] = c & math.BigInteger.DM;
-				i++;
-				c >>= math.BigInteger.DB;
-			}
-			c += this.sign;
-		} else {
-			c += this.sign;
-			while(i < a.t) {
-				c -= a.chunks[i];
-				r.chunks[i] = c & math.BigInteger.DM;
-				i++;
-				c >>= math.BigInteger.DB;
-			}
-			c -= a.sign;
-		}
-		r.sign = c < 0?-1:0;
-		if(c < -1) {
-			r.chunks[i] = math.BigInteger.DV + c;
-			i++;
-		} else if(c > 0) {
-			r.chunks[i] = c;
-			i++;
-		}
-		r.t = i;
-		r.clamp();
-	}
-	,squareTo: function(r) {
-		if(r == this) throw "can not squareTo self";
-		var x = this.abs();
-		var i = r.t = 2 * x.t;
-		while(--i >= 0) r.chunks[i] = 0;
-		i = 0;
-		while(i < x.t - 1) {
-			var c = x.am(i,x.chunks[i],r,2 * i,0,1);
-			if((r.chunks[i + x.t] += x.am(i + 1,2 * x.chunks[i],r,2 * i + 1,c,x.t - i - 1)) >= math.BigInteger.DV) {
-				r.chunks[i + x.t] -= math.BigInteger.DV;
-				r.chunks[i + x.t + 1] = 1;
-			}
-			i++;
-		}
-		if(r.t > 0) {
-			var rv = x.am(i,x.chunks[i],r,2 * i,0,1);
-			r.chunks[r.t - 1] += rv;
-		}
-		r.sign = 0;
-		r.clamp();
-	}
-	,multiplyTo: function(a,r) {
-		var x = this.abs(), y = a.abs();
-		var i = x.t;
-		r.t = i + y.t;
-		while(--i >= 0) r.chunks[i] = 0;
-		var _g1 = 0, _g = y.t;
-		while(_g1 < _g) {
-			var i1 = _g1++;
-			r.chunks[i1 + x.t] = x.am(0,y.chunks[i1],r,i1,0,x.t);
-		}
-		r.sign = 0;
-		r.clamp();
-		if(this.sign != a.sign) math.BigInteger.get_ZERO().subTo(r,r);
-	}
-	,divRemTo: function(m,q,r) {
-		var pm = m.abs();
-		if(pm.t <= 0) return;
-		var pt = this.abs();
-		if(pt.t < pm.t) {
-			if(q != null) q.fromInt(0);
-			if(r != null) this.copyTo(r);
-			return;
-		}
-		if(r == null) r = math.BigInteger.nbi();
-		var y = math.BigInteger.nbi();
-		var ts = this.sign;
-		var ms = m.sign;
-		var nsh = math.BigInteger.DB - math.BigInteger.nbits(pm.chunks[pm.t - 1]);
-		if(nsh > 0) {
-			pt.lShiftTo(nsh,r);
-			pm.lShiftTo(nsh,y);
-		} else {
-			pt.copyTo(r);
-			pm.copyTo(y);
-		}
-		var ys = y.t;
-		var y0 = y.chunks[ys - 1];
-		if(y0 == 0) return;
-		var yt = y0 * 1.0 * ((1 << math.BigInteger.F1) * 1.0) + (ys > 1?(y.chunks[ys - 2] >> math.BigInteger.F2) * 1.0:0.0);
-		var d1 = math.BigInteger.FV / yt;
-		var d2 = (1 << math.BigInteger.F1) * 1.0 / yt;
-		var e = (1 << math.BigInteger.F2) * 1.0;
-		var i = r.t;
-		var j = i - ys;
-		var t = q == null?math.BigInteger.nbi():q;
-		y.dlShiftTo(j,t);
-		if(r.compare(t) >= 0) {
-			r.chunks[r.t] = 1;
-			r.t++;
-			r.subTo(t,r);
-		}
-		math.BigInteger.get_ONE().dlShiftTo(ys,t);
-		t.subTo(y,y);
-		while(y.t < ys) {
-			y.chunks[y.t] = 0;
-			y.t++;
-		}
-		while(--j >= 0) {
-			var qd;
-			if(r.chunks[--i] == y0) qd = math.BigInteger.DM; else qd = Math.floor(r.chunks[i] * 1.0 * d1 + (r.chunks[i - 1] * 1.0 + e) * d2);
-			r.chunks[i] += y.am(0,qd,r,j,0,ys);
-			if(r.chunks[i] < qd) {
-				y.dlShiftTo(j,t);
-				r.subTo(t,r);
-				while(r.chunks[i] < --qd) r.subTo(t,r);
-			}
-		}
-		if(q != null) {
-			r.drShiftTo(ys,q);
-			if(ts != ms) math.BigInteger.get_ZERO().subTo(q,q);
-		}
-		r.t = ys;
-		r.clamp();
-		if(nsh > 0) r.rShiftTo(nsh,r);
-		if(ts < 0) math.BigInteger.get_ZERO().subTo(r,r);
-	}
-	,copyTo: function(r) {
-		var _g1 = 0, _g = this.chunks.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			r.chunks[i] = this.chunks[i];
-		}
-		r.t = this.t;
-		r.sign = this.sign;
-	}
-	,bitLength: function() {
-		if(this.t <= 0) return 0;
-		return math.BigInteger.DB * (this.t - 1) + math.BigInteger.nbits(this.chunks[this.t - 1] ^ this.sign & math.BigInteger.DM);
-	}
-	,neg: function() {
-		var r = math.BigInteger.nbi();
-		math.BigInteger.get_ZERO().subTo(this,r);
-		return r;
-	}
-	,modPowInt: function(e,m) {
-		if(m == null) throw "m is null";
-		var z;
-		if(e < 256 || m.isEven()) z = new math.reduction.Classic(m); else z = new math.reduction.Montgomery(m);
-		return this.exp(e,z);
-	}
-	,mod: function(a) {
-		var r = math.BigInteger.nbi();
-		this.abs().divRemTo(a,null,r);
-		if(this.sign < 0 && r.compare(math.BigInteger.get_ZERO()) > 0) a.subTo(r,r);
-		return r;
-	}
-	,isEven: function() {
-		return (this.t > 0?this.chunks[0] & 1:this.sign) == 0;
-	}
-	,compare: function(a) {
-		var r = this.sign - a.sign;
-		if(r != 0) return r;
-		var i = this.t;
-		r = i - a.t;
-		if(r != 0) return r;
-		while(--i >= 0) {
-			r = this.chunks[i] - a.chunks[i];
-			if(r != 0) return r;
-		}
-		return 0;
-	}
-	,abs: function() {
-		return this.sign < 0?this.neg():this;
-	}
-	,toBytesUnsigned: function() {
-		var bb = new BytesBuffer();
-		var k = 8;
-		var km = 255;
-		var d = 0;
-		var i = this.t;
-		var p = math.BigInteger.DB - i * math.BigInteger.DB % k;
-		var m = false;
-		var c = 0;
-		if(i-- > 0) {
-			if(p < math.BigInteger.DB && (d = this.chunks[i] >> p) > 0) {
-				m = true;
-				bb.b.push(d);
-				c++;
-			}
-			while(i >= 0) {
-				if(p < k) {
-					d = (this.chunks[i] & (1 << p) - 1) << k - p;
-					d |= this.chunks[--i] >> (p += math.BigInteger.DB - k);
-				} else {
-					d = this.chunks[i] >> (p -= k) & km;
-					if(p <= 0) {
-						p += math.BigInteger.DB;
-						--i;
-					}
-				}
-				if(d > 0) m = true;
-				if(m) {
-					bb.b.push(d);
-					c++;
-				}
-			}
-		}
-		return bb.getBytes();
-	}
-	,fromInt: function(x) {
-		this.t = 1;
-		this.chunks[0] = 0;
-		this.sign = x < 0?-1:0;
-		if(x > 0) this.chunks[0] = x; else if(x < -1) this.chunks[0] = x + math.BigInteger.DV; else this.t = 0;
-	}
-	,am: null
-	,chunks: null
-	,sign: null
-	,t: null
-	,__class__: math.BigInteger
-}
-math.reduction = {}
-math.reduction.ModularReduction = function() { }
-$hxClasses["math.reduction.ModularReduction"] = math.reduction.ModularReduction;
-math.reduction.ModularReduction.__name__ = ["math","reduction","ModularReduction"];
-math.reduction.ModularReduction.prototype = {
-	sqrTo: null
-	,mulTo: null
-	,revert: null
-	,convert: null
-	,__class__: math.reduction.ModularReduction
-}
-math.reduction.Classic = function(m) {
-	this.m = m;
-};
-$hxClasses["math.reduction.Classic"] = math.reduction.Classic;
-math.reduction.Classic.__name__ = ["math","reduction","Classic"];
-math.reduction.Classic.__interfaces__ = [math.reduction.ModularReduction];
-math.reduction.Classic.prototype = {
-	sqrTo: function(x,r) {
-		x.squareTo(r);
-		this.reduce(r);
-	}
-	,mulTo: function(x,y,r) {
-		x.multiplyTo(y,r);
-		this.reduce(r);
-	}
-	,reduce: function(x) {
-		x.divRemTo(this.m,null,x);
-	}
-	,revert: function(x) {
-		return x;
-	}
-	,convert: function(x) {
-		if(x.sign < 0 || x.compare(this.m) >= 0) return x.mod(this.m);
-		return x;
-	}
-	,m: null
-	,__class__: math.reduction.Classic
-}
-math.reduction.Montgomery = function(x) {
-	this.m = x;
-	this.mp = this.m.invDigit();
-	this.mpl = this.mp & 32767;
-	this.mph = this.mp >> 15;
-	this.um = (1 << math.BigInteger.DB - 15) - 1;
-	this.mt2 = 2 * this.m.t;
-};
-$hxClasses["math.reduction.Montgomery"] = math.reduction.Montgomery;
-math.reduction.Montgomery.__name__ = ["math","reduction","Montgomery"];
-math.reduction.Montgomery.__interfaces__ = [math.reduction.ModularReduction];
-math.reduction.Montgomery.prototype = {
-	sqrTo: function(x,r) {
-		x.squareTo(r);
-		this.reduce(r);
-	}
-	,mulTo: function(x,y,r) {
-		x.multiplyTo(y,r);
-		this.reduce(r);
-	}
-	,reduce: function(x) {
-		x.padTo(this.mt2);
-		var i = 0;
-		while(i < this.m.t) {
-			var j = x.chunks[i] & 32767;
-			var u0 = j * this.mpl + ((j * this.mph + (x.chunks[i] >> 15) * this.mpl & this.um) << 15) & math.BigInteger.DM;
-			j = i + this.m.t;
-			x.chunks[j] += this.m.am(0,u0,x,i,0,this.m.t);
-			while(x.chunks[j] >= math.BigInteger.DV) {
-				x.chunks[j] -= math.BigInteger.DV;
-				if(x.chunks.length < j + 2) x.chunks[j + 1] = 0;
-				x.chunks[++j]++;
-			}
-			i++;
-		}
-		x.clamp();
-		x.drShiftTo(this.m.t,x);
-		if(x.compare(this.m) >= 0) x.subTo(this.m,x);
-	}
-	,revert: function(x) {
-		var r = math.BigInteger.nbi();
-		x.copyTo(r);
-		this.reduce(r);
-		return r;
-	}
-	,convert: function(x) {
-		var r = math.BigInteger.nbi();
-		x.abs().dlShiftTo(this.m.t,r);
-		r.divRemTo(this.m,null,r);
-		if(x.sign < 0 && r.compare(math.BigInteger.get_ZERO()) > 0) this.m.subTo(r,r);
-		return r;
-	}
-	,um: null
-	,mph: null
-	,mpl: null
-	,mp: null
-	,mt2: null
-	,m: null
-	,__class__: math.reduction.Montgomery
-}
 var rg = {}
 rg.RGConst = function() { }
 $hxClasses["rg.RGConst"] = rg.RGConst;
@@ -7579,15 +6542,10 @@ rg.app.charts.App.prototype = {
 				brandPadding = 24;
 			});
 		}
-		if(!uselegacy) {
-			if(!jsoptions.options.a && document.location.href.substr(0,7) != "file://") visualization.addReadyOnce(function() {
-				var widget = rg.html.widget.Logo.createLogo(visualization.container,brandPadding);
-			});
-			visualization.addReadyOnce(function() {
-				rg.app.charts.App.chartsLoaded++;
-				if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) _g.globalNotifier.dispatch();
-			});
-		}
+		if(!uselegacy) visualization.addReadyOnce(function() {
+			rg.app.charts.App.chartsLoaded++;
+			if(rg.app.charts.App.chartsLoaded == rg.app.charts.App.chartsCounter) _g.globalNotifier.dispatch();
+		});
 		if(null != jsoptions.options.error) visualization.addError(jsoptions.options.error);
 		haxe.Timer.delay($bind(loader,loader.load),0);
 		return visualization;
@@ -7692,7 +6650,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.5.35.9326"};
+	r.info.charts = { version : "1.5.45.9353"};
 	r.getTooltip = function() {
 		return rg.html.widget.Tooltip.get_instance();
 	};
@@ -7731,47 +6689,6 @@ rg.app.charts.JSBridge.chartopt = function(ob,viz) {
 rg.app.charts.MVPOptions = function() { }
 $hxClasses["rg.app.charts.MVPOptions"] = rg.app.charts.MVPOptions;
 rg.app.charts.MVPOptions.__name__ = ["rg","app","charts","MVPOptions"];
-rg.app.charts.MVPOptions.a1 = function(params,handler) {
-	var authcode = ReportGrid.authCode, authorized = false;
-	if(null == authcode) {
-		var script = rg.util.Js.findScript("reportgrid-charts.js");
-		var args = rg.util.Urls.parseQueryParameters(script.src);
-		authcode = Reflect.field(args,"authCode");
-	}
-	if(null != authcode) {
-		var auth = new rg.util.Auth(authcode), hosts = [], host = js.Browser.window.location.hostname;
-		if(new EReg("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$","").match(host)) hosts.push(host); else {
-			var parts = host.split(".");
-			if(parts.length == 3 && parts[0] == "www") parts.shift();
-			hosts.push(parts.join("."));
-			while(parts.length > 2) parts.shift();
-			hosts.push("*." + parts.join("."));
-		}
-		authorized = auth.authorizeMany(hosts);
-	} else authorized = rg.html.widget.Logo.pageIsBranded();
-	rg.app.charts.MVPOptions.a1 = function(params1,handler1) {
-		params1.options.a = authorized;
-		handler1(params1);
-	};
-	rg.app.charts.MVPOptions.a1(params,handler);
-}
-rg.app.charts.MVPOptions.a2 = function(params,handler) {
-	var changeAndToggle = function(auth) {
-		if(null == auth) rg.app.charts.MVPOptions.a2 = function(params1,handler1) {
-			handler1(params1);
-		}; else rg.app.charts.MVPOptions.a2 = function(params1,handler1) {
-			params1.options.a = auth;
-			handler1(params1);
-		};
-		rg.app.charts.MVPOptions.a2(params,handler);
-	};
-	var api = ReportGrid.token;
-	if(params.options.a || null == api) changeAndToggle(null); else api(function(result) {
-		changeAndToggle((result.expires <= 0 || result.expires >= new Date().getTime()) && result.permissions.read);
-	},function(err) {
-		changeAndToggle(null);
-	});
-}
 rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	var chain = new rg.util.ChainedExecutor(handler);
 	if(null == parameters.options) parameters.options = { };
@@ -7779,11 +6696,9 @@ rg.app.charts.MVPOptions.complete = function(parameters,handler) {
 	if(null != options.download && !Types.isAnonymous(options.download)) {
 		var v = options.download;
 		Reflect.deleteField(options,"download");
-		if(v == true) options.download = { position : "auto"}; else if(js.Boot.__instanceof(v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 118, className : "rg.app.charts.MVPOptions", methodName : "complete"});
+		if(v == true) options.download = { position : "auto"}; else if(js.Boot.__instanceof(v,String)) options.download = { position : v}; else throw new thx.error.Error("invalid value for download '{0}'",[v],null,{ fileName : "MVPOptions.hx", lineNumber : 40, className : "rg.app.charts.MVPOptions", methodName : "complete"});
 	}
 	if(null != options.map && Types.isAnonymous(options.map)) options.map = [options.map];
-	chain.addAction(rg.app.charts.MVPOptions.a1);
-	chain.addAction(rg.app.charts.MVPOptions.a2);
 	chain.addAction(function(params,handler1) {
 		var axes = params.axes, hasdependent = false;
 		if(null == axes) axes = [];
@@ -9808,125 +8723,6 @@ rg.html.widget.DownloaderPositions.parse = function(v) {
 	default:
 		return rg.html.widget.DownloaderPosition.ElementSelector(v);
 	}
-}
-rg.html.widget.Logo = function(container,padright) {
-	this.mapvalues = new haxe.ds.StringMap();
-	this.padRight = padright;
-	this.id = ++rg.html.widget.Logo._id;
-	this.container = container;
-	this.create();
-	var timer = new haxe.Timer(5000);
-	timer.run = $bind(this,this.live);
-};
-$hxClasses["rg.html.widget.Logo"] = rg.html.widget.Logo;
-rg.html.widget.Logo.__name__ = ["rg","html","widget","Logo"];
-rg.html.widget.Logo.pageIsBranded = function() {
-	var _g = 0, _g1 = rg.html.widget.Logo.getLogos();
-	while(_g < _g1.length) {
-		var logo = _g1[_g];
-		++_g;
-		if(!dhx.Dom.select("img[src=\"" + logo + "\"]").empty()) return true;
-	}
-	return false;
-}
-rg.html.widget.Logo.createLogo = function(container,padright) {
-	var id = container.attr("id").get(), logo = rg.html.widget.Logo.registry.get(id);
-	if(null == logo) rg.html.widget.Logo.registry.set(id,logo = new rg.html.widget.Logo(container,padright)); else logo.live();
-	return logo;
-}
-rg.html.widget.Logo.getLogo = function() {
-	return rg.html.widget.Logo.getLogos()[0];
-}
-rg.html.widget.Logo.getLogos = function() {
-	return ["http://api.reportgrid.com/css/images/reportgrid-clear.png","http://api.reportgrid.com/css/images/reportgrid-cleart.png","http://api.reportgrid.com/css/images/reportgrid-dark.png","http://api.reportgrid.com/css/images/reportgrid-darkt.png","https://api.reportgrid.com/css/images/reportgrid-clear.png","https://api.reportgrid.com/css/images/reportgrid-cleart.png","https://api.reportgrid.com/css/images/reportgrid-dark.png","https://api.reportgrid.com/css/images/reportgrid-darkt.png"];
-}
-rg.html.widget.Logo.position = function(el) {
-	var p = { x : el.offsetLeft || 0, y : el.offsetTop || 0};
-	while(null != (el = el.offsetParent)) {
-		p.x += el.offsetLeft;
-		p.y += el.offsetTop;
-	}
-	return p;
-}
-rg.html.widget.Logo.prototype = {
-	updateImage: function() {
-		this.setAttr(this.image,"src",rg.html.widget.Logo.getLogo());
-		this.setAttr(this.image,"title","Powered by ReportGrid");
-		this.setAttr(this.image,"height","" + 29);
-		this.setAttr(this.image,"width","" + 194);
-		this.setStyle(this.image,"opacity","1");
-		this.setStyle(this.image,"border","none");
-		this.setStyle(this.image,"height",29 + "px");
-		this.setStyle(this.image,"width",194 + "px");
-	}
-	,updateAnchor: function() {
-		var body = js.Browser.document.body, len = body.childNodes.length;
-		if(dhx.Dom.select("body :last-child").node() != this.anchor.node()) body.appendChild(this.anchor.node());
-		var pos = rg.html.widget.Logo.position(this.frame.node()), width = this.frame.style("width").getFloat();
-		this.setAttr(this.anchor,"title","Powered by ReportGrid");
-		this.setAttr(this.anchor,"href","http://www.reportgrid.com/charts/");
-		this.setStyle(this.anchor,"z-index","2147483647");
-		this.setStyle(this.anchor,"display","block");
-		this.setStyle(this.anchor,"opacity","1");
-		this.setStyle(this.anchor,"position","absolute");
-		this.setStyle(this.anchor,"height",29 + "px");
-		this.setStyle(this.anchor,"width",194 + "px");
-		this.setStyle(this.anchor,"top",pos.y + "px");
-		this.setStyle(this.anchor,"left",pos.x - 194 + width - this.padRight + "px");
-	}
-	,setAttr: function(s,name,value) {
-		var key = "attr:" + name + ":" + value, v;
-		if(null != (v = this.mapvalues.get(key)) && v != s.attr(name).get()) s.attr(name).string(v); else if(null == v) {
-			s.attr(name).string(value);
-			this.mapvalues.set(key,s.attr(name).get());
-		}
-	}
-	,setStyle: function(s,name,value) {
-		var key = "style:" + name + ":" + value, v;
-		if(null != (v = this.mapvalues.get(key)) && v != s.style(name).get()) s.style(name).string(v,"important"); else if(null == v) {
-			s.style(name).string(value,"important");
-			this.mapvalues.set(key,s.style(name).get());
-		}
-	}
-	,updateFrame: function() {
-		this.setStyle(this.frame,"display","block");
-		this.setStyle(this.frame,"opacity","1");
-		this.setStyle(this.frame,"width","100%");
-		this.setStyle(this.frame,"height",29 + "px");
-		this.setStyle(this.frame,"position","relative");
-	}
-	,createImage: function() {
-		this.image = this.anchor.append("img");
-		this.updateImage();
-	}
-	,createAnchor: function() {
-		this.anchor = dhx.Dom.select("body").append("a").attr("class").string("reportgridbrandanchor" + this.id).attr("target").string("_blank");
-		this.updateAnchor();
-	}
-	,createFrame: function() {
-		this.chartContainer = this.container.select("*");
-		this.frame = this.container.insert("div",this.chartContainer.node()).attr("class").string("reportgridbrandcontainer");
-		this.updateFrame();
-	}
-	,create: function() {
-		this.createFrame();
-		this.createAnchor();
-		this.createImage();
-	}
-	,live: function() {
-		if(this.container.select("div.reportgridbrandcontainer").empty()) this.createFrame(); else this.updateFrame();
-		if(dhx.Dom.select("body").select("a.reportgridbrandanchor" + this.id).empty()) this.createAnchor(); else this.updateAnchor();
-		if(this.anchor.select("img").empty()) this.createImage(); else this.updateImage();
-	}
-	,padRight: null
-	,mapvalues: null
-	,id: null
-	,image: null
-	,anchor: null
-	,frame: null
-	,container: null
-	,chartContainer: null
-	,__class__: rg.html.widget.Logo
 }
 rg.html.widget.Tooltip = function(el) {
 	this.visible = false;
@@ -17084,39 +15880,6 @@ rg.svg.widget.Sensible.findDataNodesNear = function(coords,context,distance) {
 	});
 }
 rg.util = {}
-rg.util.Auth = function(authCode) {
-	try {
-		this.tests = rg.util.Decrypt.decrypt(authCode).split(",");
-	} catch( e ) {
-	}
-};
-$hxClasses["rg.util.Auth"] = rg.util.Auth;
-rg.util.Auth.__name__ = ["rg","util","Auth"];
-rg.util.Auth.prototype = {
-	authorizeMany: function(hosts) {
-		var _g = 0;
-		while(_g < hosts.length) {
-			var host = hosts[_g];
-			++_g;
-			if(this.authorize(host)) return true;
-		}
-		return false;
-	}
-	,authorizeOne: function(host,test) {
-		if(host.substring(0,2) == "*.") return StringTools.endsWith("." + test,host.substring(1)); else return test == host;
-	}
-	,authorize: function(host) {
-		var _g = 0, _g1 = this.tests;
-		while(_g < _g1.length) {
-			var test = _g1[_g];
-			++_g;
-			if(this.authorizeOne(host,test)) return true;
-		}
-		return false;
-	}
-	,tests: null
-	,__class__: rg.util.Auth
-}
 rg.util.ChainedExecutor = function(handler) {
 	this.handler = handler;
 	this.actions = [];
@@ -17215,17 +15978,6 @@ rg.util.DataPoints.id = function(dp,dependentProperties) {
 		Reflect.deleteField(cdp,p);
 	}
 	return haxe.crypto.Md5.encode(Dynamics.string(cdp));
-}
-rg.util.Decrypt = function() { }
-$hxClasses["rg.util.Decrypt"] = rg.util.Decrypt;
-rg.util.Decrypt.__name__ = ["rg","util","Decrypt"];
-rg.util.Decrypt.decrypt = function(s) {
-	var r = new chx.crypt.RSAEncrypt(rg.util.Decrypt.modulus,rg.util.Decrypt.publicExponent), d = chx.formats.Base64.decode(s);
-	try {
-		return r.verify(d).toString();
-	} catch( e ) {
-		return null;
-	}
 }
 rg.util.Js = function() { }
 $hxClasses["rg.util.Js"] = rg.util.Js;
@@ -22761,8 +21513,6 @@ if (!('every' in Array.prototype)) {
         return true;
     };
 }
-var bb = new BytesBuffer();
-BytesUtil.EMPTY = bb.getBytes();
 if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
 	var i = a.indexOf(o);
 	if(i == -1) return false;
@@ -24314,36 +23064,6 @@ window.requestAnimationFrame = window.requestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
-var dbits;
-var j_lm;
-var canary = 0xdeadbeefcafe;
-j_lm = (canary & 16777215) == 15715070;
-var browser = window.navigator.appName;
-if(j_lm && browser == "Microsoft Internet Explorer") dbits = 30; else if(j_lm && browser != "Netscape") dbits = 26; else dbits = 28;
-switch(dbits) {
-case 30:
-	math.BigInteger.defaultAm = 2;
-	break;
-case 28:
-	math.BigInteger.defaultAm = 3;
-	break;
-case 26:
-	math.BigInteger.defaultAm = 1;
-	break;
-default:
-	throw "bad dbits value";
-}
-math.BigInteger.DB = dbits;
-math.BigInteger.DM = (1 << math.BigInteger.DB) - 1;
-math.BigInteger.DV = 1 << math.BigInteger.DB;
-math.BigInteger.BI_FP = 52;
-math.BigInteger.FV = Math.pow(2,math.BigInteger.BI_FP);
-math.BigInteger.F1 = math.BigInteger.BI_FP - math.BigInteger.DB;
-math.BigInteger.F2 = 2 * math.BigInteger.DB - math.BigInteger.BI_FP;
-math.BigInteger.initBiRc();
-math.BigInteger.BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-math.BigInteger.lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509];
-math.BigInteger.lplim = 67108864 / math.BigInteger.lowprimes[math.BigInteger.lowprimes.length - 1] | 0;
 var r = window.ReportGrid?window.ReportGrid:window.ReportGrid = { };
 r.$ = r.$ || { };
 r.$.pk = r.$.pk || { };
@@ -24672,8 +23392,6 @@ rg.html.chart.PivotTable.defaultColorStart = new thx.color.Hsl(210,1,1);
 rg.html.chart.PivotTable.defaultColorEnd = new thx.color.Hsl(210,1,0.5);
 rg.html.widget.DownloaderMenu.DEFAULT_FORMATS = ["png","jpg","pdf"];
 rg.html.widget.DownloaderMenu.DEFAULT_TITLE = "Download";
-rg.html.widget.Logo.registry = new haxe.ds.StringMap();
-rg.html.widget.Logo._id = 0;
 rg.info.Info.warner = window.console && window.console.warn?function(m) {
 	console.warn("" + Std.string(m));
 }:function(m) {
@@ -24709,8 +23427,6 @@ rg.svg.util.SVGSymbolBuilder.SIZE_PATTERN = new EReg("^(\\d+)x(\\d+)$","");
 rg.svg.util.SVGSymbolBuilder.ALIGN_PATTERN = new EReg("^(center|left|right)\\s+(center|top|bottom)$","i");
 rg.svg.util.SVGSymbolBuilder.HORIZONTAL_PATTERN = new EReg("^(center|left|right)$","i");
 rg.svg.util.SVGSymbolBuilder.VERTICAL_PATTERN = new EReg("^(top|bottom)$","i");
-rg.util.Decrypt.modulus = "00:ca:a7:37:07:b0:26:63:cb:f1:37:9d:e9:cc:c1:bd:f1:57:f5:90:72:4d:74:e2:5f:33:df:6c:c4:e4:7f:95:3c:87:89:ed:3c:60:cc:b0:15:f9:ad:57:77:52:4b:25:9b:c8:f9:d0:8a:b8:0a:ab:17:3d:7c:cf:1d:19:a3:8c:43:9b:ee:5b:2e:9e:45:18:b3:97:2a:91:c2:90:c2:1e:49:a3:5e:b1:48:09:1c:ee:06:b9:6e:ec:22:e6:2d:06:b8:b4:22:5f:4d:5e:81:6a:91:13:30:5d:6c:b5:7c:cc:fa:47:dc:8e:b4:f3:fd:0a:6e:d2:f8:09:3c:b1:c2:90:19";
-rg.util.Decrypt.publicExponent = "3";
 rg.util.Periodicity.validGroupValues = ["hour","day","week","month","year"];
 rg.util.RGStrings.range = new EReg("(\\d+(?:\\.\\d+)?|\\.\\d+)?-(\\d+(?:\\.\\d+|\\.\\d+)?)?","");
 rg.visualization.Visualizations.html = ["pivottable","leaderboard"];
